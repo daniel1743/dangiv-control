@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dan&Giv Control - Tu Asistente Financiero</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      /* Estilos mínimos para el modal (no requiere dependencias) */
+      .modal-backdrop {
+        position: fixed; inset: 0; background: rgba(0,0,0,.45);
+        display: none; align-items: center; justify-content: center; z-index: 9999;
+      }
+      .modal-backdrop.show { display: flex; }
+      .modal-card {
+        width: min(560px, 92vw); border-radius: 16px; background: var(--color-surface, #111827);
+        color: var(--color-text, #e5e7eb); box-shadow: 0 20px 50px rgba(0,0,0,.35);
+        transform: translateY(10px) scale(.98); opacity: 0; transition: all .25s ease;
+        border: 1px solid rgba(255,255,255,.08);
+      }
+      .modal-backdrop.show .modal-card { transform: translateY(0) scale(1); opacity: 1; }
+      .modal-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom: 1px solid rgba(255,255,255,.08); }
+      .modal-title { font-size:18px; font-weight:700; display:flex; gap:10px; align-items:center; }
+      .modal-body { padding: 16px 20px; display: grid; gap: 12px; }
+      .modal-footer { display:flex; gap:10px; justify-content:flex-end; padding:16px 20px; border-top: 1px solid rgba(255,255,255,.08); }
+      .form-row { display:grid; gap:8px; }
+      .form-row label { font-size:14px; opacity:.9; }
+      .form-row input {
+        background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+        color: inherit; padding:10px 12px; border-radius:10px; outline:none;
+      }
+      .btn { cursor:pointer; border:1px solid transparent; border-radius:10px; padding:10px 14px; font-weight:600; }
+      .btn--secondary { background: transparent; border-color: rgba(255,255,255,.18); }
+      .btn--primary { background: #2563eb; color:white; border-color: #1d4ed8; }
+      .btn--ghost { background: transparent; color: inherit; }
+      .modal-close { background: transparent; border: none; color: inherit; cursor: pointer; }
+      @media (prefers-color-scheme: light) {
+        .modal-card { background: #ffffff; color:#0f172a; border-color: rgba(0,0,0,.08); }
+        .form-row input { background:#fff; border-color: rgba(0,0,0,.15); }
+      }
+    </style>
+
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Dan&Giv Control</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn--sm btn--outline" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+        <!-- Sidebar -->
+       <aside class="sidebar">
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-section="dashboard">
+      <i class="fas fa-chart-line"></i>
+      <span>Dashboard</span>
+    </button>
+    <button class="nav-item" data-section="expenses">
+      <i class="fas fa-plus-circle"></i>
+      <span>Registrar Gasto</span>
+    </button>
+    <button class="nav-item" data-section="goals">
+      <i class="fas fa-bullseye"></i>
+      <span>Metas Financieras</span>
+    </button>
+    <button class="nav-item" data-section="analysis">
+      <i class="fas fa-chart-pie"></i>
+      <span>Análisis</span>
+    </button>
+    <button class="nav-item" data-section="shopping">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Lista de Compras</span>
+    </button>
+    <button class="nav-item" data-section="config">
+      <i class="fas fa-cog"></i>
+      <span>Configuración</span>
+    </button>
+  </nav>
+</aside>
+
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h1>¡Bienvenido a tu asistente financiero!</h1>
+                    <p>Gestiona tus finanzas de manera inteligente y alcanza tus metas</p>
+                </div>
+
+                <!-- Financial Summary -->
+                <div class="stats-grid">
+                    <div class="stat-card stat-card--primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Balance Total</h3>
+                            <p class="stat-value" id="totalBalance">$2,188</p>
+                            <span class="stat-change positive">+12.5% este mes</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Gastos Totales</h3>
+                            <p class="stat-value" id="totalExpenses">$312</p>
+                            <span class="stat-change negative">+8.2% este mes</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Ahorros</h3>
+                            <p class="stat-value" id="totalSavings">$1,300</p>
+                            <span class="stat-change positive">Meta: 75%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Transacciones</h3>
+                            <p class="stat-value" id="totalTransactions">5</p>
+                            <span class="stat-change">Este mes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts and Analysis -->
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Gastos por Categoría</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="expenseChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Progreso de Metas</h3>
+                        </div>
+                        <div class="card__body">
+                            <div id="goalsProgress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Recommendations -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Recomendaciones de Ahorro <i class="fas fa-robot"></i></h3>
+                    </div>
+                    <div class="card__body">
+                        <div id="aiRecommendations"></div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Transacciones Recientes</h3>
+                    </div>
+                    <div class="card__body">
+                        <div id="recentTransactions"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Expense Registration Section -->
+            <section id="expenses" class="section">
+                <div class="section-header">
+                    <h1>Registrar Nuevo Gasto</h1>
+                    <p>Añade tus gastos de manera rápida y organizada</p>
+                </div>
+
+                <div class="form-container">
+                    <form id="expenseForm" class="expense-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label" for="description">Descripción del Gasto</label>
+                                <input type="text" id="description" class="form-control" placeholder="Ej. Almuerzo, Gasolina" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="amount">Monto ($)</label>
+                                <input type="number" id="amount" class="form-control" placeholder="0.00" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="category">Categoría</label>
+                                <select id="category" class="form-control" required>
+                                    <option value="">Selecciona una categoría</option>
+                                    <option value="Alimentación">Alimentación</option>
+                                    <option value="Transporte">Transporte</option>
+                                    <option value="Entretenimiento">Entretenimiento</option>
+                                    <option value="Salud">Salud</option>
+                                    <option value="Servicios">Servicios</option>
+                                    <option value="Compras">Compras</option>
+                                    <option value="Otros">Otros</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="necessity">Grado de Necesidad</label>
+                                <select id="necessity" class="form-control" required>
+                                    <option value="">Selecciona el grado</option>
+                                    <option value="Muy Necesario">Muy Necesario</option>
+                                    <option value="Necesario">Necesario</option>
+                                    <option value="Poco Necesario">Poco Necesario</option>
+                                    <option value="No Necesario">No Necesario</option>
+                                    <option value="Compra por Impulso">Compra por Impulso</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="date">Fecha</label>
+                                <input type="date" id="date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="user">Usuario</label>
+                                <select id="user" class="form-control" required>
+                                    <option value="">Selecciona usuario</option>
+                                    <option value="Daniel">Daniel</option>
+                                    <option value="Givonik">Givonik</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn--primary btn--lg">
+                                <i class="fas fa-plus"></i>
+                                Registrar Gasto
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Expense List -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Historial de Gastos</h3>
+                    </div>
+                    <div class="card__body">
+                        <div id="expenseList"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Goals Section -->
+            <section id="goals" class="section">
+                <div class="section-header">
+                    <h1>Metas Financieras</h1>
+                    <p>Define y monitorea tus objetivos de ahorro</p>
+                </div>
+
+                <!-- Add Goal Form -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Nueva Meta Financiera</h3>
+                    </div>
+                    <div class="card__body">
+                        <form id="goalForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="goalName">Nombre de la Meta</label>
+                                    <input type="text" id="goalName" class="form-control" placeholder="Ej. Vacaciones en la playa" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="goalTarget">Cantidad Objetivo ($)</label>
+                                    <input type="number" id="goalTarget" class="form-control" placeholder="1000" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="goalDeadline">Fecha Límite</label>
+                                    <input type="date" id="goalDeadline" class="form-control" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn--primary">
+                                <i class="fas fa-target"></i>
+                                Crear Meta
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Goals List -->
+                <div id="goalsList"></div>
+            </section>
+
+            <!-- Analysis Section -->
+            <section id="analysis" class="section">
+                <div class="section-header">
+                    <h1>Análisis de Gastos</h1>
+                    <p>Visualiza patrones y tendencias en tus finanzas</p>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Gastos por Usuario</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="userExpenseChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Necesidad vs No Necesario</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="necessityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Gastos Innecesarios del Mes</h3>
+                    </div>
+                    <div class="card__body">
+                        <div id="unnecessaryExpenses"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Shopping List Section -->
+            <section id="shopping" class="section">
+                <div class="section-header">
+                    <h1>Lista de Compras</h1>
+                    <p>Organiza tus compras y controla gastos de mercadería</p>
+                </div>
+
+                <!-- Add Item Form -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Agregar Producto</h3>
+                    </div>
+                    <div class="card__body">
+                        <form id="shoppingForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="product">Producto</label>
+                                    <input type="text" id="product" class="form-control" placeholder="Ej. Leche, Pan" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="quantity">Cantidad</label>
+                                    <input type="number" id="quantity" class="form-control" placeholder="1" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="necessary">¿Es necesario?</label>
+                                    <select id="necessary" class="form-control" required>
+                                        <option value="">Selecciona</option>
+                                        <option value="true">Sí</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn--primary">
+                                <i class="fas fa-plus"></i>
+                                Agregar Producto
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Shopping List -->
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Lista Actual</h3>
+                        <button class="btn btn--secondary btn--sm" id="generateList">
+                            <i class="fas fa-download"></i>
+                            Generar Lista
+                        </button>
+                    </div>
+                    <div class="card__body">
+                        <div id="shoppingList"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Configuration Section -->
+            <section id="config" class="section">
+                <div class="section-header">
+                    <h1>Configuración</h1>
+                    <p>Personaliza tu experiencia financiera</p>
+                </div>
+
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Ingresos Mensuales</h3>
+                    </div>
+                    <div class="card__body">
+                        <form id="incomeForm">
+                            <div class="form-group">
+                                <label class="form-label" for="monthlyIncome">Dinero Total del Mes ($)</label>
+                                <input type="number" id="monthlyIncome" class="form-control" placeholder="2500" step="0.01">
+                                <small>Ingresa tu salario total o ingresos del mes</small>
+                            </div>
+                            <button type="submit" class="btn btn--primary">
+                                <i class="fas fa-save"></i>
+                                Guardar Configuración
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Resumen del Mes</h3>
+                    </div>
+                    <div class="card__body">
+                        <div id="monthSummary"></div>
+                    </div>
+                </div>
+
+                <!-- NUEVA tarjeta de Seguridad con botón funcional hoy -->
+                <div class="card mt-16">
+                    <div class="card__header">
+                        <h3>Seguridad</h3>
+                    </div>
+                    <div class="card__body">
+                        <button id="changePasswordsBtn" class="btn btn--secondary">
+  <i class="fas fa-key"></i> Cambiar Contraseñas
+</button>
+<button id="resetPasswordsBtn" class="btn btn--danger" style="margin-top:8px;">
+  <i class="fas fa-undo"></i> Resetear Contraseñas
+</button>
+
+                        <small style="display:block; margin-top:8px; opacity:.8;">
+                            Requiere doble autorización (Daniel + Givonik). Próximamente: modal con validación avanzada.
+                        </small>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <i class="toast-icon"></i>
+            <span class="toast-message"></span>
+        </div>
+    </div>
+
+
+<!-- Modal -->
+<div class="modal" id="securityModal">
+  <div class="modal-dialog">
+    
+    <!-- Lado ilustración -->
+    <div class="modal-illustration">
+      <img src="img/ahorro.png" alt="Ilustración ahorro" />
+    </div>
+
+    <!-- Lado formulario -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Confirmar eliminación</h2>
+        <button class="modal-close" type="button" aria-label="Cerrar"
+          onclick="document.getElementById('securityModal').classList.remove('show')">
+          &times;
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Contraseña actual Daniel -->
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="curDaniel" placeholder="Contraseña de Daniel" autocomplete="current-password" />
+          <i class="fas fa-eye toggle-pass" data-target="curDaniel"></i>
+        </div>
+
+        <!-- Contraseña actual Givonik -->
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="curGivonik" placeholder="Contraseña de Givonik" autocomplete="current-password" />
+          <i class="fas fa-eye toggle-pass" data-target="curGivonik"></i>
+        </div>
+
+        <!-- Sección para cambio de contraseñas (se muestra solo si corresponde) -->
+        <div id="newPassSection" style="display:none; margin-top: 16px;">
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="newDaniel" placeholder="Nueva contraseña de Daniel" autocomplete="new-password" />
+            <i class="fas fa-eye toggle-pass" data-target="newDaniel"></i>
+          </div>
+
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="confirmDaniel" placeholder="Confirmar contraseña de Daniel" autocomplete="new-password" />
+            <i class="fas fa-eye toggle-pass" data-target="confirmDaniel"></i>
+          </div>
+
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="newGivonik" placeholder="Nueva contraseña de Givonik" autocomplete="new-password" />
+            <i class="fas fa-eye toggle-pass" data-target="newGivonik"></i>
+          </div>
+
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="confirmGivonik" placeholder="Confirmar contraseña de Givonik" autocomplete="new-password" />
+            <i class="fas fa-eye toggle-pass" data-target="confirmGivonik"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" type="button"
+          onclick="document.getElementById('securityModal').classList.remove('show')">
+          Cancelar
+        </button>
+        <button class="btn-primary" id="modalSavePasswordsBtn">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+     <!-- Librerías externas -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.js"></script>
+
+<!-- Tu archivo -->
+<script src="app.js"></script>
+
+    <script>
+      // Preparado: en el siguiente paso conectaremos el modal y eliminaremos los prompt().
+      // Por ahora, solo dejo un handler opcional para abrir el modal si quisieras probar la animación:
+      // document.getElementById('changePasswordsBtn').addEventListener('dblclick', () => {
+      //   document.getElementById('securityModal').classList.add('show');
+      // });
+      // El botón principal ya funciona hoy con onclick -> window.app.changePasswords()
+    </script>
+</body>
+</html>
