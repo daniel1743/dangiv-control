@@ -792,8 +792,15 @@ body {
 .notifications {
     position: relative;
     cursor: pointer;
-    padding: var(--space-8);
-    border-radius: var(--radius-full);
+    .notifications:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        /* claro */
+      }
+    
+      [data-color-scheme="dark"] .notifications:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+        /* oscuro */
+      }
     transition: background-color var(--duration-fast) var(--ease-standard);
 }
 
@@ -801,21 +808,7 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-.notification-badge {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    background-color: var(--color-error);
-    color: white;
-    border-radius: var(--radius-full);
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-bold);
-}
+.notification-badge
 
 /* Main Layout */
 .main-layout {
@@ -826,15 +819,17 @@ body {
 
 /* Sidebar */
 .sidebar {
-    width: 260px;
-    background-color: var(--color-surface);
-    border-right: 1px solid var(--color-border);
-    padding: var(--space-24) 0;
-    position: fixed;
-    left: 0;
-    top: 80px;
-    bottom: 0;
-    overflow-y: auto;
+  width: 260px;
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: var(--space-24) 0;
+  position: fixed;
+  left: 0;
+  top: 80px;
+  bottom: 0;
+  overflow-y: auto;
+  z-index: 100;
+  /* Sidebar por encima del contenido */
 }
 
 .sidebar-nav {
@@ -859,12 +854,12 @@ body {
 }
 
 .nav-item:hover {
-    background-color: var(--color-secondary);
-    color: var(--color-text);
+    background-color: rgba(var(--color-teal-500-rgb), 0.1);
+      color: var(--color-primary);
 }
 
 .nav-item.active {
-    background-color: var(--color-primary);
+  background-color: var(--color-primary);
     color: var(--color-btn-primary-text);
 }
 
@@ -875,10 +870,16 @@ body {
 
 /* Main Content */
 .main-content {
-    flex: 1;
-    margin-left: 260px;
-    padding: var(--space-32);
-    background-color: var(--color-background);
+  position: relative;
+  /* Añadimos posición relativa */
+  flex: 1;
+  margin-left: 260px;
+  padding: var(--space-32);
+  background-color: var(--color-background);
+  z-index: 1;
+  /* Contenido principal con z-index bajo */
+  min-height: calc(100vh - 80px);
+  /* Asegura altura completa */
 }
 
 /* Sections */
@@ -911,6 +912,12 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: var(--space-24);
     margin-bottom: var(--space-32);
+}
+.stat-card,
+.card {
+  position: relative;
+  z-index: 2;
+  /* Tarjetas ligeramente por encima del contenido base */
 }
 
 .stat-card {
@@ -1659,8 +1666,13 @@ body, .modal {
 .topbar,
 .navbar,
 .app-header {
-  background-color: #2563eb !important;  /* Azul en modo claro */
-  color: #fff;
+  background-color: var(--color-primary) !important;
+    /* Teal */
+    color: var(--color-btn-primary-text);
+}
+.header {
+  z-index: 1000;
+  /* Header siempre arriba */
 }
 
 /* Iconos y botones dentro de la barra */
@@ -1889,4 +1901,251 @@ body, .modal {
 .reveal.active {
   opacity: 1;
   transform: translateY(0);
+}
+
+
+/* 🔔 Dropdown de notificaciones */
+/* Estilos base para el dropdown de notificaciones */
+.notification-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 280px;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  /* Colores por defecto (modo claro) */
+  background-color: #ffffff;
+  color: #222;
+  border: 1px solid #e0e0e0;
+}
+
+.notification-dropdown h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #111;
+}
+
+.notification-dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.notification-dropdown li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notification-dropdown li:last-child {
+  border-bottom: none;
+}
+
+.notification-dropdown li:hover {
+  background: rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+/* Modo oscuro específico */
+[data-color-scheme="dark"] .notification-dropdown {
+  background-color: #222;
+  color: #f9f9f9;
+  border: 1px solid #333;
+}
+
+[data-color-scheme="dark"] .notification-dropdown h4 {
+  color: #fff;
+}
+
+[data-color-scheme="dark"] .notification-dropdown li {
+  color: #f5f5f5;
+  border-bottom: 1px solid #444;
+}
+
+[data-color-scheme="dark"] .notification-dropdown li:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+  .notification-dropdown h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: inherit;
+    /* Hereda el color del padre */
+  }
+
+  .notification-dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .notification-dropdown li {
+    font-size: 13px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    /* Línea divisora suave */
+    color: inherit;
+    /* Hereda el color del padre */
+  }
+
+  .notification-dropdown li:last-child {
+    border-bottom: none;
+  }
+/* === Estilos generales del dropdown === */
+.notification-dropdown {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 12px;
+  min-width: 240px;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 9999;
+}
+
+.notification-dropdown h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Items */
+.notification-dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification-dropdown li {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eaeaea;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Hover */
+.notification-dropdown li:hover {
+  background: rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+/* === Light mode === */
+[data-color-scheme="light"] .notification-dropdown {
+  background: #fff;
+  color: #111;
+  border: 1px solid #ddd;
+}
+
+[data-color-scheme="light"] .notification-dropdown li {
+  color: #333;
+  border-bottom: 1px solid #eee;
+}
+
+/* === Dark mode === */
+[data-color-scheme="dark"] .notification-dropdown {
+  background: #222;
+  color: #f5f5f5;
+  border: 1px solid #444;
+}
+
+[data-color-scheme="dark"] .notification-dropdown li {
+  color: #f5f5f5;
+  border-bottom: 1px solid #333;
+}
+
+[data-color-scheme="dark"] .notification-dropdown li:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos consistentes para el menú de notificaciones */
+.notification-dropdown {
+  position: absolute;
+  top: 50px;
+  /* deja espacio para no montarse sobre la barra */
+  right: 0;
+  width: 280px;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+}
+
+/* ---- Modo claro ---- */
+/* Dropdown con gradiente igual al panel Balance Total */
+[data-color-scheme="light"] .notification-dropdown {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  color: var(--color-btn-primary-text);
+  border: none;
+}
+
+[data-color-scheme="light"] .notification-dropdown h4 {
+  color: var(--color-btn-primary-text);
+}
+
+[data-color-scheme="light"] .notification-dropdown li {
+  color: var(--color-btn-primary-text);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-color-scheme="light"] .notification-dropdown h4 {
+  color: #111;
+  margin-bottom: 8px;
+}
+
+[data-color-scheme="light"] .notification-dropdown li {
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #333;
+  /* Añadimos color oscuro para el texto */
+}
+
+[data-color-scheme="light"] .notification-dropdown li i {
+  margin-right: 6px;
+  color: #555;
+}
+
+/* ---- Modo oscuro ---- */
+[data-color-scheme="dark"] .notification-dropdown {
+  background-color: #222;
+  color: #f9f9f9;
+  border: 1px solid #333;
+}
+
+[data-color-scheme="dark"] .notification-dropdown h4 {
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+[data-color-scheme="dark"] .notification-dropdown li {
+  padding: 6px 0;
+  border-bottom: 1px solid #444;
+  font-size: 14px;
+}
+
+[data-color-scheme="dark"] .notification-dropdown li i {
+  margin-right: 6px;
+  color: #ccc;
+}
+
+/* Íconos de notificaciones visibles en ambos temas */
+.notification-icon {
+  color: var(--color-text);
+  /* usa el color de texto activo */
+  margin-right: 6px;
 }

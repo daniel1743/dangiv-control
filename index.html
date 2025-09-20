@@ -56,10 +56,20 @@
                 <button class="btn btn--sm btn--outline" id="themeToggle">
                     <i class="fas fa-moon"></i>
                 </button>
-                <div class="notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
-                </div>
+        <div class="notifications">
+<!-- 🔔 Área de notificaciones -->
+<div id="notificationArea" class="notifications">
+  <i id="notificationBell" class="fas fa-bell"></i>
+  <span id="notificationCount" class="notification-badge"></span>
+</div>
+
+<!-- Menú desplegable -->
+<div id="notificationDropdown" class="notification-dropdown hidden">
+  <h4>Notificaciones</h4>
+  <ul id="notificationList"></ul>
+</div>
+
+
             </div>
         </div>
     </header>
