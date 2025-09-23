@@ -751,15 +751,18 @@ body {
 
 /* Header */
 .header {
-    background-color: var(--color-primary);
-    color: var(--color-btn-primary-text);
-    padding: var(--space-16) 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    box-shadow: var(--shadow-md);
+  background-color: var(--color-primary);
+  color: var(--color-btn-primary-text);
+  height: 70px;
+  /* 🔹 fijamos altura exacta */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
 }
 
 .header-content {
@@ -784,9 +787,20 @@ body {
 }
 
 .header-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-16);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  /* Aumentamos el espacio entre los elementos (íconos y botón) */
+}
+
+/* Quedará así */
+.header-actions .btn i,
+.header-actions .notifications i {
+  font-size: 20px;
+  width: 24px;
+  /* Añadido para darles un contenedor idéntico */
+  text-align: center;
+  /* Añadido para centrar el glifo del ícono */
 }
 
 .notifications {
@@ -812,11 +826,11 @@ body {
 
 /* Main Layout */
 .main-layout {
-    display: flex;
-    margin-top: 80px; /* Header height */
-    min-height: calc(100vh - 80px);
+  display: flex;
+  margin-top: 70px;
+  /* 🔹 igual a altura del header */
+  min-height: calc(100vh - 70px);
 }
-
 /* Sidebar */
 .sidebar {
   width: 260px;
@@ -832,9 +846,7 @@ body {
   /* Sidebar por encima del contenido */
 }
 
-.sidebar-nav {
-    padding: 0 var(--space-16);
-}
+
 
 .nav-item {
     display: flex;
@@ -1627,15 +1639,20 @@ body, .modal {
 }
 
 /* Hover */
+/* Quedará así */
+/* Hover */
 .nav-item:hover {
-  background: #f3f6ff;
-  color: #2563eb;
+  background: rgba(var(--color-teal-500-rgb), 0.1);
+  /* Fondo turquesa muy sutil */
+  color: var(--color-primary);
+  /* Texto en color turquesa principal */
   transform: translateX(4px);
 }
 
 /* Activo */
 .nav-item.active {
-  background: #2563eb;
+  background: var(--color-primary);
+  /* Usamos la variable principal del tema */
   color: #fff;
 }
 
@@ -2148,4 +2165,411 @@ body, .modal {
   color: var(--color-text);
   /* usa el color de texto activo */
   margin-right: 6px;
+}
+
+/* Solución inmediata */
+.main-content {
+  padding-top: 80px;
+  /* altura navbar */
+  margin-left: 260px;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn--sm {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  border-radius: 8px;
+}
+
+#loginBtn,
+#logoutBtn {
+  white-space: nowrap;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  padding-left: 16px;
+  margin-left: 16px;
+}
+
+.btn--sm {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.btn--primary:hover {
+  background-color: #1e40af;
+  /* Azul más oscuro */
+}
+
+.btn--outline:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 66px;
+  padding: 0 32px;
+  background: var(--header-bg, #218291);
+  /* usa tu color base header */
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn--sm {
+  padding: 7px 14px;
+  font-size: 1rem;
+  border-radius: 7px;
+}
+
+.btn--primary {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+}
+
+.btn--primary:hover {
+  background: #1d4ed8;
+}
+
+.btn--outline {
+  background: transparent;
+  color: #fff;
+  border: 1.5px solid #fff;
+}
+
+.btn--outline:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.notifications {
+  position: relative;
+  margin-left: 6px;
+}
+
+.notification-badge {
+  background: #db4545;
+  color: #fff;
+  border-radius: 8px;
+  padding: 2px 7px;
+  font-size: 0.82em;
+  position: absolute;
+  top: -4px;
+  right: -10px;
+  display: none;
+}
+
+.navbar {
+  background: var(--color-primary);
+  color: var(--color-white);
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.07);
+  padding: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.navbar__container {
+  max-width: 1300px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.navbar__logo i {
+  font-size: 2rem;
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.25rem;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s;
+  position: relative;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  background-color: #db4545;
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+  z-index: 2;
+  padding: 0;
+  /* Añadido para anular otros paddings */
+}
+
+/* Quedará así */
+/* Quedará así */
+.btn--primary {
+  background: var(--color-teal-600);
+  /* Tono turquesa más oscuro y corporativo */
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 9px 22px;
+  border-radius: 11px;
+  border: none;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.04);
+  margin-left: 14px;
+  transition: background 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.btn--primary:hover {
+  background: var(--color-teal-700);
+  /* Un tono aún más oscuro para el hover */
+}
+
+/* ===== Estilos para el Modal de Autenticación ===== */
+
+/* Contenedor principal del diálogo */
+.auth-dialog {
+  display: flex;
+  width: min(800px, 95vw);
+  /* Ancho máximo del modal */
+  background: var(--color-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Columna de la ilustración (izquierda) */
+.auth-dialog .modal-illustration {
+  flex: 1;
+  background: linear-gradient(135deg, rgba(var(--color-teal-500-rgb), 0.1), rgba(var(--color-teal-500-rgb), 0.05));
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-text);
+}
+
+.auth-dialog .modal-illustration img {
+  max-width: 250px;
+  margin-bottom: 24px;
+}
+
+.auth-dialog .modal-illustration h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--color-primary);
+}
+
+.auth-dialog .modal-illustration p {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  max-width: 300px;
+}
+
+/* Columna del formulario (derecha) */
+.auth-dialog .modal-content {
+  flex: 1;
+  padding: 40px;
+  background: var(--color-surface);
+}
+
+.auth-dialog .modal-header .modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.auth-dialog .modal-body {
+  padding: 0;
+  /* Quitamos padding extra */
+}
+
+.auth-dialog .form-link {
+  display: block;
+  text-align: right;
+  font-size: 0.85rem;
+  margin-top: -8px;
+  margin-bottom: 16px;
+  color: var(--color-primary);
+}
+
+/* Footer del modal de autenticación */
+.auth-footer {
+  text-align: center;
+  border-top: none;
+  padding-top: 16px;
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  .auth-dialog .modal-illustration {
+    display: none;
+    /* Ocultamos la ilustración en móviles */
+  }
+
+  .auth-dialog {
+    width: min(400px, 95vw);
+    /* Ajustamos el ancho para móviles */
+  }
+}
+/* QUEDARÁ ASÍ (Pega esto al final de style.css) */
+
+/* === INICIO DE SECCIÓN: ESTILOS RESPONSIVE PARA MÓVIL === */
+
+/* Por defecto, el botón hamburguesa está oculto en pantallas grandes */
+.hamburger-menu {
+  display: none;
+}
+
+/* Reglas para pantallas de 768px o menos (tablets y móviles) */
+/* QUEDARÁ ASÍ */
+@media (max-width: 768px) {
+  .navbar__actions {
+    display: none;
+    /* Ocultamos acciones para simplificar */
+  }
+
+  .hamburger-menu {
+    display: block;
+    /* Mostramos el botón hamburguesa */
+  }
+
+  .sidebar {
+    /* ¡CORRECCIÓN AQUÍ! Forzamos la posición y el apilamiento */
+    position: fixed;
+    top: 68px;
+    /* Altura de la navbar */
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    /* Ocultamos el sidebar fuera de la pantalla */
+    z-index: 1100;
+    /* Sidebar por encima de todo */
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    /* Mostramos el sidebar cuando tiene la clase 'open' */
+  }
+
+  .main-content {
+    margin-left: 0;
+    /* El contenido ocupa todo el ancho */
+    padding: var(--space-16);
+    padding-top: calc(68px + var(--space-16));
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    /* Debajo del sidebar pero encima del contenido */
+    display: none;
+  }
+}
+
+/* Empty State Styles */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-32);
+    text-align: center;
+    min-height: 300px;
+    background: linear-gradient(135deg, 
+        rgba(var(--color-teal-500-rgb), 0.05), 
+        rgba(var(--color-teal-500-rgb), 0.02)
+    );
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--color-border);
+}
+
+.empty-state-image {
+    width: 200px;
+    height: auto;
+    margin-bottom: var(--space-24);
+    opacity: 0.9;
+    border-radius: var(--radius-lg);
+}
+
+.empty-state-content {
+    max-width: 400px;
+}
+
+.empty-state-content h3 {
+    color: var(--color-primary);
+    margin-bottom: var(--space-12);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+}
+
+.empty-state-content p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-20);
+    line-height: var(--line-height-normal);
+}
+
+.empty-state .btn {
+    margin-top: var(--space-8);
 }

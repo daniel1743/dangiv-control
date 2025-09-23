@@ -2,218 +2,330 @@
 // Main JavaScript file with all functionality
 
 class FinanceApp {
-  resetPasswords() {
-    this.securityPasswords = {
-      Daniel: CryptoJS.SHA256("1234").toString(),
-      Givonik: CryptoJS.SHA256("5678").toString(),
-    };
-    this.saveData();
-    this.showToast("Contraseñas reseteadas a valores por defecto", "success");
-  }
+ // Quedará así (el nuevo constructor)
+// Quedará así
+// Quedará así
+constructor() {
+    // 1. Cargar datos desde LocalStorage o usar valores por defecto
+    const savedData = JSON.parse(localStorage.getItem("danGivControlData")) || {};
 
-  constructor() {
-    // ===== Intentar cargar datos previos desde LocalStorage =====
-    const savedData = JSON.parse(localStorage.getItem("danGivControlData"));
-
-    this.expenses = savedData?.expenses || [
-      {
-        id: 1,
-        description: "Supermercado",
-        amount: 150,
-        category: "Alimentación",
-        necessity: "Muy Necesario",
-        date: "2025-09-10",
-        user: "Daniel",
-        protected: false,
-      },
-      {
-        id: 2,
-        description: "Gasolina",
-        amount: 80,
-        category: "Transporte",
-        necessity: "Necesario",
-        date: "2025-09-08",
-        user: "Givonik",
-        protected: false,
-      },
-      {
-        id: 3,
-        description: "Netflix",
-        amount: 12,
-        category: "Entretenimiento",
-        necessity: "Poco Necesario",
-        date: "2025-09-05",
-        user: "Daniel",
-        protected: false,
-      },
-      {
-        id: 4,
-        description: "Bombona de gas",
-        amount: 45,
-        category: "Servicios",
-        necessity: "Muy Necesario",
-        date: "2025-09-03",
-        user: "Daniel",
-        protected: false,
-      },
-      {
-        id: 5,
-        description: "Cine",
-        amount: 25,
-        category: "Entretenimiento",
-        necessity: "No Necesario",
-        date: "2025-09-02",
-        user: "Givonik",
-        protected: false,
-      },
+    this.expenses = savedData.expenses || [
+        { id: 1, description: "Supermercado", amount: 150, category: "Alimentación", necessity: "Muy Necesario", date: "2025-09-10", user: "Daniel", protected: true },
+        { id: 2, description: "Cine", amount: 25, category: "Entretenimiento", necessity: "No Necesario", date: "2025-09-12", user: "Givonik", protected: true },
     ];
+    this.goals = savedData.goals || [];
+    this.shoppingItems = savedData.shoppingItems || [];
+    this.monthlyIncome = savedData.monthlyIncome || 2500;
 
-    this.goals = savedData?.goals || [
-      {
-        id: 1,
-        name: "Vacaciones en la playa",
-        target: 1500,
-        current: 350,
-        deadline: "2025-12-15",
-      },
-      {
-        id: 2,
-        name: "Fondo de emergencia",
-        target: 1000,
-        current: 750,
-        deadline: "2025-11-30",
-      },
-      {
-        id: 3,
-        name: "Nueva laptop",
-        target: 800,
-        current: 200,
-        deadline: "2025-10-31",
-      },
-    ];
-
-    this.shoppingItems = savedData?.shoppingItems || [
-      {
-        id: 1,
-        product: "Leche",
-        quantity: 2,
-        necessary: true,
-        selected: false,
-      },
-      { id: 2, product: "Pan", quantity: 1, necessary: true, selected: false },
-      {
-        id: 3,
-        product: "Queso",
-        quantity: 1,
-        necessary: false,
-        selected: false,
-      },
-    ];
-
-    this.monthlyIncome = savedData?.monthlyIncome || 2500;
-
-    // 🔑 Reinicio forzado de contraseñas
-    this.securityPasswords = {
-      Daniel: CryptoJS.SHA256("1234").toString(),
-      Givonik: CryptoJS.SHA256("5678").toString(),
+    // Carga las contraseñas guardadas o establece las iniciales
+    this.securityPasswords = savedData.securityPasswords || {
+        Daniel: CryptoJS.SHA256("1234").toString(),
+        Givonik: CryptoJS.SHA256("5678").toString(),
     };
 
-    // --- NUEVAS FUNCIONES ---
-    this.verifyPassword = (user, input) => {
-      const hash = CryptoJS.SHA256(input).toString();
-      return this.securityPasswords[user] === hash;
-    };
-
-    this.updatePassword = (user, newPass) => {
-      this.securityPasswords[user] = CryptoJS.SHA256(newPass).toString();
-      this.saveData();
-    };
-
-    this.categories = [
-      "Alimentación",
-      "Transporte",
-      "Entretenimiento",
-      "Salud",
-      "Servicios",
-      "Compras",
-      "Otros",
-    ];
-    this.necessityLevels = [
-      "Muy Necesario",
-      "Necesario",
-      "Poco Necesario",
-      "No Necesario",
-      "Compra por Impulso",
-    ];
+    // 2. Propiedades de la aplicación (no se guardan, son de configuración)
+    this.categories = ["Alimentación", "Transporte", "Entretenimiento", "Salud", "Servicios", "Compras", "Otros"];
+    this.necessityLevels = ["Muy Necesario", "Necesario", "Poco Necesario", "No Necesario", "Compra por Impulso"];
     this.users = ["Daniel", "Givonik", "Otro"];
-
     this.aiRecommendations = [
-      "Reduce gastos de entretenimiento en un 20% este mes",
-      "Has gastado $25 en cine este mes, considera alternativas gratuitas",
-      "Tu gasto en alimentación está dentro del presupuesto recomendado",
-      "Recuerda que tienes metas de ahorro pendientes",
+        "Reduce gastos de entretenimiento en un 20% este mes.",
+        "Has gastado $25 en cine, considera alternativas gratuitas.",
+        "Tu gasto en alimentación está dentro del presupuesto.",
     ];
-
     this.charts = {};
     this.currentSection = "dashboard";
+    this.currentUser = null; // Se establecerá con Firebase
+    this.pendingDeleteId = null; // Para el flujo de borrado seguro
 
-    // === Persistir cambios ===
-    this.saveData = () => {
-      const data = {
-        expenses: this.expenses,
-        goals: this.goals,
-        shoppingItems: this.shoppingItems,
-        monthlyIncome: this.monthlyIncome,
-        securityPasswords: this.securityPasswords,
-      };
-      localStorage.setItem("danGivControlData", JSON.stringify(data));
-    };
+    // La línea this.saveData() ha sido eliminada de aquí.
+  }
+verifyPassword(userName, plainPassword) {
+  // 1. Validar que el usuario y la contraseña existan.
+  if (!this.securityPasswords[userName] || !plainPassword) {
+    return false;
+  }
+  
+  // 2. Hashear la contraseña de texto plano que nos pasan para compararla.
+  const hashedPassword = CryptoJS.SHA256(plainPassword).toString();
+  
+  // 3. Comparar el hash guardado con el que acabamos de generar.
+  return this.securityPasswords[userName] === hashedPassword;
+}
 
-    // 🟢 Guardamos inmediatamente el reset
-    this.saveData();
+// Método para guardar todo el estado relevante en LocalStorage
+async saveData() {
+  if (!this.currentUser || this.currentUser === 'anonymous') {
+    this.showToast("Debes iniciar sesión para guardar en la nube", "error");
+    return;
   }
 
-  init() {
-    // Wait for DOM to be fully loaded
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => this.setupApp());
+  const dataToSave = {
+    expenses: this.expenses,
+    goals: this.goals,
+    shoppingItems: this.shoppingItems,
+    monthlyIncome: this.monthlyIncome,
+    securityPasswords: this.securityPasswords,
+    lastUpdate: Date.now()
+  };
+
+  try {
+    // ¡CAMBIO AQUÍ! Guardamos en la nube usando el ID del usuario.
+    const userDocRef = FB.doc(FB.db, "userData", this.currentUser);
+    await FB.setDoc(userDocRef, dataToSave);
+
+    // Si todo va bien, también guardamos localmente como respaldo y mostramos éxito.
+    localStorage.setItem('danGivControlData', JSON.stringify(dataToSave));
+    this.showToast("Datos guardados en la nube ✅", "success");
+    
+  } catch (error) {
+    // Si falla, informamos al usuario y lo vemos en consola.
+    console.error("Error al guardar en Firestore:", error);
+    this.showToast("Error al guardar en la nube. Revisa la consola.", "error");
+  }
+}
+
+  // Dentro de class FinanceApp { ... }
+
+openSecurityModal(mode = "change") {
+  const modal = document.getElementById("securityModal");
+  if (!modal) return;
+
+  // Limpiar campos
+  ["curDaniel","curGivonik","newDaniel","confirmDaniel","newGivonik","confirmGivonik"]
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+
+  const newPassSection = document.getElementById("newPassSection");
+  const saveBtn = document.getElementById("modalSavePasswordsBtn");
+  const titleEl = modal.querySelector(".modal-title");
+
+  const isChange = mode === "change";
+  if (newPassSection) newPassSection.style.display = isChange ? "" : "none";
+  if (saveBtn) saveBtn.textContent = isChange ? "Guardar" : "Eliminar";
+  if (titleEl) titleEl.textContent = isChange ? "Cambiar Contraseñas" : "Confirmar eliminación";
+
+  modal.classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+closeSecurityModal() {
+  const modal = document.getElementById("securityModal");
+  if (modal) modal.classList.remove("show");
+  document.body.style.overflow = "";
+}
+
+
+// QUEDARÁ ASÍ (La única y correcta función setupAuth)
+
+// === INICIO DE SECCIÓN: LÓGICA DE AUTENTICACIÓN DE FIREBASE ===
+setupAuth() {
+  const FB = window.FB;
+  if (!FB?.auth) return;
+
+  const loginBtns = document.querySelectorAll('#navbarLoginBtn, #sidebarLoginBtn');
+  const logoutBtns = document.querySelectorAll('#navbarLogoutBtn, #sidebarLogoutBtn');
+
+  FB.onAuthStateChanged(FB.auth, (user) => {
+    if (user) {
+      this.currentUser = user.uid;
+      loginBtns.forEach(btn => btn.style.display = 'none');
+      logoutBtns.forEach(btn => btn.style.display = 'inline-flex');
+      this.syncFromFirebase();
     } else {
-      this.setupApp();
+      this.currentUser = 'anonymous';
+      loginBtns.forEach(btn => btn.style.display = 'inline-flex');
+      logoutBtns.forEach(btn => btn.style.display = 'none');
     }
+  });
+
+  // El botón de login ahora abre el modal.
+  loginBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      this.openAuthModal();
+    });
+  });
+
+  logoutBtns.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      try {
+        await FB.signOut(FB.auth);
+        this.showToast('Sesión cerrada 👋', 'info');
+      } catch (e) {
+        this.showToast('No se pudo cerrar sesión', 'error');
+      }
+    });
+  });
+}
+async syncFromFirebase() {
+  if (!this.currentUser || this.currentUser === 'anonymous') {
+    // Si no hay usuario, no hay nada que sincronizar.
+    return;
   }
 
-  // Quedará así
-  setupApp() {
-    this.setupEventListeners();
-    this.setupCurrentDate();
+  try {
+    const userDocRef = FB.doc(FB.db, "userData", this.currentUser);
+    const docSnap = await FB.getDoc(userDocRef);
+
+    if (docSnap.exists()) {
+      // Si el documento existe en la nube, cargamos sus datos en la app.
+      const cloudData = docSnap.data();
+      this.expenses = cloudData.expenses || [];
+      this.goals = cloudData.goals || [];
+      this.shoppingItems = cloudData.shoppingItems || [];
+      this.monthlyIncome = cloudData.monthlyIncome || 2500;
+      this.securityPasswords = cloudData.securityPasswords || {};
+      
+      this.showToast("Datos sincronizados desde la nube ☁️", "success");
+    } else {
+      // Si el documento no existe (es un usuario nuevo), creamos su primer guardado.
+      this.showToast("¡Bienvenido! Creando tu espacio en la nube.", "info");
+      await this.saveData();
+    }
+
+    // Después de sincronizar, actualizamos toda la pantalla.
     this.renderDashboard();
     this.renderExpenses();
     this.renderGoals();
     this.renderShoppingList();
     this.renderConfig();
 
-    // 👉 inicializamos la campana
-    this.setupNotificationBell();
+  } catch (error) {
+    console.error("Error al sincronizar desde Firestore:", error);
+    this.showToast("No se pudieron cargar tus datos desde la nube.", "error");
+  }
+}
+// Quedará así (Pega estos dos métodos nuevos en tu clase)
+// Quedará así
+// QUEDARÁ ASÍ (Función de registro con depuración mejorada)
+async registerWithEmail(email, password) {
+    try {
+        console.log('Intentando registrar:', email); // Debug
+        const userCredential = await FB.createUserWithEmailAndPassword(FB.auth, email, password);
+        this.showToast(`¡Cuenta creada para ${userCredential.user.email}!`, "success");
+        this.closeAuthModal();
+        return true;
+    } catch (error) {
+        console.error("Error completo de registro:", error); // Debug mejorado
+        
+        // Mensajes de error más específicos
+        if (error.code === 'auth/weak-password') {
+            this.showToast('La contraseña debe tener al menos 6 caracteres.', 'error');
+        } else if (error.code === 'auth/email-already-in-use') {
+            this.showToast('El correo electrónico ya está en uso.', 'error');
+        } else if (error.code === 'auth/invalid-email') {
+            this.showToast('El correo electrónico no es válido.', 'error');
+        } else if (error.code === 'auth/operation-not-allowed') {
+            this.showToast('El registro con email/password no está habilitado.', 'error');
+        } else {
+            this.showToast(`Error: ${error.message}`, 'error');
+        }
+        return false;
+    }
+}
+async loginWithEmail(email, password) {
+  try {
+    const userCredential = await FB.signInWithEmailAndPassword(FB.auth, email, password);
+    this.showToast(`¡Bienvenido de nuevo, ${userCredential.user.email}!`, "success");
+    // Opcional: Cerrar el modal de autenticación aquí.
+    // document.getElementById('authModal').classList.remove('show');
+    return true;
+  } catch (error) {
+    console.error("Error de inicio de sesión:", error.code);
+    if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+      this.showToast('Correo o contraseña incorrectos.', 'error');
+    } else {
+      this.showToast('Error al iniciar sesión.', 'error');
+    }
+    return false;
+  }
+}
+// QUEDARÁ ASÍ (La nueva función init)
+
+// === INICIO DE SECCIÓN: INICIALIZACIÓN DE LA APP ===
+init() {
+  // Esta función ahora solo llama directamente a los métodos de configuración.
+  this.setupAuth();
+  this.setupEventListeners(); // ¡CORRECCIÓN! Llamamos a la función correcta.
+   this.setupNotificationBell();
+
+}
+
+  resetPasswords() {
+  this.securityPasswords = savedData?.securityPasswords || {
+  Daniel: CryptoJS.SHA256("1234").toString(),
+  Givonik: CryptoJS.SHA256("5678").toString(),
+};
+    this.saveData();
+    this.showToast("Contraseñas reseteadas a valores por defecto", "success");
   }
 
-  setupEventListeners() {
-    // Navigation - Fix event handling
+
+
+// Quedará así
+setupEventListeners() {
+    // === INICIO DE SECCIÓN: CONFIGURACIÓN DE EVENTOS DE LA UI ===
+
+    this.setupAuthModalListeners(); 
+// === LÓGICA PARA EL MENÚ HAMBURGUESA (MÓVIL) ===
+const hamburgerBtn = document.getElementById("hamburgerBtn");
+const sidebar = document.querySelector(".sidebar");
+
+if (hamburgerBtn && sidebar) {
+  // Crear el overlay si no existe para oscurecer el fondo
+  let overlay = document.querySelector('.overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    document.body.appendChild(overlay);
+  }
+  // === LÓGICA PARA EL BOTÓN DE CONFIGURACIÓN ===
+const settingsBtn = document.getElementById("settingsBtn");
+if (settingsBtn) {
+  settingsBtn.addEventListener("click", () => {
+    this.showSection("config");
+  });
+}
+this.setupCurrentDate();
+  // Evento para abrir/cerrar con el botón
+  hamburgerBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+    overlay.style.display = sidebar.classList.contains("open") ? "block" : "none";
+  });
+
+  // Evento para cerrar al hacer clic en el overlay
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.style.display = 'none';
+  });
+
+  // Evento para cerrar el menú al seleccionar una sección en móvil
+  document.querySelectorAll(".sidebar .nav-item").forEach(item => {
+    item.addEventListener("click", () => {
+      if (window.innerWidth <= 768) {
+        sidebar.classList.remove("open");
+        overlay.style.display = 'none';
+      }
+    });
+  });
+}
+    // Navigation
     document.querySelectorAll(".nav-item").forEach((item) => {
       item.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
         const section = e.currentTarget.getAttribute("data-section");
-        console.log("Navigating to:", section);
         this.showSection(section);
-        const resetBtn = document.getElementById("resetPasswordsBtn");
-        if (resetBtn) {
-          resetBtn.addEventListener("click", () => {
-            this.resetPasswords();
-          });
-        }
       });
     });
-    // Abrir modal de seguridad desde el botón de Configuración
+
+    // Reset passwords button
+    const resetBtn = document.getElementById("resetPasswordsBtn");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        this.resetPasswords();
+      });
+    }
+
+    // Change passwords button
     const changePassBtn = document.getElementById("changePasswordsBtn");
     if (changePassBtn) {
       changePassBtn.addEventListener("click", () => {
@@ -221,29 +333,19 @@ class FinanceApp {
       });
     }
 
-    // Guardar nuevas contraseñas desde el modal
-    // --- Estado global del modal ---
-    this.modalMode = "change"; // 'change' | 'auth-delete'
-    this.pendingDeleteId = null;
-
-    // Botón principal del modal (función según modo)
+    // Modal save passwords
     const modalSaveBtn = document.getElementById("modalSavePasswordsBtn");
     if (modalSaveBtn) {
       modalSaveBtn.addEventListener("click", () => {
-        if (this.modalMode === "change") {
-          this.savePasswordsFromModal(); // Cambiar contraseñas
-        } else if (this.modalMode === "auth-delete") {
-          this.confirmDeleteFromModal(); // Autenticar y eliminar
-        }
+        this.savePasswordsFromModal();
       });
     }
 
-    // Forms - Fix form submission
+    // Forms
     const expenseForm = document.getElementById("expenseForm");
     if (expenseForm) {
       expenseForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        e.stopPropagation();
         this.addExpense(e);
       });
     }
@@ -252,7 +354,6 @@ class FinanceApp {
     if (goalForm) {
       goalForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        e.stopPropagation();
         this.addGoal(e);
       });
     }
@@ -261,7 +362,6 @@ class FinanceApp {
     if (shoppingForm) {
       shoppingForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        e.stopPropagation();
         this.addShoppingItem(e);
       });
     }
@@ -270,7 +370,6 @@ class FinanceApp {
     if (incomeForm) {
       incomeForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        e.stopPropagation();
         this.updateIncome(e);
       });
     }
@@ -292,32 +391,31 @@ class FinanceApp {
         this.toggleTheme();
       });
     }
-  }
+}
 
-  setupCurrentDate() {
-    const dateField = document.getElementById("date");
+setupCurrentDate() {
+    const dateField = document.getElementById('date');
     if (dateField) {
-      const today = new Date().toISOString().split("T")[0];
-      dateField.value = today;
+        const today = new Date().toISOString().split('T')[0];
+        dateField.value = today;
+        
+        // Opcional: También puedes añadir el atributo max para no permitir fechas futuras
+        dateField.max = today;
     }
-  }
+}
 
   showSection(sectionId) {
-    console.log("Showing section:", sectionId);
-
-    // Update navigation active state
+    // Update navigation
     document.querySelectorAll(".nav-item").forEach((item) => {
       item.classList.remove("active");
     });
 
-    const activeNavItem = document.querySelector(
-      `[data-section="${sectionId}"]`
-    );
+    const activeNavItem = document.querySelector(`[data-section="${sectionId}"]`);
     if (activeNavItem) {
       activeNavItem.classList.add("active");
     }
 
-    // Update sections visibility
+    // Update sections
     document.querySelectorAll(".section").forEach((section) => {
       section.classList.remove("active");
     });
@@ -348,122 +446,98 @@ class FinanceApp {
     this.renderGoalsProgress();
     this.renderAIRecommendations();
     this.renderRecentTransactions();
-
-    // 👉 aquí actualizamos la campana
     this.updateNotifications();
   }
-// Reemplaza completamente tu método setupNotificationBell()
-setupNotificationBell() {
+
+  setupNotificationBell() {
     const area = document.getElementById('notificationArea');
     const dropdown = document.getElementById('notificationDropdown');
     const badge = document.getElementById('notificationCount');
     
     if (area && dropdown) {
-        // Toggle al hacer clic en la campana
-        area.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evita que se propague al document
-            dropdown.classList.toggle('hidden');
-            
-            // Si se abre el dropdown, ocultamos el badge
-            if (!dropdown.classList.contains('hidden')) {
-                if (badge) badge.style.display = 'none';
-            }
-        });
+      area.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
         
-        // Evitar que se cierre al hacer clic dentro del dropdown
-        dropdown.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
-        
-        // Cerrar al hacer clic fuera (en cualquier parte de la página)
-        document.addEventListener('click', (e) => {
-            // Si el dropdown está visible y el clic no fue en la campana ni en el dropdown
-            if (!dropdown.classList.contains('hidden')) {
-                if (!area.contains(e.target) && !dropdown.contains(e.target)) {
-                    dropdown.classList.add('hidden');
-                }
-            }
-        });
-    }
-}
-
-
-updateNotifications() {
-  let notifications = [];
-  const today = new Date();
-  if (n.type === "goal") {
-  li.innerHTML = `<i class="fas fa-flag notification-icon"></i> ${n.text}`;
-} else if (n.type === "expense") {
-  li.innerHTML = `<i class="fas fa-lock notification-icon"></i> ${n.text}`;
-} else {
-  li.textContent = n.text;
-}
-
-  // metas por vencer
-  this.goals.forEach((goal) => {
-    const deadline = new Date(goal.deadline);
-    const diff = (deadline - today) / (1000 * 60 * 60 * 24);
-    if (diff <= 7 && goal.current < goal.target) {
-      notifications.push({
-        type: "goal",
-        text: `Meta "${goal.name}" vence en ${Math.ceil(diff)} días`,
-      });
-    }
-  });
-
-  // gastos protegidos
-  this.expenses.forEach((exp) => {
-    if (exp.protected) {
-      notifications.push({
-        type: "expense",
-        text: `Gasto protegido: ${exp.description} ($${exp.amount})`,
-      });
-    }
-  });
-
-  // pintar badge SOLO si hay notificaciones
-  const badge = document.getElementById("notificationCount");
-  if (badge) {
-    if (notifications.length > 0) {
-      badge.style.display = "flex"; // vuelve a aparecer
-      badge.textContent = ""; // solo puntito, sin número
-    } else {
-      badge.style.display = "none";
-    }
-  }
-
-  // pintar lista en dropdown
-  const list = document.getElementById("notificationList");
-  if (list) {
-    list.innerHTML = "";
-    if (notifications.length === 0) {
-      list.innerHTML = "<li>Sin notificaciones</li>";
-    } else {
-      notifications.forEach((n) => {
-        const li = document.createElement("li");
-        if (n.type === "goal") {
-          li.innerHTML = `<i class="fas fa-flag"></i> ${n.text}`;
-        } else if (n.type === "expense") {
-          li.innerHTML = `<i class="fas fa-lock"></i> ${n.text}`;
-        } else {
-          li.textContent = n.text;
+        if (!dropdown.classList.contains('hidden')) {
+          if (badge) badge.style.display = 'none';
         }
-        list.appendChild(li);
+      });
+      
+      dropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      document.addEventListener('click', (e) => {
+        if (!dropdown.classList.contains('hidden')) {
+          if (!area.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+          }
+        }
       });
     }
   }
-}
 
+  updateNotifications() {
+    let notifications = [];
+    const today = new Date();
+
+    // Metas por vencer
+    this.goals.forEach((goal) => {
+      const deadline = new Date(goal.deadline);
+      const diff = (deadline - today) / (1000 * 60 * 60 * 24);
+      if (diff <= 7 && goal.current < goal.target) {
+        notifications.push({
+          type: "goal",
+          text: `Meta "${goal.name}" vence en ${Math.ceil(diff)} días`,
+        });
+      }
+    });
+
+    // Gastos protegidos
+    this.expenses.forEach((exp) => {
+      if (exp.protected) {
+        notifications.push({
+          type: "expense",
+          text: `Gasto protegido: ${exp.description} ($${exp.amount})`,
+        });
+      }
+    });
+
+    const badge = document.getElementById("notificationCount");
+    if (badge) {
+      if (notifications.length > 0) {
+        badge.style.display = "flex";
+        badge.textContent = "";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+
+    const list = document.getElementById("notificationList");
+    if (list) {
+      list.innerHTML = "";
+      if (notifications.length === 0) {
+        list.innerHTML = "<li>Sin notificaciones</li>";
+      } else {
+        notifications.forEach((n) => {
+          const li = document.createElement("li");
+          if (n.type === "goal") {
+            li.innerHTML = `<i class="fas fa-flag"></i> ${n.text}`;
+          } else if (n.type === "expense") {
+            li.innerHTML = `<i class="fas fa-lock"></i> ${n.text}`;
+          } else {
+            li.textContent = n.text;
+          }
+          list.appendChild(li);
+        });
+      }
+    }
+  }
 
   updateStats() {
-    const totalExpenses = this.expenses.reduce(
-      (sum, exp) => sum + exp.amount,
-      0
-    );
-    const totalSavings = this.goals.reduce(
-      (sum, goal) => sum + goal.current,
-      0
-    );
+    const totalExpenses = this.expenses.reduce((sum, exp) => sum + exp.amount, 0);
+    const totalSavings = this.goals.reduce((sum, goal) => sum + goal.current, 0);
     const availableBalance = this.monthlyIncome - totalExpenses;
 
     const balanceEl = document.getElementById("totalBalance");
@@ -471,13 +545,10 @@ updateNotifications() {
     const savingsEl = document.getElementById("totalSavings");
     const transactionsEl = document.getElementById("totalTransactions");
 
-    if (balanceEl)
-      balanceEl.textContent = `$${availableBalance.toLocaleString()}`;
-    if (expensesEl)
-      expensesEl.textContent = `$${totalExpenses.toLocaleString()}`;
+    if (balanceEl) balanceEl.textContent = `$${availableBalance.toLocaleString()}`;
+    if (expensesEl) expensesEl.textContent = `$${totalExpenses.toLocaleString()}`;
     if (savingsEl) savingsEl.textContent = `$${totalSavings.toLocaleString()}`;
-    if (transactionsEl)
-      transactionsEl.textContent = this.expenses.length.toString();
+    if (transactionsEl) transactionsEl.textContent = this.expenses.length.toString();
   }
 
   renderExpenseChart() {
@@ -486,7 +557,6 @@ updateNotifications() {
 
     const ctx = canvas.getContext("2d");
 
-    // Destroy existing chart if it exists
     if (this.charts.expenseChart) {
       this.charts.expenseChart.destroy();
     }
@@ -533,8 +603,7 @@ updateNotifications() {
   getCategoryData() {
     const categoryData = {};
     this.expenses.forEach((expense) => {
-      categoryData[expense.category] =
-        (categoryData[expense.category] || 0) + expense.amount;
+      categoryData[expense.category] = (categoryData[expense.category] || 0) + expense.amount;
     });
     return categoryData;
   }
@@ -546,8 +615,7 @@ updateNotifications() {
     container.innerHTML = "";
 
     if (this.goals.length === 0) {
-      container.innerHTML =
-        '<div class="empty-state"><i class="fas fa-target"></i><h3>No hay metas establecidas</h3><p>Crea tu primera meta financiera</p></div>';
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-target"></i><h3>No hay metas establecidas</h3><p>Crea tu primera meta financiera</p></div>';
       return;
     }
 
@@ -556,74 +624,15 @@ updateNotifications() {
       const goalEl = document.createElement("div");
       goalEl.className = "goal-progress";
       goalEl.innerHTML = `
-                <div class="goal-name">${goal.name}</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${progress}%"></div>
-                </div>
-                <div class="goal-percentage">${progress.toFixed(
-                  1
-                )}% completado</div>
-            `;
+        <div class="goal-name">${goal.name}</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${progress}%"></div>
+        </div>
+        <div class="goal-percentage">${progress.toFixed(1)}% completado</div>
+      `;
       container.appendChild(goalEl);
     });
   }
-  // Quedará así
-  // Quedará así
- // Quedará así
-updateNotifications() {
-  let notifications = [];
-  const today = new Date();
-
-  // metas por vencer
-  this.goals.forEach((goal) => {
-    const deadline = new Date(goal.deadline);
-    const diff = (deadline - today) / (1000 * 60 * 60 * 24);
-    if (diff <= 7 && goal.current < goal.target) {
-      notifications.push({
-        type: "goal",
-        text: `Meta "${goal.name}" vence en ${Math.ceil(diff)} días`,
-      });
-    }
-  });
-
-  // gastos protegidos
-  this.expenses.forEach((exp) => {
-    if (exp.protected) {
-      notifications.push({
-        type: "expense",
-        text: `Gasto protegido: ${exp.description} ($${exp.amount})`,
-      });
-    }
-  });
-
-  // pintar número en campana
-  const badge = document.getElementById("notificationCount");
-  if (badge) {
-    badge.textContent = notifications.length > 0 ? notifications.length : "";
-  }
-
-  // pintar lista en dropdown con iconos y textos claros
-  const list = document.getElementById("notificationList");
-  if (list) {
-    list.innerHTML = "";
-    if (notifications.length === 0) {
-      list.innerHTML = "<li>Sin notificaciones</li>";
-    } else {
-      notifications.forEach((n) => {
-        const li = document.createElement("li");
-        if (n.type === "goal") {
-          li.innerHTML = `<i class="fas fa-flag"></i> ${n.text}`;
-        } else if (n.type === "expense") {
-          li.innerHTML = `<i class="fas fa-lock"></i> ${n.text}`;
-        } else {
-          li.textContent = n.text;
-        }
-        list.appendChild(li);
-      });
-    }
-  }
-}
-
 
   renderAIRecommendations() {
     const container = document.getElementById("aiRecommendations");
@@ -635,9 +644,9 @@ updateNotifications() {
       const recEl = document.createElement("div");
       recEl.className = "recommendation-item";
       recEl.innerHTML = `
-                <i class="fas fa-lightbulb recommendation-icon"></i>
-                <div class="recommendation-text">${recommendation}</div>
-            `;
+        <i class="fas fa-lightbulb recommendation-icon"></i>
+        <div class="recommendation-text">${recommendation}</div>
+      `;
       container.appendChild(recEl);
     });
   }
@@ -651,8 +660,7 @@ updateNotifications() {
     const recentExpenses = this.expenses.slice(-5).reverse();
 
     if (recentExpenses.length === 0) {
-      container.innerHTML =
-        '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No hay transacciones</h3></div>';
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No hay transacciones</h3></div>';
       return;
     }
 
@@ -660,12 +668,12 @@ updateNotifications() {
       const transactionEl = document.createElement("div");
       transactionEl.className = "transaction-item";
       transactionEl.innerHTML = `
-                <div class="transaction-info">
-                    <h4>${expense.description}</h4>
-                    <div class="transaction-meta">${expense.date} • ${expense.user} • ${expense.category}</div>
-                </div>
-                <div class="transaction-amount expense">-$${expense.amount}</div>
-            `;
+        <div class="transaction-info">
+          <h4>${expense.description}</h4>
+          <div class="transaction-meta">${expense.date} • ${expense.user} • ${expense.category}</div>
+        </div>
+        <div class="transaction-amount expense">-$${expense.amount}</div>
+      `;
       container.appendChild(transactionEl);
     });
   }
@@ -681,20 +689,8 @@ updateNotifications() {
     const date = document.getElementById("date").value;
     const user = document.getElementById("user").value;
 
-    // Validation
-    if (
-      !description ||
-      !amount ||
-      amount <= 0 ||
-      !category ||
-      !necessity ||
-      !date ||
-      !user
-    ) {
-      this.showToast(
-        "Por favor completa todos los campos correctamente",
-        "error"
-      );
+    if (!description || !amount || amount <= 0 || !category || !necessity || !date || !user) {
+      this.showToast("Por favor completa todos los campos correctamente", "error");
       return;
     }
 
@@ -710,11 +706,11 @@ updateNotifications() {
     };
 
     this.expenses.push(expense);
+    this.saveData();
     this.renderDashboard();
     this.renderExpenses();
     this.showToast("Gasto registrado exitosamente", "success");
 
-    // Reset form
     document.getElementById("expenseForm").reset();
     this.setupCurrentDate();
   }
@@ -726,64 +722,44 @@ updateNotifications() {
     container.innerHTML = "";
 
     if (this.expenses.length === 0) {
-      container.innerHTML =
-        '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No hay gastos registrados</h3></div>';
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No hay gastos registrados</h3></div>';
       return;
     }
 
-    const sortedExpenses = [...this.expenses].sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
-    );
+    const sortedExpenses = [...this.expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
 
     sortedExpenses.forEach((expense) => {
       const expenseEl = document.createElement("div");
       expenseEl.className = "transaction-item";
       expenseEl.innerHTML = `
-            <div class="transaction-info">
-                <h4>${expense.description}</h4>
-                <div class="transaction-meta">
-                    ${expense.date} • ${expense.user} • ${expense.category} • ${
-        expense.necessity
-      }
-                    ${expense.protected ? " • 🔒" : ""}
-                </div>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px;">
-                <div class="transaction-amount expense">$${expense.amount}</div>
-                <button type="button" class="btn btn-danger btn-delete" data-id="${
-                  expense.id
-                }">
-                    Eliminar
-                </button>
-            </div>
-        `;
+        <div class="transaction-info">
+          <h4>${expense.description}</h4>
+          <div class="transaction-meta">
+            ${expense.date} • ${expense.user} • ${expense.category} • ${expense.necessity}
+            ${expense.protected ? " • 🔒" : ""}
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="transaction-amount expense">$${expense.amount}</div>
+          <button type="button" class="btn btn-danger btn-delete" data-id="${expense.id}">
+            Eliminar
+          </button>
+        </div>
+      `;
 
       container.appendChild(expenseEl);
 
-      // --- Botón Eliminar conectado ---
       const delBtn = expenseEl.querySelector(".btn-delete");
       if (delBtn) {
         delBtn.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          if (typeof this.deleteExpense === "function") {
-            this.deleteExpense(expense.id);
-          } else {
-            console.warn("deleteExpense aún no está implementado.");
-            this.showToast(
-              "La función de eliminar se activará en el siguiente paso",
-              "info"
-            );
-          }
+          this.deleteExpense(expense.id);
         });
       }
     });
   }
 
-  // Reemplaza todo tu método deleteExpense por este
-  // Reemplaza TODO tu método deleteExpense por este
-  // Quedará así
-  // Reemplaza TODO tu método deleteExpense por este
   deleteExpense(id) {
     const idx = this.expenses.findIndex((e) => e.id === id);
     if (idx === -1) {
@@ -793,131 +769,186 @@ updateNotifications() {
 
     const item = this.expenses[idx];
 
-    // Si NO está protegido, eliminar directo
     if (!item.protected) {
       this.expenses.splice(idx, 1);
+      this.saveData();
       this.renderDashboard();
       this.renderExpenses();
       this.showToast("Gasto eliminado", "success");
       return;
     }
 
-    // --- Si ES protegido, usar el modal en modo validación ---
+    // Gasto protegido - usar modal de seguridad
     const modal = document.getElementById("securityModal");
-    const curDanielEl = document.getElementById("curDaniel");
-    const curGivonikEl = document.getElementById("curGivonik");
-    const newPassSection = document.getElementById("newPassSection");
-    const saveBtn = document.getElementById("modalSavePasswordsBtn");
-    const cancelBtn = modal?.querySelector(".modal-footer .btn-cancel");
-    const titleEl = modal?.querySelector(".modal-title");
-
-    if (!modal || !curDanielEl || !curGivonikEl || !saveBtn) {
+    if (!modal) {
       this.showToast("Modal de seguridad no disponible", "error");
       return;
     }
 
-    // Limpiar campos
-    [curDanielEl, curGivonikEl].forEach((el) => el && (el.value = ""));
-    if (newPassSection) {
-      newPassSection.querySelectorAll("input").forEach((el) => (el.value = ""));
-    }
+    this.openDeleteModal(id);
+  }
 
-    // Ocultar inputs de nuevas contraseñas (solo validación)
+  openDeleteModal(expenseId) {
+    const modal = document.getElementById("securityModal");
+    const titleEl = modal.querySelector(".modal-title");
+    const saveBtn = document.getElementById("modalSavePasswordsBtn");
+    const newPassSection = document.getElementById("newPassSection");
+
+    if (titleEl) titleEl.innerHTML = `<i class="fas fa-key"></i> Confirmar eliminación`;
+    if (saveBtn) saveBtn.textContent = "Eliminar";
     if (newPassSection) newPassSection.style.display = "none";
 
-    const originalTitle = titleEl?.textContent || "";
-    const originalBtnText = saveBtn.textContent;
-    if (titleEl)
-      titleEl.innerHTML = `<i class="fas fa-key"></i> Confirmar eliminación`;
-    saveBtn.textContent = "Eliminar";
+    // Limpiar campos
+    const curDanielEl = document.getElementById("curDaniel");
+    const curGivonikEl = document.getElementById("curGivonik");
+    if (curDanielEl) curDanielEl.value = "";
+    if (curGivonikEl) curGivonikEl.value = "";
 
-    // Guardar handler original
-    if (!this._originalSaveHandler) {
-      this._originalSaveHandler = saveBtn.onclick;
+    // Configurar evento de eliminación
+    this.pendingDeleteId = expenseId;
+    modal.classList.add("show");
+  }
+
+  confirmDeleteFromModal() {
+    const curDanielEl = document.getElementById("curDaniel");
+    const curGivonikEl = document.getElementById("curGivonik");
+    
+    if (!curDanielEl || !curGivonikEl) return;
+
+    const curDaniel = curDanielEl.value || "";
+    const curGivonik = curGivonikEl.value || "";
+
+    if (!this.verifyPassword("Daniel", curDaniel)) {
+      this.showToast("Contraseña actual de Daniel incorrecta", "error");
+      return;
+    }
+    if (!this.verifyPassword("Givonik", curGivonik)) {
+      this.showToast("Contraseña actual de Givonik incorrecta", "error");
+      return;
     }
 
-    // Restaurar UI/handlers al cancelar o cerrar
-    const restoreUI = () => {
-      if (newPassSection) newPassSection.style.display = "";
-      if (titleEl) titleEl.textContent = originalTitle || "Cambiar Contraseñas";
-      saveBtn.textContent = originalBtnText || "Guardar";
-      saveBtn.onclick = this._originalSaveHandler || null;
-    };
-
-    if (cancelBtn) {
-      const onCancel = () => {
-        modal.classList.remove("show");
-        restoreUI();
-        cancelBtn.removeEventListener("click", onCancel);
-      };
-      cancelBtn.addEventListener("click", onCancel);
-    }
-
-    // Nuevo handler del botón principal
-    saveBtn.onclick = () => {
-      const curDaniel = curDanielEl.value || "";
-      const curGivonik = curGivonikEl.value || "";
-
-      if (!this.verifyPassword("Daniel", curDaniel)) {
-        this.showToast("Contraseña actual de Daniel incorrecta", "error");
-        return;
-      }
-      if (!this.verifyPassword("Givonik", curGivonik)) {
-        this.showToast("Contraseña actual de Givonik incorrecta", "error");
-        return;
-      }
-
-      // Autorizado: eliminar
+    // Eliminar gasto
+    const idx = this.expenses.findIndex((e) => e.id === this.pendingDeleteId);
+    if (idx !== -1) {
       this.expenses.splice(idx, 1);
-      modal.classList.remove("show");
+      this.saveData();
       this.renderDashboard();
       this.renderExpenses();
       this.showToast("Gasto eliminado", "success");
+    }
 
-      restoreUI();
-    };
-
-    modal.classList.add("show");
+    document.getElementById("securityModal").classList.remove("show");
+    this.pendingDeleteId = null;
   }
 
-  changePasswords() {
-    this.openSecurityModal("change"); // abre en modo cambio
+ // Recomendado: soporta modos 'change' y 'delete' y bloquea el scroll
+openSecurityModal(mode = "change") {
+  const modal = document.getElementById("securityModal");
+  if (!modal) return;
+
+  // Limpiar campos
+  ["curDaniel","curGivonik","newDaniel","confirmDaniel","newGivonik","confirmGivonik"]
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+
+  const newPassSection = document.getElementById("newPassSection");
+  const saveBtn = document.getElementById("modalSavePasswordsBtn");
+  const titleEl = modal.querySelector(".modal-title");
+
+  // Configurar UI según el modo
+  const isChange = mode === "change";
+  if (newPassSection) newPassSection.style.display = isChange ? "" : "none";
+  if (saveBtn) saveBtn.textContent = isChange ? "Guardar" : "Eliminar";
+  if (titleEl) titleEl.textContent = isChange ? "Cambiar Contraseñas" : "Confirmar eliminación";
+
+  // Mantener pendingDeleteId si ya fue seteado antes por el flujo de eliminar
+  // (No se toca aquí; sólo se usa cuando mode==='delete')
+
+  // Abrir modal y bloquear scroll
+  modal.classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+// Cierre coherente en un solo lugar
+closeSecurityModal() {
+  const modal = document.getElementById("securityModal");
+  if (modal) modal.classList.remove("show");
+  document.body.style.overflow = "";
+}
+
+// === SECCIÓN: MANEJO DEL MODAL DE AUTENTICACIÓN (LOGIN/REGISTRO) ===
+
+openAuthModal() {
+  const modal = document.getElementById('authModal');
+  if (modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
   }
+}
 
-  openSecurityModal(mode = "change") {
-    const modal = document.getElementById("securityModal");
-    if (!modal)
-      return this.showToast("Modal de seguridad no encontrado", "error");
-
-    // limpiar campos
-    [
-      "curDaniel",
-      "curGivonik",
-      "newDaniel",
-      "confirmDaniel",
-      "newGivonik",
-      "confirmGivonik",
-    ].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.value = "";
-    });
-
-    // configurar modo
-    this.modalMode = mode;
-    const newPassSection = document.getElementById("newPassSection");
-    if (newPassSection)
-      newPassSection.style.display = mode === "change" ? "" : "none";
-
-    // ajustar texto del botón
-    const saveBtn = document.getElementById("modalSavePasswordsBtn");
-    if (saveBtn)
-      saveBtn.textContent = mode === "change" ? "Guardar" : "Confirmar";
-
-    modal.classList.add("show");
+closeAuthModal() {
+  const modal = document.getElementById('authModal');
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
   }
+}
+
+setupAuthModalListeners() {
+  const modal = document.getElementById('authModal');
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const authSwitchLink = document.getElementById('authSwitchLink');
+  const closeButtons = modal.querySelectorAll('[data-close-modal]');
+
+  // Listener para cambiar entre login y registro
+  authSwitchLink?.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginForm.classList.toggle('hidden');
+    registerForm.classList.toggle('hidden');
+    const isLoginVisible = !loginForm.classList.contains('hidden');
+    authSwitchLink.innerHTML = isLoginVisible
+      ? '¿No tienes una cuenta? <a href="#">Regístrate aquí</a>'
+      : '¿Ya tienes una cuenta? <a href="#">Inicia sesión</a>';
+  });
+
+  // Listener para el formulario de login
+  loginForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    const success = await this.loginWithEmail(email, password);
+    if (success) {
+      this.closeAuthModal();
+    }
+  });
+
+  // Listener para el formulario de registro
+  registerForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    const success = await this.registerWithEmail(email, password);
+    if (success) {
+      this.closeAuthModal();
+    }
+  });
+
+  // Listeners para cerrar el modal
+  closeButtons.forEach(btn => btn.addEventListener('click', () => this.closeAuthModal()));
+  modal.addEventListener('click', (e) => {
+    if (e.target.id === 'authModal') {
+      this.closeAuthModal();
+    }
+  });
+}
 
   savePasswordsFromModal() {
-    const modal = document.getElementById("securityModal");
+    // Si estamos en modo eliminar
+    if (this.pendingDeleteId) {
+      this.confirmDeleteFromModal();
+      return;
+    }
+
     const curDanielEl = document.getElementById("curDaniel");
     const curGivonikEl = document.getElementById("curGivonik");
     const newDanielEl = document.getElementById("newDaniel");
@@ -925,15 +956,7 @@ updateNotifications() {
     const newGivonikEl = document.getElementById("newGivonik");
     const confirmGivonikEl = document.getElementById("confirmGivonik");
 
-    if (
-      !modal ||
-      !curDanielEl ||
-      !curGivonikEl ||
-      !newDanielEl ||
-      !confirmDanielEl ||
-      !newGivonikEl ||
-      !confirmGivonikEl
-    ) {
+    if (!curDanielEl || !curGivonikEl || !newDanielEl || !confirmDanielEl || !newGivonikEl || !confirmGivonikEl) {
       this.showToast("Campos del modal incompletos", "error");
       return;
     }
@@ -945,7 +968,6 @@ updateNotifications() {
     const newGivonik = newGivonikEl.value || "";
     const confirmGivonik = confirmGivonikEl.value || "";
 
-    // Validar actuales
     if (!this.verifyPassword("Daniel", curDaniel)) {
       this.showToast("Contraseña actual de Daniel incorrecta", "error");
       return;
@@ -955,12 +977,8 @@ updateNotifications() {
       return;
     }
 
-    // Validar nuevas
     if (newDaniel.trim().length < 4 || newGivonik.trim().length < 4) {
-      this.showToast(
-        "Las nuevas contraseñas deben tener al menos 4 caracteres",
-        "error"
-      );
+      this.showToast("Las nuevas contraseñas deben tener al menos 4 caracteres", "error");
       return;
     }
     if (newDaniel !== confirmDaniel) {
@@ -972,16 +990,11 @@ updateNotifications() {
       return;
     }
 
-    // Guardar (encriptadas)
     this.updatePassword("Daniel", newDaniel);
     this.updatePassword("Givonik", newGivonik);
 
-    this.saveData();
-    modal.classList.remove("show");
-    this.showToast(
-      "Contraseñas actualizadas con doble autorización",
-      "success"
-    );
+    document.getElementById("securityModal").classList.remove("show");
+    this.showToast("Contraseñas actualizadas con doble autorización", "success");
   }
 
   // Goals Methods
@@ -993,10 +1006,7 @@ updateNotifications() {
     const deadline = document.getElementById("goalDeadline").value;
 
     if (!name || !target || target <= 0 || !deadline) {
-      this.showToast(
-        "Por favor completa todos los campos correctamente",
-        "error"
-      );
+      this.showToast("Por favor completa todos los campos correctamente", "error");
       return;
     }
 
@@ -1009,6 +1019,7 @@ updateNotifications() {
     };
 
     this.goals.push(goal);
+    this.saveData();
     this.renderGoals();
     this.renderGoalsProgress();
     this.showToast("Meta creada exitosamente", "success");
@@ -1022,8 +1033,7 @@ updateNotifications() {
     container.innerHTML = "";
 
     if (this.goals.length === 0) {
-      container.innerHTML =
-        '<div class="empty-state"><i class="fas fa-target"></i><h3>No hay metas establecidas</h3></div>';
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-target"></i><h3>No hay metas establecidas</h3></div>';
       return;
     }
 
@@ -1032,24 +1042,20 @@ updateNotifications() {
       const goalEl = document.createElement("div");
       goalEl.className = "goal-card";
       goalEl.innerHTML = `
-                <div class="goal-header">
-                    <h3 class="goal-title">${goal.name}</h3>
-                    <div class="goal-amount">$${goal.current} / $${
-        goal.target
-      }</div>
-                </div>
-                <div class="goal-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${progress}%"></div>
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span class="goal-percentage">${progress.toFixed(
-                      1
-                    )}% completado</span>
-                    <span class="goal-deadline">Hasta: ${goal.deadline}</span>
-                </div>
-            `;
+        <div class="goal-header">
+          <h3 class="goal-title">${goal.name}</h3>
+          <div class="goal-amount">$${goal.current} / $${goal.target}</div>
+        </div>
+        <div class="goal-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${progress}%"></div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="goal-percentage">${progress.toFixed(1)}% completado</span>
+          <span class="goal-deadline">Hasta: ${goal.deadline}</span>
+        </div>
+      `;
       container.appendChild(goalEl);
     });
   }
@@ -1129,18 +1135,14 @@ updateNotifications() {
     }
 
     const necessaryExpenses = this.expenses
-      .filter(
-        (exp) =>
-          exp.necessity === "Muy Necesario" || exp.necessity === "Necesario"
-      )
+      .filter((exp) => exp.necessity === "Muy Necesario" || exp.necessity === "Necesario")
       .reduce((sum, exp) => sum + exp.amount, 0);
 
     const unnecessaryExpenses = this.expenses
-      .filter(
-        (exp) =>
-          exp.necessity === "Poco Necesario" ||
-          exp.necessity === "No Necesario" ||
-          exp.necessity === "Compra por Impulso"
+      .filter((exp) => 
+        exp.necessity === "Poco Necesario" ||
+        exp.necessity === "No Necesario" ||
+        exp.necessity === "Compra por Impulso"
       )
       .reduce((sum, exp) => sum + exp.amount, 0);
 
@@ -1182,8 +1184,7 @@ updateNotifications() {
     );
 
     if (unnecessary.length === 0) {
-      container.innerHTML =
-        '<div class="empty-state"><i class="fas fa-thumbs-up"></i><h3>¡Excelente!</h3><p>No tienes gastos innecesarios este mes</p></div>';
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-thumbs-up"></i><h3>¡Excelente!</h3><p>No tienes gastos innecesarios este mes</p></div>';
       return;
     }
 
@@ -1191,31 +1192,28 @@ updateNotifications() {
       const expenseEl = document.createElement("div");
       expenseEl.className = "unnecessary-expense";
       expenseEl.innerHTML = `
-                <div class="unnecessary-info">
-                    <h4>${expense.description}</h4>
-                    <div class="unnecessary-meta">${expense.date} • ${expense.user} • ${expense.necessity}</div>
-                </div>
-                <div class="unnecessary-amount">$${expense.amount}</div>
-            `;
+        <div class="unnecessary-info">
+          <h4>${expense.description}</h4>
+          <div class="unnecessary-meta">${expense.date} • ${expense.user} • ${expense.necessity}</div>
+        </div>
+        <div class="unnecessary-amount">$${expense.amount}</div>
+      `;
       container.appendChild(expenseEl);
     });
 
-    const totalUnnecessary = unnecessary.reduce(
-      (sum, exp) => sum + exp.amount,
-      0
-    );
+    const totalUnnecessary = unnecessary.reduce((sum, exp) => sum + exp.amount, 0);
     const summaryEl = document.createElement("div");
     summaryEl.className = "mt-16 p-16 text-center";
     summaryEl.style.backgroundColor = "rgba(var(--color-error-rgb), 0.1)";
     summaryEl.style.borderRadius = "var(--radius-base)";
     summaryEl.innerHTML = `
-            <h4 style="color: var(--color-error); margin-bottom: var(--space-8);">
-                Total en gastos innecesarios: $${totalUnnecessary}
-            </h4>
-            <p style="color: var(--color-text-secondary);">
-                Podrías haber ahorrado este dinero para tus metas financieras
-            </p>
-        `;
+      <h4 style="color: var(--color-error); margin-bottom: var(--space-8);">
+        Total en gastos innecesarios: $${totalUnnecessary}
+      </h4>
+      <p style="color: var(--color-text-secondary);">
+        Podrías haber ahorrado este dinero para tus metas financieras
+      </p>
+    `;
     container.appendChild(summaryEl);
   }
 
@@ -1228,10 +1226,7 @@ updateNotifications() {
     const necessary = document.getElementById("necessary").value;
 
     if (!product || !quantity || quantity <= 0 || necessary === "") {
-      this.showToast(
-        "Por favor completa todos los campos correctamente",
-        "error"
-      );
+      this.showToast("Por favor completa todos los campos correctamente", "error");
       return;
     }
 
@@ -1244,6 +1239,7 @@ updateNotifications() {
     };
 
     this.shoppingItems.push(item);
+    this.saveData();
     this.renderShoppingList();
     this.showToast("Producto agregado a la lista", "success");
     document.getElementById("shoppingForm").reset();
@@ -1256,8 +1252,7 @@ updateNotifications() {
     container.innerHTML = "";
 
     if (this.shoppingItems.length === 0) {
-      container.innerHTML =
-        '<div class="empty-state"><i class="fas fa-shopping-cart"></i><h3>Lista vacía</h3><p>Agrega productos a tu lista de compras</p></div>';
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-shopping-cart"></i><h3>Lista vacía</h3><p>Agrega productos a tu lista de compras</p></div>';
       return;
     }
 
@@ -1265,25 +1260,19 @@ updateNotifications() {
       const itemEl = document.createElement("div");
       itemEl.className = "shopping-item";
       itemEl.innerHTML = `
-                <input type="checkbox" class="shopping-checkbox" ${
-                  item.selected ? "checked" : ""
-                } 
-                       data-index="${index}">
-                <div class="shopping-content">
-                    <div class="shopping-product">${item.product}</div>
-                    <div class="shopping-details">
-                        Cantidad: ${item.quantity} • 
-                        <span class="necessity-badge ${
-                          item.necessary ? "necessary" : "not-necessary"
-                        }">
-                            ${item.necessary ? "Necesario" : "No Necesario"}
-                        </span>
-                    </div>
-                </div>
-            `;
+        <input type="checkbox" class="shopping-checkbox" ${item.selected ? "checked" : ""} data-index="${index}">
+        <div class="shopping-content">
+          <div class="shopping-product">${item.product}</div>
+          <div class="shopping-details">
+            Cantidad: ${item.quantity} • 
+            <span class="necessity-badge ${item.necessary ? "necessary" : "not-necessary"}">
+              ${item.necessary ? "Necesario" : "No Necesario"}
+            </span>
+          </div>
+        </div>
+      `;
       container.appendChild(itemEl);
 
-      // Add event listener to checkbox
       const checkbox = itemEl.querySelector(".shopping-checkbox");
       checkbox.addEventListener("change", () => {
         this.toggleShoppingItem(index);
@@ -1294,6 +1283,7 @@ updateNotifications() {
   toggleShoppingItem(index) {
     if (this.shoppingItems[index]) {
       this.shoppingItems[index].selected = !this.shoppingItems[index].selected;
+      this.saveData();
     }
   }
 
@@ -1306,17 +1296,16 @@ updateNotifications() {
     }
 
     let listContent = "LISTA DE COMPRAS - Dan&Giv Control\n";
-    listContent += "=" + "=".repeat(35) + "\n\n";
+    listContent += "===================================\n\n";
 
     selectedItems.forEach((item) => {
       listContent += `☐ ${item.product} (${item.quantity})\n`;
     });
 
-    listContent += "\n" + "=".repeat(37) + "\n";
+    listContent += "\n===================================\n";
     listContent += `Total de productos: ${selectedItems.length}\n`;
     listContent += `Generado: ${new Date().toLocaleDateString("es-ES")}`;
 
-    // Create and download file
     const blob = new Blob([listContent], { type: "text/plain" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -1342,6 +1331,7 @@ updateNotifications() {
     }
 
     this.monthlyIncome = income;
+    this.saveData();
     this.renderConfig();
     this.updateStats();
     this.showToast("Ingresos actualizados", "success");
@@ -1356,89 +1346,42 @@ updateNotifications() {
     const container = document.getElementById("monthSummary");
     if (!container) return;
 
-    const totalExpenses = this.expenses.reduce(
-      (sum, exp) => sum + exp.amount,
-      0
-    );
+    const totalExpenses = this.expenses.reduce((sum, exp) => sum + exp.amount, 0);
     const available = this.monthlyIncome - totalExpenses;
-    const savingsGoal = this.goals.reduce(
-      (sum, goal) => sum + (goal.target - goal.current),
-      0
-    );
+    const savingsGoal = this.goals.reduce((sum, goal) => sum + (goal.target - goal.current), 0);
 
     container.innerHTML = `
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-content">
-                        <h3>Ingresos del Mes</h3>
-                        <p class="stat-value">$${this.monthlyIncome.toLocaleString()}</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-content">
-                        <h3>Gastos Totales</h3>
-                        <p class="stat-value">$${totalExpenses.toLocaleString()}</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-content">
-                        <h3>Dinero Disponible</h3>
-                        <p class="stat-value" style="color: ${
-                          available >= 0
-                            ? "var(--color-success)"
-                            : "var(--color-error)"
-                        }">
-                            $${available.toLocaleString()}
-                        </p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-content">
-                        <h3>Falta para Metas</h3>
-                        <p class="stat-value">$${savingsGoal.toLocaleString()}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="card mt-16">
-                <div class="card__header">
-                    <h3>Análisis del Mes</h3>
-                </div>
-                <div class="card__body">
-                    <div class="recommendation-item">
-                        <i class="fas fa-info-circle recommendation-icon"></i>
-                        <div class="recommendation-text">
-                            ${
-                              available >= 0
-                                ? `Tienes $${available} disponibles. Considera destinar parte a tus metas de ahorro.`
-                                : `Estás gastando $${Math.abs(
-                                    available
-                                  )} más de tus ingresos. Revisa tus gastos innecesarios.`
-                            }
-                        </div>
-                    </div>
-                    ${
-                      this.expenses.filter(
-                        (exp) => exp.category === "Servicios"
-                      ).length > 0
-                        ? `
-                        <div class="recommendation-item">
-                            <i class="fas fa-question-circle recommendation-icon"></i>
-                            <div class="recommendation-text">
-                                Este mes compraste ${
-                                  this.expenses.filter((exp) =>
-                                    exp.description
-                                      .toLowerCase()
-                                      .includes("bombona")
-                                  ).length
-                                } bombona(s) de gas. ¿Era necesario?
-                            </div>
-                        </div>
-                    `
-                        : ""
-                    }
-                </div>
-            </div>
-        `;
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-content">
+            <h3>Ingresos del Mes</h3>
+            <p class="stat-value">$${this.monthlyIncome.toLocaleString()}</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-content">
+            <h3>Gastos Totales</h3>
+            <p class="stat-value">$${totalExpenses.toLocaleString()}</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-content">
+            <h3>Dinero Disponible</h3>
+            <p class="stat-value" style="color: ${
+              available >= 0 ? "var(--color-success)" : "var(--color-error)"
+            }">
+              $${available.toLocaleString()}
+            </p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-content">
+            <h3>Falta para Metas</h3>
+            <p class="stat-value">$${savingsGoal.toLocaleString()}</p>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   // Utility Methods
@@ -1449,7 +1392,6 @@ updateNotifications() {
     const icon = toast.querySelector(".toast-icon");
     const messageEl = toast.querySelector(".toast-message");
 
-    // Set icon based on type
     const icons = {
       success: "fas fa-check-circle",
       error: "fas fa-exclamation-circle",
@@ -1466,8 +1408,7 @@ updateNotifications() {
   }
 
   toggleTheme() {
-    const currentTheme =
-      document.documentElement.getAttribute("data-color-scheme");
+    const currentTheme = document.documentElement.getAttribute("data-color-scheme");
     const newTheme = currentTheme === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-color-scheme", newTheme);
 
@@ -1478,44 +1419,19 @@ updateNotifications() {
   }
 }
 
-// Initialize the application
-document.addEventListener("DOMContentLoaded", () => {
-  window.app = new FinanceApp();
-  window.app.init();
-});
+// Quedará así (ESTE ES EL ÚNICO CÓDIGO QUE DEBE IR DESPUÉS DE LA CLASE)
 
-// Fallback initialization
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => {
-    if (!window.app) {
-      window.app = new FinanceApp();
-      window.app.init();
-    }
-  });
-} else {
-  window.app = new FinanceApp();
-  window.app.init();
-}
-// === Toggle mostrar/ocultar contraseña ===
-document.addEventListener("click", function (e) {
-  if (e.target.classList.contains("toggle-pass")) {
-    const input = e.target.previousElementSibling; // el input está justo antes del ojito
-    if (input && input.type === "password") {
-      input.type = "text";
-      e.target.classList.remove("fa-eye");
-      e.target.classList.add("fa-eye-slash");
-    } else if (input && input.type === "text") {
-      input.type = "password";
-      e.target.classList.remove("fa-eye-slash");
-      e.target.classList.add("fa-eye");
-    }
+// === INICIO DE SECCIÓN: INICIALIZACIÓN GLOBAL DE LA APP ===
+
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Inicializa la aplicación principal una sola vez.
+  if (!window.app) {
+    window.app = new FinanceApp();
+    window.app.init();
   }
-});
 
-// === Animaciones con scroll (Intersection Observer) ===
-document.addEventListener("DOMContentLoaded", () => {
+  // 2. Configura las animaciones de scroll.
   const reveals = document.querySelectorAll(".reveal");
-
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -1526,6 +1442,46 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     { threshold: 0.1 }
   );
-
   reveals.forEach((el) => observer.observe(el));
 });
+
+// === FIN DE SECCIÓN: INICIALIZACIÓN GLOBAL DE LA APP ===
+
+
+// === INICIO DE SECCIÓN: HELPERS GLOBALES (EVENTOS Y CONSOLA) ===
+
+// 1. Funcionalidad para mostrar/ocultar contraseñas (toggle pass)
+// Quedará así
+// 1. Funcionalidad para mostrar/ocultar contraseñas (toggle pass)
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('toggle-pass')) {
+        // CORRECCIÓN: Usamos el data-target para encontrar el input correcto.
+        const inputId = e.target.dataset.target;
+        const input = document.getElementById(inputId);
+        
+        if (input) {
+            if (input.type === 'password') {
+                input.type = 'text';
+                e.target.classList.remove('fa-eye');
+                e.target.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                e.target.classList.remove('fa-eye-slash');
+                e.target.classList.add('fa-eye');
+            }
+        }
+    }
+});
+// 2. Publicar una función global para verificar contraseñas desde la consola.
+window.verificarPassword = function(userName, plainPassword) {
+  if (window.app && typeof window.app.verifyPassword === 'function') {
+    const ok = window.app.verifyPassword(userName, plainPassword);
+    console.log(`Verificación para '${userName}':`, ok);
+    return ok;
+  } else {
+    console.warn('App no inicializada o método no disponible');
+    return false;
+  }
+};
+
+// === FIN DE SECCIÓN: HELPERS GLOBALES (EVENTOS Y CONSOLA) ===
