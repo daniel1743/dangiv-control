@@ -76,8 +76,9 @@ app.post('/api/perplexity', async (req, res) => {
 
     // ▼▼▼ CORRECCIÓN FINAL Y DEFINITIVA ▼▼▼
     // Volvemos al modelo más estándar y ponemos la clave en la URL.
-    const modelToUse = 'gemini-pro';
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${geminiKey}`;
+    // Usar el modelo disponible según /api/models
+    const modelToUse = 'gemini-2.0-flash-lite';
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/${modelToUse}:generateContent?key=${geminiKey}`;
 
     const response = await fetch(geminiUrl, {
       method: 'POST',
