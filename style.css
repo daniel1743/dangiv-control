@@ -1054,10 +1054,11 @@ body {
 }
 
 .progress-fill {
-    height: 100%;
-    background-color: var(--color-primary);
-    border-radius: var(--radius-full);
-    transition: width var(--duration-normal) var(--ease-standard);
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-teal-400));
+  border-radius: var(--radius-full);
+  transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  /* Transición más suave y elegante */
 }
 
 /* Goal Card */
@@ -2573,3 +2574,103 @@ body, .modal {
 .empty-state .btn {
     margin-top: var(--space-8);
 }
+
+/* Quedará así (añade este bloque al final de style.css) */
+/* === Insight Card (Recomendaciones IA) === */
+.insight-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+  background-color: var(--color-bg-1);
+  /* Fondo azulado sutil */
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-primary);
+  /* Acento de color principal */
+  border-radius: var(--radius-lg);
+  padding: var(--space-16);
+  margin-bottom: var(--space-12);
+}
+
+.insight-card__icon {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-top: var(--space-4);
+}
+
+.insight-card__content {
+  flex: 1;
+}
+
+.insight-card__title {
+  margin: 0 0 var(--space-4) 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.insight-card__text {
+  margin: 0;
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+}
+
+
+/* === INICIO: ESTILOS DE LA INTERFAZ DE CHAT === */
+.chat-history {
+  height: 300px;
+  /* Altura fija para el historial */
+  overflow-y: auto;
+  /* Scroll si los mensajes superan la altura */
+  padding: var(--space-16);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.chat-message {
+  display: flex;
+  max-width: 80%;
+}
+
+.chat-message.ai {
+  align-self: flex-start;
+  /* Mensajes de la IA a la izquierda */
+}
+
+.chat-message.user {
+  align-self: flex-end;
+  /* Mensajes del usuario a la derecha */
+}
+
+.chat-bubble {
+  padding: var(--space-12) var(--space-16);
+  border-radius: var(--radius-lg);
+  line-height: var(--line-height-normal);
+}
+
+.chat-message.ai .chat-bubble {
+  background-color: var(--color-secondary);
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.chat-message.user .chat-bubble {
+  background-color: var(--color-primary);
+  color: var(--color-btn-primary-text);
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.chat-form {
+  display: flex;
+  gap: var(--space-8);
+}
+
+.chat-form input {
+  flex: 1;
+  /* El campo de texto ocupa todo el espacio disponible */
+}
+
+/* === FIN: ESTILOS DE LA INTERFAZ DE CHAT === */
