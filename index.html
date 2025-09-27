@@ -50,8 +50,33 @@
           </div>
 
           <div id="notificationDropdown" class="notification-dropdown hidden">
-            <h4>Notificaciones</h4>
-            <ul id="notificationList"></ul>
+            <div class="notification-header">
+              <h4>Notificaciones</h4>
+              <button class="notification-header-action" id="markAllReadBtn" title="Marcar todo como leído">
+                <i class="fas fa-check-double"></i>
+              </button>
+            </div>
+
+            <div class="notification-body" id="notificationBody">
+              <div class="notification-list" id="notificationList">
+                <!-- Notifications will be rendered here -->
+              </div>
+
+              <div class="notification-empty hidden" id="notificationEmpty">
+                <div class="notification-empty-icon">
+                  <i class="fas fa-bell-slash"></i>
+                </div>
+                <h5>¡Todo al día!</h5>
+                <p>No tienes notificaciones pendientes</p>
+              </div>
+            </div>
+
+            <div class="notification-footer">
+              <button class="notification-settings-btn" id="notificationSettingsBtn" title="Configuración de notificaciones">
+                <i class="fas fa-cog"></i>
+                <span>Configuración</span>
+              </button>
+            </div>
           </div>
           <button class="icon-btn" id="settingsBtn" aria-label="Configuración">
             <i class="fas fa-cog"></i>
@@ -59,18 +84,92 @@
           <button class="icon-btn" id="themeToggle" aria-label="Cambio de tema">
             <i class="fas fa-moon"></i>
           </button>
+          <!-- Login Button (shown when not logged in) -->
           <button class="btn btn--primary" id="navbarLoginBtn">
             <i class="fas fa-sign-in-alt"></i>
             <span>Iniciar sesión</span>
           </button>
-          <button
-            class="btn btn--secondary"
-            id="navbarLogoutBtn"
-            style="display: none"
-          >
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Cerrar sesión</span>
-          </button>
+
+          <!-- Profile Menu (shown when logged in) -->
+          <div class="profile-menu-container" id="profileMenuContainer" style="display: none;">
+            <button class="profile-avatar-btn" id="profileAvatarBtn" aria-label="Abrir menú de perfil">
+              <div class="profile-avatar-wrapper" id="profileAvatarWrapper">
+                <!-- Animated ring for Pro users -->
+                <div class="profile-ring" id="profileRing">
+                  <svg class="profile-ring-svg" viewBox="0 0 60 60">
+                    <circle
+                      class="profile-ring-track"
+                      cx="30"
+                      cy="30"
+                      r="28"
+                      fill="none"
+                      stroke-width="2"
+                    ></circle>
+                    <circle
+                      class="profile-ring-progress"
+                      cx="30"
+                      cy="30"
+                      r="28"
+                      fill="none"
+                      stroke-width="2"
+                    ></circle>
+                  </svg>
+                </div>
+
+                <!-- Avatar image -->
+                <img
+                  class="profile-avatar"
+                  id="profileAvatar"
+                  src=""
+                  alt="Foto de perfil"
+                >
+
+                <!-- Verification badge for Pro users -->
+                <div class="profile-verification-badge" id="profileBadge">
+                  <i class="fas fa-check"></i>
+                </div>
+              </div>
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div class="profile-dropdown hidden" id="profileDropdown">
+              <div class="profile-dropdown-header">
+                <div class="profile-header-avatar">
+                  <img class="profile-header-img" id="profileHeaderImg" src="" alt="Avatar">
+                  <div class="profile-header-badge" id="profileHeaderBadge">
+                    <i class="fas fa-crown"></i>
+                  </div>
+                </div>
+                <div class="profile-header-info">
+                  <h4 class="profile-name" id="profileName">Usuario</h4>
+                  <span class="profile-plan" id="profilePlan">Plan Free</span>
+                </div>
+              </div>
+
+              <div class="profile-dropdown-menu">
+                <button class="profile-menu-item" id="viewProfileBtn">
+                  <i class="fas fa-user"></i>
+                  <span>Ver Perfil</span>
+                </button>
+                <button class="profile-menu-item" id="profileSettingsBtn">
+                  <i class="fas fa-cog"></i>
+                  <span>Configuración</span>
+                </button>
+                <div class="profile-menu-divider"></div>
+                <button class="profile-menu-item profile-menu-logout" id="profileLogoutBtn">
+                  <i class="fas fa-sign-out-alt"></i>
+                  <span>Cerrar Sesión</span>
+                </button>
+              </div>
+
+              <div class="profile-dropdown-footer">
+                <button class="profile-upgrade-btn" id="profileUpgradeBtn">
+                  <i class="fas fa-star"></i>
+                  <span>Actualizar a Pro</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -154,21 +253,40 @@
           </div>
 
           <!-- Tarjeta de Ahorros -->
-          <div class="stat-card">
-            <div class="stat-icon-wrapper">
-              <i class="fas fa-piggy-bank stat-icon"></i>
+          <div class="stat-card stat-card--savings" id="savingsCard">
+            <div class="stat-icon-wrapper savings-icon-wrapper">
+              <div class="savings-progress-ring" id="savingsProgressRing">
+                <svg class="progress-circle" width="48" height="48">
+                  <circle
+                    class="progress-circle-bg"
+                    cx="24"
+                    cy="24"
+                    r="20"
+                    fill="none"
+                    stroke-width="4"
+                  ></circle>
+                  <circle
+                    class="progress-circle-fill"
+                    cx="24"
+                    cy="24"
+                    r="20"
+                    fill="none"
+                    stroke-width="4"
+                    stroke-dasharray="125.6"
+                    stroke-dashoffset="125.6"
+                    id="savingsProgressCircle"
+                  ></circle>
+                </svg>
+                <i class="fas fa-piggy-bank stat-icon"></i>
+              </div>
             </div>
             <div class="stat-details">
-              <h3>Ahorros</h3>
-              <p class="stat-value" id="totalSavings">$0</p>
-              <div class="progress-bar-container">
-                <div
-                  class="progress-bar"
-                  id="savingsProgressBar"
-                  style="width: 0%"
-                ></div>
+              <div class="savings-header">
+                <h3>Ahorros</h3>
+                <i class="fas fa-check savings-check" id="savingsCheck"></i>
               </div>
-              <span class="stat-change" id="savingsGoalText">Meta: $0</span>
+              <p class="stat-value" id="totalSavings">$0</p>
+              <span class="stat-change savings-progress-text" id="savingsProgressText">0% de la meta</span>
             </div>
           </div>
 
@@ -206,6 +324,10 @@
             </div>
             <div class="card__body">
               <div id="goalsProgress"></div>
+              <div class="goals-chart-container">
+                <canvas id="goalsProgressChart" width="400" height="200"></canvas>
+                <div id="goalsProgressValue" class="goals-progress-value">$0</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1009,6 +1131,7 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="app.js"></script>
   </body>

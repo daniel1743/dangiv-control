@@ -133,6 +133,26 @@ class FinanceApp {
     this.charts = {};
     this.currentSection = 'dashboard';
     this.currentUser = 'anonymous'; // Â¡CORRECCIÃƒâ€œN APLICADA!
+    this.userPlan = 'free'; // free or pro
+    this.userProfile = {
+      name: 'Usuario',
+      email: '',
+      avatar: 'https://ui-avatars.com/api/?name=Usuario&background=3da1ac&color=fff&size=128',
+      avatarType: 'default', // 'default' or 'custom'
+      selectedAvatar: 0 // Index for default avatars
+    };
+    this.defaultAvatars = [
+      'https://ui-avatars.com/api/?name=U1&background=3da1ac&color=fff&size=128&font-size=0.6',
+      'https://ui-avatars.com/api/?name=U2&background=f97316&color=fff&size=128&font-size=0.6',
+      'https://ui-avatars.com/api/?name=U3&background=ef4444&color=fff&size=128&font-size=0.6',
+      'https://ui-avatars.com/api/?name=U4&background=22c55e&color=fff&size=128&font-size=0.6',
+      'https://ui-avatars.com/api/?name=U5&background=8b5cf6&color=fff&size=128&font-size=0.6',
+      'https://ui-avatars.com/api/?name=U6&background=f59e0b&color=fff&size=128&font-size=0.6',
+      'https://ui-avatars.com/api/?name=U7&background=6366f1&color=fff&size=128&font-size=0.6',
+      'https://ui-avatars.com/api/?name=U8&background=ec4899&color=fff&size=128&font-size=0.6',
+      'https://ui-avatars.com/api/?name=U9&background=14b8a6&color=fff&size=128&font-size=0.6',
+      'https://ui-avatars.com/api/?name=U10&background=64748b&color=fff&size=128&font-size=0.6'
+    ];
     this.pendingDeleteId = null;
     this.aiRecommendations = [];
 
@@ -151,6 +171,11 @@ class FinanceApp {
       // Actualizamos los KPIs y el grÃ¡fico con los datos de demo
       this.updateStats(dataSet.stats);
       this.renderExpenseChart(dataSet);
+
+      // Renderizar gráfico de metas con datos variables para demostración
+      setTimeout(() => {
+        this.renderGoalsProgressChart();
+      }, 500);
 
       // Pasamos al siguiente set de datos para la prÃ³xima vez
       this.currentDemoIndex =
@@ -444,23 +469,36 @@ class FinanceApp {
     const loginBtns = document.querySelectorAll(
       '#navbarLoginBtn, #sidebarLoginBtn'
     );
-    const logoutBtns = document.querySelectorAll(
-      '#navbarLogoutBtn, #sidebarLogoutBtn'
-    );
+    const profileMenuContainer = document.getElementById('profileMenuContainer');
 
     FB.onAuthStateChanged(FB.auth, (user) => {
       if (user) {
         this.currentUser = user.uid;
+        this.userProfile.email = user.email || '';
+        this.userProfile.name = user.displayName || user.email?.split('@')[0] || 'Usuario';
+
+        // Show profile menu, hide login buttons
         loginBtns.forEach((btn) => (btn.style.display = 'none'));
-        logoutBtns.forEach((btn) => (btn.style.display = 'inline-flex'));
+        if (profileMenuContainer) profileMenuContainer.style.display = 'block';
+
+        this.updateProfileDisplay();
         this.syncFromFirebase();
       } else {
         this.currentUser = 'anonymous';
+        this.userPlan = 'free';
+        this.userProfile.name = 'Usuario';
+        this.userProfile.email = '';
+
+        // Show login buttons, hide profile menu
         loginBtns.forEach((btn) => (btn.style.display = 'inline-flex'));
-        logoutBtns.forEach((btn) => (btn.style.display = 'none'));
+        if (profileMenuContainer) profileMenuContainer.style.display = 'none';
+
         this.renderDashboard();
       }
     });
+
+    // Setup profile menu functionality
+    this.setupProfileMenu();
 
     // El botÃ³n de login ahora abre el modal.
     loginBtns.forEach((btn) => {
@@ -468,18 +506,223 @@ class FinanceApp {
         this.openAuthModal();
       });
     });
+  }
 
-    logoutBtns.forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        try {
-          await FB.signOut(FB.auth);
-          this.showToast('Sesión cerrada 👋', 'info');
-        } catch (e) {
-          this.showToast('No se pudo cerrar sesión', 'error');
+  setupProfileMenu() {
+    const profileAvatarBtn = document.getElementById('profileAvatarBtn');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const viewProfileBtn = document.getElementById('viewProfileBtn');
+    const profileSettingsBtn = document.getElementById('profileSettingsBtn');
+    const profileLogoutBtn = document.getElementById('profileLogoutBtn');
+    const profileUpgradeBtn = document.getElementById('profileUpgradeBtn');
+
+    // Profile avatar click to toggle dropdown
+    if (profileAvatarBtn && profileDropdown) {
+      profileAvatarBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('hidden');
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!profileDropdown.classList.contains('hidden')) {
+          if (!profileAvatarBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+            profileDropdown.classList.add('hidden');
+          }
         }
       });
-    });
+
+      // Prevent dropdown from closing when clicking inside
+      profileDropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
+
+    // Profile menu actions
+    if (viewProfileBtn) {
+      viewProfileBtn.addEventListener('click', () => {
+        this.showToast('Página de perfil próximamente', 'info');
+        profileDropdown.classList.add('hidden');
+      });
+    }
+
+    if (profileSettingsBtn) {
+      profileSettingsBtn.addEventListener('click', () => {
+        this.showSection('config');
+        profileDropdown.classList.add('hidden');
+      });
+    }
+
+    if (profileLogoutBtn) {
+      profileLogoutBtn.addEventListener('click', async () => {
+        try {
+          const FB = window.FB;
+          await FB.signOut(FB.auth);
+          this.showToast('Sesión cerrada correctamente 👋', 'success');
+          profileDropdown.classList.add('hidden');
+        } catch (e) {
+          this.showToast('Error al cerrar sesión', 'error');
+        }
+      });
+    }
+
+    if (profileUpgradeBtn) {
+      profileUpgradeBtn.addEventListener('click', () => {
+        this.showUpgradeModal();
+        profileDropdown.classList.add('hidden');
+      });
+    }
+
+    // Initialize SVG gradient for profile ring
+    this.initializeProfileRingGradient();
   }
+
+  updateProfileDisplay() {
+    const profileAvatar = document.getElementById('profileAvatar');
+    const profileHeaderImg = document.getElementById('profileHeaderImg');
+    const profileName = document.getElementById('profileName');
+    const profilePlan = document.getElementById('profilePlan');
+    const profileAvatarWrapper = document.getElementById('profileAvatarWrapper');
+    const profileDropdownHeader = document.querySelector('.profile-dropdown-header');
+    const profileDropdownFooter = document.querySelector('.profile-dropdown-footer');
+
+    // Update avatar images
+    const avatarSrc = this.userProfile.avatarType === 'custom'
+      ? this.userProfile.avatar
+      : this.defaultAvatars[this.userProfile.selectedAvatar];
+
+    if (profileAvatar) profileAvatar.src = avatarSrc;
+    if (profileHeaderImg) profileHeaderImg.src = avatarSrc;
+
+    // Update profile info
+    if (profileName) profileName.textContent = this.userProfile.name;
+    if (profilePlan) {
+      profilePlan.textContent = this.userPlan === 'pro' ? 'Plan Pro' : 'Plan Free';
+      profilePlan.className = `profile-plan ${this.userPlan === 'pro' ? 'plan-pro' : ''}`;
+    }
+
+    // Update Pro/Free visual states
+    if (profileAvatarWrapper) {
+      profileAvatarWrapper.className = `profile-avatar-wrapper ${this.userPlan === 'pro' ? 'user-pro' : ''}`;
+    }
+
+    if (profileDropdownHeader) {
+      profileDropdownHeader.className = `profile-dropdown-header ${this.userPlan === 'pro' ? 'user-pro' : ''}`;
+    }
+
+    if (profileDropdownFooter) {
+      profileDropdownFooter.className = `profile-dropdown-footer ${this.userPlan === 'pro' ? 'user-pro' : ''}`;
+    }
+  }
+
+  initializeProfileRingGradient() {
+    const profileRingSvg = document.querySelector('.profile-ring-svg');
+    if (!profileRingSvg) return;
+
+    // Create gradient definition
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+    gradient.setAttribute('id', 'profileGradient');
+    gradient.setAttribute('x1', '0%');
+    gradient.setAttribute('y1', '0%');
+    gradient.setAttribute('x2', '100%');
+    gradient.setAttribute('y2', '100%');
+
+    const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop1.setAttribute('offset', '0%');
+    stop1.setAttribute('stop-color', '#ffd700');
+
+    const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop2.setAttribute('offset', '50%');
+    stop2.setAttribute('stop-color', '#ffa500');
+
+    const stop3 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop3.setAttribute('offset', '100%');
+    stop3.setAttribute('stop-color', '#ff6b35');
+
+    gradient.appendChild(stop1);
+    gradient.appendChild(stop2);
+    gradient.appendChild(stop3);
+    defs.appendChild(gradient);
+    profileRingSvg.appendChild(defs);
+  }
+
+  showUpgradeModal() {
+    // Create a simple upgrade modal
+    const modalHtml = `
+      <div class="modal upgrade-modal" id="upgradeModal">
+        <div class="modal-content upgrade-modal-content">
+          <div class="modal-header">
+            <h2>🌟 Actualizar a Pro</h2>
+            <button class="modal-close" onclick="document.getElementById('upgradeModal').remove()">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="upgrade-features">
+              <h3>Características Pro:</h3>
+              <ul>
+                <li>✨ Foto de perfil personalizada</li>
+                <li>🎨 Anillo de perfil animado</li>
+                <li>✅ Insignia de verificación</li>
+                <li>📊 Análisis avanzados</li>
+                <li>🎯 Metas ilimitadas</li>
+                <li>☁️ Sincronización prioritaria</li>
+              </ul>
+              <div class="upgrade-price">
+                <span class="price">$4.99/mes</span>
+                <span class="price-desc">Cancela cuando quieras</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn--primary" onclick="app.simulateUpgrade()">Actualizar Ahora</button>
+            <button class="btn btn--secondary" onclick="document.getElementById('upgradeModal').remove()">Tal vez después</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const modal = document.getElementById('upgradeModal');
+    modal.classList.add('show');
+  }
+
+  simulateUpgrade() {
+    // Simulate upgrading to Pro (for demo purposes)
+    this.userPlan = 'pro';
+    this.updateProfileDisplay();
+    this.showToast('¡Bienvenido a Pro! 🌟', 'success');
+
+    document.getElementById('upgradeModal').remove();
+  }
+
+  changeAvatar(avatarIndex) {
+    if (this.userPlan === 'free') {
+      this.userProfile.selectedAvatar = avatarIndex;
+      this.userProfile.avatarType = 'default';
+      this.userProfile.avatar = this.defaultAvatars[avatarIndex];
+    }
+    this.updateProfileDisplay();
+    this.saveData();
+  }
+
+  uploadCustomAvatar(file) {
+    if (this.userPlan !== 'pro') {
+      this.showToast('Función disponible solo para usuarios Pro', 'info');
+      return;
+    }
+
+    // Simulate uploading custom avatar
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.userProfile.avatar = e.target.result;
+      this.userProfile.avatarType = 'custom';
+      this.updateProfileDisplay();
+      this.saveData();
+      this.showToast('Foto de perfil actualizada', 'success');
+    };
+    reader.readAsDataURL(file);
+  }
+
   async syncFromFirebase() {
     if (!this.currentUser || this.currentUser === 'anonymous') {
       // Si no hay usuario, no hay nada que sincronizar.
@@ -866,6 +1109,7 @@ class FinanceApp {
     this.updateStats();
     this.renderExpenseChart();
     this.renderGoalsProgress();
+    this.renderGoalsProgressChart();
     this.renderAIRecommendations();
     this.renderRecentTransactions();
     this.updateNotifications();
@@ -901,60 +1145,278 @@ class FinanceApp {
   }
 
   updateNotifications() {
+    // Initialize notification tracking if not exists
+    if (!this.notificationStates) {
+      this.notificationStates = new Map();
+    }
+
     let notifications = [];
     const today = new Date();
 
-    // Metas por vencer
-    this.goals.forEach((goal) => {
+    // Generate goal notifications
+    this.goals.forEach((goal, index) => {
       const deadline = new Date(goal.deadline);
       const diff = (deadline - today) / (1000 * 60 * 60 * 24);
+      const progress = (goal.current / goal.target) * 100;
+
       if (diff <= 7 && goal.current < goal.target) {
+        const priority = diff <= 2 ? 'high' : diff <= 5 ? 'medium' : 'low';
+        const urgencyText = diff <= 1 ? 'mañana' : `${Math.ceil(diff)} días`;
+
         notifications.push({
+          id: `goal-${index}-deadline`,
           type: 'goal',
-          text: `Meta "${goal.name}" vence en ${Math.ceil(diff)} dÃ­as`,
+          category: 'goal',
+          title: goal.name,
+          subtitle: `Meta vence en ${urgencyText}`,
+          amount: `$${this.formatCurrency(goal.target - goal.current)} restantes`,
+          time: this.getRelativeTime(deadline),
+          priority: priority,
+          data: { goalId: index, section: 'goals' },
+          isRead: this.notificationStates.get(`goal-${index}-deadline`) || false
         });
       }
     });
 
-    // Gastos protegidos
-    this.expenses.forEach((exp) => {
-      if (exp.protected) {
-        notifications.push({
-          type: 'expense',
-          text: `Gasto protegido: ${exp.description} ($${exp.amount})`,
-        });
-      }
+    // Generate expense notifications for recent large expenses
+    const recentExpenses = this.expenses
+      .filter(exp => {
+        const expDate = new Date(exp.date);
+        const daysDiff = (today - expDate) / (1000 * 60 * 60 * 24);
+        return daysDiff <= 3; // Last 3 days
+      })
+      .sort((a, b) => b.amount - a.amount);
+
+    recentExpenses.slice(0, 3).forEach((exp, index) => {
+      const isLarge = exp.amount > (this.monthlyIncome * 0.1); // 10% of monthly income
+      const priority = exp.protected ? 'high' : isLarge ? 'medium' : 'low';
+
+      notifications.push({
+        id: `expense-${exp.date}-${index}`,
+        type: 'expense',
+        category: this.getCategoryIcon(exp.category),
+        title: exp.description,
+        subtitle: exp.protected ? 'Gasto protegido' : `Gasto en ${exp.category}`,
+        amount: `$${this.formatCurrency(exp.amount)}`,
+        time: this.getRelativeTime(new Date(exp.date)),
+        priority: priority,
+        data: { expenseId: index, section: 'expenses' },
+        isRead: this.notificationStates.get(`expense-${exp.date}-${index}`) || false
+      });
     });
 
+    // Update badge count (only unread notifications)
+    const unreadCount = notifications.filter(n => !n.isRead).length;
+    this.updateNotificationBadge(unreadCount);
+
+    // Render notifications
+    this.renderNotificationList(notifications);
+
+    // Setup event listeners for new notifications
+    this.setupNotificationEventListeners();
+  }
+
+  getCategoryIcon(category) {
+    const iconMap = {
+      'Alimentación': 'food',
+      'Transporte': 'transport',
+      'Entretenimiento': 'entertainment',
+      'Salud': 'health',
+      'Servicios': 'services',
+      'Compras': 'shopping',
+      'Otros': 'shopping'
+    };
+    return iconMap[category] || 'shopping';
+  }
+
+  getCategoryEmoji(category) {
+    const emojiMap = {
+      'food': '🍔',
+      'transport': '🚗',
+      'entertainment': '🎬',
+      'health': '🏥',
+      'services': '⚡',
+      'shopping': '🛒',
+      'goal': '🎯',
+      'protected': '🔒'
+    };
+    return emojiMap[category] || '📝';
+  }
+
+  updateNotificationBadge(count) {
     const badge = document.getElementById('notificationCount');
     if (badge) {
-      if (notifications.length > 0) {
+      if (count > 0) {
         badge.style.display = 'flex';
-        badge.textContent = '';
+        badge.textContent = count > 99 ? '99+' : count.toString();
       } else {
         badge.style.display = 'none';
       }
     }
+  }
 
+  renderNotificationList(notifications) {
     const list = document.getElementById('notificationList');
-    if (list) {
-      list.innerHTML = '';
-      if (notifications.length === 0) {
-        list.innerHTML = '<li>Sin notificaciones</li>';
-      } else {
-        notifications.forEach((n) => {
-          const li = document.createElement('li');
-          if (n.type === 'goal') {
-            li.innerHTML = `<i class="fas fa-flag"></i> ${n.text}`;
-          } else if (n.type === 'expense') {
-            li.innerHTML = `<i class="fas fa-lock"></i> ${n.text}`;
-          } else {
-            li.textContent = n.text;
-          }
-          list.appendChild(li);
-        });
-      }
+    const emptyState = document.getElementById('notificationEmpty');
+
+    if (!list || !emptyState) return;
+
+    // Show/hide empty state
+    if (notifications.length === 0) {
+      list.classList.add('hidden');
+      emptyState.classList.remove('hidden');
+      return;
     }
+
+    list.classList.remove('hidden');
+    emptyState.classList.add('hidden');
+
+    // Sort notifications by priority and read status
+    const sortedNotifications = notifications.sort((a, b) => {
+      if (a.isRead !== b.isRead) return a.isRead ? 1 : -1;
+      const priorityOrder = { high: 3, medium: 2, low: 1 };
+      return priorityOrder[b.priority] - priorityOrder[a.priority];
+    });
+
+    // Render notification items
+    list.innerHTML = '';
+    sortedNotifications.forEach(notification => {
+      const item = this.createNotificationItem(notification);
+      list.appendChild(item);
+    });
+  }
+
+  createNotificationItem(notification) {
+    const item = document.createElement('div');
+    item.className = `notification-item priority-${notification.priority}${notification.isRead ? ' read' : ''}`;
+    item.dataset.notificationId = notification.id;
+
+    const emoji = this.getCategoryEmoji(notification.category);
+
+    item.innerHTML = `
+      <div class="notification-icon category-${notification.category}">
+        ${emoji}
+      </div>
+
+      <div class="notification-content">
+        <h6 class="notification-title">${notification.title}</h6>
+        <p class="notification-subtitle">
+          ${notification.subtitle}
+          ${notification.amount ? `<span class="notification-amount">${notification.amount}</span>` : ''}
+        </p>
+        <div class="notification-time">${notification.time}</div>
+      </div>
+
+      <div class="notification-actions">
+        <button class="notification-action-btn" data-action="read" title="Marcar como leída">
+          <i class="fas fa-check"></i>
+        </button>
+        <button class="notification-action-btn" data-action="view" title="Ver detalles">
+          <i class="fas fa-external-link-alt"></i>
+        </button>
+      </div>
+    `;
+
+    return item;
+  }
+
+  setupNotificationEventListeners() {
+    // Mark all as read button
+    const markAllBtn = document.getElementById('markAllReadBtn');
+    if (markAllBtn) {
+      markAllBtn.replaceWith(markAllBtn.cloneNode(true)); // Remove old listeners
+      document.getElementById('markAllReadBtn').addEventListener('click', () => {
+        this.markAllNotificationsAsRead();
+      });
+    }
+
+    // Settings button
+    const settingsBtn = document.getElementById('notificationSettingsBtn');
+    if (settingsBtn) {
+      settingsBtn.replaceWith(settingsBtn.cloneNode(true)); // Remove old listeners
+      document.getElementById('notificationSettingsBtn').addEventListener('click', () => {
+        this.showToast('Configuración de notificaciones próximamente', 'info');
+      });
+    }
+
+    // Individual notification actions
+    const actionBtns = document.querySelectorAll('.notification-action-btn');
+    actionBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const action = btn.dataset.action;
+        const notificationId = btn.closest('.notification-item').dataset.notificationId;
+
+        if (action === 'read') {
+          this.markNotificationAsRead(notificationId);
+        } else if (action === 'view') {
+          this.handleNotificationClick(notificationId);
+        }
+      });
+    });
+
+    // Notification item clicks
+    const notificationItems = document.querySelectorAll('.notification-item');
+    notificationItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const notificationId = item.dataset.notificationId;
+        this.handleNotificationClick(notificationId);
+      });
+    });
+  }
+
+  markNotificationAsRead(notificationId) {
+    this.notificationStates.set(notificationId, true);
+    this.saveData(); // Save state
+
+    const item = document.querySelector(`[data-notification-id="${notificationId}"]`);
+    if (item) {
+      item.classList.add('read');
+      item.classList.add('removing');
+
+      setTimeout(() => {
+        this.updateNotifications(); // Refresh the list
+      }, 200);
+    }
+  }
+
+  markAllNotificationsAsRead() {
+    const items = document.querySelectorAll('.notification-item:not(.read)');
+    items.forEach(item => {
+      const notificationId = item.dataset.notificationId;
+      this.notificationStates.set(notificationId, true);
+    });
+
+    this.saveData();
+    this.updateNotifications();
+    this.showToast('Todas las notificaciones marcadas como leídas', 'success');
+  }
+
+  handleNotificationClick(notificationId) {
+    // Mark as read when clicked
+    this.markNotificationAsRead(notificationId);
+
+    // Navigate to relevant section (placeholder for future implementation)
+    this.showToast('Navegación a sección específica próximamente', 'info');
+
+    // Close dropdown
+    const dropdown = document.getElementById('notificationDropdown');
+    if (dropdown) {
+      dropdown.classList.add('hidden');
+    }
+  }
+
+  getRelativeTime(date) {
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 60) return `Hace ${minutes} min`;
+    if (hours < 24) return `Hace ${hours}h`;
+    if (days < 7) return `Hace ${days} días`;
+    return date.toLocaleDateString();
   }
 
   // QuedarÃ¡ asÃ­ (updateStats)
@@ -995,6 +1457,9 @@ class FinanceApp {
     ).textContent = `$${stats.totalSavings.toLocaleString()}`;
     document.getElementById('totalTransactions').textContent =
       stats.transactionCount.toString();
+
+    // Update savings progress visualization
+    this.updateSavingsProgress(stats.totalSavings, demoStats);
     const expensesChangeEl = document.getElementById('expensesChange');
     const savingsChangeEl = document.getElementById('savingsChange');
 
@@ -1007,6 +1472,65 @@ class FinanceApp {
     }
   }
 
+  updateSavingsProgress(totalSavings, demoStats = null) {
+    // Calculate total goals target
+    const totalGoalsTarget = this.goals.reduce((sum, goal) => sum + goal.target, 0);
+
+    // Calculate progress percentage
+    let progressPercentage = 0;
+    if (totalGoalsTarget > 0) {
+      progressPercentage = Math.min((totalSavings / totalGoalsTarget) * 100, 100);
+    } else if (demoStats && demoStats.savingsProgress) {
+      progressPercentage = demoStats.savingsProgress;
+    }
+
+    // Determine progress level
+    const progressLevel = this.getSavingsProgressLevel(progressPercentage);
+    const checkStatus = this.getSavingsCheckStatus(progressPercentage);
+
+    // Update circular progress ring
+    const progressRing = document.getElementById('savingsProgressRing');
+    const progressCircle = document.getElementById('savingsProgressCircle');
+    const savingsCheck = document.getElementById('savingsCheck');
+    const savingsProgressText = document.getElementById('savingsProgressText');
+
+    if (progressRing && progressCircle && savingsCheck && savingsProgressText) {
+      // Update ring progress
+      const circumference = 125.6; // 2 * π * 20 (radius)
+      const offset = circumference - (progressPercentage / 100) * circumference;
+
+      progressRing.setAttribute('data-progress', progressLevel);
+      progressCircle.style.strokeDashoffset = offset;
+
+      // Update check status
+      savingsCheck.setAttribute('data-status', checkStatus);
+
+      // Update progress text with dynamic color
+      const progressText = totalGoalsTarget > 0
+        ? `${Math.round(progressPercentage)}% de la meta`
+        : demoStats
+          ? `${Math.round(progressPercentage)}% de la meta`
+          : 'Define tus metas';
+
+      savingsProgressText.textContent = progressText;
+      savingsProgressText.setAttribute('data-level', progressLevel);
+    }
+  }
+
+  getSavingsProgressLevel(percentage) {
+    if (percentage >= 100) return 'complete';
+    if (percentage >= 70) return 'high';
+    if (percentage >= 30) return 'medium';
+    return 'low';
+  }
+
+  getSavingsCheckStatus(percentage) {
+    if (percentage >= 100) return 'complete';
+    if (percentage >= 70) return 'high';
+    if (percentage >= 30) return 'progress';
+    return 'initial';
+  }
+
   // QuedarÃ¡ asÃ­ (renderExpenseChart)
   // QuedarÃ¡ asÃ­ (reemplaza la funciÃ³n completa)
   renderExpenseChart(demoData = null) {
@@ -1017,16 +1541,20 @@ class FinanceApp {
     let chartData;
     let chartTitle = 'Gastos por CategorÃ­a';
 
-    // --- INICIO: Paleta de colores moderna ---
+    // --- INICIO: Paleta de colores moderna ampliada ---
     const modernColors = [
       '#008F8C', // Verde azulado principal
       '#00C49A', // Verde menta
       '#FFB347', // Naranja suave
       '#FF8066', // Coral
-      '#D9D9D9', // Gris claro
-      '#6B7280', // Gris medio
+      '#A855F7', // Púrpura
+      '#0EA5E9', // Azul cielo
+      '#F59E0B', // Ámbar
+      '#EF4444', // Rojo vibrante
+      '#8B5CF6', // Violeta
+      '#10B981', // Esmeralda
     ];
-    // --- FIN: Paleta de colores moderna ---
+    // --- FIN: Paleta de colores moderna ampliada ---
 
     if (demoData) {
       chartData = {
@@ -1035,12 +1563,10 @@ class FinanceApp {
           {
             data: demoData.data,
             backgroundColor: modernColors,
-            borderWidth: 0, // Sin borde
+            borderWidth: 0,
             borderColor: 'transparent',
-            // --- INICIO: Efecto hover ---
             hoverOffset: 15,
-            hoverBorderWidth: 0, // Sin borde al hacer hover
-            // --- FIN: Efecto hover ---
+            hoverBorderWidth: 0,
           },
         ],
       };
@@ -1073,12 +1599,13 @@ class FinanceApp {
       this.charts.expenseChart = new Chart(ctx, {
         type: 'doughnut',
         data: chartData,
+        plugins: [ChartDataLabels],
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          cutout: '70%', // Anillo mÃ¡s delgado para un look moderno
+          cutout: '60%',
           animation: {
-            duration: 1200, // AnimaciÃ³n mÃ¡s suave
+            duration: 1200,
             easing: 'easeInOutQuart',
           },
           plugins: {
@@ -1090,16 +1617,29 @@ class FinanceApp {
               color: 'var(--color-text)',
             },
             legend: {
-              position: 'bottom',
-              labels: {
-                usePointStyle: true,
-                pointStyle: 'circle',
-                padding: 25,
-                font: { size: 12, family: 'Inter, sans-serif' },
-                color: 'var(--color-text-secondary)',
-              },
+              display: false,
             },
-            // --- INICIO: Tooltips modernos ---
+            datalabels: {
+              color: function(context) {
+                return context.dataset.backgroundColor[context.dataIndex];
+              },
+              font: {
+                size: 12,
+                weight: 'bold',
+                family: 'Inter, sans-serif'
+              },
+              formatter: function(value, context) {
+                return context.chart.data.labels[context.dataIndex];
+              },
+              anchor: 'end',
+              align: 'end',
+              offset: 10,
+              display: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = (context.parsed / total) * 100;
+                return percentage > 5; // Solo mostrar si es mayor al 5%
+              }
+            },
             tooltip: {
               enabled: true,
               backgroundColor: 'var(--color-surface-raised)',
@@ -1117,11 +1657,10 @@ class FinanceApp {
                   const value = context.raw || 0;
                   const total = context.chart.getDatasetMeta(0).total;
                   const percentage = ((value / total) * 100).toFixed(1);
-                  return ` ${label}: ${value.toFixed(2)}Ã¢â€šÂ¬ (${percentage}%)`;
+                  return ` ${label}: $${value.toFixed(2)} (${percentage}%)`;
                 },
               },
             },
-            // --- FIN: Tooltips modernos ---
           },
         },
       });
@@ -1161,6 +1700,141 @@ class FinanceApp {
       `;
       container.appendChild(goalEl);
     });
+  }
+
+  renderGoalsProgressChart() {
+    const canvas = document.getElementById('goalsProgressChart');
+    const valueElement = document.getElementById('goalsProgressValue');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // Destruir gráfico existente si existe
+    if (this.goalsChart) {
+      this.goalsChart.destroy();
+    }
+
+    let chartData;
+    let chartLabels;
+    let finalValue;
+
+    if (!this.currentUser || this.goals.length === 0) {
+      // Datos de demostración para usuarios no logueados o sin metas
+      chartLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+      chartData = [1000, 1500, 2200, 2800, 3500, 4200];
+      finalValue = 4200;
+    } else {
+      // Datos reales basados en el progreso de metas del usuario
+      const monthlyData = this.calculateMonthlySavings();
+      chartLabels = monthlyData.labels;
+      chartData = monthlyData.values;
+      finalValue = chartData[chartData.length - 1] || 0;
+    }
+
+    // Actualizar valor numérico
+    if (valueElement) {
+      valueElement.textContent = `$${finalValue.toLocaleString()}`;
+      valueElement.className = 'goals-progress-value';
+      if (finalValue > 0) {
+        valueElement.classList.add('positive');
+      } else if (finalValue < 0) {
+        valueElement.classList.add('negative');
+      }
+    }
+
+    // Crear gradiente
+    const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+    gradient.addColorStop(0, 'rgba(33, 128, 141, 0.3)');
+    gradient.addColorStop(1, 'rgba(33, 128, 141, 0.05)');
+
+    this.goalsChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: chartLabels,
+        datasets: [{
+          data: chartData,
+          borderColor: 'var(--color-primary)',
+          backgroundColor: gradient,
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointHoverRadius: 8,
+          pointBackgroundColor: 'var(--color-primary)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointHoverBackgroundColor: 'var(--color-primary)',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            display: false,
+            grid: {
+              display: false
+            }
+          },
+          y: {
+            display: false,
+            grid: {
+              display: false
+            }
+          }
+        },
+        animation: {
+          duration: 2000,
+          easing: 'easeInOutQuart',
+          onComplete: () => {
+            // Animación del valor numérico
+            if (valueElement) {
+              valueElement.style.transform = 'translate(-50%, -50%) scale(1.1)';
+              setTimeout(() => {
+                valueElement.style.transform = 'translate(-50%, -50%) scale(1)';
+              }, 200);
+            }
+          }
+        }
+      }
+    });
+  }
+
+  calculateMonthlySavings() {
+    const currentDate = new Date();
+    const labels = [];
+    const values = [];
+
+    // Generar últimos 6 meses
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const monthName = date.toLocaleDateString('es-ES', { month: 'short' });
+      labels.push(monthName);
+
+      // Calcular ahorro acumulativo basado en ingresos menos gastos
+      const monthlyExpenses = this.getMonthlyExpenses(date);
+      const monthlySavings = (this.monthlyIncome || 0) - monthlyExpenses;
+      const previousValue = i === 5 ? 0 : values[values.length - 1] || 0;
+      values.push(Math.max(0, previousValue + monthlySavings));
+    }
+
+    return { labels, values };
+  }
+
+  getMonthlyExpenses(date) {
+    return this.expenses
+      .filter(expense => {
+        const expenseDate = new Date(expense.date);
+        return expenseDate.getMonth() === date.getMonth() &&
+               expenseDate.getFullYear() === date.getFullYear();
+      })
+      .reduce((total, expense) => total + expense.amount, 0);
   }
 
   renderEmptyGoalsState(container) {
@@ -2264,7 +2938,7 @@ class FinanceApp {
     const chatHistoryContainer = document.getElementById('chatHistory');
     const typingIndicator = document.createElement('div');
     typingIndicator.className = 'chat-message ai';
-    typingIndicator.innerHTML = `<div class="chat-bubble"><i class="fas fa-spinner fa-spin"></i></div>`;
+    typingIndicator.innerHTML = `<div class="chat-bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
     chatHistoryContainer.appendChild(typingIndicator);
     chatHistoryContainer.scrollTop = chatHistoryContainer.scrollHeight;
 
