@@ -71,6 +71,21 @@ node server.js
 node test-api.js
 ```
 
+### Git Workflow
+When making changes:
+```bash
+# Check current status
+git status
+
+# Add changes
+git add .
+
+# Commit with descriptive message
+git commit -m "feat: your feature description"
+# OR
+git commit -m "fix: your bug fix description"
+```
+
 ### Code Formatting
 Prettier configuration is available:
 ```bash
@@ -145,6 +160,7 @@ GEMINI_API_KEY=your_actual_gemini_api_key
 ### Backend Endpoints
 - `GET /api/models` - List available Gemini models
 - `POST /api/perplexity` - Proxy for secure API calls
+- `POST /api/gemini` - Gemini API chat endpoint (if implemented)
 
 ## Features and Components
 
@@ -204,7 +220,7 @@ Key CSS patterns:
 ## Development Patterns
 
 ### Code Organization
-- Single class architecture (`FinanceApp`)
+- Single class architecture (`FinanceApp`) in app.js:2100 lines
 - Method naming follows camelCase convention
 - Spanish language used in UI and some comments
 - Comprehensive error handling with toast notifications
@@ -219,5 +235,11 @@ Key CSS patterns:
 - localStorage for persistence
 - Firebase Firestore for cloud sync
 - Automatic data normalization for encoding issues
+
+### Debugging
+- Set `DEBUG_MODE = true` in app.js for console logging
+- Browser DevTools for frontend debugging
+- Firebase console for database inspection
+- Network tab for API call monitoring
 
 This application is designed to work immediately without any build process or dependency installation, making it easy to deploy and modify.

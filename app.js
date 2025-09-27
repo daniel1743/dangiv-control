@@ -249,77 +249,95 @@ class FinanceApp {
   }
 
   fixLegacyEncoding(value) {
-    if (typeof value !== 'string') return value;
-    if (!/[ÃÂâ€™“”‘’–—¢ºª¡¿·�]/.test(value)) return value;
+    if (typeof value !== 'string' || value.length === 0) {
+      return value;
+    }
 
     let result = value;
 
-    if (this._utf8Decoder) {
-      try {
-        const bytes = new Uint8Array(value.length);
-        for (let i = 0; i < value.length; i += 1) {
-          bytes[i] = value.charCodeAt(i) & 0xff;
+    if (/[ÃÂâ€™“”‘’–—¢ºª¡¿·•°Å¶]/.test(result)) {
+      if (this._latinDecoder) {
+        try {
+          const bytes = new Uint8Array(result.length);
+          for (let i = 0; i < result.length; i += 1) {
+            bytes[i] = result.charCodeAt(i) & 0xff;
+          }
+          const decoded = this._latinDecoder.decode(bytes);
+          if (decoded && !decoded.includes('�')) {
+            result = decoded;
+          }
+        } catch (error) {
+          console.warn('No se pudo decodificar texto en windows-1252:', value, error);
         }
-        const decoded = this._utf8Decoder.decode(bytes);
-        if (decoded && !decoded.includes('�')) {
-          result = decoded;
-        }
-      } catch (error) {
-        console.warn('No se pudo decodificar texto legacy:', value, error);
       }
+
+      const replacements = [
+        ['Ã¡', 'á'],
+        ['Ã©', 'é'],
+        ['Ã­', 'í'],
+        ['Ã³', 'ó'],
+        ['Ãº', 'ú'],
+        ['Ãñ', 'ñ'],
+        ['Ã±', 'ñ'],
+        ['Ã�', 'Á'],
+        ['Ã‰', 'É'],
+        ['Ã�', 'Í'],
+        ['Ã“', 'Ó'],
+        ['Ãš', 'Ú'],
+        ['Ãœ', 'Ü'],
+        ['Ã¼', 'ü'],
+        ['Ã ', 'à'],
+        ['Ã¨', 'è'],
+        ['Ãª', 'ê'],
+        ['Ã¬', 'ì'],
+        ['Ã²', 'ò'],
+        ['Ã´', 'ô'],
+        ['Ã¹', 'ù'],
+        ['Ã»', 'û'],
+        ['Ã§', 'ç'],
+        ['Ã‘', 'Ñ'],
+        ['Ã¢â‚¬Â¢', '•'],
+        ['Ã¢â‚¬â€œ', '–'],
+        ['Ã¢â‚¬â€', '—'],
+        ['Ã¢â‚¬Ëœ', '‘'],
+        ['Ã¢â‚¬â„¢', '’'],
+        ['Ã¢â‚¬Å“', '“'],
+        ['Ã¢â‚¬Â�', '”'],
+        ['Ã¢â‚¬Â¦', '…'],
+        ['Â¿', '¿'],
+        ['Â¡', '¡'],
+        ['Âº', 'º'],
+        ['Âª', 'ª'],
+        ['Â·', '·'],
+        ['Â°', '°'],
+        ['Â', ''],
+      ];
+
+      replacements.forEach(([from, to]) => {
+        if (result.includes(from)) {
+          result = result.split(from).join(to);
+        }
+      });
     }
 
-    const replacements = [
-      ['Ã¡', 'á'],
-      ['Ã©', 'é'],
-      ['Ã­', 'í'],
-      ['Ã³', 'ó'],
-      ['Ãº', 'ú'],
-      ['Ã±', 'ñ'],
-      ['Ã�', 'Á'],
-      ['Ã‰', 'É'],
-      ['Ã�', 'Í'],
-      ['Ã“', 'Ó'],
-      ['Ãš', 'Ú'],
-      ['Ãœ', 'Ü'],
-      ['Ã¼', 'ü'],
-      ['Ã‘', 'Ñ'],
-      ['Ã§', 'ç'],
-      ['Ã ', 'à'],
-      ['Ã¨', 'è'],
-      ['Ã¬', 'ì'],
-      ['Ã²', 'ò'],
-      ['Ã¡', 'á'],
-      ['Ã³', 'ó'],
-      ['Ãº', 'ú'],
-      ['•', '•'],
-      ['[P]', '[P]'],
-      ['Ã°Å¸â€â€™', 'PROTEGIDO'],
-      ['Ã¢â‚¬â€œ', '–'],
-      ['Ã¢â‚¬â€', '—'],
-      ['Ã¢â‚¬Ëœ', '‘'],
-      ['Ã¢â‚¬â„¢', '’'],
-      ['Ã¢â‚¬Å“', '“'],
-      ['Ã¢â‚¬Â�', '”'],
-      ['Ã¢â‚¬Â¦', '…'],
-      ['Ã¢â‚¬Â', ''],
-      ['Â¿', '¿'],
-      ['Â¡', '¡'],
-      ['Âº', 'º'],
-      ['Âª', 'ª'],
-      ['Â·', '·'],
-      ['Â°', '°'],
-      ['Â', ''],
-    ];
+    return result;
+  }
 
-    let manual = result;
-    replacements.forEach(([from, to]) => {
-      if (manual.includes(from)) {
-        manual = manual.split(from).join(to);
-      }
-    });
+  formatMetaLine(parts = []) {
+    if (!Array.isArray(parts)) {
+      return '';
+    }
 
-    return manual;
+    return parts
+      .filter((part) => {
+        if (part === undefined || part === null) {
+          return false;
+        }
+        const textPart = String(part).trim();
+        return textPart.length > 0;
+      })
+      .map((part) => this.fixLegacyEncoding(String(part).trim()))
+      .join(' • ');
   }
 
   // Método para guardar todo el estado relevante en LocalStorageÃ©todo para guardar todo el estado relevante en LocalStorage
@@ -1293,10 +1311,15 @@ class FinanceApp {
     recentExpenses.forEach((expense) => {
       const transactionEl = document.createElement('div');
       transactionEl.className = 'transaction-item';
+      const metaLine = this.formatMetaLine([
+        expense.date,
+        expense.user,
+        expense.category,
+      ]);
       transactionEl.innerHTML = `
         <div class="transaction-info">
-          <h4>${expense.description}</h4>
-          <div class="transaction-meta">${expense.date} • ${expense.user} • ${expense.category}</div>
+          <h4>${this.fixLegacyEncoding(expense.description)}</h4>
+          <div class="transaction-meta">${metaLine}</div>
         </div>
         <div class="transaction-amount expense">-$${expense.amount}</div>
       `;
@@ -1371,21 +1394,21 @@ class FinanceApp {
     sortedExpenses.forEach((expense) => {
       const expenseEl = document.createElement('div');
       expenseEl.className = 'transaction-item';
+      const metaLine = this.formatMetaLine([
+        expense.date,
+        expense.user,
+        expense.category,
+        expense.necessity,
+        expense.protected ? 'PROTEGIDO' : '',
+      ]);
       expenseEl.innerHTML = `
         <div class="transaction-info">
-          <h4>${expense.description}</h4>
-          <div class="transaction-meta">
-            ${expense.date} • ${expense.user} • ${expense.category} • ${
-        expense.necessity
-      }
-            ${expense.protected ? ' • Ã°Å¸â€â€™' : ''}
-          </div>
+          <h4>${this.fixLegacyEncoding(expense.description)}</h4>
+          <div class="transaction-meta">${metaLine}</div>
         </div>
         <div style="display:flex; align-items:center; gap:12px;">
           <div class="transaction-amount expense">$${expense.amount}</div>
-          <button type="button" class="btn btn-danger btn-delete" data-id="${
-            expense.id
-          }">
+          <button type="button" class="btn btn-danger btn-delete" data-id="${expense.id}">
             Eliminar
           </button>
         </div>
@@ -1402,10 +1425,11 @@ class FinanceApp {
         });
       }
     });
+
   }
 
   deleteExpense(id) {
-    const idx = this.expenses.findIndex((e) => e.id === id);
+    const idx = this.expenses.findIndex((expense) => expense.id === id);
     if (idx === -1) {
       this.showToast('Gasto no encontrado', 'error');
       return;
@@ -1422,7 +1446,6 @@ class FinanceApp {
       return;
     }
 
-    // Gasto protegido - usar modal de seguridad
     const modal = document.getElementById('securityModal');
     if (!modal) {
       this.showToast('Modal de seguridad no disponible', 'error');
@@ -1716,26 +1739,76 @@ class FinanceApp {
     this.goals.forEach((goal) => {
       const progress = Math.min((goal.current / goal.target) * 100, 100);
       const goalEl = document.createElement('div');
+
+      // Determine progress level and status
+      const progressLevel = this.getProgressLevel(progress);
+      const checkStatus = this.getCheckStatus(progress);
+      const progressData = this.getProgressData(progress);
+
+      // Set dynamic attributes
       goalEl.className = 'goal-card';
+      goalEl.setAttribute('data-progress', progress.toFixed(0));
+      goalEl.setAttribute('data-progress-level', progressLevel);
+
+      // Create motivational message
+      const motivationMessage = progress >= 75 && progress < 100
+        ? `<div class="goal-motivation-message">¡Ya casi lo logras!</div>`
+        : progress >= 100
+        ? `<div class="goal-motivation-message">🎉 ¡Meta alcanzada!</div>`
+        : '';
+
       goalEl.innerHTML = `
         <div class="goal-header">
+          <div class="goal-check-wrapper">
+            <i class="fas fa-check goal-check" data-status="${checkStatus}"></i>
+          </div>
           <h3 class="goal-title">${goal.name}</h3>
-          <div class="goal-amount">$${goal.current} / $${goal.target}</div>
         </div>
-        <div class="goal-progress">
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: ${progress}%"></div>
+
+        <div class="goal-body">
+          <div class="goal-progress-container">
+            <div class="goal-progress-bar" data-progress="${progressData}">
+              <div class="goal-progress-fill" style="width: ${progress}%"></div>
+              <span class="goal-progress-percentage">${progress.toFixed(0)}%</span>
+            </div>
+            ${motivationMessage}
           </div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span class="goal-percentage">${progress.toFixed(
-            1
-          )}% completado</span>
-          <span class="goal-deadline">Hasta: ${goal.deadline}</span>
+
+        <div class="goal-footer">
+          <div class="goal-meta-info">
+            <span class="goal-target">Meta: $${this.formatCurrency(goal.target)}</span>
+            <span class="goal-saved">Ahorrado: $${this.formatCurrency(goal.current)}</span>
+          </div>
         </div>
       `;
+
       container.appendChild(goalEl);
     });
+  }
+
+  getProgressLevel(progress) {
+    if (progress >= 100) return 'complete';
+    if (progress >= 71) return 'high';
+    if (progress >= 31) return 'medium';
+    return 'low';
+  }
+
+  getCheckStatus(progress) {
+    if (progress >= 100) return 'achieved';
+    if (progress >= 31) return 'progress';
+    return 'initial';
+  }
+
+  getProgressData(progress) {
+    if (progress >= 100) return 'complete';
+    if (progress >= 71) return 'high';
+    if (progress >= 31) return 'medium';
+    return 'low';
+  }
+
+  formatCurrency(amount) {
+    return new Intl.NumberFormat('es-ES').format(amount);
   }
 
   // Analysis Methods
@@ -1874,10 +1947,15 @@ class FinanceApp {
     unnecessary.forEach((expense) => {
       const expenseEl = document.createElement('div');
       expenseEl.className = 'unnecessary-expense';
+      const metaLine = this.formatMetaLine([
+        expense.date,
+        expense.user,
+        expense.necessity,
+      ]);
       expenseEl.innerHTML = `
         <div class="unnecessary-info">
-          <h4>${expense.description}</h4>
-          <div class="unnecessary-meta">${expense.date} • ${expense.user} • ${expense.necessity}</div>
+          <h4>${this.fixLegacyEncoding(expense.description)}</h4>
+          <div class="unnecessary-meta">${metaLine}</div>
         </div>
         <div class="unnecessary-amount">$${expense.amount}</div>
       `;
@@ -1954,12 +2032,11 @@ class FinanceApp {
           item.selected ? 'checked' : ''
         } data-index="${index}">
         <div class="shopping-content">
-          <div class="shopping-product">${item.product}</div>
+          <div class="shopping-product">${this.fixLegacyEncoding(item.product)}</div>
           <div class="shopping-details">
-            Cantidad: ${item.quantity} • 
-            <span class="necessity-badge ${
-              item.necessary ? 'necessary' : 'not-necessary'
-            }">
+            <span>Cantidad: ${item.quantity}</span>
+            <span class="shopping-separator">•</span>
+            <span class="necessity-badge ${item.necessary ? 'necessary' : 'not-necessary'}">
               ${item.necessary ? 'Necesario' : 'No Necesario'}
             </span>
           </div>
@@ -1993,7 +2070,8 @@ class FinanceApp {
     listContent += '===================================\n\n';
 
     selectedItems.forEach((item) => {
-      listContent += `Ã¢ËœÂ ${item.product} (${item.quantity})\n`;
+      const cleanProduct = this.fixLegacyEncoding(item.product);
+      listContent += `• ${cleanProduct} (${item.quantity})\n`;
     });
 
     listContent += '\n===================================\n';
