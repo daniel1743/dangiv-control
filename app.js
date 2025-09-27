@@ -2,18 +2,44 @@
 // Main JavaScript file with all functionality
 
 class FinanceApp {
-  // Quedará así (el nuevo constructor)
-  // Quedará así
-  // Quedará así
+  // QuedarÃ¡ asÃ­ (el nuevo constructor)
+  // QuedarÃ¡ asÃ­
+  // QuedarÃ¡ asÃ­
 
-  // Quedará así (reemplaza el constructor completo)
+  // QuedarÃ¡ asÃ­ (reemplaza el constructor completo)
   constructor() {
-    // 1. Cargar datos desde LocalStorage o usar valores por defecto
-    const savedData =
+    if (typeof TextDecoder !== 'undefined') {
+      try {
+        this._utf8Decoder = new TextDecoder('utf-8', { fatal: false });
+      } catch {
+        this._utf8Decoder = null;
+      }
+      try {
+        this._latinDecoder = new TextDecoder('windows-1252', { fatal: false });
+      } catch {
+        this._latinDecoder = null;
+      }
+    } else {
+      this._utf8Decoder = null;
+      this._latinDecoder = null;
+    }
+
+    const rawData =
       JSON.parse(localStorage.getItem('danGivControlData')) || {};
 
-    this.expenses = savedData.expenses || []; // Forzamos a que inicie vacío para el test
-    this.goals = savedData.goals || []; // Forzamos a que inicie vacío para el test
+    const { cleaned: savedData, changed: hadEncodingIssues } =
+      this.normalizePersistedData(rawData);
+
+    if (hadEncodingIssues) {
+      try {
+        localStorage.setItem('danGivControlData', JSON.stringify(savedData));
+      } catch (error) {
+        console.warn('No se pudo normalizar el almacenamiento local:', error);
+      }
+    }
+
+    this.expenses = savedData.expenses || [];
+    this.goals = savedData.goals || [];
     this.shoppingItems = savedData.shoppingItems || [];
     this.monthlyIncome = savedData.monthlyIncome || 2500;
 
@@ -25,7 +51,7 @@ class FinanceApp {
     // Propiedades del Modo Demo
     this.demoIntervalId = null;
     this.currentDemoIndex = 0;
-    // Quedará así (reemplaza el array demoDataSets completo)
+    // QuedarÃ¡ asÃ­ (reemplaza el array demoDataSets completo)
     this.demoDataSets = [
       // Escenario 1: "Mes Bueno"
       {
@@ -57,26 +83,26 @@ class FinanceApp {
           savings: 1200,
           transactions: 32,
           balanceChange: { text: 'Balance final ajustado', class: 'neutral' },
-          expensesChange: { text: '+5% vs mes anterior', class: 'negative' }, // Gastaste más, es negativo
+          expensesChange: { text: '+5% vs mes anterior', class: 'negative' }, // Gastaste mÃ¡s, es negativo
           savingsChange: { text: 'Meta: 60%', class: 'positive' },
         },
         goals: [
           { name: 'Fondo de Emergencia', current: 1200, target: 3000 },
-          { name: 'Tecnología', current: 300, target: 900 },
+          { name: 'TecnologÃ­a', current: 300, target: 900 },
         ],
       },
-      // Escenario 3: "Mes Difícil"
+      // Escenario 3: "Mes DifÃ­cil"
       {
         title: 'Mes con Gastos Imprevistos',
         labels: ['Salud', 'Reparaciones', 'Otros'],
         data: [50, 30, 20], // % de gastos
         stats: {
-          balance: -450, // (Ingreso 2600 - Gasto 3050) ¡BALANCE NEGATIVO!
+          balance: -450, // (Ingreso 2600 - Gasto 3050) Â¡BALANCE NEGATIVO!
           expenses: 3050, // (25 transacciones @ ~122 c/u)
           savings: 900,
           transactions: 25,
           balanceChange: { text: 'Balance final negativo', class: 'negative' },
-          expensesChange: { text: '+28% vs mes anterior', class: 'negative' }, // Gastaste mucho más
+          expensesChange: { text: '+28% vs mes anterior', class: 'negative' }, // Gastaste mucho mÃ¡s
           savingsChange: { text: 'Meta: 45%', class: 'negative' },
         },
         goals: [
@@ -86,7 +112,7 @@ class FinanceApp {
       },
     ];
 
-    // 2. Propiedades de la aplicación
+    // 2. Propiedades de la aplicaciÃ³n
     this.categories = [
       'Alimentación',
       'Transporte',
@@ -106,27 +132,27 @@ class FinanceApp {
     this.users = ['Daniel', 'Givonik', 'Otro'];
     this.charts = {};
     this.currentSection = 'dashboard';
-    this.currentUser = 'anonymous'; // ¡CORRECCIÓN APLICADA!
+    this.currentUser = 'anonymous'; // Â¡CORRECCIÃƒâ€œN APLICADA!
     this.pendingDeleteId = null;
     this.aiRecommendations = [];
 
     this.conversationHistory = []; // Para guardar el historial del chat
-    this.conversationState = 'START'; // Para saber en qué punto del chat estamos
+    this.conversationState = 'START'; // Para saber en quÃ© punto del chat estamos
   }
 
-  // Quedará así (pega estas dos nuevas funciones en la clase)
+  // QuedarÃ¡ asÃ­ (pega estas dos nuevas funciones en la clase)
   startDemoMode() {
-    // Si la animación ya está corriendo, no hacemos nada.
+    // Si la animaciÃ³n ya estÃ¡ corriendo, no hacemos nada.
     if (this.demoIntervalId) return;
 
     const updateDemo = () => {
       const dataSet = this.demoDataSets[this.currentDemoIndex];
 
-      // Actualizamos los KPIs y el gráfico con los datos de demo
+      // Actualizamos los KPIs y el grÃ¡fico con los datos de demo
       this.updateStats(dataSet.stats);
       this.renderExpenseChart(dataSet);
 
-      // Pasamos al siguiente set de datos para la próxima vez
+      // Pasamos al siguiente set de datos para la prÃ³xima vez
       this.currentDemoIndex =
         (this.currentDemoIndex + 1) % this.demoDataSets.length;
     };
@@ -138,6 +164,41 @@ class FinanceApp {
   stopDemoMode() {
     clearInterval(this.demoIntervalId);
     this.demoIntervalId = null;
+    // También limpiar el intervalo de mensajes de metas
+    if (this.goalsMessageInterval) {
+      clearInterval(this.goalsMessageInterval);
+      this.goalsMessageInterval = null;
+    }
+  }
+
+  // Función para forzar la normalización de datos existentes
+  forceDataNormalization() {
+    try {
+      const currentData = {
+        expenses: this.expenses,
+        goals: this.goals,
+        shoppingItems: this.shoppingItems,
+        monthlyIncome: this.monthlyIncome,
+        securityPasswords: this.securityPasswords
+      };
+
+      const { cleaned: normalizedData, changed } = this.normalizePersistedData(currentData);
+
+      if (changed) {
+        console.log('Aplicando normalización de caracteres a datos existentes...');
+        this.expenses = normalizedData.expenses || [];
+        this.goals = normalizedData.goals || [];
+        this.shoppingItems = normalizedData.shoppingItems || [];
+        this.monthlyIncome = normalizedData.monthlyIncome || 2500;
+        this.securityPasswords = normalizedData.securityPasswords || this.securityPasswords;
+
+        // Guardar los datos normalizados
+        this.saveData();
+        this.showToast('Datos actualizados para mejorar la visualización', 'success');
+      }
+    } catch (error) {
+      console.warn('Error al normalizar datos:', error);
+    }
   }
 
   verifyPassword(userName, plainPassword) {
@@ -153,13 +214,116 @@ class FinanceApp {
     return this.securityPasswords[userName] === hashedPassword;
   }
 
-  // Método para guardar todo el estado relevante en LocalStorage
-  async saveData() {
-    if (!this.currentUser || this.currentUser === 'anonymous') {
-      this.showToast('Debes iniciar sesión para guardar en la nube', 'error');
-      return;
+  normalizePersistedData(data) {
+    if (!data || typeof data !== 'object') {
+      return { cleaned: {}, changed: false };
     }
 
+    const tracker = { changed: false };
+    const cleaned = this.normalizeValue(data, tracker);
+    return { cleaned, changed: tracker.changed };
+  }
+
+  normalizeValue(value, tracker) {
+    if (Array.isArray(value)) {
+      return value.map((item) => this.normalizeValue(item, tracker));
+    }
+
+    if (value && typeof value === 'object') {
+      const result = {};
+      Object.entries(value).forEach(([key, nestedValue]) => {
+        result[key] = this.normalizeValue(nestedValue, tracker);
+      });
+      return result;
+    }
+
+    if (typeof value === 'string') {
+      const fixed = this.fixLegacyEncoding(value);
+      if (fixed !== value) {
+        tracker.changed = true;
+      }
+      return fixed;
+    }
+
+    return value;
+  }
+
+  fixLegacyEncoding(value) {
+    if (typeof value !== 'string') return value;
+    if (!/[ÃÂâ€™“”‘’–—¢ºª¡¿·�]/.test(value)) return value;
+
+    let result = value;
+
+    if (this._utf8Decoder) {
+      try {
+        const bytes = new Uint8Array(value.length);
+        for (let i = 0; i < value.length; i += 1) {
+          bytes[i] = value.charCodeAt(i) & 0xff;
+        }
+        const decoded = this._utf8Decoder.decode(bytes);
+        if (decoded && !decoded.includes('�')) {
+          result = decoded;
+        }
+      } catch (error) {
+        console.warn('No se pudo decodificar texto legacy:', value, error);
+      }
+    }
+
+    const replacements = [
+      ['Ã¡', 'á'],
+      ['Ã©', 'é'],
+      ['Ã­', 'í'],
+      ['Ã³', 'ó'],
+      ['Ãº', 'ú'],
+      ['Ã±', 'ñ'],
+      ['Ã�', 'Á'],
+      ['Ã‰', 'É'],
+      ['Ã�', 'Í'],
+      ['Ã“', 'Ó'],
+      ['Ãš', 'Ú'],
+      ['Ãœ', 'Ü'],
+      ['Ã¼', 'ü'],
+      ['Ã‘', 'Ñ'],
+      ['Ã§', 'ç'],
+      ['Ã ', 'à'],
+      ['Ã¨', 'è'],
+      ['Ã¬', 'ì'],
+      ['Ã²', 'ò'],
+      ['Ã¡', 'á'],
+      ['Ã³', 'ó'],
+      ['Ãº', 'ú'],
+      ['•', '•'],
+      ['[P]', '[P]'],
+      ['Ã°Å¸â€â€™', 'PROTEGIDO'],
+      ['Ã¢â‚¬â€œ', '–'],
+      ['Ã¢â‚¬â€', '—'],
+      ['Ã¢â‚¬Ëœ', '‘'],
+      ['Ã¢â‚¬â„¢', '’'],
+      ['Ã¢â‚¬Å“', '“'],
+      ['Ã¢â‚¬Â�', '”'],
+      ['Ã¢â‚¬Â¦', '…'],
+      ['Ã¢â‚¬Â', ''],
+      ['Â¿', '¿'],
+      ['Â¡', '¡'],
+      ['Âº', 'º'],
+      ['Âª', 'ª'],
+      ['Â·', '·'],
+      ['Â°', '°'],
+      ['Â', ''],
+    ];
+
+    let manual = result;
+    replacements.forEach(([from, to]) => {
+      if (manual.includes(from)) {
+        manual = manual.split(from).join(to);
+      }
+    });
+
+    return manual;
+  }
+
+  // Método para guardar todo el estado relevante en LocalStorageÃ©todo para guardar todo el estado relevante en LocalStorage
+  async saveData() {
     const dataToSave = {
       expenses: this.expenses,
       goals: this.goals,
@@ -169,21 +333,45 @@ class FinanceApp {
       lastUpdate: Date.now(),
     };
 
-    try {
-      // ¡CAMBIO AQUÍ! Guardamos en la nube usando el ID del usuario.
-      const userDocRef = FB.doc(FB.db, 'userData', this.currentUser);
-      await FB.setDoc(userDocRef, dataToSave);
+    const { cleaned: normalizedData } = this.normalizePersistedData(dataToSave);
 
-      // Si todo va bien, también guardamos localmente como respaldo y mostramos éxito.
-      localStorage.setItem('danGivControlData', JSON.stringify(dataToSave));
-      this.showToast('Datos guardados en la nube ✅', 'success');
+    let localSaveOk = false;
+
+    try {
+      localStorage.setItem('danGivControlData', JSON.stringify(normalizedData));
+      localSaveOk = true;
     } catch (error) {
-      // Si falla, informamos al usuario y lo vemos en consola.
-      console.error('Error al guardar en Firestore:', error);
+      console.error('Error al guardar en localStorage:', error);
+    }
+
+    if (!this.currentUser || this.currentUser === 'anonymous') {
       this.showToast(
-        'Error al guardar en la nube. Revisa la consola.',
-        'error'
+        localSaveOk
+          ? 'Datos guardados en este dispositivo. Inicia sesión para sincronizarlos en la nube.'
+          : 'No se pudieron guardar los datos en este dispositivo.',
+        localSaveOk ? 'info' : 'error'
       );
+      return;
+    }
+
+    try {
+      const userDocRef = FB.doc(FB.db, 'userData', this.currentUser);
+      await FB.setDoc(userDocRef, normalizedData);
+
+      if (localSaveOk) {
+        this.showToast('Datos guardados en la nube y en este dispositivo.', 'success');
+      } else {
+        this.showToast(
+          'Datos sincronizados en la nube. No se pudieron guardar de forma local.',
+          'info'
+        );
+      }
+    } catch (error) {
+      console.error('Error al guardar en Firestore:', error);
+      const message = localSaveOk
+        ? 'Los datos se guardaron en este dispositivo, pero falló la sincronización en la nube.'
+        : 'No se pudieron guardar los datos.';
+      this.showToast(message, 'error');
     }
   }
 
@@ -215,8 +403,8 @@ class FinanceApp {
     if (saveBtn) saveBtn.textContent = isChange ? 'Guardar' : 'Eliminar';
     if (titleEl)
       titleEl.textContent = isChange
-        ? 'Cambiar Contraseñas'
-        : 'Confirmar eliminación';
+        ? 'Cambiar ContraseÃ±as'
+        : 'Confirmar eliminaciÃ³n';
 
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
@@ -228,9 +416,9 @@ class FinanceApp {
     document.body.style.overflow = '';
   }
 
-  // QUEDARÁ ASÍ (La única y correcta función setupAuth)
+  // QUEDARÃ ASÃ (La Ãºnica y correcta funciÃ³n setupAuth)
 
-  // === INICIO DE SECCIÓN: LÓGICA DE AUTENTICACIÓN DE FIREBASE ===
+  // === INICIO DE SECCIÃƒâ€œN: LÃƒâ€œGICA DE AUTENTICACIÃƒâ€œN DE FIREBASE ===
   setupAuth() {
     const FB = window.FB;
     if (!FB?.auth) return;
@@ -256,7 +444,7 @@ class FinanceApp {
       }
     });
 
-    // El botón de login ahora abre el modal.
+    // El botÃ³n de login ahora abre el modal.
     loginBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
         this.openAuthModal();
@@ -285,35 +473,51 @@ class FinanceApp {
       const docSnap = await FB.getDoc(userDocRef);
 
       if (docSnap.exists()) {
-        // Si el documento existe en la nube, cargamos sus datos en la app.
-        const cloudData = docSnap.data();
+        const cloudRaw = docSnap.data() || {};
+        const { cleaned: cloudData, changed: cloudNormalized } =
+          this.normalizePersistedData(cloudRaw);
+
         this.expenses = cloudData.expenses || [];
         this.goals = cloudData.goals || [];
         this.shoppingItems = cloudData.shoppingItems || [];
         this.monthlyIncome = cloudData.monthlyIncome || 2500;
         this.securityPasswords = cloudData.securityPasswords || {};
 
-        this.showToast('Datos sincronizados desde la nube ☁️', 'success');
+        try {
+          localStorage.setItem("danGivControlData", JSON.stringify(cloudData));
+        } catch (error) {
+          console.warn(
+            "No se pudo actualizar el almacenamiento local con los datos de la nube.",
+            error
+          );
+        }
+
+        if (cloudNormalized) {
+          console.info(
+            "Se normalizaron textos con codificación incorrecta provenientes de la nube."
+          );
+        }
+
+        this.showToast('Datos sincronizados desde la nube.', 'success');
       } else {
-        // Si el documento no existe (es un usuario nuevo), creamos su primer guardado.
         this.showToast('¡Bienvenido! Creando tu espacio en la nube.', 'info');
         await this.saveData();
       }
 
-      // Después de sincronizar, actualizamos toda la pantalla.
       this.renderDashboard();
       this.renderExpenses();
       this.renderGoals();
       this.renderShoppingList();
       this.renderConfig();
+
     } catch (error) {
       console.error('Error al sincronizar desde Firestore:', error);
       this.showToast('No se pudieron cargar tus datos desde la nube.', 'error');
     }
   }
-  // Quedará así (Pega estos dos métodos nuevos en tu clase)
-  // Quedará así
-  // QUEDARÁ ASÍ (Función de registro con depuración mejorada)
+  // QuedarÃ¡ asÃ­ (Pega estos dos mÃ©todos nuevos en tu clase)
+  // QuedarÃ¡ asÃ­
+  // QUEDARÃ ASÃ (FunciÃ³n de registro con depuraciÃ³n mejorada)
   async registerWithEmail(email, password) {
     try {
       console.log('Intentando registrar:', email); // Debug
@@ -331,7 +535,7 @@ class FinanceApp {
     } catch (error) {
       console.error('Error completo de registro:', error); // Debug mejorado
 
-      // Mensajes de error más específicos
+      // Mensajes de error mÃ¡s especÃ­ficos
       if (error.code === 'auth/weak-password') {
         this.showToast(
           'La contraseña debe tener al menos 6 caracteres.',
@@ -363,11 +567,11 @@ class FinanceApp {
         `¡Bienvenido de nuevo, ${userCredential.user.email}!`,
         'success'
       );
-      // Opcional: Cerrar el modal de autenticación aquí.
+      // Opcional: Cerrar el modal de autenticaciÃ³n aquÃ­.
       // document.getElementById('authModal').classList.remove('show');
       return true;
     } catch (error) {
-      console.error('Error de inicio de sesión:', error.code);
+      console.error('Error de inicio de sesiÃ³n:', error.code);
       if (
         error.code === 'auth/wrong-password' ||
         error.code === 'auth/user-not-found' ||
@@ -380,20 +584,24 @@ class FinanceApp {
       return false;
     }
   }
-  // QUEDARÁ ASÍ (La nueva función init)
+  // QUEDARÃ ASÃ (La nueva funciÃ³n init)
 
-  // === INICIO DE SECCIÓN: INICIALIZACIÓN DE LA APP ===
+  // === INICIO DE SECCIÃƒâ€œN: INICIALIZACIÃƒâ€œN DE LA APP ===
   init() {
     // Esta función ahora solo llama directamente a los métodos de configuración.
     this.setupAuth();
     this.setupEventListeners(); // ¡CORRECCIÓN! Llamamos a la función correcta.
     this.setupNotificationBell();
+
+    // Forzar normalización de datos existentes al inicio
+    this.forceDataNormalization();
+
     this.renderDashboard();
   }
 
-  // CORRECCIÓN: Se eliminó la referencia a 'savedData' y se asignan los valores por defecto directamente.
+  // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
   resetPasswords() {
-    // CORRECCIÓN: Se eliminó la referencia a 'savedData' y se asignan los valores por defecto directamente.
+    // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
     this.securityPasswords = {
       Daniel: CryptoJS.SHA256('1234').toString(),
       Givonik: CryptoJS.SHA256('5678').toString(),
@@ -402,10 +610,10 @@ class FinanceApp {
     this.showToast('Contraseñas reseteadas a valores por defecto', 'success');
   }
 
-  // Quedará así
+  // QuedarÃ¡ asÃ­
   setupEventListeners() {
     // === FORMULARIOS PRINCIPALES ===setupEventListeners() {
-    // === LÓGICA DE ONBOARDING HÍBRIDO (NUEVO) ===
+    // === LÃƒâ€œGICA DE ONBOARDING HÃBRIDO (NUEVO) ===
     const onboardingChoiceContainer = document.getElementById(
       'onboardingChoiceContainer'
     );
@@ -482,7 +690,7 @@ class FinanceApp {
       });
     }
 
-    // === NAVEGACIÓN Y UI GENERAL ===
+    // === NAVEGACIÃƒâ€œN Y UI GENERAL ===
     document.querySelectorAll('.nav-item').forEach((item) => {
       item.addEventListener('click', (e) => {
         e.preventDefault();
@@ -500,7 +708,7 @@ class FinanceApp {
       });
     }
 
-    // === LÓGICA PARA EL MENÚ HAMBURGUESA (MÓVIL) ===
+    // === LÃƒâ€œGICA PARA EL MENÃƒÅ¡ HAMBURGUESA (MÃƒâ€œVIL) ===
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const sidebar = document.querySelector('.sidebar');
     if (hamburgerBtn && sidebar) {
@@ -556,12 +764,12 @@ class FinanceApp {
     const modalSaveBtn = document.getElementById('modalSavePasswordsBtn');
     if (modalSaveBtn) {
       modalSaveBtn.addEventListener('click', (e) => {
-        e.preventDefault(); // Añadido para consistencia
+        e.preventDefault(); // AÃ±adido para consistencia
         this.savePasswordsFromModal();
       });
     }
 
-    // === ACCIONES ESPECÍFICAS ===
+    // === ACCIONES ESPECÃFICAS ===
     const generateListBtn = document.getElementById('generateList');
     if (generateListBtn) {
       generateListBtn.addEventListener('click', (e) => {
@@ -580,7 +788,7 @@ class FinanceApp {
       const today = new Date().toISOString().split('T')[0];
       dateField.value = today;
 
-      // Opcional: También puedes añadir el atributo max para no permitir fechas futuras
+      // Opcional: TambiÃ©n puedes aÃ±adir el atributo max para no permitir fechas futuras
       dateField.max = today;
     }
   }
@@ -621,9 +829,9 @@ class FinanceApp {
   }
 
   // Dashboard Methods
-  // Quedará así
-  // Quedará así
-  // Quedará así
+  // QuedarÃ¡ asÃ­
+  // QuedarÃ¡ asÃ­
+  // QuedarÃ¡ asÃ­
   renderDashboard() {
     // El Modo Demo ahora solo se activa si el usuario es 'anonymous'
     if (
@@ -632,7 +840,7 @@ class FinanceApp {
       this.goals.length === 0
     ) {
       this.startDemoMode();
-      return; // Añadimos un return para claridad
+      return; // AÃ±adimos un return para claridad
     }
 
     // Para un usuario real (incluso sin datos), detenemos el demo y mostramos su dashboard.
@@ -685,7 +893,7 @@ class FinanceApp {
       if (diff <= 7 && goal.current < goal.target) {
         notifications.push({
           type: 'goal',
-          text: `Meta "${goal.name}" vence en ${Math.ceil(diff)} días`,
+          text: `Meta "${goal.name}" vence en ${Math.ceil(diff)} dÃ­as`,
         });
       }
     });
@@ -731,7 +939,7 @@ class FinanceApp {
     }
   }
 
-  // Quedará así (updateStats)
+  // QuedarÃ¡ asÃ­ (updateStats)
   updateStats(demoStats = null) {
     let stats;
     if (demoStats) {
@@ -781,15 +989,26 @@ class FinanceApp {
     }
   }
 
-  // Quedará así (renderExpenseChart)
-  // Quedará así (reemplaza la función completa)
+  // QuedarÃ¡ asÃ­ (renderExpenseChart)
+  // QuedarÃ¡ asÃ­ (reemplaza la funciÃ³n completa)
   renderExpenseChart(demoData = null) {
     const canvas = document.getElementById('expenseChart');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
     let chartData;
-    let chartTitle = 'Gastos por Categoría';
+    let chartTitle = 'Gastos por CategorÃ­a';
+
+    // --- INICIO: Paleta de colores moderna ---
+    const modernColors = [
+      '#008F8C', // Verde azulado principal
+      '#00C49A', // Verde menta
+      '#FFB347', // Naranja suave
+      '#FF8066', // Coral
+      '#D9D9D9', // Gris claro
+      '#6B7280', // Gris medio
+    ];
+    // --- FIN: Paleta de colores moderna ---
 
     if (demoData) {
       chartData = {
@@ -797,15 +1016,13 @@ class FinanceApp {
         datasets: [
           {
             data: demoData.data,
-            backgroundColor: [
-              '#1FB8CD',
-              '#FFC185',
-              '#B4413C',
-              '#ECEBD5',
-              '#5D878F',
-            ],
-            borderWidth: 2,
-            borderColor: 'var(--color-surface)',
+            backgroundColor: modernColors,
+            borderWidth: 0, // Sin borde
+            borderColor: 'transparent',
+            // --- INICIO: Efecto hover ---
+            hoverOffset: 15,
+            hoverBorderWidth: 0, // Sin borde al hacer hover
+            // --- FIN: Efecto hover ---
           },
         ],
       };
@@ -817,52 +1034,76 @@ class FinanceApp {
         datasets: [
           {
             data: Object.values(categoryData),
-            backgroundColor: [
-              '#1FB8CD',
-              '#FFC185',
-              '#B4413C',
-              '#ECEBD5',
-              '#5D878F',
-            ],
-            borderWidth: 2,
-            borderColor: 'var(--color-surface)',
+            backgroundColor: modernColors,
+            borderWidth: 0,
+            borderColor: 'transparent',
+            hoverOffset: 15,
+            hoverBorderWidth: 0,
           },
         ],
       };
     }
 
-    // Si el gráfico YA EXISTE, solo actualizamos sus datos para una animación suave.
     if (this.charts.expenseChart) {
       this.charts.expenseChart.data.labels = chartData.labels;
       this.charts.expenseChart.data.datasets[0].data =
         chartData.datasets[0].data;
+      this.charts.expenseChart.data.datasets[0].backgroundColor = modernColors;
       this.charts.expenseChart.options.plugins.title.text = chartTitle;
-      // El modo 'normal' fuerza una transición suave desde el estado anterior.
       this.charts.expenseChart.update('normal');
-    }
-    // Si NO EXISTE, lo creamos por primera vez.
-    else {
+    } else {
       this.charts.expenseChart = new Chart(ctx, {
         type: 'doughnut',
         data: chartData,
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          // ¡CAMBIO CLAVE! Una configuración de animación más sutil.
+          cutout: '70%', // Anillo mÃ¡s delgado para un look moderno
           animation: {
-            duration: 1000,
-            easing: 'easeOutQuart',
+            duration: 1200, // AnimaciÃ³n mÃ¡s suave
+            easing: 'easeInOutQuart',
           },
           plugins: {
             title: {
               display: true,
               text: chartTitle,
-              padding: { top: 10, bottom: 10 },
+              padding: { top: 15, bottom: 15 },
+              font: { size: 16, family: 'Inter, sans-serif', weight: '600' },
+              color: 'var(--color-text)',
             },
             legend: {
               position: 'bottom',
-              labels: { usePointStyle: true, padding: 20 },
+              labels: {
+                usePointStyle: true,
+                pointStyle: 'circle',
+                padding: 25,
+                font: { size: 12, family: 'Inter, sans-serif' },
+                color: 'var(--color-text-secondary)',
+              },
             },
+            // --- INICIO: Tooltips modernos ---
+            tooltip: {
+              enabled: true,
+              backgroundColor: 'var(--color-surface-raised)',
+              titleColor: 'var(--color-text)',
+              bodyColor: 'var(--color-text-secondary)',
+              borderColor: 'var(--color-border)',
+              borderWidth: 1,
+              padding: 10,
+              cornerRadius: 8,
+              displayColors: true,
+              boxPadding: 4,
+              callbacks: {
+                label: function (context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  const total = context.chart.getDatasetMeta(0).total;
+                  const percentage = ((value / total) * 100).toFixed(1);
+                  return ` ${label}: ${value.toFixed(2)}Ã¢â€šÂ¬ (${percentage}%)`;
+                },
+              },
+            },
+            // --- FIN: Tooltips modernos ---
           },
         },
       });
@@ -885,8 +1126,7 @@ class FinanceApp {
     container.innerHTML = '';
 
     if (this.goals.length === 0) {
-      container.innerHTML =
-        '<div class="empty-state"><i class="fas fa-target"></i><h3>No hay metas establecidas</h3><p>Crea tu primera meta financiera</p></div>';
+      this.renderEmptyGoalsState(container);
       return;
     }
 
@@ -905,7 +1145,106 @@ class FinanceApp {
     });
   }
 
-  // Quedará así
+  renderEmptyGoalsState(container) {
+    const motivationalMessages = [
+      {
+        icon: 'fas fa-rocket',
+        title: '¡Comienza tu viaje financiero!',
+        subtitle: 'Establece tu primera meta y ve cómo tu dinero crece',
+        color: '#3b82f6'
+      },
+      {
+        icon: 'fas fa-star',
+        title: 'Las metas te acercan al éxito',
+        subtitle: 'Cada gran logro comienza con una decisión de intentarlo',
+        color: '#f59e0b'
+      },
+      {
+        icon: 'fas fa-chart-line',
+        title: 'Visualiza tu progreso',
+        subtitle: 'Transforma tus sueños en objetivos medibles',
+        color: '#10b981'
+      },
+      {
+        icon: 'fas fa-gem',
+        title: 'Construye tu futuro',
+        subtitle: 'Cada peso ahorrado es un paso hacia tu libertad financiera',
+        color: '#8b5cf6'
+      },
+      {
+        icon: 'fas fa-trophy',
+        title: 'Alcanza tus sueños',
+        subtitle: 'Las metas claras son el camino hacia el éxito',
+        color: '#ef4444'
+      }
+    ];
+
+    let currentMessageIndex = 0;
+
+    const createMessageElement = (message) => {
+      return `
+        <div class="empty-goals-state">
+          <div class="floating-icon" style="color: ${message.color}">
+            <i class="${message.icon}"></i>
+          </div>
+          <h3 class="animated-title">${message.title}</h3>
+          <p class="animated-subtitle">${message.subtitle}</p>
+          <div class="progress-dots">
+            ${motivationalMessages.map((_, index) =>
+              `<span class="dot ${index === currentMessageIndex ? 'active' : ''}" style="background-color: ${index === currentMessageIndex ? message.color : '#cbd5e1'}"></span>`
+            ).join('')}
+          </div>
+          <button class="create-goal-btn" style="background: linear-gradient(135deg, ${message.color}, ${message.color}99)">
+            <i class="fas fa-plus"></i> Crear primera meta
+          </button>
+        </div>
+      `;
+    };
+
+    container.innerHTML = createMessageElement(motivationalMessages[currentMessageIndex]);
+
+    // Configurar el botón para crear meta
+    const createBtn = container.querySelector('.create-goal-btn');
+    if (createBtn) {
+      createBtn.addEventListener('click', () => {
+        this.showSection('goals');
+        document.querySelector('#goalForm input[name="name"]')?.focus();
+      });
+    }
+
+    // Animación automática de mensajes
+    const animateMessages = () => {
+      currentMessageIndex = (currentMessageIndex + 1) % motivationalMessages.length;
+
+      const state = container.querySelector('.empty-goals-state');
+      if (state) {
+        state.style.animation = 'fadeOutUp 0.5s ease-in-out forwards';
+
+        setTimeout(() => {
+          container.innerHTML = createMessageElement(motivationalMessages[currentMessageIndex]);
+
+          // Reconfigurar el botón
+          const newCreateBtn = container.querySelector('.create-goal-btn');
+          if (newCreateBtn) {
+            newCreateBtn.addEventListener('click', () => {
+              this.showSection('goals');
+              document.querySelector('#goalForm input[name="name"]')?.focus();
+            });
+          }
+
+          const newState = container.querySelector('.empty-goals-state');
+          if (newState) {
+            newState.style.animation = 'fadeInDown 0.5s ease-in-out forwards';
+          }
+        }, 500);
+      }
+    };
+
+    // Cambiar mensaje cada 4 segundos
+    this.goalsMessageInterval = setInterval(animateMessages, 4000);
+  }
+
+  // QuedarÃ¡ asÃ­
   renderAIRecommendations() {
     const container = document.getElementById('aiRecommendations');
     if (!container) return;
@@ -923,7 +1262,7 @@ class FinanceApp {
 
     recommendations.forEach((recommendation) => {
       const recEl = document.createElement('div');
-      recEl.className = 'insight-card'; // Usamos la nueva clase del rediseño
+      recEl.className = 'insight-card'; // Usamos la nueva clase del rediseÃ±o
       recEl.innerHTML = `
             <div class="insight-card__icon">
                 <i class="fas fa-wand-magic-sparkles"></i>
@@ -1039,7 +1378,7 @@ class FinanceApp {
             ${expense.date} • ${expense.user} • ${expense.category} • ${
         expense.necessity
       }
-            ${expense.protected ? ' • 🔒' : ''}
+            ${expense.protected ? ' • Ã°Å¸â€â€™' : ''}
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:12px;">
@@ -1100,7 +1439,7 @@ class FinanceApp {
     const newPassSection = document.getElementById('newPassSection');
 
     if (titleEl)
-      titleEl.innerHTML = `<i class="fas fa-key"></i> Confirmar eliminación`;
+      titleEl.innerHTML = `<i class="fas fa-key"></i> Confirmar eliminaciÃ³n`;
     if (saveBtn) saveBtn.textContent = 'Eliminar';
     if (newPassSection) newPassSection.style.display = 'none';
 
@@ -1110,7 +1449,7 @@ class FinanceApp {
     if (curDanielEl) curDanielEl.value = '';
     if (curGivonikEl) curGivonikEl.value = '';
 
-    // Configurar evento de eliminación
+    // Configurar evento de eliminaciÃ³n
     this.pendingDeleteId = expenseId;
     modal.classList.add('show');
   }
@@ -1169,17 +1508,17 @@ class FinanceApp {
     const saveBtn = document.getElementById('modalSavePasswordsBtn');
     const titleEl = modal.querySelector('.modal-title');
 
-    // Configurar UI según el modo
+    // Configurar UI segÃºn el modo
     const isChange = mode === 'change';
     if (newPassSection) newPassSection.style.display = isChange ? '' : 'none';
     if (saveBtn) saveBtn.textContent = isChange ? 'Guardar' : 'Eliminar';
     if (titleEl)
       titleEl.textContent = isChange
-        ? 'Cambiar Contraseñas'
-        : 'Confirmar eliminación';
+        ? 'Cambiar ContraseÃ±as'
+        : 'Confirmar eliminaciÃ³n';
 
     // Mantener pendingDeleteId si ya fue seteado antes por el flujo de eliminar
-    // (No se toca aquí; sólo se usa cuando mode==='delete')
+    // (No se toca aquÃ­; sÃ³lo se usa cuando mode==='delete')
 
     // Abrir modal y bloquear scroll
     modal.classList.add('show');
@@ -1193,7 +1532,7 @@ class FinanceApp {
     document.body.style.overflow = '';
   }
 
-  // === SECCIÓN: MANEJO DEL MODAL DE AUTENTICACIÓN (LOGIN/REGISTRO) ===
+  // === SECCIÃƒâ€œN: MANEJO DEL MODAL DE AUTENTICACIÃƒâ€œN (LOGIN/REGISTRO) ===
 
   openAuthModal() {
     const modal = document.getElementById('authModal');
@@ -1558,7 +1897,7 @@ class FinanceApp {
         Total en gastos innecesarios: $${totalUnnecessary}
       </h4>
       <p style="color: var(--color-text-secondary);">
-        Podrías haber ahorrado este dinero para tus metas financieras
+        PodrÃ­as haber ahorrado este dinero para tus metas financieras
       </p>
     `;
     container.appendChild(summaryEl);
@@ -1603,7 +1942,7 @@ class FinanceApp {
 
     if (this.shoppingItems.length === 0) {
       container.innerHTML =
-        '<div class="empty-state"><i class="fas fa-shopping-cart"></i><h3>Lista vacía</h3><p>Agrega productos a tu lista de compras</p></div>';
+        '<div class="empty-state"><i class="fas fa-shopping-cart"></i><h3>Lista vacÃ­a</h3><p>Agrega productos a tu lista de compras</p></div>';
       return;
     }
 
@@ -1654,7 +1993,7 @@ class FinanceApp {
     listContent += '===================================\n\n';
 
     selectedItems.forEach((item) => {
-      listContent += `☐ ${item.product} (${item.quantity})\n`;
+      listContent += `Ã¢ËœÂ ${item.product} (${item.quantity})\n`;
     });
 
     listContent += '\n===================================\n';
@@ -1768,7 +2107,7 @@ class FinanceApp {
     }, 3000);
   }
 
-  // ... (código de la función toggleTheme) ...
+  // ... (cÃ³digo de la funciÃ³n toggleTheme) ...
   toggleTheme() {
     const currentTheme =
       document.documentElement.getAttribute('data-color-scheme');
@@ -1781,8 +2120,8 @@ class FinanceApp {
     }
   }
 
-  // PEGA EL NUEVO CÓDIGO JS AQUÍ
-  // REEMPLAZA TU FUNCIÓN handleAIOnboarding CON ESTA:
+  // PEGA EL NUEVO CÃƒâ€œDIGO JS AQUÃ
+  // REEMPLAZA TU FUNCIÃƒâ€œN handleAIOnboarding CON ESTA:
   async handleAIOnboarding() {
     const nickname = document.getElementById('userNickname').value;
     const goal = document.getElementById('mainGoal').value;
@@ -1818,112 +2157,32 @@ class FinanceApp {
     submitButton.innerHTML = `<i class="fas fa-check"></i> Crear mi Primer Plan`;
   }
 
-  // REEMPLAZA TU FUNCIÓN renderChatHistory CON ESTA (si ya la tienes):
   renderChatHistory() {
     const container = document.getElementById('chatHistory');
     if (!container) return;
 
     container.innerHTML = '';
 
-    // Filtramos los mensajes iniciales del sistema si no quieres mostrarlos
-    const messagesToShow = this.conversationHistory.filter(
-      (msg) => msg.role !== 'system'
-    );
-
-    messagesToShow.forEach((message) => {
-      const messageClass = message.role === 'user' ? 'user' : 'ai';
-      const messageEl = document.createElement('div');
-      messageEl.className = `chat-message ${messageClass}`;
-      messageEl.innerHTML = `<div class="chat-bubble">${message.content}</div>`;
-      container.appendChild(messageEl);
-    });
-
-    container.scrollTop = container.scrollHeight;
-  }
-
-  // REEMPLAZA TU FUNCIÓN sendChatMessage CON ESTA:
-  async sendChatMessage() {
-    const input = document.getElementById('chatInput');
-    const messageText = input.value.trim();
-    if (!messageText) return;
-
-    // 1. Añadimos el mensaje del usuario al historial y actualizamos la UI
-    this.conversationHistory.push({ role: 'user', content: messageText });
-    this.renderChatHistory();
-    input.value = ''; // Limpiamos el campo de texto
-
-    // 2. Mostramos un indicador de que la IA está "pensando"
-    const chatHistoryContainer = document.getElementById('chatHistory');
-    const typingIndicator = document.createElement('div');
-    typingIndicator.className = 'chat-message ai';
-    typingIndicator.innerHTML = `<div class="chat-bubble"><i class="fas fa-spinner fa-spin"></i></div>`;
-    chatHistoryContainer.appendChild(typingIndicator);
-    chatHistoryContainer.scrollTop = chatHistoryContainer.scrollHeight;
-
-    try {
-      // 3. Enviamos el historial COMPLETO al servidor
-      const response = await fetch('http://localhost:3000/api/perplexity', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'llama-3-sonar-large-32k-online', // Este modelo es solo de referencia
-          messages: this.conversationHistory, // Enviamos todo el contexto
-        }),
-      });
-
-      if (!response.ok)
-        throw new Error(`Error del servidor: ${response.statusText}`);
-
-      const data = await response.json();
-      const aiMessage = data.choices[0].message.content;
-
-      // 4. Añadimos la respuesta de la IA al historial
-      this.conversationHistory.push({ role: 'assistant', content: aiMessage });
-
-      // 5. Volvemos a renderizar todo el historial, ya con la nueva respuesta
-      this.renderChatHistory();
-    } catch (error) {
-      console.error('Error al enviar mensaje de chat:', error);
-      this.showToast('Hubo un error en la conversación con la IA.', 'error');
-      this.conversationHistory.push({
-        role: 'assistant',
-        content: 'Lo siento, tuve un problema para procesar tu respuesta.',
-      });
-      this.renderChatHistory();
-    }
-  }
-  renderChatHistory() {
-    const container = document.getElementById('chatHistory');
-    if (!container) return;
-
-    container.innerHTML = ''; // Limpiamos el historial para redibujarlo
-
     this.conversationHistory.forEach((message) => {
-      // Determinamos si el mensaje es del usuario o de la IA
-      const messageClass = message.role === 'user' ? 'user' : 'ai';
-
+      const roleClass = message.role === 'user' ? 'user' : 'ai';
       const messageEl = document.createElement('div');
-      messageEl.className = `chat-message ${messageClass}`;
-
+      messageEl.className = `chat-message ${roleClass}`;
       messageEl.innerHTML = `<div class="chat-bubble">${message.content}</div>`;
-
       container.appendChild(messageEl);
     });
 
-    // Hacemos scroll hasta el último mensaje
     container.scrollTop = container.scrollHeight;
   }
+
   async sendChatMessage() {
     const input = document.getElementById('chatInput');
-    const messageText = input.value.trim();
+    const messageText = input ? input.value.trim() : '';
     if (!messageText) return;
 
-    // 1. Añadimos el mensaje del usuario al historial y actualizamos la UI
     this.conversationHistory.push({ role: 'user', content: messageText });
     this.renderChatHistory();
-    input.value = ''; // Limpiamos el campo de texto
+    if (input) input.value = '';
 
-    // 2. Mostramos un indicador de que la IA está "pensando"
     const chatHistoryContainer = document.getElementById('chatHistory');
     const typingIndicator = document.createElement('div');
     typingIndicator.className = 'chat-message ai';
@@ -1932,31 +2191,31 @@ class FinanceApp {
     chatHistoryContainer.scrollTop = chatHistoryContainer.scrollHeight;
 
     try {
-      // 3. Enviamos el historial COMPLETO al servidor
       const response = await fetch('http://localhost:3000/api/perplexity', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'llama-3-sonar-large-32k-online',
-          messages: this.conversationHistory, // <-- Enviamos todo el contexto
+          messages: this.conversationHistory,
         }),
       });
 
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(`Error del servidor: ${response.statusText}`);
+      }
 
       const data = await response.json();
-      const aiMessage = data.choices[0].message.content;
+      const aiMessage = data.choices?.[0]?.message?.content;
+      if (aiMessage) {
+        this.conversationHistory.push({ role: 'assistant', content: aiMessage });
+      } else {
+        throw new Error('Respuesta vacía de la IA');
+      }
 
-      // 4. Añadimos la respuesta de la IA al historial
-      this.conversationHistory.push({ role: 'assistant', content: aiMessage });
-
-      // 5. Volvemos a renderizar todo el historial, ya con la nueva respuesta
       this.renderChatHistory();
     } catch (error) {
       console.error('Error al enviar mensaje de chat:', error);
       this.showToast('Hubo un error en la conversación con la IA.', 'error');
-      // Opcional: podrías mostrar un mensaje de error en el propio chat
       this.conversationHistory.push({
         role: 'assistant',
         content: 'Lo siento, tuve un problema para procesar tu respuesta.',
@@ -1966,10 +2225,10 @@ class FinanceApp {
   }
 } // <-- FIN DE LA CLASE FINANCEAPP
 
-// === INICIO DE SECCIÓN: INICIALIZACIÓN GLOBAL DE LA APP ===
+// === INICIO DE SECCIÃƒâ€œN: INICIALIZACIÃƒâ€œN GLOBAL DE LA APP ===
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Inicializa la aplicación principal una sola vez.
+  // 1. Inicializa la aplicaciÃ³n principal una sola vez.
   if (!window.app) {
     window.app = new FinanceApp();
     window.app.init();
@@ -1990,16 +2249,16 @@ document.addEventListener('DOMContentLoaded', () => {
   reveals.forEach((el) => observer.observe(el));
 });
 
-// === FIN DE SECCIÓN: INICIALIZACIÓN GLOBAL DE LA APP ===
+// === FIN DE SECCIÃƒâ€œN: INICIALIZACIÃƒâ€œN GLOBAL DE LA APP ===
 
-// === INICIO DE SECCIÓN: HELPERS GLOBALES (EVENTOS Y CONSOLA) ===
+// === INICIO DE SECCIÃƒâ€œN: HELPERS GLOBALES (EVENTOS Y CONSOLA) ===
 
-// 1. Funcionalidad para mostrar/ocultar contraseñas (toggle pass)
-// Quedará así
-// 1. Funcionalidad para mostrar/ocultar contraseñas (toggle pass)
+// 1. Funcionalidad para mostrar/ocultar contraseÃ±as (toggle pass)
+// QuedarÃ¡ asÃ­
+// 1. Funcionalidad para mostrar/ocultar contraseÃ±as (toggle pass)
 document.addEventListener('click', function (e) {
   if (e.target.classList.contains('toggle-pass')) {
-    // CORRECCIÓN: Usamos el data-target para encontrar el input correcto.
+    // CORRECCIÃƒâ€œN: Usamos el data-target para encontrar el input correcto.
     const inputId = e.target.dataset.target;
     const input = document.getElementById(inputId);
 
@@ -2016,16 +2275,16 @@ document.addEventListener('click', function (e) {
     }
   }
 });
-// 2. Publicar una función global para verificar contraseñas desde la consola.
+// 2. Publicar una funciÃ³n global para verificar contraseÃ±as desde la consola.
 window.verificarPassword = function (userName, plainPassword) {
   if (window.app && typeof window.app.verifyPassword === 'function') {
     const ok = window.app.verifyPassword(userName, plainPassword);
-    console.log(`Verificación para '${userName}':`, ok);
+    console.log(`VerificaciÃ³n para '${userName}':`, ok);
     return ok;
   } else {
-    console.warn('App no inicializada o método no disponible');
+    console.warn('App no inicializada o mÃ©todo no disponible');
     return false;
   }
 };
 
-// === FIN DE SECCIÓN: HELPERS GLOBALES (EVENTOS Y CONSOLA) ===
+// === FIN DE SECCIÃƒâ€œN: HELPERS GLOBALES (EVENTOS Y CONSOLA) ===

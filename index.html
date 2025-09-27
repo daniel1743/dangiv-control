@@ -127,53 +127,60 @@
         </div>
         <!-- Financial Summary -->
         <div class="stats-grid">
+          <!-- Tarjeta de Balance Total -->
           <div class="stat-card stat-card--primary">
-            <div class="stat-icon">
-              <i class="fas fa-wallet"></i>
+            <div class="stat-icon-wrapper">
+              <i class="fas fa-wallet stat-icon"></i>
             </div>
-            <div class="stat-content">
+            <div class="stat-details">
               <h3>Balance Total</h3>
               <p class="stat-value" id="totalBalance">$0</p>
-              <span class="stat-change positive" id="balanceChange"
-                >Calculando...</span
-              >
+              <span class="stat-change">&nbsp;</span>
             </div>
           </div>
 
+          <!-- Tarjeta de Gastos Totales -->
           <div class="stat-card">
-            <div class="stat-icon">
-              <i class="fas fa-arrow-down"></i>
+            <div class="stat-icon-wrapper">
+              <i class="fas fa-chart-bar stat-icon"></i>
             </div>
-            <div class="stat-content">
+            <div class="stat-details">
               <h3>Gastos Totales</h3>
               <p class="stat-value" id="totalExpenses">$0</p>
               <span class="stat-change negative" id="expensesChange"
-                >+0% este mes</span
+                >+0% vs mes anterior</span
               >
             </div>
           </div>
 
+          <!-- Tarjeta de Ahorros -->
           <div class="stat-card">
-            <div class="stat-icon">
-              <i class="fas fa-piggy-bank"></i>
+            <div class="stat-icon-wrapper">
+              <i class="fas fa-piggy-bank stat-icon"></i>
             </div>
-            <div class="stat-content">
+            <div class="stat-details">
               <h3>Ahorros</h3>
               <p class="stat-value" id="totalSavings">$0</p>
-              <span class="stat-change positive" id="savingsChange"
-                >Meta: 0%</span
-              >
+              <div class="progress-bar-container">
+                <div
+                  class="progress-bar"
+                  id="savingsProgressBar"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <span class="stat-change" id="savingsGoalText">Meta: $0</span>
             </div>
           </div>
 
+          <!-- Tarjeta de Transacciones -->
           <div class="stat-card">
-            <div class="stat-icon">
-              <i class="fas fa-receipt"></i>
+            <div class="stat-icon-wrapper">
+              <i class="fas fa-receipt stat-icon"></i>
             </div>
-            <div class="stat-content">
+            <div class="stat-details">
               <h3>Transacciones</h3>
               <p class="stat-value" id="totalTransactions">0</p>
-              <span class="stat-change" id="transactionsChange">Este mes</span>
+              <span class="stat-change">Este mes</span>
             </div>
           </div>
         </div>
@@ -702,7 +709,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h2 class="modal-title" id="securityModalTitle">
-              Confirmar eliminación
+              Confirmar eliminacion
             </h2>
             <button
               class="modal-close"
