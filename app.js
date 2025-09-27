@@ -171,11 +171,7 @@ class FinanceApp {
       // Actualizamos los KPIs y el grÃ¡fico con los datos de demo
       this.updateStats(dataSet.stats);
       this.renderExpenseChart(dataSet);
-
-      // Renderizar gráfico de metas con datos variables para demostración
-      setTimeout(() => {
-        this.renderGoalsProgressChart();
-      }, 500);
+      this.renderGoalsProgressChart();
 
       // Pasamos al siguiente set de datos para la prÃ³xima vez
       this.currentDemoIndex =
@@ -1594,7 +1590,7 @@ class FinanceApp {
         chartData.datasets[0].data;
       this.charts.expenseChart.data.datasets[0].backgroundColor = modernColors;
       this.charts.expenseChart.options.plugins.title.text = chartTitle;
-      this.charts.expenseChart.update('normal');
+      this.charts.expenseChart.update('none');
     } else {
       this.charts.expenseChart = new Chart(ctx, {
         type: 'doughnut',
@@ -1603,7 +1599,7 @@ class FinanceApp {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          cutout: '60%',
+          cutout: '70%',
           animation: {
             duration: 1200,
             easing: 'easeInOutQuart',
@@ -1620,25 +1616,24 @@ class FinanceApp {
               display: false,
             },
             datalabels: {
-              color: function(context) {
-                return context.dataset.backgroundColor[context.dataIndex];
-              },
+              color: '#666',
               font: {
-                size: 12,
-                weight: 'bold',
+                size: 11,
+                weight: '600',
                 family: 'Inter, sans-serif'
               },
               formatter: function(value, context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = (value / total) * 100;
+                if (percentage < 8) return '';
                 return context.chart.data.labels[context.dataIndex];
               },
               anchor: 'end',
               align: 'end',
-              offset: 10,
-              display: function(context) {
-                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                const percentage = (context.parsed / total) * 100;
-                return percentage > 5; // Solo mostrar si es mayor al 5%
-              }
+              offset: 8,
+              clip: false,
+              textStrokeColor: '#fff',
+              textStrokeWidth: 2
             },
             tooltip: {
               enabled: true,
@@ -1708,20 +1703,21 @@ class FinanceApp {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    // Destruir gráfico existente si existe
-    if (this.goalsChart) {
-      this.goalsChart.destroy();
-    }
-
     let chartData;
     let chartLabels;
     let finalValue;
 
     if (!this.currentUser || this.goals.length === 0) {
-      // Datos de demostración para usuarios no logueados o sin metas
+      // Datos de demostración que varían según el índice actual
       chartLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-      chartData = [1000, 1500, 2200, 2800, 3500, 4200];
-      finalValue = 4200;
+      const baseData = [1000, 1500, 2200, 2800, 3500, 4200];
+      const variations = [
+        [1000, 1500, 2200, 2800, 3500, 4200], // Escenario 1
+        [800, 1200, 1800, 2400, 3200, 3800],  // Escenario 2
+        [1200, 1800, 2500, 3100, 3900, 4600], // Escenario 3
+      ];
+      chartData = variations[this.currentDemoIndex % variations.length] || baseData;
+      finalValue = chartData[chartData.length - 1];
     } else {
       // Datos reales basados en el progreso de metas del usuario
       const monthlyData = this.calculateMonthlySavings();
@@ -1730,13 +1726,15 @@ class FinanceApp {
       finalValue = chartData[chartData.length - 1] || 0;
     }
 
-    // Actualizar valor numérico
+    // Actualizar valor numérico de forma suave
     if (valueElement) {
-      valueElement.textContent = `$${finalValue.toLocaleString()}`;
+      const currentValue = parseInt(valueElement.textContent.replace(/[^0-9]/g, '')) || 0;
+      this.animateValue(valueElement, currentValue, finalValue, 800);
+
       valueElement.className = 'goals-progress-value';
-      if (finalValue > 0) {
+      if (finalValue > 3000) {
         valueElement.classList.add('positive');
-      } else if (finalValue < 0) {
+      } else if (finalValue < 2000) {
         valueElement.classList.add('negative');
       }
     }
@@ -1746,64 +1744,78 @@ class FinanceApp {
     gradient.addColorStop(0, 'rgba(33, 128, 141, 0.3)');
     gradient.addColorStop(1, 'rgba(33, 128, 141, 0.05)');
 
-    this.goalsChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: chartLabels,
-        datasets: [{
-          data: chartData,
-          borderColor: 'var(--color-primary)',
-          backgroundColor: gradient,
-          borderWidth: 3,
-          fill: true,
-          tension: 0.4,
-          pointRadius: 4,
-          pointHoverRadius: 8,
-          pointBackgroundColor: 'var(--color-primary)',
-          pointBorderColor: '#fff',
-          pointBorderWidth: 2,
-          pointHoverBackgroundColor: 'var(--color-primary)',
-          pointHoverBorderColor: '#fff',
-          pointHoverBorderWidth: 3
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          }
+    if (this.goalsChart) {
+      // Actualizar datos existentes sin destruir el gráfico
+      this.goalsChart.data.datasets[0].data = chartData;
+      this.goalsChart.update('none');
+    } else {
+      // Crear nuevo gráfico
+      this.goalsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: chartLabels,
+          datasets: [{
+            data: chartData,
+            borderColor: 'var(--color-primary)',
+            backgroundColor: gradient,
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointHoverRadius: 8,
+            pointBackgroundColor: 'var(--color-primary)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointHoverBackgroundColor: 'var(--color-primary)',
+            pointHoverBorderColor: '#fff',
+            pointHoverBorderWidth: 3
+          }]
         },
-        scales: {
-          x: {
-            display: false,
-            grid: {
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
               display: false
             }
           },
-          y: {
-            display: false,
-            grid: {
-              display: false
+          scales: {
+            x: {
+              display: false,
+              grid: {
+                display: false
+              }
+            },
+            y: {
+              display: false,
+              grid: {
+                display: false
+              }
             }
-          }
-        },
-        animation: {
-          duration: 2000,
-          easing: 'easeInOutQuart',
-          onComplete: () => {
-            // Animación del valor numérico
-            if (valueElement) {
-              valueElement.style.transform = 'translate(-50%, -50%) scale(1.1)';
-              setTimeout(() => {
-                valueElement.style.transform = 'translate(-50%, -50%) scale(1)';
-              }, 200);
-            }
+          },
+          animation: {
+            duration: 1500,
+            easing: 'easeInOutQuart'
           }
         }
+      });
+    }
+  }
+
+  animateValue(element, start, end, duration) {
+    const startTime = performance.now();
+    const update = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      const current = Math.round(start + (end - start) * easeProgress);
+      element.textContent = `$${current.toLocaleString()}`;
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
       }
-    });
+    };
+    requestAnimationFrame(update);
   }
 
   calculateMonthlySavings() {
