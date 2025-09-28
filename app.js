@@ -1659,16 +1659,16 @@ class FinanceApp {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    // Paleta de colores pasteles elegantes
+    // Paleta de colores vibrantes para modo oscuro
     const pastelelColors = [
-      '#A8E6CF', // Verde menta pastel
-      '#FFD3A5', // Melocotón pastel
-      '#FD8A8A', // Rosa coral pastel
-      '#9BB5FF', // Azul lavanda pastel
-      '#C7CEEA', // Lila pastel
-      '#B4E7E8', // Turquesa pastel
-      '#F7DC6F', // Amarillo pastel
-      '#D7BDE2', // Púrpura pastel
+      '#00E676', // Verde vibrante
+      '#FF6D00', // Naranja vibrante
+      '#E91E63', // Rosa vibrante
+      '#2196F3', // Azul vibrante
+      '#9C27B0', // Púrpura vibrante
+      '#00BCD4', // Cian vibrante
+      '#FFEB3B', // Amarillo vibrante
+      '#FF5722', // Rojo-naranja vibrante
     ];
 
     let chartData;
@@ -1750,7 +1750,7 @@ class FinanceApp {
       options: {
         responsive: true,
         maintainAspectRatio: true,
-        cutout: '75%', // Anillo muy delgado y elegante
+        cutout: '70%', // Anillo óptimo para visualización
         plugins: {
           legend: { display: false },
           tooltip: {

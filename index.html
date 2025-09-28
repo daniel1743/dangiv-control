@@ -305,9 +305,9 @@
 
         <!-- Premium Interactive Dashboard -->
         <div class="premium-dashboard">
-          <div class="dual-chart-layout">
-            <!-- Left Panel: Elegant Burger Chart -->
-            <div class="chart-panel">
+          <div class="dashboard-grid">
+            <!-- Left Column: Chart -->
+            <div class="chart-column">
               <div class="chart-container-premium">
                 <div class="chart-header">
                   <h3 class="chart-title">Distribución de Gastos</h3>
@@ -324,76 +324,73 @@
               </div>
             </div>
 
-            <!-- Right Panel: Interactive Summary -->
-            <div class="chart-panel">
-              <div class="chart-container-premium">
-                <div class="chart-header">
-                  <h3 class="chart-title">Resumen Interactivo</h3>
-                  <div class="chart-subtitle">Control financiero en tiempo real</div>
+            <!-- Right Column: Individual Cards -->
+            <div class="cards-column">
+              <!-- Cash Flow Card -->
+              <div class="card">
+                <div class="card__header">
+                  <h3>Flujo de Caja</h3>
+                  <span class="main-value" id="cashFlowTotal">$2,000</span>
                 </div>
-
-                <div class="interactive-components">
-                  <!-- Cash Flow Component -->
-                  <div class="component cash-flow-component">
-                    <div class="component-header">
-                      <h4>Flujo de Caja</h4>
-                      <span class="main-value" id="cashFlowTotal">$2,000</span>
-                    </div>
-                    <div class="progress-bars">
-                      <div class="progress-item">
-                        <div class="progress-label">
-                          <span>Gastos Necesarios</span>
-                          <span class="progress-value" id="necessaryValue">$1,200</span>
-                        </div>
-                        <div class="progress-bar">
-                          <div class="progress-fill necessary" id="necessaryProgress"></div>
-                        </div>
+                <div class="card__body">
+                  <div class="progress-bars">
+                    <div class="progress-item">
+                      <div class="progress-label">
+                        <span>Gastos Necesarios</span>
+                        <span class="progress-value" id="necessaryValue">$1,200</span>
                       </div>
-                      <div class="progress-item">
-                        <div class="progress-label">
-                          <span>Gastos No Necesarios</span>
-                          <span class="progress-value" id="unnecessaryValue">$800</span>
-                        </div>
-                        <div class="progress-bar">
-                          <div class="progress-fill unnecessary" id="unnecessaryProgress"></div>
-                        </div>
+                      <div class="progress-bar">
+                        <div class="progress-fill necessary" id="necessaryProgress"></div>
+                      </div>
+                    </div>
+                    <div class="progress-item">
+                      <div class="progress-label">
+                        <span>Gastos No Necesarios</span>
+                        <span class="progress-value" id="unnecessaryValue">$800</span>
+                      </div>
+                      <div class="progress-bar">
+                        <div class="progress-fill unnecessary" id="unnecessaryProgress"></div>
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
 
-                  <!-- Upcoming Payments Component -->
-                  <div class="component upcoming-payments-component">
-                    <div class="component-header">
-                      <h4>Próximos Pagos</h4>
-                      <span class="payment-count" id="paymentCount">3 pendientes</span>
-                    </div>
-                    <div class="payments-list" id="paymentsList">
-                      <!-- Payments will be dynamically inserted -->
-                    </div>
+              <!-- Upcoming Payments Card -->
+              <div class="card">
+                <div class="card__header">
+                  <h3>Próximos Pagos</h3>
+                  <span class="payment-count" id="paymentCount">3 pendientes</span>
+                </div>
+                <div class="card__body">
+                  <div class="payments-list" id="paymentsList">
+                    <!-- Payments will be dynamically inserted -->
                   </div>
+                </div>
+              </div>
 
-                  <!-- Goals Progress Component -->
-                  <div class="component goals-progress-component">
-                    <div class="component-header">
-                      <h4>Progreso de Metas</h4>
-                      <button class="cta-button" id="addGoalBtn">
-                        <i class="fas fa-plus"></i> Nueva Meta
-                      </button>
+              <!-- Goals Progress Card -->
+              <div class="card">
+                <div class="card__header">
+                  <h3>Progreso de Metas</h3>
+                  <button class="cta-button" id="addGoalBtn">
+                    <i class="fas fa-plus"></i> Nueva Meta
+                  </button>
+                </div>
+                <div class="card__body">
+                  <div class="goals-summary">
+                    <div class="circular-progress">
+                      <svg class="progress-ring" width="80" height="80">
+                        <circle class="progress-ring-bg" cx="40" cy="40" r="35" stroke-width="6"></circle>
+                        <circle class="progress-ring-fill" cx="40" cy="40" r="35" stroke-width="6" id="goalsProgressRing"></circle>
+                      </svg>
+                      <div class="progress-center">
+                        <i class="fas fa-piggy-bank"></i>
+                      </div>
                     </div>
-                    <div class="goals-summary">
-                      <div class="circular-progress">
-                        <svg class="progress-ring" width="80" height="80">
-                          <circle class="progress-ring-bg" cx="40" cy="40" r="35" stroke-width="6"></circle>
-                          <circle class="progress-ring-fill" cx="40" cy="40" r="35" stroke-width="6" id="goalsProgressRing"></circle>
-                        </svg>
-                        <div class="progress-center">
-                          <i class="fas fa-piggy-bank"></i>
-                        </div>
-                      </div>
-                      <div class="goals-info">
-                        <div class="goals-text" id="goalsProgressText">$4,200 / $6,000</div>
-                        <div class="goals-percentage" id="goalsProgressPercentage">70%</div>
-                      </div>
+                    <div class="goals-info">
+                      <div class="goals-text" id="goalsProgressText">$4,200 / $6,000</div>
+                      <div class="goals-percentage" id="goalsProgressPercentage">70%</div>
                     </div>
                   </div>
                 </div>
