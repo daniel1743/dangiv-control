@@ -71,6 +71,15 @@ node server.js
 node test-api.js
 ```
 
+### Linting and Formatting
+```bash
+# Format code with Prettier (if installed globally)
+npx prettier --write .
+
+# Check formatting
+npx prettier --check .
+```
+
 ### Git Workflow
 When making changes:
 ```bash
@@ -86,12 +95,6 @@ git commit -m "feat: your feature description"
 git commit -m "fix: your bug fix description"
 ```
 
-### Code Formatting
-Prettier configuration is available:
-```bash
-# Format code (if prettier is installed globally)
-npx prettier --write .
-```
 
 ### Testing
 - No formal test framework configured
@@ -201,6 +204,11 @@ Key CSS patterns:
 - Modal and toast notification systems
 
 ## Important Notes
+
+### Development Language
+- **Primary language**: Spanish is used throughout the application for UI, comments, and user-facing content
+- Variable and function names are in English (following standard conventions)
+- When making changes, maintain Spanish for user interface elements
 
 ### Security Considerations
 - API keys are exposed in client-side code (typical for frontend-only apps)
