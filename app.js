@@ -545,6 +545,7 @@ class FinanceApp {
 
         this.updateProfileDisplay();
         this.syncFromFirebase();
+        this.updateCarouselVisibility();
       } else {
         this.currentUser = 'anonymous';
         this.userPlan = 'free';
@@ -554,6 +555,7 @@ class FinanceApp {
         // Show login buttons, hide profile menu
         loginBtns.forEach((btn) => (btn.style.display = 'inline-flex'));
         if (profileMenuContainer) profileMenuContainer.style.display = 'none';
+        this.updateCarouselVisibility();
 
         this.renderDashboard();
       }
@@ -944,12 +946,16 @@ class FinanceApp {
     this.setupAuth();
     this.setupEventListeners(); // ¡CORRECCIÓN! Llamamos a la función correcta.
     this.setupNotificationBell();
-    this.setupScrollOptimization(); // Optimización sutil del scroll
+    this.setupScrollOptimization();
+    this.initQuickAccess(); // Optimización sutil del scroll
 
     // Forzar normalización de datos existentes al inicio
     this.forceDataNormalization();
 
     this.renderDashboard();
+    this.initTrendChart();
+    this.initOnboardingCarousel();
+    this.initSidebarScrollBehavior();
   }
   // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
   resetPasswords() {
@@ -1684,7 +1690,7 @@ class FinanceApp {
             borderWidth: 0,
             hoverBorderWidth: 3,
             hoverBorderColor: '#ffffff',
-            hoverOffset: 8,
+            hoverOffset: 6,
           },
         ],
       };
@@ -1721,7 +1727,7 @@ class FinanceApp {
               borderWidth: 0,
               hoverBorderWidth: 3,
               hoverBorderColor: '#ffffff',
-              hoverOffset: 8,
+              hoverOffset: 6,
             },
           ],
         };
@@ -2664,6 +2670,8 @@ class FinanceApp {
     this.saveData();
     this.renderDashboard();
     this.renderExpenses();
+    this.updateTrendChart();
+    this.updateLastTransaction();
     this.showToast('Gasto registrado exitosamente', 'success');
 
     document.getElementById('expenseForm').reset();
@@ -3673,6 +3681,429 @@ window.verificarPassword = function (userName, plainPassword) {
     console.warn('App no inicializada o mÃ©todo no disponible');
     return false;
   }
+};
+
+// === QUICK ACCESS CARD FUNCTIONALITY ===
+
+// Quick Access Card functionality
+FinanceApp.prototype.initQuickAccess = function() {
+  this.updateQuickAccessGreeting();
+  this.updateLastTransaction();
+
+  const quickAddBtn = document.getElementById('quickAddExpenseBtn');
+  if (quickAddBtn) {
+    quickAddBtn.addEventListener('click', () => {
+      this.showSection('expenses');
+    });
+  }
+};
+
+FinanceApp.prototype.updateQuickAccessGreeting = function() {
+  const greetingEl = document.getElementById('quickAccessGreeting');
+  if (greetingEl) {
+    const now = new Date();
+    const hour = now.getHours();
+    let greeting = '¡Hola';
+
+    if (hour < 12) greeting = '¡Buenos días';
+    else if (hour < 18) greeting = '¡Buenas tardes';
+    else greeting = '¡Buenas noches';
+
+    if (this.currentUser && this.currentUser !== 'anonymous') {
+      greeting += `, ${this.currentUser}!`;
+    } else {
+      greeting += ', Usuario!';
+    }
+
+    greetingEl.textContent = greeting;
+  }
+};
+
+FinanceApp.prototype.updateLastTransaction = function() {
+  const detailEl = document.getElementById('lastTransactionDetail');
+  if (detailEl) {
+    if (this.expenses.length > 0) {
+      const lastExpense = this.expenses[this.expenses.length - 1];
+      detailEl.innerHTML = `
+        <span class="transaction-desc">${lastExpense.description}</span>
+        <span class="transaction-amount">$${lastExpense.amount}</span>
+      `;
+    } else {
+      detailEl.innerHTML = `
+        <span class="transaction-desc">Sin transacciones</span>
+        <span class="transaction-amount">$0</span>
+      `;
+    }
+  }
+};
+
+// === TREND CHART FUNCTIONALITY ===
+
+FinanceApp.prototype.initTrendChart = function() {
+  const canvas = document.getElementById('trendChart');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+
+  if (this.charts.trendChart) {
+    this.charts.trendChart.destroy();
+  }
+
+  let chartData;
+
+  if (!this.currentUser || this.currentUser === 'anonymous') {
+    // Demo mode with animated data
+    chartData = this.getTrendDemoData();
+  } else {
+    // Real user data
+    chartData = this.getTrendUserData();
+  }
+
+  this.charts.trendChart = new Chart(ctx, {
+    type: 'line',
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          titleColor: '#333',
+          bodyColor: '#666',
+          borderColor: 'rgba(0, 0, 0, 0.1)',
+          borderWidth: 1,
+          cornerRadius: 8
+        }
+      },
+      scales: {
+        x: {
+          display: true,
+          grid: { display: false },
+          ticks: { color: 'var(--color-text-secondary)' }
+        },
+        y: {
+          display: true,
+          grid: { color: 'rgba(0, 0, 0, 0.05)' },
+          ticks: { color: 'var(--color-text-secondary)' }
+        }
+      },
+      elements: {
+        line: {
+          tension: 0.4,
+          borderWidth: 3
+        },
+        point: {
+          radius: 4,
+          hoverRadius: 6
+        }
+      },
+      animation: {
+        duration: this.currentUser === 'anonymous' ? 2000 : 1000,
+        easing: 'easeInOutQuart'
+      }
+    }
+  });
+
+  if (this.currentUser === 'anonymous') {
+    this.startTrendAnimation();
+  }
+};
+
+FinanceApp.prototype.getTrendDemoData = function() {
+  const labels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+  const baseData = [120, 190, 300, 500, 200, 300, 450];
+
+  return {
+    labels: labels,
+    datasets: [{
+      data: baseData,
+      borderColor: 'var(--color-primary)',
+      backgroundColor: 'rgba(33, 128, 141, 0.1)',
+      fill: true,
+      pointBackgroundColor: 'var(--color-primary)',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2
+    }]
+  };
+};
+
+FinanceApp.prototype.getTrendUserData = function() {
+  const last7Days = [];
+  const dailyExpenses = {};
+
+  // Get last 7 days
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toISOString().split('T')[0];
+    last7Days.push(dateStr);
+    dailyExpenses[dateStr] = 0;
+  }
+
+  // Calculate daily expenses
+  this.expenses.forEach(expense => {
+    const expenseDate = expense.date;
+    if (dailyExpenses.hasOwnProperty(expenseDate)) {
+      dailyExpenses[expenseDate] += expense.amount;
+    }
+  });
+
+  const labels = last7Days.map(date => {
+    const d = new Date(date);
+    return d.toLocaleDateString('es-ES', { weekday: 'short' });
+  });
+
+  const data = last7Days.map(date => dailyExpenses[date]);
+
+  return {
+    labels: labels,
+    datasets: [{
+      data: data,
+      borderColor: 'var(--color-primary)',
+      backgroundColor: 'rgba(33, 128, 141, 0.1)',
+      fill: true,
+      pointBackgroundColor: 'var(--color-primary)',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2
+    }]
+  };
+};
+
+FinanceApp.prototype.startTrendAnimation = function() {
+  if (this.trendAnimationInterval) {
+    clearInterval(this.trendAnimationInterval);
+  }
+
+  this.trendAnimationInterval = setInterval(() => {
+    if (this.charts.trendChart && this.currentUser === 'anonymous') {
+      const dataset = this.charts.trendChart.data.datasets[0];
+
+      // Generate new animated data
+      dataset.data = dataset.data.map(() =>
+        Math.floor(Math.random() * 400) + 100
+      );
+
+      this.charts.trendChart.update('none');
+    }
+  }, 3000);
+};
+
+FinanceApp.prototype.updateTrendChart = function() {
+  if (this.charts.trendChart) {
+    const newData = this.currentUser === 'anonymous' ?
+      this.getTrendDemoData() : this.getTrendUserData();
+
+    this.charts.trendChart.data = newData;
+    this.charts.trendChart.update();
+  }
+};
+
+// === ONBOARDING CAROUSEL FUNCTIONALITY ===
+
+FinanceApp.prototype.initOnboardingCarousel = function() {
+  // Show carousel for all users (for now)
+  const carousel = document.getElementById('onboardingCarousel');
+  if (!carousel) return;
+
+  // Always show carousel
+  carousel.style.display = 'block';
+  carousel.style.visibility = 'visible';
+
+  // Handle card interactions
+  const cards = carousel.querySelectorAll('.onboarding-card');
+  const track = document.getElementById('carouselTrack');
+  const getStartedBtn = document.getElementById('getStartedBtn');
+
+  let isInteracting = false;
+
+  // Add interaction handlers to cards
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      this.pauseCarousel(track);
+      isInteracting = true;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      this.resumeCarousel(track);
+      isInteracting = false;
+    });
+
+    card.addEventListener('touchstart', () => {
+      this.pauseCarousel(track);
+      isInteracting = true;
+    });
+
+    card.addEventListener('touchend', () => {
+      setTimeout(() => {
+        if (!isInteracting) {
+          this.resumeCarousel(track);
+        }
+      }, 100);
+    });
+
+    card.addEventListener('click', () => {
+      this.handleCardClick(card);
+    });
+  });
+
+  // Handle CTA button
+  if (getStartedBtn) {
+    getStartedBtn.addEventListener('click', () => {
+      this.showSection('config');
+      this.showToast('¡Bienvenido! Configura tu cuenta para comenzar', 'success');
+    });
+  }
+
+  // Pause carousel when hovering over the entire carousel
+  carousel.addEventListener('mouseenter', () => {
+    if (!isInteracting) {
+      this.pauseCarousel(track);
+    }
+  });
+
+  carousel.addEventListener('mouseleave', () => {
+    if (!isInteracting) {
+      this.resumeCarousel(track);
+    }
+  });
+};
+
+FinanceApp.prototype.pauseCarousel = function(track) {
+  if (track) {
+    track.style.animationPlayState = 'paused';
+  }
+};
+
+FinanceApp.prototype.resumeCarousel = function(track) {
+  if (track) {
+    track.style.animationPlayState = 'running';
+  }
+};
+
+FinanceApp.prototype.handleCardClick = function(card) {
+  const step = card.getAttribute('data-step');
+
+  // Add click animation
+  card.style.transform = 'translateY(-4px) scale(1.01)';
+  setTimeout(() => {
+    card.style.transform = '';
+  }, 200);
+
+  // Handle different steps
+  switch(step) {
+    case '1':
+      this.showToast('🎯 ¡Perfecto! Registrar gastos es súper fácil aquí', 'info');
+      setTimeout(() => {
+        this.showSection('expenses');
+      }, 1500);
+      break;
+    case '2':
+      this.showToast('📊 ¡Genial! Los gráficos te van a encantar', 'info');
+      setTimeout(() => {
+        this.showSection('analysis');
+      }, 1500);
+      break;
+    case '3':
+      this.showToast('💰 ¡Excelente! Define tus metas financieras', 'info');
+      setTimeout(() => {
+        this.showSection('goals');
+      }, 1500);
+      break;
+    case '4':
+      this.showToast('🎊 ¡Increíble! Estás listo para la libertad financiera', 'success');
+      setTimeout(() => {
+        this.showSection('config');
+      }, 1500);
+      break;
+  }
+};
+
+// Update carousel visibility when user status changes
+FinanceApp.prototype.updateCarouselVisibility = function() {
+  const carousel = document.getElementById('onboardingCarousel');
+  if (!carousel) return;
+
+  if (this.currentUser && this.currentUser !== 'anonymous') {
+    carousel.style.display = 'none';
+  } else {
+    carousel.style.display = 'block';
+  }
+};
+
+// === SIDEBAR SCROLL BEHAVIOR ===
+
+FinanceApp.prototype.initSidebarScrollBehavior = function() {
+  const sidebar = document.querySelector('.sidebar');
+  if (!sidebar) return;
+
+  let lastScrollTop = 0;
+  let isScrollingDown = false;
+  let scrollTimeout = null;
+
+  const handleScroll = () => {
+    const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const mainContent = document.querySelector('.main-content');
+
+    // Determine scroll direction
+    if (currentScrollTop > lastScrollTop && currentScrollTop > 100) {
+      // Scrolling down and past threshold
+      if (!isScrollingDown) {
+        isScrollingDown = true;
+        sidebar.classList.add('sidebar-hidden');
+        sidebar.classList.remove('sidebar-visible');
+        if (mainContent) {
+          mainContent.style.marginLeft = '0';
+        }
+      }
+    } else if (currentScrollTop < lastScrollTop) {
+      // Scrolling up
+      if (isScrollingDown) {
+        isScrollingDown = false;
+        sidebar.classList.remove('sidebar-hidden');
+        sidebar.classList.add('sidebar-visible');
+        if (mainContent) {
+          mainContent.style.marginLeft = '260px';
+        }
+      }
+    }
+
+    lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+
+    // Clear existing timeout
+    if (scrollTimeout) {
+      clearTimeout(scrollTimeout);
+    }
+
+    // Show sidebar after scrolling stops for 1 second
+    scrollTimeout = setTimeout(() => {
+      if (!isScrollingDown) {
+        const mainContent = document.querySelector('.main-content');
+        sidebar.classList.remove('sidebar-hidden');
+        sidebar.classList.add('sidebar-visible');
+        if (mainContent) {
+          mainContent.style.marginLeft = '260px';
+        }
+      }
+    }, 1000);
+  };
+
+  // Throttle scroll events for better performance
+  let ticking = false;
+  const throttledScroll = () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        handleScroll();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  };
+
+  window.addEventListener('scroll', throttledScroll, { passive: true });
+
+  // Initially show sidebar
+  sidebar.classList.add('sidebar-visible');
 };
 
 // === FIN DE SECCIÃƒâ€œN: HELPERS GLOBALES (EVENTOS Y CONSOLA) ===
