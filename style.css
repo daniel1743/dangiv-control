@@ -381,6 +381,15 @@
 /* Trend Chart Alignment */
 .chart-column > .chart-container-premium:nth-child(2) {
   margin-top: var(--space-16);
+  min-height: 250px;
+  max-height: 280px;
+}
+
+/* Specific styling for trend chart container */
+.chart-container-premium:has(.trend-chart-wrapper) {
+  padding: var(--space-16);
+  min-height: 250px;
+  max-height: 280px;
 }
 
 /* Wave Animation for Trend Chart */
@@ -899,11 +908,18 @@
   max-height: 320px !important;
 }
 
-#goalChart, #userExpenseChart, #necessityChart, #trendChart {
+#goalChart, #userExpenseChart, #necessityChart {
   width: 100% !important;
   height: 280px !important;
   max-width: 400px !important;
   max-height: 280px !important;
+}
+
+#trendChart {
+  width: 100% !important;
+  height: 180px !important;
+  max-width: 100% !important;
+  max-height: 180px !important;
 }
 
 #premiumChart:hover {
@@ -3194,10 +3210,14 @@ select.form-control {
 }
 
 .trend-chart-wrapper {
-  height: 150px;
+  height: 200px;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+  margin-top: var(--space-12);
 }
 
 /* Quick Actions Card */
