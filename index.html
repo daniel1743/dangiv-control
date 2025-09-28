@@ -45,7 +45,7 @@
           </div>
           <span class="logo-text">
             <span class="brand-name">Financia</span>
-            <span class="brand-suite">Suite Pro</span>
+            <span class="brand-suite">Suite Pro <span class="beta-badge">BETA</span></span>
           </span>
         </div>
         <button
@@ -249,7 +249,7 @@
         <!-- Financial Summary -->
         <div class="stats-grid">
           <!-- Tarjeta de Balance Total -->
-          <div class="stat-card stat-card--primary">
+          <div class="stat-card stat-card--primary animate-on-scroll" data-animation="fadeInUp" data-delay="100">
             <div class="stat-icon-wrapper">
               <i class="fas fa-wallet stat-icon"></i>
             </div>
@@ -261,7 +261,7 @@
           </div>
 
           <!-- Tarjeta de Gastos Totales -->
-          <div class="stat-card">
+          <div class="stat-card animate-on-scroll" data-animation="fadeInUp" data-delay="200">
             <div class="stat-icon-wrapper">
               <i class="fas fa-chart-bar stat-icon"></i>
             </div>
@@ -275,7 +275,7 @@
           </div>
 
           <!-- Tarjeta de Ahorros -->
-          <div class="stat-card stat-card--savings" id="savingsCard">
+          <div class="stat-card stat-card--savings animate-on-scroll" id="savingsCard" data-animation="fadeInUp" data-delay="300">
             <div class="stat-icon-wrapper savings-icon-wrapper">
               <div class="savings-progress-ring" id="savingsProgressRing">
                 <svg class="progress-circle" width="48" height="48">
@@ -313,7 +313,7 @@
           </div>
 
           <!-- Tarjeta de Transacciones -->
-          <div class="stat-card">
+          <div class="stat-card animate-on-scroll" data-animation="fadeInUp" data-delay="400">
             <div class="stat-icon-wrapper">
               <i class="fas fa-receipt stat-icon"></i>
             </div>
@@ -325,7 +325,7 @@
           </div>
 
           <!-- Tarjeta de Progreso Mensual -->
-          <div class="stat-card stat-card--progress">
+          <div class="stat-card stat-card--progress animate-on-scroll" data-animation="fadeInUp" data-delay="500">
             <div class="stat-icon-wrapper">
               <i class="fas fa-calendar-alt stat-icon"></i>
             </div>
@@ -338,10 +338,10 @@
         </div>
 
         <!-- Premium Interactive Dashboard -->
-        <div class="premium-dashboard">
+        <div class="premium-dashboard animate-on-scroll" data-animation="fadeIn" data-delay="600">
           <div class="dashboard-grid">
             <!-- Left Column: Chart -->
-            <div class="chart-column">
+            <div class="chart-column animate-on-scroll" data-animation="slideInLeft" data-delay="700">
               <div class="chart-container-premium">
                 <div class="chart-header">
                   <h3 class="chart-title">Distribución de Gastos</h3>
@@ -370,7 +370,7 @@
             </div>
 
             <!-- Right Column: Individual Cards -->
-            <div class="cards-column">
+            <div class="cards-column animate-on-scroll" data-animation="slideInRight" data-delay="800">
               <!-- Cash Flow Card -->
               <div class="card">
                 <div class="card__header">
@@ -510,7 +510,7 @@
         </div>
 
         <!-- Onboarding Carousel for Anonymous Users -->
-        <div class="onboarding-carousel" id="onboardingCarousel">
+        <div class="onboarding-carousel animate-on-scroll" id="onboardingCarousel" data-animation="slideInUp" data-delay="1000">
             <div class="carousel-header">
               <h3>✨ Descubre tu nueva forma de manejar el dinero</h3>
               <p>En solo 3 pasos te convertirás en el maestro de tus finanzas</p>
@@ -1157,7 +1157,7 @@
     <div class="modal" id="securityModal">
       <div class="modal-dialog">
         <div class="modal-illustration">
-          <img src="img/ahorro.png" alt="Ilustración ahorro" />
+          <img data-src="img/ahorro.png" alt="Ilustración ahorro" class="lazy-load" />
         </div>
         <div class="modal-content">
           <div class="modal-header">

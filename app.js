@@ -546,6 +546,7 @@ class FinanceApp {
         this.updateProfileDisplay();
         this.syncFromFirebase();
         this.updateCarouselVisibility();
+        this.updateDashboardWelcome();
       } else {
         this.currentUser = 'anonymous';
         this.userPlan = 'free';
@@ -556,6 +557,7 @@ class FinanceApp {
         loginBtns.forEach((btn) => (btn.style.display = 'inline-flex'));
         if (profileMenuContainer) profileMenuContainer.style.display = 'none';
         this.updateCarouselVisibility();
+        this.updateDashboardWelcome();
 
         this.renderDashboard();
       }
@@ -956,6 +958,9 @@ class FinanceApp {
     this.initTrendChart();
     this.initOnboardingCarousel();
     this.initSidebarScrollBehavior();
+    this.initLazyLoading();
+    this.initScrollAnimations();
+    this.updateDashboardWelcome();
   }
   // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
   resetPasswords() {
@@ -1754,9 +1759,9 @@ class FinanceApp {
       type: 'doughnut',
       data: chartData,
       options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        cutout: '70%', // Anillo óptimo para visualización
+        responsive: false,
+        maintainAspectRatio: false,
+        cutout: '65%', // Anillo óptimo para visualización
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -1807,21 +1812,27 @@ class FinanceApp {
 
     legendContainer.innerHTML = '';
 
+    // Crear leyendas solo para categorías con datos
+
     chartData.labels.forEach((label, index) => {
       const value = chartData.datasets[0].data[index];
-      const percentage = ((value / total) * 100).toFixed(1);
 
-      const legendItem = document.createElement('div');
-      legendItem.className = 'legend-item';
-      legendItem.style.animationDelay = `${index * 100}ms`;
+      // Solo mostrar categorías con datos > 0
+      if (value > 0) {
+        const percentage = ((value / total) * 100).toFixed(1);
 
-      legendItem.innerHTML = `
-        <div class="legend-color" style="background-color: ${colors[index]}"></div>
-        <span class="legend-text">${label}</span>
-        <span class="legend-percentage">${percentage}%</span>
-      `;
+        const legendItem = document.createElement('div');
+        legendItem.className = 'legend-item';
+        legendItem.style.animationDelay = `${index * 100}ms`;
 
-      legendContainer.appendChild(legendItem);
+        legendItem.innerHTML = `
+          <div class="legend-color" style="background-color: ${colors[index] || colors[0]}"></div>
+          <span class="legend-text">${label}</span>
+          <span class="legend-percentage">${percentage}%</span>
+        `;
+
+        legendContainer.appendChild(legendItem);
+      }
     });
   }
 
@@ -4031,79 +4042,405 @@ FinanceApp.prototype.updateCarouselVisibility = function() {
   }
 };
 
+// Update dashboard welcome message based on user authentication
+FinanceApp.prototype.updateDashboardWelcome = function() {
+  const titleElement = document.querySelector('#dashboard .section-header h1');
+  const subtitleElement = document.querySelector('#dashboard .section-header p');
+
+  if (!titleElement || !subtitleElement) return;
+
+  if (this.currentUser && this.currentUser !== 'anonymous') {
+    const userName = this.userProfile.name || 'Usuario';
+
+    // Professional welcome messages for authenticated users
+    const welcomeMessages = [
+      `¡Hola ${userName}! Este es tu dashboard financiero`,
+      `Bienvenido de vuelta, ${userName}`,
+      `Tu centro de control financiero, ${userName}`,
+      `Dashboard financiero de ${userName}`
+    ];
+
+    const professionalSubtitles = [
+      'Gestiona tus inversiones, controla gastos y alcanza tus objetivos financieros',
+      'Analiza tu rendimiento financiero y toma decisiones estratégicas',
+      'Monitorea tu patrimonio y optimiza tu flujo de caja',
+      'Supervisa tus finanzas como un experto en inversiones',
+      'Controla cada aspecto de tu economía personal',
+      'Tu herramienta profesional para la excelencia financiera'
+    ];
+
+    // Select random messages to keep it fresh
+    const randomWelcome = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+    const randomSubtitle = professionalSubtitles[Math.floor(Math.random() * professionalSubtitles.length)];
+
+    titleElement.textContent = randomWelcome;
+    subtitleElement.textContent = randomSubtitle;
+  } else {
+    // Default message for anonymous users
+    titleElement.textContent = '¡Bienvenido a tu asistente financiero!';
+    subtitleElement.textContent = 'Gestiona tus finanzas de manera inteligente y alcanza tus metas';
+  }
+};
+
 // === SIDEBAR SCROLL BEHAVIOR ===
 
 FinanceApp.prototype.initSidebarScrollBehavior = function() {
   const sidebar = document.querySelector('.sidebar');
   if (!sidebar) return;
 
-  let lastScrollTop = 0;
-  let isScrollingDown = false;
-  let scrollTimeout = null;
-
-  const handleScroll = () => {
-    const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const mainContent = document.querySelector('.main-content');
-
-    // Determine scroll direction
-    if (currentScrollTop > lastScrollTop && currentScrollTop > 100) {
-      // Scrolling down and past threshold
-      if (!isScrollingDown) {
-        isScrollingDown = true;
-        sidebar.classList.add('sidebar-hidden');
-        sidebar.classList.remove('sidebar-visible');
-        if (mainContent) {
-          mainContent.style.marginLeft = '0';
-        }
-      }
-    } else if (currentScrollTop < lastScrollTop) {
-      // Scrolling up
-      if (isScrollingDown) {
-        isScrollingDown = false;
-        sidebar.classList.remove('sidebar-hidden');
-        sidebar.classList.add('sidebar-visible');
-        if (mainContent) {
-          mainContent.style.marginLeft = '260px';
-        }
-      }
-    }
-
-    lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
-
-    // Clear existing timeout
-    if (scrollTimeout) {
-      clearTimeout(scrollTimeout);
-    }
-
-    // Show sidebar after scrolling stops for 1 second
-    scrollTimeout = setTimeout(() => {
-      if (!isScrollingDown) {
-        const mainContent = document.querySelector('.main-content');
-        sidebar.classList.remove('sidebar-hidden');
-        sidebar.classList.add('sidebar-visible');
-        if (mainContent) {
-          mainContent.style.marginLeft = '260px';
-        }
-      }
-    }, 1000);
-  };
-
-  // Throttle scroll events for better performance
-  let ticking = false;
-  const throttledScroll = () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        handleScroll();
-        ticking = false;
-      });
-      ticking = true;
-    }
-  };
-
-  window.addEventListener('scroll', throttledScroll, { passive: true });
-
-  // Initially show sidebar
+  // Keep sidebar always visible for better dashboard UX
   sidebar.classList.add('sidebar-visible');
+  sidebar.classList.remove('sidebar-hidden');
+
+  // Ensure main content has proper margin
+  const mainContent = document.querySelector('.main-content');
+  if (mainContent) {
+    mainContent.style.marginLeft = '260px';
+  }
+};
+
+// === LAZY LOADING FUNCTIONALITY ===
+
+FinanceApp.prototype.initLazyLoading = function() {
+  // Lazy loading para imágenes
+  this.initImageLazyLoading();
+
+  // Lazy loading para secciones y componentes pesados
+  this.initComponentLazyLoading();
+
+  // Lazy loading para gráficos
+  this.initChartLazyLoading();
+};
+
+FinanceApp.prototype.initImageLazyLoading = function() {
+  const imageObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        const src = img.getAttribute('data-src');
+
+        if (src) {
+          img.src = src;
+          img.removeAttribute('data-src');
+          img.classList.remove('lazy-load');
+          img.classList.add('lazy-loaded');
+        }
+
+        observer.unobserve(img);
+      }
+    });
+  }, {
+    rootMargin: '50px 0px',
+    threshold: 0.1
+  });
+
+  document.querySelectorAll('img[data-src]').forEach(img => {
+    imageObserver.observe(img);
+  });
+};
+
+FinanceApp.prototype.initComponentLazyLoading = function() {
+  const componentObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const component = entry.target;
+
+        // Carousel lazy loading
+        if (component.classList.contains('onboarding-carousel')) {
+          this.lazyLoadCarousel(component);
+        }
+
+        // Footer lazy loading
+        if (component.classList.contains('footer')) {
+          this.lazyLoadFooter(component);
+        }
+
+        componentObserver.unobserve(component);
+      }
+    });
+  }, {
+    rootMargin: '100px 0px',
+    threshold: 0.1
+  });
+
+  // Observar componentes pesados
+  document.querySelectorAll('.onboarding-carousel, .footer').forEach(component => {
+    componentObserver.observe(component);
+  });
+};
+
+FinanceApp.prototype.initChartLazyLoading = function() {
+  const chartObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const chartContainer = entry.target;
+        const chartId = chartContainer.querySelector('canvas')?.id;
+
+        if (chartId && !this.charts[chartId]) {
+          this.lazyLoadChart(chartId);
+        }
+
+        chartObserver.unobserve(chartContainer);
+      }
+    });
+  }, {
+    rootMargin: '200px 0px',
+    threshold: 0.1
+  });
+
+  // Observar contenedores de gráficos
+  document.querySelectorAll('.chart-container-premium, .burger-chart-wrapper').forEach(container => {
+    chartObserver.observe(container);
+  });
+};
+
+FinanceApp.prototype.lazyLoadCarousel = function(carousel) {
+  // Activar animaciones del carousel solo cuando es visible
+  const track = carousel.querySelector('.carousel-track');
+  if (track) {
+    track.style.animationPlayState = 'running';
+  }
+};
+
+FinanceApp.prototype.lazyLoadFooter = function(footer) {
+  // Activar formulario de newsletter solo cuando el footer es visible
+  const newsletterForm = footer.querySelector('.newsletter-form');
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', this.handleNewsletterSubmit.bind(this));
+  }
+};
+
+FinanceApp.prototype.lazyLoadChart = function(chartId) {
+  // Cargar gráficos bajo demanda
+  switch(chartId) {
+    case 'premiumChart':
+      if (!this.charts.premiumChart) {
+        this.renderPremiumChart();
+      }
+      break;
+    case 'trendChart':
+      if (!this.charts.trendChart) {
+        this.initTrendChart();
+      }
+      break;
+    default:
+      break;
+  }
+};
+
+FinanceApp.prototype.handleNewsletterSubmit = function(e) {
+  e.preventDefault();
+  const email = e.target.querySelector('input[type="email"]').value;
+
+  if (email) {
+    this.showToast('¡Gracias por suscribirte! Te mantendremos informado.', 'success');
+    e.target.reset();
+  }
+};
+
+// Optimización de performance para scroll
+FinanceApp.prototype.debounce = function(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
+
+// === SCROLL ANIMATIONS FUNCTIONALITY ===
+
+FinanceApp.prototype.initScrollAnimations = function() {
+  // Configuración del Intersection Observer para animaciones
+  const animationObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const element = entry.target;
+        const animation = element.getAttribute('data-animation') || 'fadeInUp';
+        const delay = parseInt(element.getAttribute('data-delay')) || 0;
+
+        // Aplicar delay
+        setTimeout(() => {
+          this.triggerAnimation(element, animation);
+        }, delay);
+
+        // Una vez animado, no observar más
+        animationObserver.unobserve(element);
+      }
+    });
+  }, {
+    rootMargin: '0px 0px -100px 0px', // Triggear antes de que sea completamente visible
+    threshold: 0.1
+  });
+
+  // Observar todos los elementos con animación
+  document.querySelectorAll('.animate-on-scroll').forEach(element => {
+    animationObserver.observe(element);
+  });
+
+  // Animaciones especiales para números/contadores
+  this.initCounterAnimations();
+};
+
+FinanceApp.prototype.triggerAnimation = function(element, animation) {
+  // Agregar clase de animación
+  element.classList.add('animated');
+  element.classList.add(`animate-${animation}`);
+
+  // Efectos especiales para diferentes tipos de elementos
+  if (element.classList.contains('stat-card')) {
+    this.animateStatCard(element);
+  }
+
+  if (element.classList.contains('chart-container-premium')) {
+    this.animateChart(element);
+  }
+
+  if (element.classList.contains('onboarding-carousel')) {
+    this.animateCarousel(element);
+  }
+
+  // Trigger custom event para otros listeners
+  element.dispatchEvent(new CustomEvent('animated', {
+    detail: { animation: animation }
+  }));
+};
+
+FinanceApp.prototype.animateStatCard = function(card) {
+  // Animar el valor numérico
+  const valueElement = card.querySelector('.stat-value');
+  if (valueElement) {
+    const finalValue = valueElement.textContent;
+    const numericValue = parseFloat(finalValue.replace(/[^0-9.-]/g, '')) || 0;
+
+    if (numericValue > 0) {
+      this.animateCountUp(valueElement, 0, numericValue, finalValue);
+    }
+  }
+
+  // Animar el icono
+  const icon = card.querySelector('.stat-icon');
+  if (icon) {
+    setTimeout(() => {
+      icon.style.transform = 'scale(1.1)';
+      icon.style.transition = 'transform 0.3s ease';
+
+      setTimeout(() => {
+        icon.style.transform = 'scale(1)';
+      }, 300);
+    }, 300);
+  }
+};
+
+FinanceApp.prototype.animateChart = function(chartContainer) {
+  // Agregar efecto de reveal al gráfico
+  const canvas = chartContainer.querySelector('canvas');
+  if (canvas) {
+    canvas.style.opacity = '0';
+    canvas.style.transform = 'scale(0.8)';
+
+    setTimeout(() => {
+      canvas.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+      canvas.style.opacity = '1';
+      canvas.style.transform = 'scale(1)';
+    }, 200);
+  }
+};
+
+FinanceApp.prototype.animateCarousel = function(carousel) {
+  // Animar cards del carousel secuencialmente
+  const cards = carousel.querySelectorAll('.onboarding-card');
+  cards.forEach((card, index) => {
+    setTimeout(() => {
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0) scale(1)';
+      card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    }, index * 100);
+  });
+};
+
+FinanceApp.prototype.animateCountUp = function(element, start, end, originalText) {
+  const duration = 1000; // 1 segundo
+  const increment = end / (duration / 16); // 60 FPS
+  let current = start;
+
+  const isMonetary = originalText.includes('$');
+  const hasComma = originalText.includes(',');
+
+  const timer = setInterval(() => {
+    current += increment;
+
+    if (current >= end) {
+      current = end;
+      clearInterval(timer);
+    }
+
+    // Formatear número
+    let displayValue = Math.round(current);
+
+    if (isMonetary) {
+      displayValue = `$${displayValue.toLocaleString()}`;
+    } else if (hasComma) {
+      displayValue = displayValue.toLocaleString();
+    }
+
+    element.textContent = displayValue;
+  }, 16);
+};
+
+FinanceApp.prototype.initCounterAnimations = function() {
+  // Configurar observer para contadores especiales
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const counter = entry.target;
+
+        if (counter.classList.contains('stat-value')) {
+          // Ya se maneja en animateStatCard
+          return;
+        }
+
+        // Para otros contadores personalizados
+        const finalValue = counter.getAttribute('data-count');
+        if (finalValue) {
+          this.animateCountUp(counter, 0, parseInt(finalValue), finalValue);
+          counterObserver.unobserve(counter);
+        }
+      }
+    });
+  }, {
+    threshold: 0.5
+  });
+
+  // Observar elementos con data-count
+  document.querySelectorAll('[data-count]').forEach(counter => {
+    counterObserver.observe(counter);
+  });
+};
+
+// Utilidad para crear animaciones personalizadas
+FinanceApp.prototype.createCustomAnimation = function(element, keyframes, options = {}) {
+  const defaultOptions = {
+    duration: 800,
+    easing: 'ease-out',
+    fill: 'forwards'
+  };
+
+  const animationOptions = { ...defaultOptions, ...options };
+
+  return element.animate(keyframes, animationOptions);
+};
+
+// Función para revelar elementos secuencialmente
+FinanceApp.prototype.revealSequentially = function(elements, delay = 100) {
+  elements.forEach((element, index) => {
+    setTimeout(() => {
+      element.classList.add('animated', 'animate-fadeInUp');
+    }, index * delay);
+  });
 };
 
 // === FIN DE SECCIÃƒâ€œN: HELPERS GLOBALES (EVENTOS Y CONSOLA) ===
