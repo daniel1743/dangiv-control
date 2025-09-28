@@ -24,8 +24,7 @@ class FinanceApp {
       this._latinDecoder = null;
     }
 
-    const rawData =
-      JSON.parse(localStorage.getItem('danGivControlData')) || {};
+    const rawData = JSON.parse(localStorage.getItem('danGivControlData')) || {};
 
     const { cleaned: savedData, changed: hadEncodingIssues } =
       this.normalizePersistedData(rawData);
@@ -56,8 +55,15 @@ class FinanceApp {
       // Escenario 1: "Mes Bueno"
       {
         title: 'Mes de Ahorro Exitoso',
-        labels: ['Ahorro', 'Necesarios', 'Ocio'],
-        data: [40, 50, 10], // % de gastos
+        labels: [
+          'Alimentación',
+          'Transporte',
+          'Entretenimiento',
+          'Salud',
+          'Servicios',
+          'Compras',
+        ],
+        data: [35, 20, 15, 10, 12, 8], // % de gastos
         stats: {
           balance: 1300, // (Ingreso 3000 - Gasto 1700)
           expenses: 1700, // (17 transacciones @ ~100 c/u)
@@ -75,8 +81,14 @@ class FinanceApp {
       // Escenario 2: "Mes Regular"
       {
         title: 'Gastos del Hogar',
-        labels: ['Servicios', 'Comida', 'Transporte'],
-        data: [25, 45, 30], // % de gastos
+        labels: [
+          'Servicios',
+          'Alimentación',
+          'Transporte',
+          'Salud',
+          'Entretenimiento',
+        ],
+        data: [30, 35, 20, 10, 5], // % de gastos
         stats: {
           balance: 450, // (Ingreso 2800 - Gasto 2350)
           expenses: 2350, // (32 transacciones @ ~73 c/u)
@@ -94,8 +106,8 @@ class FinanceApp {
       // Escenario 3: "Mes DifÃ­cil"
       {
         title: 'Mes con Gastos Imprevistos',
-        labels: ['Salud', 'Reparaciones', 'Otros'],
-        data: [50, 30, 20], // % de gastos
+        labels: ['Salud', 'Reparaciones', 'Alimentación', 'Servicios', 'Otros'],
+        data: [35, 25, 20, 15, 5], // % de gastos
         stats: {
           balance: -450, // (Ingreso 2600 - Gasto 3050) Â¡BALANCE NEGATIVO!
           expenses: 3050, // (25 transacciones @ ~122 c/u)
@@ -137,9 +149,10 @@ class FinanceApp {
     this.userProfile = {
       name: 'Usuario',
       email: '',
-      avatar: 'https://ui-avatars.com/api/?name=Usuario&background=3da1ac&color=fff&size=128',
+      avatar:
+        'https://ui-avatars.com/api/?name=Usuario&background=3da1ac&color=fff&size=128',
       avatarType: 'default', // 'default' or 'custom'
-      selectedAvatar: 0 // Index for default avatars
+      selectedAvatar: 0, // Index for default avatars
     };
     this.defaultAvatars = [
       'https://ui-avatars.com/api/?name=U1&background=3da1ac&color=fff&size=128&font-size=0.6',
@@ -151,7 +164,7 @@ class FinanceApp {
       'https://ui-avatars.com/api/?name=U7&background=6366f1&color=fff&size=128&font-size=0.6',
       'https://ui-avatars.com/api/?name=U8&background=ec4899&color=fff&size=128&font-size=0.6',
       'https://ui-avatars.com/api/?name=U9&background=14b8a6&color=fff&size=128&font-size=0.6',
-      'https://ui-avatars.com/api/?name=U10&background=64748b&color=fff&size=128&font-size=0.6'
+      'https://ui-avatars.com/api/?name=U10&background=64748b&color=fff&size=128&font-size=0.6',
     ];
     this.pendingDeleteId = null;
     this.aiRecommendations = [];
@@ -160,18 +173,23 @@ class FinanceApp {
     this.conversationState = 'START'; // Para saber en quÃ© punto del chat estamos
   }
 
-  // QuedarÃ¡ asÃ­ (pega estas dos nuevas funciones en la clase)
   startDemoMode() {
     // Si la animaciÃ³n ya estÃ¡ corriendo, no hacemos nada.
     if (this.demoIntervalId) return;
 
     const updateDemo = () => {
+      // Optimización: solo actualizar si el usuario está viendo la página
+      if (document.hidden) return;
+
       const dataSet = this.demoDataSets[this.currentDemoIndex];
 
-      // Actualizamos los KPIs y el grÃ¡fico con los datos de demo
-      this.updateStats(dataSet.stats);
-      this.renderExpenseChart(dataSet);
-      this.renderGoalsProgressChart();
+      // Usar requestAnimationFrame para suavizar las actualizaciones
+      requestAnimationFrame(() => {
+        this.updateStats(dataSet.stats);
+        this.renderPremiumChart(dataSet);
+        this.renderInteractiveSummary(dataSet);
+        this.renderGoalsProgressChart();
+      });
 
       // Pasamos al siguiente set de datos para la prÃ³xima vez
       this.currentDemoIndex =
@@ -179,7 +197,7 @@ class FinanceApp {
     };
 
     updateDemo(); // Ejecutamos una vez inmediatamente
-    this.demoIntervalId = setInterval(updateDemo, 4000); // Y luego cada 4 segundos
+    this.demoIntervalId = setInterval(updateDemo, 5000); // Aumentado a 5 segundos para reducir carga
   }
 
   stopDemoMode() {
@@ -192,6 +210,37 @@ class FinanceApp {
     }
   }
 
+  // Optimización sutil del scroll mediante throttling de eventos pesados
+  setupScrollOptimization() {
+    let ticking = false;
+    const optimizeScroll = () => {
+      // Solo ejecutar optimizaciones si hay demo activo
+      if (this.demoIntervalId && document.hidden) {
+        // Pausar demo temporalmente si la página no es visible
+        clearInterval(this.demoIntervalId);
+        this.demoIntervalId = null;
+
+        // Reanudar cuando la página vuelva a ser visible
+        const resumeDemo = () => {
+          if (!document.hidden && this.currentUser === 'anonymous') {
+            this.startDemoMode();
+          }
+        };
+
+        document.addEventListener('visibilitychange', resumeDemo, { once: true });
+      }
+      ticking = false;
+    };
+
+    // Throttling sutil para eventos de scroll
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(optimizeScroll);
+        ticking = true;
+      }
+    }, { passive: true });
+  }
+
   // Función para forzar la normalización de datos existentes
   forceDataNormalization() {
     try {
@@ -200,22 +249,29 @@ class FinanceApp {
         goals: this.goals,
         shoppingItems: this.shoppingItems,
         monthlyIncome: this.monthlyIncome,
-        securityPasswords: this.securityPasswords
+        securityPasswords: this.securityPasswords,
       };
 
-      const { cleaned: normalizedData, changed } = this.normalizePersistedData(currentData);
+      const { cleaned: normalizedData, changed } =
+        this.normalizePersistedData(currentData);
 
       if (changed) {
-        console.log('Aplicando normalización de caracteres a datos existentes...');
+        console.log(
+          'Aplicando normalización de caracteres a datos existentes...'
+        );
         this.expenses = normalizedData.expenses || [];
         this.goals = normalizedData.goals || [];
         this.shoppingItems = normalizedData.shoppingItems || [];
         this.monthlyIncome = normalizedData.monthlyIncome || 2500;
-        this.securityPasswords = normalizedData.securityPasswords || this.securityPasswords;
+        this.securityPasswords =
+          normalizedData.securityPasswords || this.securityPasswords;
 
         // Guardar los datos normalizados
         this.saveData();
-        this.showToast('Datos actualizados para mejorar la visualización', 'success');
+        this.showToast(
+          'Datos actualizados para mejorar la visualización',
+          'success'
+        );
       }
     } catch (error) {
       console.warn('Error al normalizar datos:', error);
@@ -288,7 +344,11 @@ class FinanceApp {
             result = decoded;
           }
         } catch (error) {
-          console.warn('No se pudo decodificar texto en windows-1252:', value, error);
+          console.warn(
+            'No se pudo decodificar texto en windows-1252:',
+            value,
+            error
+          );
         }
       }
 
@@ -398,7 +458,10 @@ class FinanceApp {
       await FB.setDoc(userDocRef, normalizedData);
 
       if (localSaveOk) {
-        this.showToast('Datos guardados en la nube y en este dispositivo.', 'success');
+        this.showToast(
+          'Datos guardados en la nube y en este dispositivo.',
+          'success'
+        );
       } else {
         this.showToast(
           'Datos sincronizados en la nube. No se pudieron guardar de forma local.',
@@ -465,13 +528,16 @@ class FinanceApp {
     const loginBtns = document.querySelectorAll(
       '#navbarLoginBtn, #sidebarLoginBtn'
     );
-    const profileMenuContainer = document.getElementById('profileMenuContainer');
+    const profileMenuContainer = document.getElementById(
+      'profileMenuContainer'
+    );
 
     FB.onAuthStateChanged(FB.auth, (user) => {
       if (user) {
         this.currentUser = user.uid;
         this.userProfile.email = user.email || '';
-        this.userProfile.name = user.displayName || user.email?.split('@')[0] || 'Usuario';
+        this.userProfile.name =
+          user.displayName || user.email?.split('@')[0] || 'Usuario';
 
         // Show profile menu, hide login buttons
         loginBtns.forEach((btn) => (btn.style.display = 'none'));
@@ -522,7 +588,10 @@ class FinanceApp {
       // Close dropdown when clicking outside
       document.addEventListener('click', (e) => {
         if (!profileDropdown.classList.contains('hidden')) {
-          if (!profileAvatarBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+          if (
+            !profileAvatarBtn.contains(e.target) &&
+            !profileDropdown.contains(e.target)
+          ) {
             profileDropdown.classList.add('hidden');
           }
         }
@@ -578,14 +647,21 @@ class FinanceApp {
     const profileHeaderImg = document.getElementById('profileHeaderImg');
     const profileName = document.getElementById('profileName');
     const profilePlan = document.getElementById('profilePlan');
-    const profileAvatarWrapper = document.getElementById('profileAvatarWrapper');
-    const profileDropdownHeader = document.querySelector('.profile-dropdown-header');
-    const profileDropdownFooter = document.querySelector('.profile-dropdown-footer');
+    const profileAvatarWrapper = document.getElementById(
+      'profileAvatarWrapper'
+    );
+    const profileDropdownHeader = document.querySelector(
+      '.profile-dropdown-header'
+    );
+    const profileDropdownFooter = document.querySelector(
+      '.profile-dropdown-footer'
+    );
 
     // Update avatar images
-    const avatarSrc = this.userProfile.avatarType === 'custom'
-      ? this.userProfile.avatar
-      : this.defaultAvatars[this.userProfile.selectedAvatar];
+    const avatarSrc =
+      this.userProfile.avatarType === 'custom'
+        ? this.userProfile.avatar
+        : this.defaultAvatars[this.userProfile.selectedAvatar];
 
     if (profileAvatar) profileAvatar.src = avatarSrc;
     if (profileHeaderImg) profileHeaderImg.src = avatarSrc;
@@ -593,21 +669,30 @@ class FinanceApp {
     // Update profile info
     if (profileName) profileName.textContent = this.userProfile.name;
     if (profilePlan) {
-      profilePlan.textContent = this.userPlan === 'pro' ? 'Plan Pro' : 'Plan Free';
-      profilePlan.className = `profile-plan ${this.userPlan === 'pro' ? 'plan-pro' : ''}`;
+      profilePlan.textContent =
+        this.userPlan === 'pro' ? 'Plan Pro' : 'Plan Free';
+      profilePlan.className = `profile-plan ${
+        this.userPlan === 'pro' ? 'plan-pro' : ''
+      }`;
     }
 
     // Update Pro/Free visual states
     if (profileAvatarWrapper) {
-      profileAvatarWrapper.className = `profile-avatar-wrapper ${this.userPlan === 'pro' ? 'user-pro' : ''}`;
+      profileAvatarWrapper.className = `profile-avatar-wrapper ${
+        this.userPlan === 'pro' ? 'user-pro' : ''
+      }`;
     }
 
     if (profileDropdownHeader) {
-      profileDropdownHeader.className = `profile-dropdown-header ${this.userPlan === 'pro' ? 'user-pro' : ''}`;
+      profileDropdownHeader.className = `profile-dropdown-header ${
+        this.userPlan === 'pro' ? 'user-pro' : ''
+      }`;
     }
 
     if (profileDropdownFooter) {
-      profileDropdownFooter.className = `profile-dropdown-footer ${this.userPlan === 'pro' ? 'user-pro' : ''}`;
+      profileDropdownFooter.className = `profile-dropdown-footer ${
+        this.userPlan === 'pro' ? 'user-pro' : ''
+      }`;
     }
   }
 
@@ -617,22 +702,34 @@ class FinanceApp {
 
     // Create gradient definition
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+    const gradient = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'linearGradient'
+    );
     gradient.setAttribute('id', 'profileGradient');
     gradient.setAttribute('x1', '0%');
     gradient.setAttribute('y1', '0%');
     gradient.setAttribute('x2', '100%');
     gradient.setAttribute('y2', '100%');
 
-    const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    const stop1 = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'stop'
+    );
     stop1.setAttribute('offset', '0%');
     stop1.setAttribute('stop-color', '#ffd700');
 
-    const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    const stop2 = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'stop'
+    );
     stop2.setAttribute('offset', '50%');
     stop2.setAttribute('stop-color', '#ffa500');
 
-    const stop3 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    const stop3 = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'stop'
+    );
     stop3.setAttribute('offset', '100%');
     stop3.setAttribute('stop-color', '#ff6b35');
 
@@ -741,17 +838,17 @@ class FinanceApp {
         this.securityPasswords = cloudData.securityPasswords || {};
 
         try {
-          localStorage.setItem("danGivControlData", JSON.stringify(cloudData));
+          localStorage.setItem('danGivControlData', JSON.stringify(cloudData));
         } catch (error) {
           console.warn(
-            "No se pudo actualizar el almacenamiento local con los datos de la nube.",
+            'No se pudo actualizar el almacenamiento local con los datos de la nube.',
             error
           );
         }
 
         if (cloudNormalized) {
           console.info(
-            "Se normalizaron textos con codificación incorrecta provenientes de la nube."
+            'Se normalizaron textos con codificación incorrecta provenientes de la nube.'
           );
         }
 
@@ -766,7 +863,6 @@ class FinanceApp {
       this.renderGoals();
       this.renderShoppingList();
       this.renderConfig();
-
     } catch (error) {
       console.error('Error al sincronizar desde Firestore:', error);
       this.showToast('No se pudieron cargar tus datos desde la nube.', 'error');
@@ -841,7 +937,6 @@ class FinanceApp {
       return false;
     }
   }
-  // QUEDARÃ ASÃ (La nueva funciÃ³n init)
 
   // === INICIO DE SECCIÃƒâ€œN: INICIALIZACIÃƒâ€œN DE LA APP ===
   init() {
@@ -849,13 +944,13 @@ class FinanceApp {
     this.setupAuth();
     this.setupEventListeners(); // ¡CORRECCIÓN! Llamamos a la función correcta.
     this.setupNotificationBell();
+    this.setupScrollOptimization(); // Optimización sutil del scroll
 
     // Forzar normalización de datos existentes al inicio
     this.forceDataNormalization();
 
     this.renderDashboard();
   }
-
   // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
   resetPasswords() {
     // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
@@ -1103,7 +1198,8 @@ class FinanceApp {
     // Para un usuario real (incluso sin datos), detenemos el demo y mostramos su dashboard.
     this.stopDemoMode();
     this.updateStats();
-    this.renderExpenseChart();
+    this.renderPremiumChart();
+    this.renderInteractiveSummary();
     this.renderGoalsProgress();
     this.renderGoalsProgressChart();
     this.renderAIRecommendations();
@@ -1165,18 +1261,21 @@ class FinanceApp {
           category: 'goal',
           title: goal.name,
           subtitle: `Meta vence en ${urgencyText}`,
-          amount: `$${this.formatCurrency(goal.target - goal.current)} restantes`,
+          amount: `$${this.formatCurrency(
+            goal.target - goal.current
+          )} restantes`,
           time: this.getRelativeTime(deadline),
           priority: priority,
           data: { goalId: index, section: 'goals' },
-          isRead: this.notificationStates.get(`goal-${index}-deadline`) || false
+          isRead:
+            this.notificationStates.get(`goal-${index}-deadline`) || false,
         });
       }
     });
 
     // Generate expense notifications for recent large expenses
     const recentExpenses = this.expenses
-      .filter(exp => {
+      .filter((exp) => {
         const expDate = new Date(exp.date);
         const daysDiff = (today - expDate) / (1000 * 60 * 60 * 24);
         return daysDiff <= 3; // Last 3 days
@@ -1184,7 +1283,7 @@ class FinanceApp {
       .sort((a, b) => b.amount - a.amount);
 
     recentExpenses.slice(0, 3).forEach((exp, index) => {
-      const isLarge = exp.amount > (this.monthlyIncome * 0.1); // 10% of monthly income
+      const isLarge = exp.amount > this.monthlyIncome * 0.1; // 10% of monthly income
       const priority = exp.protected ? 'high' : isLarge ? 'medium' : 'low';
 
       notifications.push({
@@ -1192,17 +1291,20 @@ class FinanceApp {
         type: 'expense',
         category: this.getCategoryIcon(exp.category),
         title: exp.description,
-        subtitle: exp.protected ? 'Gasto protegido' : `Gasto en ${exp.category}`,
+        subtitle: exp.protected
+          ? 'Gasto protegido'
+          : `Gasto en ${exp.category}`,
         amount: `$${this.formatCurrency(exp.amount)}`,
         time: this.getRelativeTime(new Date(exp.date)),
         priority: priority,
         data: { expenseId: index, section: 'expenses' },
-        isRead: this.notificationStates.get(`expense-${exp.date}-${index}`) || false
+        isRead:
+          this.notificationStates.get(`expense-${exp.date}-${index}`) || false,
       });
     });
 
     // Update badge count (only unread notifications)
-    const unreadCount = notifications.filter(n => !n.isRead).length;
+    const unreadCount = notifications.filter((n) => !n.isRead).length;
     this.updateNotificationBadge(unreadCount);
 
     // Render notifications
@@ -1214,27 +1316,27 @@ class FinanceApp {
 
   getCategoryIcon(category) {
     const iconMap = {
-      'Alimentación': 'food',
-      'Transporte': 'transport',
-      'Entretenimiento': 'entertainment',
-      'Salud': 'health',
-      'Servicios': 'services',
-      'Compras': 'shopping',
-      'Otros': 'shopping'
+      Alimentación: 'food',
+      Transporte: 'transport',
+      Entretenimiento: 'entertainment',
+      Salud: 'health',
+      Servicios: 'services',
+      Compras: 'shopping',
+      Otros: 'shopping',
     };
     return iconMap[category] || 'shopping';
   }
 
   getCategoryEmoji(category) {
     const emojiMap = {
-      'food': '🍔',
-      'transport': '🚗',
-      'entertainment': '🎬',
-      'health': '🏥',
-      'services': '⚡',
-      'shopping': '🛒',
-      'goal': '🎯',
-      'protected': '🔒'
+      food: '🍔',
+      transport: '🚗',
+      entertainment: '🎬',
+      health: '🏥',
+      services: '⚡',
+      shopping: '🛒',
+      goal: '🎯',
+      protected: '🔒',
     };
     return emojiMap[category] || '📝';
   }
@@ -1276,7 +1378,7 @@ class FinanceApp {
 
     // Render notification items
     list.innerHTML = '';
-    sortedNotifications.forEach(notification => {
+    sortedNotifications.forEach((notification) => {
       const item = this.createNotificationItem(notification);
       list.appendChild(item);
     });
@@ -1284,7 +1386,9 @@ class FinanceApp {
 
   createNotificationItem(notification) {
     const item = document.createElement('div');
-    item.className = `notification-item priority-${notification.priority}${notification.isRead ? ' read' : ''}`;
+    item.className = `notification-item priority-${notification.priority}${
+      notification.isRead ? ' read' : ''
+    }`;
     item.dataset.notificationId = notification.id;
 
     const emoji = this.getCategoryEmoji(notification.category);
@@ -1298,7 +1402,11 @@ class FinanceApp {
         <h6 class="notification-title">${notification.title}</h6>
         <p class="notification-subtitle">
           ${notification.subtitle}
-          ${notification.amount ? `<span class="notification-amount">${notification.amount}</span>` : ''}
+          ${
+            notification.amount
+              ? `<span class="notification-amount">${notification.amount}</span>`
+              : ''
+          }
         </p>
         <div class="notification-time">${notification.time}</div>
       </div>
@@ -1321,27 +1429,35 @@ class FinanceApp {
     const markAllBtn = document.getElementById('markAllReadBtn');
     if (markAllBtn) {
       markAllBtn.replaceWith(markAllBtn.cloneNode(true)); // Remove old listeners
-      document.getElementById('markAllReadBtn').addEventListener('click', () => {
-        this.markAllNotificationsAsRead();
-      });
+      document
+        .getElementById('markAllReadBtn')
+        .addEventListener('click', () => {
+          this.markAllNotificationsAsRead();
+        });
     }
 
     // Settings button
     const settingsBtn = document.getElementById('notificationSettingsBtn');
     if (settingsBtn) {
       settingsBtn.replaceWith(settingsBtn.cloneNode(true)); // Remove old listeners
-      document.getElementById('notificationSettingsBtn').addEventListener('click', () => {
-        this.showToast('Configuración de notificaciones próximamente', 'info');
-      });
+      document
+        .getElementById('notificationSettingsBtn')
+        .addEventListener('click', () => {
+          this.showToast(
+            'Configuración de notificaciones próximamente',
+            'info'
+          );
+        });
     }
 
     // Individual notification actions
     const actionBtns = document.querySelectorAll('.notification-action-btn');
-    actionBtns.forEach(btn => {
+    actionBtns.forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const action = btn.dataset.action;
-        const notificationId = btn.closest('.notification-item').dataset.notificationId;
+        const notificationId =
+          btn.closest('.notification-item').dataset.notificationId;
 
         if (action === 'read') {
           this.markNotificationAsRead(notificationId);
@@ -1353,7 +1469,7 @@ class FinanceApp {
 
     // Notification item clicks
     const notificationItems = document.querySelectorAll('.notification-item');
-    notificationItems.forEach(item => {
+    notificationItems.forEach((item) => {
       item.addEventListener('click', () => {
         const notificationId = item.dataset.notificationId;
         this.handleNotificationClick(notificationId);
@@ -1365,7 +1481,9 @@ class FinanceApp {
     this.notificationStates.set(notificationId, true);
     this.saveData(); // Save state
 
-    const item = document.querySelector(`[data-notification-id="${notificationId}"]`);
+    const item = document.querySelector(
+      `[data-notification-id="${notificationId}"]`
+    );
     if (item) {
       item.classList.add('read');
       item.classList.add('removing');
@@ -1378,7 +1496,7 @@ class FinanceApp {
 
   markAllNotificationsAsRead() {
     const items = document.querySelectorAll('.notification-item:not(.read)');
-    items.forEach(item => {
+    items.forEach((item) => {
       const notificationId = item.dataset.notificationId;
       this.notificationStates.set(notificationId, true);
     });
@@ -1470,12 +1588,18 @@ class FinanceApp {
 
   updateSavingsProgress(totalSavings, demoStats = null) {
     // Calculate total goals target
-    const totalGoalsTarget = this.goals.reduce((sum, goal) => sum + goal.target, 0);
+    const totalGoalsTarget = this.goals.reduce(
+      (sum, goal) => sum + goal.target,
+      0
+    );
 
     // Calculate progress percentage
     let progressPercentage = 0;
     if (totalGoalsTarget > 0) {
-      progressPercentage = Math.min((totalSavings / totalGoalsTarget) * 100, 100);
+      progressPercentage = Math.min(
+        (totalSavings / totalGoalsTarget) * 100,
+        100
+      );
     } else if (demoStats && demoStats.savingsProgress) {
       progressPercentage = demoStats.savingsProgress;
     }
@@ -1502,9 +1626,10 @@ class FinanceApp {
       savingsCheck.setAttribute('data-status', checkStatus);
 
       // Update progress text with dynamic color
-      const progressText = totalGoalsTarget > 0
-        ? `${Math.round(progressPercentage)}% de la meta`
-        : demoStats
+      const progressText =
+        totalGoalsTarget > 0
+          ? `${Math.round(progressPercentage)}% de la meta`
+          : demoStats
           ? `${Math.round(progressPercentage)}% de la meta`
           : 'Define tus metas';
 
@@ -1529,6 +1654,415 @@ class FinanceApp {
 
   // QuedarÃ¡ asÃ­ (renderExpenseChart)
   // QuedarÃ¡ asÃ­ (reemplaza la funciÃ³n completa)
+  renderPremiumChart(demoData = null) {
+    const canvas = document.getElementById('premiumChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // Paleta de colores pasteles elegantes
+    const pastelelColors = [
+      '#A8E6CF', // Verde menta pastel
+      '#FFD3A5', // Melocotón pastel
+      '#FD8A8A', // Rosa coral pastel
+      '#9BB5FF', // Azul lavanda pastel
+      '#C7CEEA', // Lila pastel
+      '#B4E7E8', // Turquesa pastel
+      '#F7DC6F', // Amarillo pastel
+      '#D7BDE2', // Púrpura pastel
+    ];
+
+    let chartData;
+    let totalAmount = 0;
+
+    if (demoData) {
+      chartData = {
+        labels: demoData.labels,
+        datasets: [
+          {
+            data: demoData.data,
+            backgroundColor: pastelelColors,
+            borderWidth: 0,
+            hoverBorderWidth: 3,
+            hoverBorderColor: '#ffffff',
+            hoverOffset: 8,
+          },
+        ],
+      };
+      totalAmount = demoData.data.reduce((a, b) => a + b, 0);
+    } else {
+      const categoryData = this.getCategoryData();
+      const values = Object.values(categoryData);
+
+      // Si no hay datos, mostrar un estado vacío elegante
+      if (values.length === 0 || values.every((v) => v === 0)) {
+        chartData = {
+          labels: ['Comienza agregando gastos'],
+          datasets: [
+            {
+              data: [1],
+              backgroundColor: ['rgba(168, 230, 207, 0.3)'],
+              borderWidth: 2,
+              borderColor: pastelelColors[0],
+              borderDash: [5, 5],
+              hoverBorderWidth: 3,
+              hoverBorderColor: pastelelColors[0],
+              hoverOffset: 4,
+            },
+          ],
+        };
+        totalAmount = 0;
+      } else {
+        chartData = {
+          labels: Object.keys(categoryData),
+          datasets: [
+            {
+              data: values,
+              backgroundColor: pastelelColors,
+              borderWidth: 0,
+              hoverBorderWidth: 3,
+              hoverBorderColor: '#ffffff',
+              hoverOffset: 8,
+            },
+          ],
+        };
+        totalAmount = values.reduce((a, b) => a + b, 0);
+      }
+    }
+
+    // Actualizar el total en el centro
+    const totalElement = document.getElementById('totalAmount');
+    if (totalElement) {
+      this.animateValue(totalElement, 0, totalAmount, 1500, '$');
+    }
+
+    // Crear leyenda elegante
+    this.createPremiumLegend(chartData, pastelelColors);
+
+    // Destruir gráfico existente
+    if (this.charts.premiumChart) {
+      this.charts.premiumChart.destroy();
+    }
+
+    // Crear nuevo gráfico tipo "hamburguesa"
+    this.charts.premiumChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        cutout: '75%', // Anillo muy delgado y elegante
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            enabled: true,
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: '#333',
+            bodyColor: '#666',
+            borderColor: 'rgba(0, 0, 0, 0.1)',
+            borderWidth: 1,
+            cornerRadius: 12,
+            padding: 16,
+            boxPadding: 8,
+            usePointStyle: true,
+            callbacks: {
+              label: function (context) {
+                const label = context.label || '';
+                const value = context.raw || 0;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return ` ${label}: $${value.toFixed(2)} (${percentage}%)`;
+              },
+            },
+          },
+        },
+        animation: {
+          duration: 2000,
+          easing: 'easeInOutCubic',
+          animateRotate: true,
+          animateScale: true,
+        },
+        onHover: (event, elements) => {
+          canvas.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+        },
+      },
+    });
+
+    // Animar keywords después del gráfico
+    setTimeout(() => this.animateKeywords(), 500);
+    // Actualizar insights
+    setTimeout(() => this.updateInsights(demoData), 1000);
+  }
+
+  createPremiumLegend(chartData, colors) {
+    const legendContainer = document.getElementById('chartLegend');
+    if (!legendContainer) return;
+
+    const total = chartData.datasets[0].data.reduce((a, b) => a + b, 0);
+
+    legendContainer.innerHTML = '';
+
+    chartData.labels.forEach((label, index) => {
+      const value = chartData.datasets[0].data[index];
+      const percentage = ((value / total) * 100).toFixed(1);
+
+      const legendItem = document.createElement('div');
+      legendItem.className = 'legend-item';
+      legendItem.style.animationDelay = `${index * 100}ms`;
+
+      legendItem.innerHTML = `
+        <div class="legend-color" style="background-color: ${colors[index]}"></div>
+        <span class="legend-text">${label}</span>
+        <span class="legend-percentage">${percentage}%</span>
+      `;
+
+      legendContainer.appendChild(legendItem);
+    });
+  }
+
+  animateKeywords() {
+    const keywords = document.querySelectorAll('.keyword');
+    keywords.forEach((keyword, index) => {
+      const delay = parseInt(keyword.getAttribute('data-delay')) || 0;
+      setTimeout(() => {
+        keyword.style.setProperty('--delay', delay + 'ms');
+        keyword.classList.add('animated');
+      }, delay);
+    });
+  }
+
+  updateInsights(demoData) {
+    // Insights para usuarios nuevos sin datos
+    const welcomeInsights = [
+      {
+        tip: '¡Bienvenido! Comienza registrando tu primer gasto',
+        progress: 'Estás a punto de tomar el control de tus finanzas',
+        goal: 'Agrega tu ingreso mensual en la sección de configuración',
+      },
+      {
+        tip: 'Establece tu primera meta financiera para mantenerte motivado',
+        progress: 'Cada gran viaje comienza con un pequeño paso',
+        goal: 'Categoriza tus gastos para un mejor análisis',
+      },
+      {
+        tip: 'Revisa la sección de análisis para entender tus patrones',
+        progress: 'La constancia es clave para el éxito financiero',
+        goal: 'Configura recordatorios para revisar tus gastos',
+      },
+    ];
+
+    const regularInsights = [
+      {
+        tip: 'Revisa tus gastos semanalmente para mantener el control',
+        progress: 'Vas por buen camino hacia tus metas financieras',
+        goal: 'Continúa ahorrando para alcanzar tu objetivo',
+      },
+      {
+        tip: 'Reduce gastos innecesarios para aumentar tu ahorro',
+        progress: 'Tu disciplina financiera está mejorando constantemente',
+        goal: 'Establece una meta de ahorro mensual realista',
+      },
+      {
+        tip: 'Considera invertir tus ahorros para generar rendimientos',
+        progress: 'Has logrado controlar tus gastos este mes',
+        goal: 'Planifica un fondo de emergencia sólido',
+      },
+    ];
+
+    // Usar insights de bienvenida si no hay datos reales y no estamos en demo
+    const hasRealData = this.expenses.length > 0 || this.goals.length > 0;
+    const isDemo = demoData !== null;
+    const insights = hasRealData || isDemo ? regularInsights : welcomeInsights;
+
+    const currentInsights = insights[this.currentDemoIndex % insights.length];
+
+    const dailyTip = document.getElementById('dailyTip');
+    const progressInsight = document.getElementById('progressInsight');
+    const nextGoal = document.getElementById('nextGoal');
+
+    if (dailyTip) dailyTip.textContent = currentInsights.tip;
+    if (progressInsight) progressInsight.textContent = currentInsights.progress;
+    if (nextGoal) nextGoal.textContent = currentInsights.goal;
+  }
+
+  animateValue(element, start, end, duration, prefix = '') {
+    const startTime = performance.now();
+    const update = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      const current = Math.round(start + (end - start) * easeProgress);
+      element.textContent = `${prefix}${current.toLocaleString()}`;
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    };
+    requestAnimationFrame(update);
+  }
+
+  renderInteractiveSummary(demoData = null) {
+    this.renderCashFlow(demoData);
+    this.renderUpcomingPayments(demoData);
+    this.renderGoalsProgress(demoData);
+  }
+
+  renderCashFlow(demoData = null) {
+    let necessaryAmount = 0;
+    let unnecessaryAmount = 0;
+
+    if (demoData) {
+      necessaryAmount = 1200;
+      unnecessaryAmount = 800;
+    } else {
+      this.expenses.forEach(expense => {
+        if (expense.necessity === 'Muy Necesario' || expense.necessity === 'Necesario') {
+          necessaryAmount += expense.amount;
+        } else {
+          unnecessaryAmount += expense.amount;
+        }
+      });
+    }
+
+    const total = necessaryAmount + unnecessaryAmount;
+
+    // Actualizar valores
+    const cashFlowTotal = document.getElementById('cashFlowTotal');
+    const necessaryValue = document.getElementById('necessaryValue');
+    const unnecessaryValue = document.getElementById('unnecessaryValue');
+
+    if (cashFlowTotal) cashFlowTotal.textContent = `$${total.toLocaleString()}`;
+    if (necessaryValue) necessaryValue.textContent = `$${necessaryAmount.toLocaleString()}`;
+    if (unnecessaryValue) unnecessaryValue.textContent = `$${unnecessaryAmount.toLocaleString()}`;
+
+    // Animar barras de progreso
+    const necessaryProgress = document.getElementById('necessaryProgress');
+    const unnecessaryProgress = document.getElementById('unnecessaryProgress');
+
+    if (necessaryProgress && total > 0) {
+      setTimeout(() => {
+        necessaryProgress.style.width = `${(necessaryAmount / total) * 100}%`;
+      }, 300);
+    }
+
+    if (unnecessaryProgress && total > 0) {
+      setTimeout(() => {
+        unnecessaryProgress.style.width = `${(unnecessaryAmount / total) * 100}%`;
+      }, 600);
+    }
+  }
+
+  renderUpcomingPayments(demoData = null) {
+    const paymentsList = document.getElementById('paymentsList');
+    const paymentCount = document.getElementById('paymentCount');
+
+    if (!paymentsList) return;
+
+    // Datos demo para próximos pagos
+    const demoPayments = [
+      {
+        description: 'Electricidad',
+        date: '15 Dic',
+        amount: 85,
+        status: 'urgent'
+      },
+      {
+        description: 'Internet',
+        date: '20 Dic',
+        amount: 45,
+        status: 'warning'
+      },
+      {
+        description: 'Suscripción Netflix',
+        date: '25 Dic',
+        amount: 15,
+        status: 'normal'
+      }
+    ];
+
+    const payments = demoData ? demoPayments : [];
+
+    if (paymentCount) {
+      paymentCount.textContent = `${payments.length} pendientes`;
+    }
+
+    paymentsList.innerHTML = '';
+
+    payments.forEach((payment, index) => {
+      const paymentItem = document.createElement('div');
+      paymentItem.className = `payment-item ${payment.status}`;
+      paymentItem.style.opacity = '0';
+      paymentItem.style.transform = 'translateY(10px)';
+
+      paymentItem.innerHTML = `
+        <div class="payment-info">
+          <div class="payment-description">${payment.description}</div>
+          <div class="payment-date">${payment.date}</div>
+        </div>
+        <div class="payment-amount">$${payment.amount}</div>
+      `;
+
+      paymentsList.appendChild(paymentItem);
+
+      // Animar entrada
+      setTimeout(() => {
+        paymentItem.style.transition = 'all 0.4s ease';
+        paymentItem.style.opacity = '1';
+        paymentItem.style.transform = 'translateY(0)';
+      }, 200 * (index + 1));
+    });
+  }
+
+  renderGoalsProgress(demoData = null) {
+    const goalsProgressRing = document.getElementById('goalsProgressRing');
+    const goalsProgressText = document.getElementById('goalsProgressText');
+    const goalsProgressPercentage = document.getElementById('goalsProgressPercentage');
+
+    let current = 0;
+    let target = 0;
+    let percentage = 0;
+
+    if (demoData) {
+      current = 4200;
+      target = 6000;
+      percentage = Math.round((current / target) * 100);
+    } else {
+      // Calcular datos reales de metas
+      if (this.goals.length > 0) {
+        const totalTarget = this.goals.reduce((sum, goal) => sum + goal.target, 0);
+        const totalCurrent = this.goals.reduce((sum, goal) => sum + goal.current, 0);
+        current = totalCurrent;
+        target = totalTarget;
+        percentage = target > 0 ? Math.round((current / target) * 100) : 0;
+      }
+    }
+
+    // Actualizar textos
+    if (goalsProgressText) {
+      goalsProgressText.textContent = `$${current.toLocaleString()} / $${target.toLocaleString()}`;
+    }
+
+    if (goalsProgressPercentage) {
+      goalsProgressPercentage.textContent = `${percentage}%`;
+    }
+
+    // Animar anillo de progreso
+    if (goalsProgressRing) {
+      const circumference = 2 * Math.PI * 35; // r=35
+      const offset = circumference - (percentage / 100) * circumference;
+
+      setTimeout(() => {
+        goalsProgressRing.style.strokeDashoffset = offset;
+      }, 800);
+    }
+
+    // Configurar botón CTA
+    const addGoalBtn = document.getElementById('addGoalBtn');
+    if (addGoalBtn) {
+      addGoalBtn.onclick = () => this.showSection('goals');
+    }
+  }
+
+
   renderExpenseChart(demoData = null) {
     const canvas = document.getElementById('expenseChart');
     if (!canvas) return;
@@ -1592,48 +2126,99 @@ class FinanceApp {
       this.charts.expenseChart.options.plugins.title.text = chartTitle;
       this.charts.expenseChart.update('none');
     } else {
+      // Registrar el plugin globalmente si no está registrado
+      if (
+        typeof ChartDataLabels !== 'undefined' &&
+        !Chart.registry.plugins.get('datalabels')
+      ) {
+        Chart.register(ChartDataLabels);
+      }
+
       this.charts.expenseChart = new Chart(ctx, {
         type: 'doughnut',
         data: chartData,
-        plugins: [ChartDataLabels],
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          cutout: '70%',
+          cutout: '60%',
+          layout: {
+            padding: {
+              top: 60,
+              bottom: 60,
+              left: 60,
+              right: 60,
+            },
+          },
           animation: {
             duration: 1200,
             easing: 'easeInOutQuart',
           },
           plugins: {
             title: {
-              display: true,
-              text: chartTitle,
-              padding: { top: 15, bottom: 15 },
-              font: { size: 16, family: 'Inter, sans-serif', weight: '600' },
-              color: 'var(--color-text)',
-            },
-            legend: {
               display: false,
             },
-            datalabels: {
-              color: '#666',
-              font: {
-                size: 11,
-                weight: '600',
-                family: 'Inter, sans-serif'
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: {
+                usePointStyle: true,
+                pointStyle: 'circle',
+                padding: 15,
+                font: {
+                  size: 11,
+                  family: 'Inter, sans-serif',
+                },
+                color: 'var(--color-text-secondary)',
+                generateLabels: function (chart) {
+                  const data = chart.data;
+                  if (data.labels.length && data.datasets.length) {
+                    return data.labels.map((label, i) => {
+                      const dataset = data.datasets[0];
+                      const backgroundColor = dataset.backgroundColor[i];
+                      const total = dataset.data.reduce((a, b) => a + b, 0);
+                      const value = dataset.data[i];
+                      const percentage = ((value / total) * 100).toFixed(1);
+
+                      return {
+                        text: `${label} (${percentage}%)`,
+                        fillStyle: backgroundColor,
+                        strokeStyle: backgroundColor,
+                        lineWidth: 0,
+                        pointStyle: 'circle',
+                        hidden: false,
+                        index: i,
+                      };
+                    });
+                  }
+                  return [];
+                },
               },
-              formatter: function(value, context) {
+            },
+            datalabels: {
+              display: true,
+              color: '#ffffff',
+              backgroundColor: function (context) {
+                return context.dataset.backgroundColor[context.dataIndex];
+              },
+              borderColor: '#ffffff',
+              borderRadius: 6,
+              borderWidth: 1,
+              font: {
+                weight: 'bold',
+                size: 10,
+                family: 'Inter, sans-serif',
+              },
+              padding: 4,
+              formatter: function (value, context) {
                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
                 const percentage = (value / total) * 100;
-                if (percentage < 8) return '';
+                if (percentage < 5) return '';
                 return context.chart.data.labels[context.dataIndex];
               },
               anchor: 'end',
               align: 'end',
-              offset: 8,
+              offset: 20,
               clip: false,
-              textStrokeColor: '#fff',
-              textStrokeWidth: 2
             },
             tooltip: {
               enabled: true,
@@ -1713,10 +2298,11 @@ class FinanceApp {
       const baseData = [1000, 1500, 2200, 2800, 3500, 4200];
       const variations = [
         [1000, 1500, 2200, 2800, 3500, 4200], // Escenario 1
-        [800, 1200, 1800, 2400, 3200, 3800],  // Escenario 2
+        [800, 1200, 1800, 2400, 3200, 3800], // Escenario 2
         [1200, 1800, 2500, 3100, 3900, 4600], // Escenario 3
       ];
-      chartData = variations[this.currentDemoIndex % variations.length] || baseData;
+      chartData =
+        variations[this.currentDemoIndex % variations.length] || baseData;
       finalValue = chartData[chartData.length - 1];
     } else {
       // Datos reales basados en el progreso de metas del usuario
@@ -1728,7 +2314,8 @@ class FinanceApp {
 
     // Actualizar valor numérico de forma suave
     if (valueElement) {
-      const currentValue = parseInt(valueElement.textContent.replace(/[^0-9]/g, '')) || 0;
+      const currentValue =
+        parseInt(valueElement.textContent.replace(/[^0-9]/g, '')) || 0;
       this.animateValue(valueElement, currentValue, finalValue, 800);
 
       valueElement.className = 'goals-progress-value';
@@ -1754,50 +2341,52 @@ class FinanceApp {
         type: 'line',
         data: {
           labels: chartLabels,
-          datasets: [{
-            data: chartData,
-            borderColor: 'var(--color-primary)',
-            backgroundColor: gradient,
-            borderWidth: 3,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 4,
-            pointHoverRadius: 8,
-            pointBackgroundColor: 'var(--color-primary)',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointHoverBackgroundColor: 'var(--color-primary)',
-            pointHoverBorderColor: '#fff',
-            pointHoverBorderWidth: 3
-          }]
+          datasets: [
+            {
+              data: chartData,
+              borderColor: 'var(--color-primary)',
+              backgroundColor: gradient,
+              borderWidth: 3,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointHoverRadius: 8,
+              pointBackgroundColor: 'var(--color-primary)',
+              pointBorderColor: '#fff',
+              pointBorderWidth: 2,
+              pointHoverBackgroundColor: 'var(--color-primary)',
+              pointHoverBorderColor: '#fff',
+              pointHoverBorderWidth: 3,
+            },
+          ],
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              display: false
-            }
+              display: false,
+            },
           },
           scales: {
             x: {
               display: false,
               grid: {
-                display: false
-              }
+                display: false,
+              },
             },
             y: {
               display: false,
               grid: {
-                display: false
-              }
-            }
+                display: false,
+              },
+            },
           },
           animation: {
             duration: 1500,
-            easing: 'easeInOutQuart'
-          }
-        }
+            easing: 'easeInOutQuart',
+          },
+        },
       });
     }
   }
@@ -1825,7 +2414,11 @@ class FinanceApp {
 
     // Generar últimos 6 meses
     for (let i = 5; i >= 0; i--) {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const date = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - i,
+        1
+      );
       const monthName = date.toLocaleDateString('es-ES', { month: 'short' });
       labels.push(monthName);
 
@@ -1841,10 +2434,12 @@ class FinanceApp {
 
   getMonthlyExpenses(date) {
     return this.expenses
-      .filter(expense => {
+      .filter((expense) => {
         const expenseDate = new Date(expense.date);
-        return expenseDate.getMonth() === date.getMonth() &&
-               expenseDate.getFullYear() === date.getFullYear();
+        return (
+          expenseDate.getMonth() === date.getMonth() &&
+          expenseDate.getFullYear() === date.getFullYear()
+        );
       })
       .reduce((total, expense) => total + expense.amount, 0);
   }
@@ -1855,32 +2450,32 @@ class FinanceApp {
         icon: 'fas fa-rocket',
         title: '¡Comienza tu viaje financiero!',
         subtitle: 'Establece tu primera meta y ve cómo tu dinero crece',
-        color: '#3b82f6'
+        color: '#3b82f6',
       },
       {
         icon: 'fas fa-star',
         title: 'Las metas te acercan al éxito',
         subtitle: 'Cada gran logro comienza con una decisión de intentarlo',
-        color: '#f59e0b'
+        color: '#f59e0b',
       },
       {
         icon: 'fas fa-chart-line',
         title: 'Visualiza tu progreso',
         subtitle: 'Transforma tus sueños en objetivos medibles',
-        color: '#10b981'
+        color: '#10b981',
       },
       {
         icon: 'fas fa-gem',
         title: 'Construye tu futuro',
         subtitle: 'Cada peso ahorrado es un paso hacia tu libertad financiera',
-        color: '#8b5cf6'
+        color: '#8b5cf6',
       },
       {
         icon: 'fas fa-trophy',
         title: 'Alcanza tus sueños',
         subtitle: 'Las metas claras son el camino hacia el éxito',
-        color: '#ef4444'
-      }
+        color: '#ef4444',
+      },
     ];
 
     let currentMessageIndex = 0;
@@ -1894,18 +2489,29 @@ class FinanceApp {
           <h3 class="animated-title">${message.title}</h3>
           <p class="animated-subtitle">${message.subtitle}</p>
           <div class="progress-dots">
-            ${motivationalMessages.map((_, index) =>
-              `<span class="dot ${index === currentMessageIndex ? 'active' : ''}" style="background-color: ${index === currentMessageIndex ? message.color : '#cbd5e1'}"></span>`
-            ).join('')}
+            ${motivationalMessages
+              .map(
+                (_, index) =>
+                  `<span class="dot ${
+                    index === currentMessageIndex ? 'active' : ''
+                  }" style="background-color: ${
+                    index === currentMessageIndex ? message.color : '#cbd5e1'
+                  }"></span>`
+              )
+              .join('')}
           </div>
-          <button class="create-goal-btn" style="background: linear-gradient(135deg, ${message.color}, ${message.color}99)">
+          <button class="create-goal-btn" style="background: linear-gradient(135deg, ${
+            message.color
+          }, ${message.color}99)">
             <i class="fas fa-plus"></i> Crear primera meta
           </button>
         </div>
       `;
     };
 
-    container.innerHTML = createMessageElement(motivationalMessages[currentMessageIndex]);
+    container.innerHTML = createMessageElement(
+      motivationalMessages[currentMessageIndex]
+    );
 
     // Configurar el botón para crear meta
     const createBtn = container.querySelector('.create-goal-btn');
@@ -1918,14 +2524,17 @@ class FinanceApp {
 
     // Animación automática de mensajes
     const animateMessages = () => {
-      currentMessageIndex = (currentMessageIndex + 1) % motivationalMessages.length;
+      currentMessageIndex =
+        (currentMessageIndex + 1) % motivationalMessages.length;
 
       const state = container.querySelector('.empty-goals-state');
       if (state) {
         state.style.animation = 'fadeOutUp 0.5s ease-in-out forwards';
 
         setTimeout(() => {
-          container.innerHTML = createMessageElement(motivationalMessages[currentMessageIndex]);
+          container.innerHTML = createMessageElement(
+            motivationalMessages[currentMessageIndex]
+          );
 
           // Reconfigurar el botón
           const newCreateBtn = container.querySelector('.create-goal-btn');
@@ -2094,7 +2703,9 @@ class FinanceApp {
         </div>
         <div style="display:flex; align-items:center; gap:12px;">
           <div class="transaction-amount expense">$${expense.amount}</div>
-          <button type="button" class="btn btn-danger btn-delete" data-id="${expense.id}">
+          <button type="button" class="btn btn-danger btn-delete" data-id="${
+            expense.id
+          }">
             Eliminar
           </button>
         </div>
@@ -2111,7 +2722,6 @@ class FinanceApp {
         });
       }
     });
-
   }
 
   deleteExpense(id) {
@@ -2437,11 +3047,12 @@ class FinanceApp {
       goalEl.setAttribute('data-progress-level', progressLevel);
 
       // Create motivational message
-      const motivationMessage = progress >= 75 && progress < 100
-        ? `<div class="goal-motivation-message">¡Ya casi lo logras!</div>`
-        : progress >= 100
-        ? `<div class="goal-motivation-message">🎉 ¡Meta alcanzada!</div>`
-        : '';
+      const motivationMessage =
+        progress >= 75 && progress < 100
+          ? `<div class="goal-motivation-message">¡Ya casi lo logras!</div>`
+          : progress >= 100
+          ? `<div class="goal-motivation-message">🎉 ¡Meta alcanzada!</div>`
+          : '';
 
       goalEl.innerHTML = `
         <div class="goal-header">
@@ -2455,7 +3066,9 @@ class FinanceApp {
           <div class="goal-progress-container">
             <div class="goal-progress-bar" data-progress="${progressData}">
               <div class="goal-progress-fill" style="width: ${progress}%"></div>
-              <span class="goal-progress-percentage">${progress.toFixed(0)}%</span>
+              <span class="goal-progress-percentage">${progress.toFixed(
+                0
+              )}%</span>
             </div>
             ${motivationMessage}
           </div>
@@ -2463,8 +3076,12 @@ class FinanceApp {
 
         <div class="goal-footer">
           <div class="goal-meta-info">
-            <span class="goal-target">Meta: $${this.formatCurrency(goal.target)}</span>
-            <span class="goal-saved">Ahorrado: $${this.formatCurrency(goal.current)}</span>
+            <span class="goal-target">Meta: $${this.formatCurrency(
+              goal.target
+            )}</span>
+            <span class="goal-saved">Ahorrado: $${this.formatCurrency(
+              goal.current
+            )}</span>
           </div>
         </div>
       `;
@@ -2718,11 +3335,15 @@ class FinanceApp {
           item.selected ? 'checked' : ''
         } data-index="${index}">
         <div class="shopping-content">
-          <div class="shopping-product">${this.fixLegacyEncoding(item.product)}</div>
+          <div class="shopping-product">${this.fixLegacyEncoding(
+            item.product
+          )}</div>
           <div class="shopping-details">
             <span>Cantidad: ${item.quantity}</span>
             <span class="shopping-separator">•</span>
-            <span class="necessity-badge ${item.necessary ? 'necessary' : 'not-necessary'}">
+            <span class="necessity-badge ${
+              item.necessary ? 'necessary' : 'not-necessary'
+            }">
               ${item.necessary ? 'Necesario' : 'No Necesario'}
             </span>
           </div>
@@ -2971,7 +3592,10 @@ class FinanceApp {
       const data = await response.json();
       const aiMessage = data.choices?.[0]?.message?.content;
       if (aiMessage) {
-        this.conversationHistory.push({ role: 'assistant', content: aiMessage });
+        this.conversationHistory.push({
+          role: 'assistant',
+          content: aiMessage,
+        });
       } else {
         throw new Error('Respuesta vacía de la IA');
       }

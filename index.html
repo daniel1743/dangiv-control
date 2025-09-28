@@ -303,30 +303,142 @@
           </div>
         </div>
 
-        <!-- Charts and Analysis -->
-        <div class="dashboard-grid">
-          <div class="card">
-            <div class="card__header">
-              <h3>Gastos por Categoría</h3>
+        <!-- Premium Interactive Dashboard -->
+        <div class="premium-dashboard">
+          <div class="dual-chart-layout">
+            <!-- Left Panel: Elegant Burger Chart -->
+            <div class="chart-panel">
+              <div class="chart-container-premium">
+                <div class="chart-header">
+                  <h3 class="chart-title">Distribución de Gastos</h3>
+                  <div class="chart-subtitle">Análisis detallado de tus finanzas</div>
+                </div>
+                <div class="burger-chart-wrapper">
+                  <canvas id="premiumChart" width="400" height="400"></canvas>
+                  <div class="chart-center-info">
+                    <div class="total-amount" id="totalAmount">$0</div>
+                    <div class="total-label">Total gastado</div>
+                  </div>
+                </div>
+                <div class="chart-legend" id="chartLegend"></div>
+              </div>
             </div>
-            <div class="card__body">
-              <div
-                class="chart-container"
-                style="position: relative; height: 300px"
-              >
-                <canvas id="expenseChart"></canvas>
+
+            <!-- Right Panel: Interactive Summary -->
+            <div class="chart-panel">
+              <div class="chart-container-premium">
+                <div class="chart-header">
+                  <h3 class="chart-title">Resumen Interactivo</h3>
+                  <div class="chart-subtitle">Control financiero en tiempo real</div>
+                </div>
+
+                <div class="interactive-components">
+                  <!-- Cash Flow Component -->
+                  <div class="component cash-flow-component">
+                    <div class="component-header">
+                      <h4>Flujo de Caja</h4>
+                      <span class="main-value" id="cashFlowTotal">$2,000</span>
+                    </div>
+                    <div class="progress-bars">
+                      <div class="progress-item">
+                        <div class="progress-label">
+                          <span>Gastos Necesarios</span>
+                          <span class="progress-value" id="necessaryValue">$1,200</span>
+                        </div>
+                        <div class="progress-bar">
+                          <div class="progress-fill necessary" id="necessaryProgress"></div>
+                        </div>
+                      </div>
+                      <div class="progress-item">
+                        <div class="progress-label">
+                          <span>Gastos No Necesarios</span>
+                          <span class="progress-value" id="unnecessaryValue">$800</span>
+                        </div>
+                        <div class="progress-bar">
+                          <div class="progress-fill unnecessary" id="unnecessaryProgress"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Upcoming Payments Component -->
+                  <div class="component upcoming-payments-component">
+                    <div class="component-header">
+                      <h4>Próximos Pagos</h4>
+                      <span class="payment-count" id="paymentCount">3 pendientes</span>
+                    </div>
+                    <div class="payments-list" id="paymentsList">
+                      <!-- Payments will be dynamically inserted -->
+                    </div>
+                  </div>
+
+                  <!-- Goals Progress Component -->
+                  <div class="component goals-progress-component">
+                    <div class="component-header">
+                      <h4>Progreso de Metas</h4>
+                      <button class="cta-button" id="addGoalBtn">
+                        <i class="fas fa-plus"></i> Nueva Meta
+                      </button>
+                    </div>
+                    <div class="goals-summary">
+                      <div class="circular-progress">
+                        <svg class="progress-ring" width="80" height="80">
+                          <circle class="progress-ring-bg" cx="40" cy="40" r="35" stroke-width="6"></circle>
+                          <circle class="progress-ring-fill" cx="40" cy="40" r="35" stroke-width="6" id="goalsProgressRing"></circle>
+                        </svg>
+                        <div class="progress-center">
+                          <i class="fas fa-piggy-bank"></i>
+                        </div>
+                      </div>
+                      <div class="goals-info">
+                        <div class="goals-text" id="goalsProgressText">$4,200 / $6,000</div>
+                        <div class="goals-percentage" id="goalsProgressPercentage">70%</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="card">
-            <div class="card__header">
-              <h3>Progreso de Metas</h3>
+
+          <!-- Bottom Panel: Floating Keywords & Insights -->
+          <div class="insights-panel">
+            <div class="floating-keywords">
+              <div class="keyword-cloud">
+                <span class="keyword" data-delay="0">Ahorro Inteligente</span>
+                <span class="keyword" data-delay="200">Control Total</span>
+                <span class="keyword" data-delay="400">Metas Claras</span>
+                <span class="keyword" data-delay="600">Finanzas Sanas</span>
+                <span class="keyword" data-delay="800">Inversión Segura</span>
+                <span class="keyword" data-delay="1000">Futuro Próspero</span>
+                <span class="keyword" data-delay="1200">Decisiones Sabias</span>
+                <span class="keyword" data-delay="1400">Libertad Financiera</span>
+              </div>
             </div>
-            <div class="card__body">
-              <div id="goalsProgress"></div>
-              <div class="goals-chart-container">
-                <canvas id="goalsProgressChart" width="400" height="200"></canvas>
-                <div id="goalsProgressValue" class="goals-progress-value">$0</div>
+
+            <div class="insights-cards">
+              <div class="insight-card" id="insightCard1">
+                <div class="insight-icon">💡</div>
+                <div class="insight-content">
+                  <h4>Consejo del Día</h4>
+                  <p id="dailyTip">Revisa tus gastos semanalmente para mantener el control</p>
+                </div>
+              </div>
+
+              <div class="insight-card" id="insightCard2">
+                <div class="insight-icon">📈</div>
+                <div class="insight-content">
+                  <h4>Tu Progreso</h4>
+                  <p id="progressInsight">Vas por buen camino hacia tus metas</p>
+                </div>
+              </div>
+
+              <div class="insight-card" id="insightCard3">
+                <div class="insight-icon">🎯</div>
+                <div class="insight-content">
+                  <h4>Próximo Objetivo</h4>
+                  <p id="nextGoal">Continúa ahorrando para alcanzar tu meta</p>
+                </div>
               </div>
             </div>
           </div>
