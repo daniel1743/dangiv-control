@@ -4922,3 +4922,48 @@ select.form-control {
   outline-offset: 2px;
 }
 
+
+/* ===== CORRECCIÓN DASHBOARD SIEMPRE VISIBLE ===== */
+
+#dashboard {
+  display: none !important;
+  position: relative !important;
+  z-index: auto !important;
+}
+
+#dashboard.active {
+  display: block !important;
+  position: relative !important;
+  z-index: auto !important;
+}
+
+.section {
+  display: none !important;
+  position: relative !important;
+  z-index: auto !important;
+}
+
+.section.active {
+  display: block !important;
+  position: relative !important;
+  z-index: auto !important;
+}
+
+/* Forzar corrección en todas las secciones */
+#dashboard,
+#expenses,
+#goals,
+#analysis,
+#shopping,
+#config,
+#achievements {
+  position: relative !important;
+  z-index: auto !important;
+  top: auto !important;
+  left: auto !important;
+}
+
+.main-content {
+  position: relative !important;
+  z-index: auto !important;
+}
