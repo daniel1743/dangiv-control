@@ -24,28 +24,69 @@
       <div class="navbar__container">
         <div class="navbar__logo">
           <div class="logo-icon">
-            <svg class="logo-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              class="logo-svg"
+              viewBox="0 0 40 40"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <defs>
-                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style="stop-color:var(--color-primary);stop-opacity:1" />
-                  <stop offset="100%" style="stop-color:var(--color-teal-600);stop-opacity:1" />
+                <linearGradient
+                  id="logoGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    style="stop-color: var(--color-primary); stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: var(--color-teal-600); stop-opacity: 1"
+                  />
                 </linearGradient>
               </defs>
               <!-- Círculo base -->
-              <circle cx="20" cy="20" r="18" fill="url(#logoGradient)" stroke="white" stroke-width="2"/>
+              <circle
+                cx="20"
+                cy="20"
+                r="18"
+                fill="url(#logoGradient)"
+                stroke="white"
+                stroke-width="2"
+              />
               <!-- Gráfico estilizado -->
-              <path d="M12 28 L16 22 L20 25 L24 18 L28 20" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <path
+                d="M12 28 L16 22 L20 25 L24 18 L28 20"
+                stroke="white"
+                stroke-width="2.5"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
               <!-- Puntos de datos -->
-              <circle cx="16" cy="22" r="2.5" fill="white"/>
-              <circle cx="20" cy="25" r="2.5" fill="white"/>
-              <circle cx="24" cy="18" r="2.5" fill="white"/>
+              <circle cx="16" cy="22" r="2.5" fill="white" />
+              <circle cx="20" cy="25" r="2.5" fill="white" />
+              <circle cx="24" cy="18" r="2.5" fill="white" />
               <!-- Símbolo de moneda $ -->
-              <text x="20" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">$</text>
+              <text
+                x="20"
+                y="15"
+                text-anchor="middle"
+                fill="white"
+                font-size="8"
+                font-weight="bold"
+              >
+                $
+              </text>
             </svg>
           </div>
           <span class="logo-text">
             <span class="brand-name">Financia</span>
-            <span class="brand-suite">Suite Pro <span class="beta-badge">BETA</span></span>
+            <span class="brand-suite"
+              >Suite Pro <span class="beta-badge">BETA</span></span
+            >
           </span>
         </div>
         <button
@@ -74,7 +115,11 @@
           <div id="notificationDropdown" class="notification-dropdown hidden">
             <div class="notification-header">
               <h4>Notificaciones</h4>
-              <button class="notification-header-action" id="markAllReadBtn" title="Marcar todo como leído">
+              <button
+                class="notification-header-action"
+                id="markAllReadBtn"
+                title="Marcar todo como leído"
+              >
                 <i class="fas fa-check-double"></i>
               </button>
             </div>
@@ -94,7 +139,11 @@
             </div>
 
             <div class="notification-footer">
-              <button class="notification-settings-btn" id="notificationSettingsBtn" title="Configuración de notificaciones">
+              <button
+                class="notification-settings-btn"
+                id="notificationSettingsBtn"
+                title="Configuración de notificaciones"
+              >
                 <i class="fas fa-cog"></i>
                 <span>Configuración</span>
               </button>
@@ -113,8 +162,16 @@
           </button>
 
           <!-- Profile Menu (shown when logged in) -->
-          <div class="profile-menu-container" id="profileMenuContainer" style="display: none;">
-            <button class="profile-avatar-btn" id="profileAvatarBtn" aria-label="Abrir menú de perfil">
+          <div
+            class="profile-menu-container"
+            id="profileMenuContainer"
+            style="display: none"
+          >
+            <button
+              class="profile-avatar-btn"
+              id="profileAvatarBtn"
+              aria-label="Abrir menú de perfil"
+            >
               <div class="profile-avatar-wrapper" id="profileAvatarWrapper">
                 <!-- Animated ring for Pro users -->
                 <div class="profile-ring" id="profileRing">
@@ -144,7 +201,7 @@
                   id="profileAvatar"
                   src=""
                   alt="Foto de perfil"
-                >
+                />
 
                 <!-- Verification badge for Pro users -->
                 <div class="profile-verification-badge" id="profileBadge">
@@ -157,7 +214,12 @@
             <div class="profile-dropdown hidden" id="profileDropdown">
               <div class="profile-dropdown-header">
                 <div class="profile-header-avatar">
-                  <img class="profile-header-img" id="profileHeaderImg" src="" alt="Avatar">
+                  <img
+                    class="profile-header-img"
+                    id="profileHeaderImg"
+                    src=""
+                    alt="Avatar"
+                  />
                   <div class="profile-header-badge" id="profileHeaderBadge">
                     <i class="fas fa-crown"></i>
                   </div>
@@ -178,7 +240,10 @@
                   <span>Configuración</span>
                 </button>
                 <div class="profile-menu-divider"></div>
-                <button class="profile-menu-item profile-menu-logout" id="profileLogoutBtn">
+                <button
+                  class="profile-menu-item profile-menu-logout"
+                  id="profileLogoutBtn"
+                >
                   <i class="fas fa-sign-out-alt"></i>
                   <span>Cerrar Sesión</span>
                 </button>
@@ -215,6 +280,10 @@
           <i class="fas fa-chart-pie"></i>
           <span>Análisis</span>
         </button>
+        <button class="nav-item" data-section="achievements">
+          <i class="fas fa-trophy"></i>
+          <span>Logros</span>
+        </button>
         <button class="nav-item" data-section="shopping">
           <i class="fas fa-shopping-cart"></i>
           <span>Lista de Compras</span>
@@ -249,7 +318,11 @@
         <!-- Financial Summary -->
         <div class="stats-grid">
           <!-- Tarjeta de Balance Total -->
-          <div class="stat-card stat-card--primary animate-on-scroll" data-animation="fadeInUp" data-delay="100">
+          <div
+            class="stat-card stat-card--primary animate-on-scroll"
+            data-animation="fadeInUp"
+            data-delay="100"
+          >
             <div class="stat-icon-wrapper">
               <i class="fas fa-wallet stat-icon"></i>
             </div>
@@ -261,7 +334,11 @@
           </div>
 
           <!-- Tarjeta de Gastos Totales -->
-          <div class="stat-card animate-on-scroll" data-animation="fadeInUp" data-delay="200">
+          <div
+            class="stat-card animate-on-scroll"
+            data-animation="fadeInUp"
+            data-delay="200"
+          >
             <div class="stat-icon-wrapper">
               <i class="fas fa-chart-bar stat-icon"></i>
             </div>
@@ -275,7 +352,12 @@
           </div>
 
           <!-- Tarjeta de Ahorros -->
-          <div class="stat-card stat-card--savings animate-on-scroll" id="savingsCard" data-animation="fadeInUp" data-delay="300">
+          <div
+            class="stat-card stat-card--savings animate-on-scroll"
+            id="savingsCard"
+            data-animation="fadeInUp"
+            data-delay="300"
+          >
             <div class="stat-icon-wrapper savings-icon-wrapper">
               <div class="savings-progress-ring" id="savingsProgressRing">
                 <svg class="progress-circle" width="48" height="48">
@@ -308,12 +390,20 @@
                 <i class="fas fa-check savings-check" id="savingsCheck"></i>
               </div>
               <p class="stat-value" id="totalSavings">$0</p>
-              <span class="stat-change savings-progress-text" id="savingsProgressText">0% de la meta</span>
+              <span
+                class="stat-change savings-progress-text"
+                id="savingsProgressText"
+                >0% de la meta</span
+              >
             </div>
           </div>
 
           <!-- Tarjeta de Transacciones -->
-          <div class="stat-card animate-on-scroll" data-animation="fadeInUp" data-delay="400">
+          <div
+            class="stat-card animate-on-scroll"
+            data-animation="fadeInUp"
+            data-delay="400"
+          >
             <div class="stat-icon-wrapper">
               <i class="fas fa-receipt stat-icon"></i>
             </div>
@@ -325,7 +415,11 @@
           </div>
 
           <!-- Tarjeta de Progreso Mensual -->
-          <div class="stat-card stat-card--progress animate-on-scroll" data-animation="fadeInUp" data-delay="500">
+          <div
+            class="stat-card stat-card--progress animate-on-scroll"
+            data-animation="fadeInUp"
+            data-delay="500"
+          >
             <div class="stat-icon-wrapper">
               <i class="fas fa-calendar-alt stat-icon"></i>
             </div>
@@ -338,14 +432,24 @@
         </div>
 
         <!-- Premium Interactive Dashboard -->
-        <div class="premium-dashboard animate-on-scroll" data-animation="fadeIn" data-delay="600">
+        <div
+          class="premium-dashboard animate-on-scroll"
+          data-animation="fadeIn"
+          data-delay="600"
+        >
           <div class="dashboard-grid">
             <!-- Left Column: Chart -->
-            <div class="chart-column animate-on-scroll" data-animation="slideInLeft" data-delay="700">
+            <div
+              class="chart-column animate-on-scroll"
+              data-animation="slideInLeft"
+              data-delay="700"
+            >
               <div class="chart-container-premium">
                 <div class="chart-header">
                   <h3 class="chart-title">Distribución de Gastos</h3>
-                  <div class="chart-subtitle">Análisis detallado de tus finanzas</div>
+                  <div class="chart-subtitle">
+                    Análisis detallado de tus finanzas
+                  </div>
                 </div>
                 <div class="burger-chart-wrapper">
                   <canvas id="premiumChart" width="400" height="400"></canvas>
@@ -370,7 +474,11 @@
             </div>
 
             <!-- Right Column: Individual Cards -->
-            <div class="cards-column animate-on-scroll" data-animation="slideInRight" data-delay="800">
+            <div
+              class="cards-column animate-on-scroll"
+              data-animation="slideInRight"
+              data-delay="800"
+            >
               <!-- Cash Flow Card -->
               <div class="card">
                 <div class="card__header">
@@ -382,19 +490,29 @@
                     <div class="progress-item">
                       <div class="progress-label">
                         <span>Gastos Necesarios</span>
-                        <span class="progress-value" id="necessaryValue">$1,200</span>
+                        <span class="progress-value" id="necessaryValue"
+                          >$1,200</span
+                        >
                       </div>
                       <div class="progress-bar">
-                        <div class="progress-fill necessary" id="necessaryProgress"></div>
+                        <div
+                          class="progress-fill necessary"
+                          id="necessaryProgress"
+                        ></div>
                       </div>
                     </div>
                     <div class="progress-item">
                       <div class="progress-label">
                         <span>Gastos No Necesarios</span>
-                        <span class="progress-value" id="unnecessaryValue">$800</span>
+                        <span class="progress-value" id="unnecessaryValue"
+                          >$800</span
+                        >
                       </div>
                       <div class="progress-bar">
-                        <div class="progress-fill unnecessary" id="unnecessaryProgress"></div>
+                        <div
+                          class="progress-fill unnecessary"
+                          id="unnecessaryProgress"
+                        ></div>
                       </div>
                     </div>
                   </div>
@@ -405,7 +523,9 @@
               <div class="card">
                 <div class="card__header">
                   <h3>Próximos Pagos</h3>
-                  <span class="payment-count" id="paymentCount">3 pendientes</span>
+                  <span class="payment-count" id="paymentCount"
+                    >3 pendientes</span
+                  >
                 </div>
                 <div class="card__body">
                   <div class="payments-list" id="paymentsList">
@@ -426,16 +546,36 @@
                   <div class="goals-summary">
                     <div class="circular-progress">
                       <svg class="progress-ring" width="80" height="80">
-                        <circle class="progress-ring-bg" cx="40" cy="40" r="35" stroke-width="6"></circle>
-                        <circle class="progress-ring-fill" cx="40" cy="40" r="35" stroke-width="6" id="goalsProgressRing"></circle>
+                        <circle
+                          class="progress-ring-bg"
+                          cx="40"
+                          cy="40"
+                          r="35"
+                          stroke-width="6"
+                        ></circle>
+                        <circle
+                          class="progress-ring-fill"
+                          cx="40"
+                          cy="40"
+                          r="35"
+                          stroke-width="6"
+                          id="goalsProgressRing"
+                        ></circle>
                       </svg>
                       <div class="progress-center">
                         <i class="fas fa-piggy-bank"></i>
                       </div>
                     </div>
                     <div class="goals-info">
-                      <div class="goals-text" id="goalsProgressText">$4,200 / $6,000</div>
-                      <div class="goals-percentage" id="goalsProgressPercentage">70%</div>
+                      <div class="goals-text" id="goalsProgressText">
+                        $4,200 / $6,000
+                      </div>
+                      <div
+                        class="goals-percentage"
+                        id="goalsProgressPercentage"
+                      >
+                        70%
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -445,13 +585,18 @@
               <div class="card">
                 <div class="card__header">
                   <h3>Acceso Rápido</h3>
-                  <span class="greeting" id="quickAccessGreeting">¡Hola, Usuario!</span>
+                  <span class="greeting" id="quickAccessGreeting"
+                    >¡Hola, Usuario!</span
+                  >
                 </div>
                 <div class="card__body">
                   <div class="quick-access-content">
                     <div class="last-transaction" id="lastTransactionInfo">
                       <div class="transaction-label">Última transacción:</div>
-                      <div class="transaction-detail" id="lastTransactionDetail">
+                      <div
+                        class="transaction-detail"
+                        id="lastTransactionDetail"
+                      >
                         <span class="transaction-desc">Sin transacciones</span>
                         <span class="transaction-amount">$0</span>
                       </div>
@@ -467,7 +612,7 @@
           </div>
 
           <!-- Bottom Panel: Floating Keywords & Insights -->
-          <div class="insights-panel">
+          <!-- <div class="insights-panel">
             <div class="floating-keywords">
               <div class="keyword-cloud">
                 <span class="keyword" data-delay="0">Ahorro Inteligente</span>
@@ -477,7 +622,9 @@
                 <span class="keyword" data-delay="800">Inversión Segura</span>
                 <span class="keyword" data-delay="1000">Futuro Próspero</span>
                 <span class="keyword" data-delay="1200">Decisiones Sabias</span>
-                <span class="keyword" data-delay="1400">Libertad Financiera</span>
+                <span class="keyword" data-delay="1400"
+                  >Libertad Financiera</span
+                >
               </div>
             </div>
 
@@ -486,7 +633,9 @@
                 <div class="insight-icon">💡</div>
                 <div class="insight-content">
                   <h4>Consejo del Día</h4>
-                  <p id="dailyTip">Revisa tus gastos semanalmente para mantener el control</p>
+                  <p id="dailyTip">
+                    Revisa tus gastos semanalmente para mantener el control
+                  </p>
                 </div>
               </div>
 
@@ -494,7 +643,9 @@
                 <div class="insight-icon">📈</div>
                 <div class="insight-content">
                   <h4>Tu Progreso</h4>
-                  <p id="progressInsight">Vas por buen camino hacia tus metas</p>
+                  <p id="progressInsight">
+                    Vas por buen camino hacia tus metas
+                  </p>
                 </div>
               </div>
 
@@ -506,160 +657,225 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
 
-        <!-- Onboarding Carousel for Anonymous Users -->
-        <div class="onboarding-carousel animate-on-scroll" id="onboardingCarousel" data-animation="slideInUp" data-delay="1000">
-            <div class="carousel-header">
-              <h3>✨ Descubre tu nueva forma de manejar el dinero</h3>
-              <p>En solo 3 pasos te convertirás en el maestro de tus finanzas</p>
-            </div>
-
-            <div class="carousel-track" id="carouselTrack">
-                <!-- Paso 1: Registra -->
-                <div class="onboarding-card" data-step="1">
-                  <div class="card-icon">
-                    <i class="fas fa-plus-circle"></i>
-                  </div>
-                  <div class="card-content">
-                    <h4>🎯 Registra cada gasto</h4>
-                    <p>Cada café, cada compra, cada capricho... todo cuenta. En segundos tendrás el control total de hacia dónde va tu dinero.</p>
-                    <div class="card-highlight">
-                      <span class="highlight-text">¡Es más fácil que ordenar una pizza! 🍕</span>
-                    </div>
-                  </div>
-                  <div class="card-action">
-                    <span class="action-text">Toca para explorar →</span>
-                  </div>
+        <!-- Brand Carousel Section -->
+        <div class="brand-carousel-container">
+          <div class="brand-carousel-wrapper">
+            <div class="brand-carousel-track" id="brandCarouselTrack">
+              <!-- Brand Card 1 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-blue">
+                  <i class="fas fa-chart-line"></i>
                 </div>
-
-                <!-- Paso 2: Analiza -->
-                <div class="onboarding-card" data-step="2">
-                  <div class="card-icon">
-                    <i class="fas fa-chart-line"></i>
-                  </div>
-                  <div class="card-content">
-                    <h4>📊 Visualiza tu progreso</h4>
-                    <p>Gráficos hermosos que transforman números aburridos en insights poderosos. Verás patrones que nunca imaginaste.</p>
-                    <div class="card-highlight">
-                      <span class="highlight-text">¡Como Netflix, pero para tu dinero! 📺</span>
-                    </div>
-                  </div>
-                  <div class="card-action">
-                    <span class="action-text">Descubre la magia →</span>
-                  </div>
-                </div>
-
-                <!-- Paso 3: Ahorra -->
-                <div class="onboarding-card" data-step="3">
-                  <div class="card-icon">
-                    <i class="fas fa-piggy-bank"></i>
-                  </div>
-                  <div class="card-content">
-                    <h4>💰 Alcanza tus sueños</h4>
-                    <p>Define metas claras y observa cómo cada decisión inteligente te acerca más a esas vacaciones, casa o libertad financiera.</p>
-                    <div class="card-highlight">
-                      <span class="highlight-text">¡Tu futuro yo te lo agradecerá! 🚀</span>
-                    </div>
-                  </div>
-                  <div class="card-action">
-                    <span class="action-text">¡Empezar ahora! →</span>
-                  </div>
-                </div>
-
-                <!-- Paso 4: Libertad -->
-                <div class="onboarding-card" data-step="4">
-                  <div class="card-icon">
-                    <i class="fas fa-trophy"></i>
-                  </div>
-                  <div class="card-content">
-                    <h4>🎊 Vive sin estrés financiero</h4>
-                    <p>Imagina dormir tranquilo sabiendo que tienes el control. Imagina decidir sin miedo. Esa tranquilidad está a un clic de distancia.</p>
-                    <div class="card-highlight">
-                      <span class="highlight-text">¡La mejor inversión eres tú! ⭐</span>
-                    </div>
-                  </div>
-                  <div class="card-action">
-                    <span class="action-text">¡Únete ya! →</span>
-                  </div>
-                </div>
-
-                <!-- Duplicar las cards para efecto infinito -->
-                <div class="onboarding-card" data-step="1">
-                  <div class="card-icon">
-                    <i class="fas fa-plus-circle"></i>
-                  </div>
-                  <div class="card-content">
-                    <h4>🎯 Registra cada gasto</h4>
-                    <p>Cada café, cada compra, cada capricho... todo cuenta. En segundos tendrás el control total de hacia dónde va tu dinero.</p>
-                    <div class="card-highlight">
-                      <span class="highlight-text">¡Es más fácil que ordenar una pizza! 🍕</span>
-                    </div>
-                  </div>
-                  <div class="card-action">
-                    <span class="action-text">Toca para explorar →</span>
-                  </div>
-                </div>
-
-                <div class="onboarding-card" data-step="2">
-                  <div class="card-icon">
-                    <i class="fas fa-chart-line"></i>
-                  </div>
-                  <div class="card-content">
-                    <h4>📊 Visualiza tu progreso</h4>
-                    <p>Gráficos hermosos que transforman números aburridos en insights poderosos. Verás patrones que nunca imaginaste.</p>
-                    <div class="card-highlight">
-                      <span class="highlight-text">¡Como Netflix, pero para tu dinero! 📺</span>
-                    </div>
-                  </div>
-                  <div class="card-action">
-                    <span class="action-text">Descubre la magia →</span>
-                  </div>
-                </div>
-
-                <!-- Paso 3: Ahorra (duplicado) -->
-                <div class="onboarding-card" data-step="3">
-                  <div class="card-icon">
-                    <i class="fas fa-piggy-bank"></i>
-                  </div>
-                  <div class="card-content">
-                    <h4>💰 Alcanza tus sueños</h4>
-                    <p>Define metas claras y observa cómo cada decisión inteligente te acerca más a esas vacaciones, casa o libertad financiera.</p>
-                    <div class="card-highlight">
-                      <span class="highlight-text">¡Tu futuro yo te lo agradecerá! 🚀</span>
-                    </div>
-                  </div>
-                  <div class="card-action">
-                    <span class="action-text">¡Empezar ahora! →</span>
-                  </div>
-                </div>
-
-                <!-- Paso 4: Libertad (duplicado) -->
-                <div class="onboarding-card" data-step="4">
-                  <div class="card-icon">
-                    <i class="fas fa-trophy"></i>
-                  </div>
-                  <div class="card-content">
-                    <h4>🎊 Vive sin estrés financiero</h4>
-                    <p>Imagina dormir tranquilo sabiendo que tienes el control. Imagina decidir sin miedo. Esa tranquilidad está a un clic de distancia.</p>
-                    <div class="card-highlight">
-                      <span class="highlight-text">¡La mejor inversión eres tú! ⭐</span>
-                    </div>
-                  </div>
-                  <div class="card-action">
-                    <span class="action-text">¡Únete ya! →</span>
-                  </div>
+                <div class="brand-content">
+                  <h3>Análisis Inteligente</h3>
+                  <p>Rastrea y analiza gastos</p>
                 </div>
               </div>
 
-            <div class="carousel-cta">
-              <button class="cta-primary" id="getStartedBtn">
-                <i class="fas fa-rocket"></i>
-                <span>¡Comienza tu transformación financiera!</span>
-              </button>
+              <!-- Brand Card 2 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-purple">
+                  <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Metas Personalizadas</h3>
+                  <p>Define objetivos financieros</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 3 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-green">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>IA Financiera</h3>
+                  <p>Recomendaciones automáticas</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 4 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-orange">
+                  <i class="fas fa-trophy"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Sistema de Logros</h3>
+                  <p>Gamificación motivacional</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 5 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-red">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Seguridad Total</h3>
+                  <p>Protección de grado bancario</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 6 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-teal">
+                  <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Multiplataforma</h3>
+                  <p>Sincronización en la nube</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 7 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-pink">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Lista Inteligente</h3>
+                  <p>Compras organizadas</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 8 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-indigo">
+                  <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Visualización</h3>
+                  <p>Gráficos interactivos</p>
+                </div>
+              </div>
+
+              <!-- Duplicate set for infinite scroll -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-blue">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Análisis Inteligente</h3>
+                  <p>Rastrea y analiza gastos</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-purple">
+                  <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Metas Personalizadas</h3>
+                  <p>Define objetivos financieros</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-green">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>IA Financiera</h3>
+                  <p>Recomendaciones automáticas</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-orange">
+                  <i class="fas fa-trophy"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Sistema de Logros</h3>
+                  <p>Gamificación motivacional</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-red">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Seguridad Total</h3>
+                  <p>Protección de grado bancario</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-teal">
+                  <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Multiplataforma</h3>
+                  <p>Sincronización en la nube</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-pink">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Lista Inteligente</h3>
+                  <p>Compras organizadas</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-indigo">
+                  <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Visualización</h3>
+                  <p>Gráficos interactivos</p>
+                </div>
+              </div>
+
+              <!-- Third set for seamless loop -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-blue">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Análisis Inteligente</h3>
+                  <p>Rastrea y analiza gastos</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-purple">
+                  <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Metas Personalizadas</h3>
+                  <p>Define objetivos financieros</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-green">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>IA Financiera</h3>
+                  <p>Recomendaciones automáticas</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-orange">
+                  <i class="fas fa-trophy"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Sistema de Logros</h3>
+                  <p>Gamificación motivacional</p>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
 
         <!-- AI Recommendations -->
         <div class="card">
@@ -678,6 +894,348 @@
           </div>
           <div class="card__body">
             <div id="recentTransactions"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NEW DASHBOARD - Clean Version -->
+      <section id="new-dashboard" class="section">
+        <div class="new-dashboard-header">
+          <h1>Dashboard Financiero</h1>
+          <p>Tu centro de control financiero personal</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="new-stats-grid">
+          <div class="new-stat-card balance-card">
+            <div class="stat-icon">
+              <i class="fas fa-wallet"></i>
+            </div>
+            <div class="stat-content">
+              <h3>Balance Total</h3>
+              <p class="stat-value" id="newTotalBalance">$0</p>
+              <span class="stat-trend">Este mes</span>
+            </div>
+          </div>
+
+          <div class="new-stat-card expenses-card">
+            <div class="stat-icon">
+              <i class="fas fa-chart-bar"></i>
+            </div>
+            <div class="stat-content">
+              <h3>Gastos Totales</h3>
+              <p class="stat-value" id="newTotalExpenses">$0</p>
+              <span class="stat-trend negative" id="newExpensesChange"
+                >+0% vs anterior</span
+              >
+            </div>
+          </div>
+
+          <div class="new-stat-card savings-card">
+            <div class="stat-icon savings-icon">
+              <i class="fas fa-piggy-bank"></i>
+            </div>
+            <div class="stat-content">
+              <h3>Ahorro del Mes</h3>
+              <p class="stat-value" id="newSavings">$0</p>
+              <span class="stat-trend positive">Meta: 20%</span>
+            </div>
+          </div>
+
+          <div class="new-stat-card goals-card">
+            <div class="stat-icon">
+              <i class="fas fa-target"></i>
+            </div>
+            <div class="stat-content">
+              <h3>Metas Activas</h3>
+              <p class="stat-value" id="newActiveGoals">0</p>
+              <span class="stat-trend" id="newGoalsProgress"
+                >0% completado</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="new-dashboard-grid">
+          <!-- Left Column -->
+          <div class="dashboard-left">
+            <!-- Main Chart -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <h3>Distribución de Gastos</h3>
+                <div class="chart-period">
+                  <span>Este mes</span>
+                </div>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="newPremiumChart" width="300" height="300"></canvas>
+                <div class="chart-center-info">
+                  <div class="total-amount" id="newTotalAmount">$0</div>
+                  <div class="total-label">Total gastado</div>
+                </div>
+              </div>
+              <div class="chart-legend" id="newChartLegend"></div>
+            </div>
+
+            <!-- Trend Chart -->
+            <div class="trend-card">
+              <div class="chart-header">
+                <h3>Tendencia de Gastos</h3>
+                <div class="chart-period">
+                  <span>Últimos 7 días</span>
+                </div>
+              </div>
+              <div class="trend-chart-wrapper">
+                <canvas id="newTrendChart" width="400" height="150"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="dashboard-right">
+            <!-- Quick Actions -->
+            <div class="quick-actions-card">
+              <div class="quick-header">
+                <h3>Acciones Rápidas</h3>
+                <span id="quickGreeting">¡Hola, Usuario!</span>
+              </div>
+              <div class="quick-actions-grid">
+                <button class="quick-btn" id="newQuickAddExpense">
+                  <i class="fas fa-plus"></i>
+                  <span>Registrar Gasto</span>
+                </button>
+                <button class="quick-btn" id="newQuickAddGoal">
+                  <i class="fas fa-target"></i>
+                  <span>Nueva Meta</span>
+                </button>
+                <button class="quick-btn" id="newQuickViewAnalysis">
+                  <i class="fas fa-chart-pie"></i>
+                  <span>Ver Análisis</span>
+                </button>
+                <button class="quick-btn" id="newQuickViewGoals">
+                  <i class="fas fa-list-check"></i>
+                  <span>Mis Metas</span>
+                </button>
+              </div>
+              <div class="last-transaction">
+                <div class="transaction-label">Última transacción:</div>
+                <div class="transaction-detail" id="newLastTransactionDetail">
+                  <span class="transaction-desc">Sin transacciones</span>
+                  <span class="transaction-amount">$0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Recommendations -->
+            <div class="recommendations-card">
+              <div class="card-header">
+                <h3><i class="fas fa-robot"></i> Recomendaciones IA</h3>
+              </div>
+              <div class="recommendations-content" id="newAiRecommendations">
+                <!-- Dynamic content -->
+              </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="transactions-card">
+              <div class="card-header">
+                <h3><i class="fas fa-receipt"></i> Transacciones Recientes</h3>
+              </div>
+              <div class="transactions-content" id="newRecentTransactions">
+                <!-- Dynamic content -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Keywords -->
+        <!-- <div class="new-floating-keywords">
+          <div class="keywords-container">
+            <span class="keyword">Ahorro Inteligente</span>
+            <span class="keyword">Control Total</span>
+            <span class="keyword">Metas Claras</span>
+            <span class="keyword">Finanzas Sanas</span>
+            <span class="keyword">Inversión Segura</span>
+            <span class="keyword">Futuro Próspero</span>
+            <span class="keyword">Decisiones Sabias</span>
+            <span class="keyword">Libertad Financiera</span>
+          </div>
+        </div> -->
+
+        <!-- Brand Carousel (keeping the working one) -->
+        <div class="brand-carousel-container">
+          <div class="brand-carousel-wrapper">
+            <div class="brand-carousel-track" id="newBrandCarouselTrack">
+              <!-- Brand Card 1 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-blue">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Análisis Inteligente</h3>
+                  <p>Rastrea y analiza gastos</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 2 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-purple">
+                  <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Metas Personalizadas</h3>
+                  <p>Define objetivos financieros</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 3 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-green">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>IA Financiera</h3>
+                  <p>Recomendaciones automáticas</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 4 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-orange">
+                  <i class="fas fa-trophy"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Sistema de Logros</h3>
+                  <p>Gamificación motivacional</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 5 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-red">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Seguridad Total</h3>
+                  <p>Protección de grado bancario</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 6 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-teal">
+                  <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Multiplataforma</h3>
+                  <p>Sincronización en la nube</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 7 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-pink">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Lista Inteligente</h3>
+                  <p>Compras organizadas</p>
+                </div>
+              </div>
+
+              <!-- Brand Card 8 -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-indigo">
+                  <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Visualización</h3>
+                  <p>Gráficos interactivos</p>
+                </div>
+              </div>
+
+              <!-- Duplicate set for infinite scroll -->
+              <div class="brand-card">
+                <div class="brand-icon gradient-blue">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Análisis Inteligente</h3>
+                  <p>Rastrea y analiza gastos</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-purple">
+                  <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Metas Personalizadas</h3>
+                  <p>Define objetivos financieros</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-green">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>IA Financiera</h3>
+                  <p>Recomendaciones automáticas</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-orange">
+                  <i class="fas fa-trophy"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Sistema de Logros</h3>
+                  <p>Gamificación motivacional</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-red">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Seguridad Total</h3>
+                  <p>Protección de grado bancario</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-teal">
+                  <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Multiplataforma</h3>
+                  <p>Sincronización en la nube</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-pink">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Lista Inteligente</h3>
+                  <p>Compras organizadas</p>
+                </div>
+              </div>
+
+              <div class="brand-card">
+                <div class="brand-icon gradient-indigo">
+                  <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="brand-content">
+                  <h3>Visualización</h3>
+                  <p>Gráficos interactivos</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -840,7 +1398,20 @@
           <h1>Análisis de Gastos</h1>
           <p>Visualiza patrones y tendencias en tus finanzas</p>
         </div>
+
         <div class="analysis-grid">
+          <div class="card radar-chart-card">
+            <div class="card__header">
+              <h3>Balance Financiero Multidimensional</h3>
+              <p>Tu perfil financiero en diferentes categorías</p>
+            </div>
+            <div class="card__body">
+              <div class="radar-chart-container">
+                <canvas id="radarChart"></canvas>
+              </div>
+            </div>
+          </div>
+
           <div class="card">
             <div class="card__header">
               <h3>Gastos por Usuario</h3>
@@ -854,6 +1425,7 @@
               </div>
             </div>
           </div>
+
           <div class="card">
             <div class="card__header">
               <h3>Necesidad vs No Necesario</h3>
@@ -868,6 +1440,7 @@
             </div>
           </div>
         </div>
+
         <div class="card">
           <div class="card__header">
             <h3>Gastos Innecesarios del Mes</h3>
@@ -941,6 +1514,39 @@
           <div class="card__body">
             <div id="shoppingList"></div>
           </div>
+        </div>
+      </section>
+
+      <!-- Achievements Section -->
+      <section id="achievements" class="section">
+        <div class="section-header">
+          <h1>🏆 Logros y Insignias</h1>
+          <p>Desbloquea insignias mientras dominas tus finanzas</p>
+        </div>
+
+        <div class="achievements-stats">
+          <div class="achievement-stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-medal"></i>
+            </div>
+            <div class="stat-content">
+              <span class="stat-number" id="unlockedCount">0</span>
+              <span class="stat-label">Logros Desbloqueados</span>
+            </div>
+          </div>
+          <div class="achievement-stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-percentage"></i>
+            </div>
+            <div class="stat-content">
+              <span class="stat-number" id="progressPercentage">0%</span>
+              <span class="stat-label">Progreso Total</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="achievements-grid" id="achievementsGrid">
+          <!-- Las tarjetas de logros se generarán dinámicamente aquí -->
         </div>
       </section>
 
@@ -1155,7 +1761,11 @@
     <div class="modal" id="securityModal">
       <div class="modal-dialog">
         <div class="modal-illustration">
-          <img data-src="img/ahorro.png" alt="Ilustración ahorro" class="lazy-load" />
+          <img
+            data-src="img/ahorro.png"
+            alt="Ilustración ahorro"
+            class="lazy-load"
+          />
         </div>
         <div class="modal-content">
           <div class="modal-header">
@@ -1463,34 +2073,78 @@
     <!-- Professional Footer -->
     <footer class="footer">
       <div class="footer-container">
-        <!-- Footer Logo and Brand -->
         <div class="footer-brand">
           <div class="footer-logo">
             <div class="logo-icon">
-              <svg class="logo-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                class="logo-svg"
+                viewBox="0 0 40 40"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <defs>
-                  <linearGradient id="footerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:var(--color-primary);stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:var(--color-teal-600);stop-opacity:1" />
+                  <linearGradient
+                    id="footerLogoGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: var(--color-primary); stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: var(--color-teal-600); stop-opacity: 1"
+                    />
                   </linearGradient>
                 </defs>
-                <circle cx="20" cy="20" r="18" fill="url(#footerLogoGradient)" stroke="white" stroke-width="2"/>
-                <path d="M12 28 L16 22 L20 25 L24 18 L28 20" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="16" cy="22" r="2.5" fill="white"/>
-                <circle cx="20" cy="25" r="2.5" fill="white"/>
-                <circle cx="24" cy="18" r="2.5" fill="white"/>
-                <text x="20" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">$</text>
+                <circle
+                  cx="20"
+                  cy="20"
+                  r="18"
+                  fill="url(#footerLogoGradient)"
+                  stroke="white"
+                  stroke-width="2"
+                />
+                <path
+                  d="M12 28 L16 22 L20 25 L24 18 L28 20"
+                  stroke="white"
+                  stroke-width="2.5"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <circle cx="16" cy="22" r="2.5" fill="white" />
+                <circle cx="20" cy="25" r="2.5" fill="white" />
+                <circle cx="24" cy="18" r="2.5" fill="white" />
+                <text
+                  x="20"
+                  y="15"
+                  text-anchor="middle"
+                  fill="white"
+                  font-size="8"
+                  font-weight="bold"
+                >
+                  $
+                </text>
               </svg>
             </div>
-            <span class="footer-brand-text">
-              <span class="brand-name">Financia</span>
-              <span class="brand-suite">Suite Pro</span>
-            </span>
+            <span class="footer-brand-text">Financia Suite Pro</span>
           </div>
           <p class="footer-description">
-            La plataforma integral para transformar tu relación con el dinero.
-            Controla, analiza y haz crecer tus finanzas de manera inteligente.
+            Transforma tu relación con el dinero. Controla, analiza y haz crecer
+            tus finanzas de manera inteligente.
           </p>
+        </div>
+
+        <div class="footer-content">
+          <div class="footer-links">
+            <a href="#" class="footer-link">Funcionalidades</a>
+            <a href="#" class="footer-link">Contacto</a>
+            <a href="#" class="footer-link">Términos y Privacidad</a>
+          </div>
+
           <div class="footer-social">
             <a href="#" class="social-link" aria-label="Facebook">
               <i class="fab fa-facebook-f"></i>
@@ -1507,100 +2161,10 @@
           </div>
         </div>
 
-        <!-- Footer Links -->
-        <div class="footer-links">
-          <div class="footer-column">
-            <h4 class="footer-title">Características</h4>
-            <ul class="footer-menu">
-              <li><a href="#" class="footer-link">Control de Gastos</a></li>
-              <li><a href="#" class="footer-link">Análisis Avanzado</a></li>
-              <li><a href="#" class="footer-link">Metas Financieras</a></li>
-              <li><a href="#" class="footer-link">Reportes Inteligentes</a></li>
-              <li><a href="#" class="footer-link">Sincronización Cloud</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-column">
-            <h4 class="footer-title">Soporte</h4>
-            <ul class="footer-menu">
-              <li><a href="#" class="footer-link">Centro de Ayuda</a></li>
-              <li><a href="#" class="footer-link">Guías y Tutoriales</a></li>
-              <li><a href="#" class="footer-link">Contacto</a></li>
-              <li><a href="#" class="footer-link">Comunidad</a></li>
-              <li><a href="#" class="footer-link">Estado del Sistema</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-column">
-            <h4 class="footer-title">Empresa</h4>
-            <ul class="footer-menu">
-              <li><a href="#" class="footer-link">Acerca de Nosotros</a></li>
-              <li><a href="#" class="footer-link">Blog Financiero</a></li>
-              <li><a href="#" class="footer-link">Carreras</a></li>
-              <li><a href="#" class="footer-link">Prensa</a></li>
-              <li><a href="#" class="footer-link">Inversionistas</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-column">
-            <h4 class="footer-title">Legal</h4>
-            <ul class="footer-menu">
-              <li><a href="#" class="footer-link">Términos de Servicio</a></li>
-              <li><a href="#" class="footer-link">Política de Privacidad</a></li>
-              <li><a href="#" class="footer-link">Cookies</a></li>
-              <li><a href="#" class="footer-link">Seguridad</a></li>
-              <li><a href="#" class="footer-link">Compliance</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Newsletter Subscription -->
-        <div class="footer-newsletter">
-          <h4 class="footer-title">Mantente Actualizado</h4>
-          <p class="newsletter-description">
-            Recibe tips financieros exclusivos y actualizaciones de producto
+        <div class="footer-bottom">
+          <p class="footer-copyright">
+            &copy; 2025 Financia Suite Pro. Todos los derechos reservados.
           </p>
-          <form class="newsletter-form">
-            <div class="newsletter-input-group">
-              <input
-                type="email"
-                class="newsletter-input"
-                placeholder="tu@email.com"
-                required
-              />
-              <button type="submit" class="newsletter-btn">
-                <i class="fas fa-paper-plane"></i>
-                <span>Suscribirse</span>
-              </button>
-            </div>
-          </form>
-          <p class="newsletter-note">
-            <i class="fas fa-shield-alt"></i>
-            Nunca compartimos tu información. Cancela cuando quieras.
-          </p>
-        </div>
-      </div>
-
-      <!-- Footer Bottom -->
-      <div class="footer-bottom">
-        <div class="footer-bottom-container">
-          <div class="footer-copyright">
-            <p>&copy; 2024 Financia Suite Pro. Todos los derechos reservados.</p>
-          </div>
-          <div class="footer-certifications">
-            <div class="certification-badge">
-              <i class="fas fa-lock"></i>
-              <span>SSL Seguro</span>
-            </div>
-            <div class="certification-badge">
-              <i class="fas fa-shield-check"></i>
-              <span>Certificado PCI</span>
-            </div>
-            <div class="certification-badge">
-              <i class="fas fa-university"></i>
-              <span>Grado Bancario</span>
-            </div>
-          </div>
         </div>
       </div>
     </footer>
