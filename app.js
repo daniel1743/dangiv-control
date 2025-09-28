@@ -4085,6 +4085,11 @@ FinanceApp.prototype.updateDashboardWelcome = function() {
 // === SIDEBAR SCROLL BEHAVIOR ===
 
 FinanceApp.prototype.initSidebarScrollBehavior = function() {
+  // Only execute on desktop screens (> 768px)
+  if (window.innerWidth <= 768) {
+    return;
+  }
+
   const sidebar = document.querySelector('.sidebar');
   if (!sidebar) return;
 
