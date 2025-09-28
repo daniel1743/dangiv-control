@@ -3,15 +3,17 @@
 
 const fetch = require('node-fetch');
 
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3000';
+
 async function testApi() {
   try {
     // Probar endpoint de modelos
-    const modelsRes = await fetch('http://localhost:3000/api/models');
+    const modelsRes = await fetch(`${API_BASE_URL}/api/models`);
     const modelsData = await modelsRes.json();
     console.log('Respuesta de /api/models:', modelsData);
 
     // Probar endpoint principal
-    const perplexityRes = await fetch('http://localhost:3000/api/perplexity', {
+    const perplexityRes = await fetch(`${API_BASE_URL}/api/perplexity`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
