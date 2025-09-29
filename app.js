@@ -21,28 +21,148 @@ class FinanceApp {
       this._latinDecoder = null;
     }
 
-    const rawData = JSON.parse(localStorage.getItem('danGivControlData')) || {};
+    const rawData = JSON.parse(localStorage.getItem('financiaProData')) || {};
 
     const { cleaned: savedData, changed: hadEncodingIssues } =
       this.normalizePersistedData(rawData);
 
     if (hadEncodingIssues) {
       try {
-        localStorage.setItem('danGivControlData', JSON.stringify(savedData));
+        localStorage.setItem('financiaProData', JSON.stringify(savedData));
       } catch (error) {
         console.warn('No se pudo normalizar el almacenamiento local:', error);
       }
     }
 
+    // Account system properties
+    this.accountType = savedData.accountType || null; // 'personal' | 'shared'
+    this.currentUser = savedData.currentUser || 'anonymous';
+    this.accountOwner = savedData.accountOwner || null;
+    this.accountUsers = savedData.accountUsers || [];
+    this.inviteCodes = savedData.inviteCodes || {};
+    this.activityLog = savedData.activityLog || [];
+
     this.expenses = savedData.expenses || [];
     this.goals = savedData.goals || [];
     this.shoppingItems = savedData.shoppingItems || [];
     this.monthlyIncome = savedData.monthlyIncome || 2500;
+    this.userCoins = savedData.userCoins || 100;
+    this.ownedStyles = savedData.ownedStyles || ['classic'];
+    this.currentStyle = savedData.currentStyle || 'classic';
 
-    this.securityPasswords = savedData.securityPasswords || {
-      Daniel: CryptoJS.SHA256('1234').toString(),
-      Givonik: CryptoJS.SHA256('5678').toString(),
-    };
+    // Chart Styles System
+    this.chartStyles = [
+      {
+        id: 'classic',
+        name: 'Clásico',
+        price: 0,
+        colors: ['#33808D', '#21616C', '#1D5460', '#194851', '#153C42'],
+        options: {
+          backgroundColor: '#ffffff',
+          borderColor: '#e5e7eb',
+          textColor: '#374151'
+        }
+      },
+      {
+        id: 'neon',
+        name: 'Neón',
+        price: 50,
+        colors: ['#ff006e', '#8338ec', '#3a86ff', '#06ffa5', '#ffbe0b'],
+        options: {
+          backgroundColor: '#1a1a2e',
+          borderColor: '#16213e',
+          textColor: '#ffffff'
+        }
+      },
+      {
+        id: 'pastel',
+        name: 'Pastel',
+        price: 30,
+        colors: ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff'],
+        options: {
+          backgroundColor: '#faf9f6',
+          borderColor: '#f0f0f0',
+          textColor: '#5a5a5a'
+        }
+      },
+      {
+        id: 'ocean',
+        name: 'Océano',
+        price: 40,
+        colors: ['#006994', '#13293d', '#004e89', '#247ba0', '#70a9a1'],
+        options: {
+          backgroundColor: '#f0f8ff',
+          borderColor: '#b8dce8',
+          textColor: '#13293d'
+        }
+      },
+      {
+        id: 'sunset',
+        name: 'Atardecer',
+        price: 45,
+        colors: ['#ff4d6d', '#c9184a', '#a4161a', '#800f2f', '#590d22'],
+        options: {
+          backgroundColor: '#fff3e0',
+          borderColor: '#ffccbc',
+          textColor: '#5d4037'
+        }
+      },
+      {
+        id: 'forest',
+        name: 'Bosque',
+        price: 35,
+        colors: ['#355e3b', '#2d5016', '#4f7942', '#8fbc8f', '#228b22'],
+        options: {
+          backgroundColor: '#f1f8e9',
+          borderColor: '#c8e6c9',
+          textColor: '#2e7d32'
+        }
+      },
+      {
+        id: 'royal',
+        name: 'Real',
+        price: 60,
+        colors: ['#4b0082', '#6a0dad', '#9370db', '#ba55d3', '#dda0dd'],
+        options: {
+          backgroundColor: '#f3e5f5',
+          borderColor: '#e1bee7',
+          textColor: '#4a148c'
+        }
+      },
+      {
+        id: 'cyberpunk',
+        name: 'Cyberpunk',
+        price: 70,
+        colors: ['#ff073a', '#39ff14', '#00ffff', '#ff00ff', '#ffff00'],
+        options: {
+          backgroundColor: '#0a0a0a',
+          borderColor: '#333333',
+          textColor: '#00ff00'
+        }
+      },
+      {
+        id: 'vintage',
+        name: 'Vintage',
+        price: 25,
+        colors: ['#8b4513', '#a0522d', '#cd853f', '#daa520', '#b8860b'],
+        options: {
+          backgroundColor: '#fdf5e6',
+          borderColor: '#f5deb3',
+          textColor: '#8b4513'
+        }
+      },
+      {
+        id: 'monochrome',
+        name: 'Monocromático',
+        price: 20,
+        colors: ['#000000', '#2c2c2c', '#545454', '#7c7c7c', '#a4a4a4'],
+        options: {
+          backgroundColor: '#ffffff',
+          borderColor: '#e0e0e0',
+          textColor: '#212121'
+        }
+      }
+    ];
 
     // Propiedades del Modo Demo
     this.demoIntervalId = null;
@@ -427,11 +547,19 @@ class FinanceApp {
   // Método para guardar todo el estado relevante en LocalStorageÃ©todo para guardar todo el estado relevante en LocalStorage
   async saveData() {
     const dataToSave = {
+      accountType: this.accountType,
+      currentUser: this.currentUser,
+      accountOwner: this.accountOwner,
+      accountUsers: this.accountUsers,
+      inviteCodes: this.inviteCodes,
+      activityLog: this.activityLog,
       expenses: this.expenses,
       goals: this.goals,
       shoppingItems: this.shoppingItems,
       monthlyIncome: this.monthlyIncome,
-      securityPasswords: this.securityPasswords,
+      userCoins: this.userCoins,
+      ownedStyles: this.ownedStyles,
+      currentStyle: this.currentStyle,
       lastUpdate: Date.now(),
     };
 
@@ -440,7 +568,7 @@ class FinanceApp {
     let localSaveOk = false;
 
     try {
-      localStorage.setItem('danGivControlData', JSON.stringify(normalizedData));
+      localStorage.setItem('financiaProData', JSON.stringify(normalizedData));
       localSaveOk = true;
     } catch (error) {
       console.error('Error al guardar en localStorage:', error);
@@ -978,6 +1106,15 @@ class FinanceApp {
   setupEventListeners() {
     // === FORMULARIOS PRINCIPALES ===setupEventListeners() {
     // === LÃƒâ€œGICA DE ONBOARDING HÃBRIDO (NUEVO) ===
+    // === USER SYSTEM EVENT LISTENERS ===
+    this.setupUserSystemListeners();
+
+    // Setup modal close functionality
+    this.setupModalCloseFunctionality();
+
+    // Setup store functionality
+    this.setupStore();
+
     const onboardingChoiceContainer = document.getElementById(
       'onboardingChoiceContainer'
     );
@@ -1012,6 +1149,7 @@ class FinanceApp {
         this.addExpense(e);
       });
     }
+
 
     const goalForm = document.getElementById('goalForm');
     if (goalForm) {
@@ -1154,6 +1292,438 @@ class FinanceApp {
 
       // Opcional: TambiÃ©n puedes aÃ±adir el atributo max para no permitir fechas futuras
       dateField.max = today;
+    }
+  }
+
+  setupModalCloseFunctionality() {
+    // Setup close functionality for all modals with data-close-modal attribute
+    document.addEventListener('click', (e) => {
+      const closeButton = e.target.closest('[data-close-modal]');
+      if (closeButton) {
+        const modalId = closeButton.getAttribute('data-close-modal');
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.style.display = 'none';
+        }
+      }
+    });
+
+    // Close modal when clicking on backdrop
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal')) {
+        e.target.style.display = 'none';
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const visibleModal = document.querySelector('.modal[style*="block"]');
+        if (visibleModal) {
+          visibleModal.style.display = 'none';
+        }
+      }
+    });
+  }
+
+  // Store System Methods
+  setupStore() {
+    this.renderStore();
+    this.setupStyleManager();
+    this.updateCoinsDisplay();
+  }
+
+  renderStore() {
+    const storeGrid = document.getElementById('storeGrid');
+    if (!storeGrid) return;
+
+    storeGrid.innerHTML = '';
+
+    this.chartStyles.forEach(style => {
+      const isOwned = this.ownedStyles.includes(style.id);
+      const canAfford = this.userCoins >= style.price;
+
+      const productCard = document.createElement('div');
+      productCard.className = `product-card ${isOwned ? 'owned' : ''} ${!canAfford && !isOwned ? 'unaffordable' : ''}`;
+
+      productCard.innerHTML = `
+        <div class="product-preview">
+          <div class="mini-chart-preview" style="background: ${style.options.backgroundColor}">
+            ${style.colors.map((color, index) =>
+              `<div class="color-bar" style="background: ${color}; height: ${20 + index * 10}px;"></div>`
+            ).join('')}
+          </div>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">${style.name}</h3>
+          <div class="product-price">
+            ${style.price === 0 ? 'Gratis' : `${style.price} monedas`}
+          </div>
+          <button class="product-btn ${isOwned ? 'owned-btn' : (canAfford ? 'buy-btn' : 'disabled-btn')}"
+                  onclick="app.${isOwned ? `applyStyle('${style.id}')` : `purchaseStyle('${style.id}')`}"
+                  ${!canAfford && !isOwned ? 'disabled' : ''}>
+            ${isOwned ? 'Aplicar' : (canAfford ? 'Comprar' : 'Insuficientes monedas')}
+          </button>
+        </div>
+      `;
+
+      storeGrid.appendChild(productCard);
+    });
+  }
+
+  purchaseStyle(styleId) {
+    const style = this.chartStyles.find(s => s.id === styleId);
+    if (!style || this.ownedStyles.includes(styleId) || this.userCoins < style.price) {
+      return;
+    }
+
+    this.userCoins -= style.price;
+    this.ownedStyles.push(styleId);
+    this.saveData();
+
+    this.renderStore();
+    this.updateCoinsDisplay();
+    this.setupStyleManager();
+
+    this.showToast(`¡Has adquirido el estilo "${style.name}"!`, 'success');
+  }
+
+  applyStyle(styleId) {
+    if (!this.ownedStyles.includes(styleId)) return;
+
+    this.currentStyle = styleId;
+    this.saveData();
+
+    this.refreshAllCharts();
+    this.setupStyleManager();
+
+    const style = this.chartStyles.find(s => s.id === styleId);
+    this.showToast(`Estilo "${style.name}" aplicado`, 'success');
+  }
+
+  setupStyleManager() {
+    const ownedStylesGrid = document.getElementById('ownedStylesGrid');
+    const currentStyleName = document.getElementById('currentStyleName');
+
+    if (!ownedStylesGrid) return;
+
+    // Update current style display
+    const currentStyleObj = this.chartStyles.find(s => s.id === this.currentStyle);
+    if (currentStyleName && currentStyleObj) {
+      currentStyleName.textContent = currentStyleObj.name;
+    }
+
+    // Render owned styles
+    ownedStylesGrid.innerHTML = '';
+
+    this.ownedStyles.forEach(styleId => {
+      const style = this.chartStyles.find(s => s.id === styleId);
+      if (!style) return;
+
+      const styleCard = document.createElement('div');
+      styleCard.className = `owned-style-card ${this.currentStyle === styleId ? 'active' : ''}`;
+
+      styleCard.innerHTML = `
+        <div class="owned-style-preview" style="background: ${style.options.backgroundColor}">
+          ${style.colors.slice(0, 3).map((color, index) =>
+            `<div class="mini-color-dot" style="background: ${color};"></div>`
+          ).join('')}
+        </div>
+        <div class="owned-style-info">
+          <span class="owned-style-name">${style.name}</span>
+          ${this.currentStyle === styleId ? '<span class="active-badge">Activo</span>' : ''}
+        </div>
+      `;
+
+      styleCard.addEventListener('click', () => {
+        if (this.currentStyle !== styleId) {
+          this.applyStyle(styleId);
+        }
+      });
+
+      ownedStylesGrid.appendChild(styleCard);
+    });
+  }
+
+  updateCoinsDisplay() {
+    const coinsDisplay = document.getElementById('userCoins');
+    if (coinsDisplay) {
+      coinsDisplay.textContent = this.userCoins;
+    }
+  }
+
+  getCurrentStyleColors() {
+    const currentStyleObj = this.chartStyles.find(s => s.id === this.currentStyle);
+    return currentStyleObj ? currentStyleObj.colors : this.chartStyles[0].colors;
+  }
+
+  refreshAllCharts() {
+    // Destroy existing charts
+    if (this.charts.expenseChart) {
+      this.charts.expenseChart.destroy();
+    }
+    if (this.charts.necessityChart) {
+      this.charts.necessityChart.destroy();
+    }
+    if (this.charts.userChart) {
+      this.charts.userChart.destroy();
+    }
+    if (this.charts.trendChart) {
+      this.charts.trendChart.destroy();
+    }
+
+    // Re-render all charts with new style
+    this.renderExpenseChart();
+    this.renderNecessityChart();
+    this.renderUserChart();
+    this.initTrendChart();
+  }
+
+  showPremiumFeatures() {
+    const storeButton = document.querySelector('[data-section="store"]');
+    const styleManagerCard = document.getElementById('styleManagerCard');
+
+    if (storeButton) {
+      storeButton.style.display = 'flex';
+    }
+    if (styleManagerCard) {
+      styleManagerCard.style.display = 'block';
+    }
+  }
+
+  // Premium Form Methods
+  setupPremiumForm() {
+    this.setupFormAutoFill();
+    this.setupNecessitySelector();
+    this.setupPremiumSubmitButton();
+    this.setupFormValidation();
+  }
+
+  setupFormAutoFill() {
+    // Auto-fill date
+    const dateField = document.getElementById('date');
+    if (dateField) {
+      const today = new Date().toISOString().split('T')[0];
+      dateField.value = today;
+      dateField.classList.add('auto-filled');
+      dateField.max = today;
+    }
+
+    // Auto-fill or hide user selector based on account type
+    const userGroup = document.querySelector('.form-group-premium:has(#user)');
+    const userField = document.getElementById('user');
+
+    if (this.accountType === 'personal') {
+      // Hide user selector for personal accounts
+      if (userGroup) {
+        userGroup.classList.add('user-selector-hidden');
+      }
+      if (userField) {
+        userField.value = this.currentUser || 'Personal';
+      }
+    } else if (this.accountType === 'shared') {
+      // Show user selector with current users
+      if (userGroup) {
+        userGroup.classList.remove('user-selector-hidden');
+      }
+      if (userField && this.currentUser) {
+        userField.value = this.currentUser;
+        userField.classList.add('auto-filled');
+      }
+    }
+  }
+
+  setupNecessitySelector() {
+    const necessityButtons = document.querySelectorAll('.necessity-btn');
+    const necessityField = document.getElementById('necessity');
+
+    necessityButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        // Remove active class from all buttons
+        necessityButtons.forEach(b => b.classList.remove('active'));
+
+        // Add active class to clicked button
+        btn.classList.add('active');
+
+        // Update hidden field value
+        if (necessityField) {
+          necessityField.value = btn.dataset.value;
+        }
+
+        // Add visual feedback
+        btn.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          btn.style.transform = '';
+        }, 150);
+      });
+    });
+  }
+
+  setupPremiumSubmitButton() {
+    const submitBtn = document.querySelector('.btn-premium');
+    const form = document.getElementById('expenseForm');
+
+    if (submitBtn && form) {
+      submitBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handlePremiumSubmit(submitBtn);
+      });
+    }
+  }
+
+  async handlePremiumSubmit(btn) {
+    // Validate form first
+    if (!this.validatePremiumForm()) {
+      return;
+    }
+
+    // Show loading state
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try {
+      // Simulate processing time for UX
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Call the original addExpense method
+      const mockEvent = { preventDefault: () => {} };
+      this.addExpense(mockEvent);
+
+      // Show success state
+      btn.classList.remove('loading');
+      btn.classList.add('success');
+
+      // Reset button after delay
+      setTimeout(() => {
+        btn.classList.remove('success');
+        btn.disabled = false;
+        this.resetPremiumForm();
+      }, 2000);
+
+    } catch (error) {
+      // Handle error
+      btn.classList.remove('loading');
+      btn.disabled = false;
+      this.showToast('Error al registrar el gasto', 'error');
+    }
+  }
+
+  validatePremiumForm() {
+    const requiredFields = [
+      { id: 'description', name: 'Descripción' },
+      { id: 'amount', name: 'Monto' },
+      { id: 'category', name: 'Categoría' },
+      { id: 'necessity', name: 'Nivel de necesidad' },
+      { id: 'date', name: 'Fecha' }
+    ];
+
+    // Add user field validation for shared accounts
+    if (this.accountType === 'shared') {
+      requiredFields.push({ id: 'user', name: 'Usuario' });
+    }
+
+    let isValid = true;
+
+    requiredFields.forEach(field => {
+      const element = document.getElementById(field.id);
+      const wrapper = element?.closest('.form-group-premium');
+
+      if (element && wrapper) {
+        // Remove previous error state
+        element.classList.remove('error', 'success');
+        const errorMsg = wrapper.querySelector('.error-message');
+        if (errorMsg) errorMsg.remove();
+
+        // Validate field
+        let fieldValid = true;
+        let errorMessage = '';
+
+        if (!element.value.trim()) {
+          fieldValid = false;
+          errorMessage = `${field.name} es requerido`;
+        } else if (field.id === 'amount') {
+          const amount = parseFloat(element.value);
+          if (isNaN(amount) || amount <= 0) {
+            fieldValid = false;
+            errorMessage = 'El monto debe ser mayor a 0';
+          }
+        }
+
+        // Apply validation state
+        if (!fieldValid) {
+          element.classList.add('error');
+          const errorDiv = document.createElement('div');
+          errorDiv.className = 'error-message';
+          errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${errorMessage}`;
+          wrapper.appendChild(errorDiv);
+          isValid = false;
+        } else {
+          element.classList.add('success');
+        }
+      }
+    });
+
+    return isValid;
+  }
+
+  setupFormValidation() {
+    const form = document.getElementById('expenseForm');
+    if (!form) return;
+
+    // Real-time validation for amount field
+    const amountField = document.getElementById('amount');
+    if (amountField) {
+      amountField.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        const wrapper = e.target.closest('.form-group-premium');
+
+        // Remove previous validation state
+        e.target.classList.remove('error', 'success');
+        const errorMsg = wrapper?.querySelector('.error-message');
+        if (errorMsg) errorMsg.remove();
+
+        if (e.target.value && !isNaN(value) && value > 0) {
+          e.target.classList.add('success');
+        } else if (e.target.value) {
+          e.target.classList.add('error');
+        }
+      });
+    }
+
+    // Real-time validation for description field
+    const descField = document.getElementById('description');
+    if (descField) {
+      descField.addEventListener('input', (e) => {
+        e.target.classList.remove('error', 'success');
+        if (e.target.value.trim().length >= 3) {
+          e.target.classList.add('success');
+        }
+      });
+    }
+  }
+
+  resetPremiumForm() {
+    const form = document.getElementById('expenseForm');
+    if (form) {
+      form.reset();
+
+      // Remove validation classes
+      form.querySelectorAll('.form-control-premium').forEach(field => {
+        field.classList.remove('error', 'success', 'auto-filled');
+      });
+
+      // Remove error messages
+      form.querySelectorAll('.error-message').forEach(msg => msg.remove());
+
+      // Reset necessity selector
+      document.querySelectorAll('.necessity-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Re-setup auto-fill
+      this.setupFormAutoFill();
     }
   }
 
@@ -2439,18 +3009,7 @@ class FinanceApp {
     let chartTitle = 'Gastos por CategorÃ­a';
 
     // --- INICIO: Paleta de colores moderna ampliada ---
-    const modernColors = [
-      '#008F8C', // Verde azulado principal
-      '#00C49A', // Verde menta
-      '#FFB347', // Naranja suave
-      '#FF8066', // Coral
-      '#A855F7', // Púrpura
-      '#0EA5E9', // Azul cielo
-      '#F59E0B', // Ámbar
-      '#EF4444', // Rojo vibrante
-      '#8B5CF6', // Violeta
-      '#10B981', // Esmeralda
-    ];
+    const modernColors = this.getCurrentStyleColors();
     // --- FIN: Paleta de colores moderna ampliada ---
 
     if (demoData) {
@@ -2718,7 +3277,7 @@ class FinanceApp {
               tension: 0.4,
               pointRadius: 4,
               pointHoverRadius: 8,
-              pointBackgroundColor: 'var(--color-primary)',
+              pointBackgroundColor: this.getCurrentStyleColors()[0],
               pointBorderColor: '#fff',
               pointBorderWidth: 2,
               pointHoverBackgroundColor: 'var(--color-primary)',
@@ -3337,6 +3896,7 @@ class FinanceApp {
       const success = await this.loginWithEmail(email, password);
       if (success) {
         this.closeAuthModal();
+        this.showPremiumFeatures();
       }
     });
 
@@ -3348,6 +3908,7 @@ class FinanceApp {
       const success = await this.registerWithEmail(email, password);
       if (success) {
         this.closeAuthModal();
+        this.showPremiumFeatures();
       }
     });
 
@@ -3654,7 +4215,7 @@ class FinanceApp {
         datasets: [
           {
             data: [necessaryExpenses, unnecessaryExpenses],
-            backgroundColor: ['#1FB8CD', '#B4413C'],
+            backgroundColor: [this.getCurrentStyleColors()[0], this.getCurrentStyleColors()[1]],
             borderWidth: 2,
             borderColor: '#fff',
           },
@@ -4254,10 +4815,10 @@ FinanceApp.prototype.getTrendDemoData = function () {
     datasets: [
       {
         data: baseData,
-        borderColor: 'var(--color-primary)',
-        backgroundColor: 'rgba(33, 128, 141, 0.1)',
+        borderColor: this.getCurrentStyleColors()[0],
+        backgroundColor: this.getCurrentStyleColors()[0] + '20',
         fill: true,
-        pointBackgroundColor: 'var(--color-primary)',
+        pointBackgroundColor: this.getCurrentStyleColors()[0],
         pointBorderColor: '#fff',
         pointBorderWidth: 2,
       },
@@ -4298,10 +4859,10 @@ FinanceApp.prototype.getTrendUserData = function () {
     datasets: [
       {
         data: data,
-        borderColor: 'var(--color-primary)',
-        backgroundColor: 'rgba(33, 128, 141, 0.1)',
+        borderColor: this.getCurrentStyleColors()[0],
+        backgroundColor: this.getCurrentStyleColors()[0] + '20',
         fill: true,
-        pointBackgroundColor: 'var(--color-primary)',
+        pointBackgroundColor: this.getCurrentStyleColors()[0],
         pointBorderColor: '#fff',
         pointBorderWidth: 2,
       },
@@ -5155,3 +5716,525 @@ FinanceApp.prototype.revealSequentially = function (elements, delay = 100) {
 };
 
 // === FIN DE SECCIÃƒâ€œN: HELPERS GLOBALES (EVENTOS Y CONSOLA) ===
+
+// === NEW USER SYSTEM METHODS ===
+
+// Global function for account type selection
+function selectAccountType(type) {
+  window.selectedAccountType = type;
+
+  document.getElementById('accountTypeModal').classList.remove('show');
+  document.body.style.overflow = '';
+
+  // Show registration form with account type pre-selected
+  document.getElementById('authModal').classList.add('show');
+  document.getElementById('authModalTitle').textContent =
+    type === 'personal' ? 'Crear Cuenta Personal' : 'Crear Cuenta Compartida';
+
+  // Show register form
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('registerForm').classList.remove('hidden');
+  document.getElementById('authSwitchLink').innerHTML =
+    '¿Ya tienes una cuenta? <a href="#" onclick="switchToLogin()">Inicia sesión aquí</a>';
+
+  // Show invite code field for shared accounts
+  if (type === 'shared') {
+    document.getElementById('inviteCodeGroup').classList.remove('hidden');
+  } else {
+    document.getElementById('inviteCodeGroup').classList.add('hidden');
+  }
+}
+
+function switchToLogin() {
+  document.getElementById('loginForm').classList.remove('hidden');
+  document.getElementById('registerForm').classList.add('hidden');
+  document.getElementById('authModalTitle').textContent = '¡Bienvenido de vuelta!';
+  document.getElementById('authSwitchLink').innerHTML =
+    '¿No tienes una cuenta? <a href="#" onclick="showAccountTypeSelection()">Regístrate aquí</a>';
+}
+
+function showAccountTypeSelection() {
+  document.getElementById('authModal').classList.remove('show');
+  document.getElementById('accountTypeModal').classList.add('show');
+}
+
+FinanceApp.prototype.setupUserSystemListeners = function() {
+  // Auth form switch
+  const authSwitchLink = document.getElementById('authSwitchLink');
+  if (authSwitchLink) {
+    authSwitchLink.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A') {
+        e.preventDefault();
+        if (e.target.onclick) {
+          e.target.onclick();
+        }
+      }
+    });
+  }
+
+  // Registration form
+  const registerForm = document.getElementById('registerForm');
+  if (registerForm) {
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.handleRegistration();
+    });
+  }
+
+  // Login form
+  const loginForm = document.getElementById('loginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.handleLogin();
+    });
+  }
+
+  // Account management buttons
+  const inviteUserBtn = document.getElementById('inviteUserBtn');
+  if (inviteUserBtn) {
+    inviteUserBtn.addEventListener('click', () => {
+      this.showInvitationModal();
+    });
+  }
+
+  const changePasswordBtn = document.getElementById('changePasswordBtn');
+  if (changePasswordBtn) {
+    changePasswordBtn.addEventListener('click', () => {
+      this.showChangePasswordModal();
+    });
+  }
+
+  const switchAccountTypeBtn = document.getElementById('switchAccountTypeBtn');
+  if (switchAccountTypeBtn) {
+    switchAccountTypeBtn.addEventListener('click', () => {
+      this.showAccountTypeSwitch();
+    });
+  }
+
+  // Invitation form
+  const generateInviteForm = document.getElementById('generateInviteForm');
+  if (generateInviteForm) {
+    generateInviteForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.generateInviteCode();
+    });
+  }
+
+  // Copy invite code
+  const copyInviteCode = document.getElementById('copyInviteCode');
+  if (copyInviteCode) {
+    copyInviteCode.addEventListener('click', () => {
+      this.copyInviteCodeToClipboard();
+    });
+  }
+
+  // Show account type selection on first register click
+  const navbarLoginBtn = document.getElementById('navbarLoginBtn');
+  if (navbarLoginBtn) {
+    navbarLoginBtn.addEventListener('click', () => {
+      showAccountTypeSelection();
+    });
+  }
+
+  const sidebarLoginBtn = document.getElementById('sidebarLoginBtn');
+  if (sidebarLoginBtn) {
+    sidebarLoginBtn.addEventListener('click', () => {
+      showAccountTypeSelection();
+    });
+  }
+
+  // Update user selection dropdown
+  this.updateUserSelectionDropdown();
+};
+
+FinanceApp.prototype.handleRegistration = function() {
+  const name = document.getElementById('registerName').value.trim();
+  const email = document.getElementById('registerEmail').value.trim();
+  const password = document.getElementById('registerPassword').value;
+  const inviteCode = document.getElementById('inviteCode').value.trim();
+
+  if (!name || !email || !password) {
+    this.showToast('Todos los campos son obligatorios', 'error');
+    return;
+  }
+
+  const accountType = window.selectedAccountType || 'personal';
+
+  if (accountType === 'shared' && inviteCode) {
+    // Joining existing shared account
+    if (this.validateInviteCode(inviteCode)) {
+      this.joinSharedAccount(name, email, password, inviteCode);
+    } else {
+      this.showToast('Código de invitación inválido', 'error');
+      return;
+    }
+  } else {
+    // Creating new account
+    this.createNewAccount(name, email, password, accountType);
+  }
+};
+
+FinanceApp.prototype.createNewAccount = function(name, email, password, accountType) {
+  const userId = this.generateUserId();
+
+  this.accountType = accountType;
+  this.currentUser = userId;
+  this.accountOwner = userId;
+  this.accountUsers = [{
+    id: userId,
+    name: name,
+    email: email,
+    role: 'owner',
+    joinedAt: Date.now()
+  }];
+
+  this.logActivity('account_created', `Cuenta ${accountType} creada`, userId);
+
+  this.saveData();
+  this.updateAccountDisplay();
+  this.updateUserSelectionDropdown();
+
+  this.closeAuthModal();
+  this.showToast(`Cuenta ${accountType} creada exitosamente`, 'success');
+};
+
+FinanceApp.prototype.joinSharedAccount = function(name, email, password, inviteCode) {
+  const inviteData = this.inviteCodes[inviteCode];
+  const userId = this.generateUserId();
+
+  this.currentUser = userId;
+  this.accountUsers.push({
+    id: userId,
+    name: name,
+    email: email,
+    role: 'member',
+    joinedAt: Date.now()
+  });
+
+  // Remove used invite code
+  delete this.inviteCodes[inviteCode];
+
+  this.logActivity('user_joined', `${name} se unió a la cuenta`, userId);
+
+  this.saveData();
+  this.updateAccountDisplay();
+  this.updateUserSelectionDropdown();
+
+  this.closeAuthModal();
+  this.showToast('Te has unido a la cuenta compartida exitosamente', 'success');
+};
+
+FinanceApp.prototype.handleLogin = function() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  if (!email || !password) {
+    this.showToast('Email y contraseña son obligatorios', 'error');
+    return;
+  }
+
+  // Simple authentication simulation
+  const user = this.accountUsers.find(u => u.email === email);
+  if (user) {
+    this.currentUser = user.id;
+    this.logActivity('user_login', `${user.name} inició sesión`, user.id);
+    this.saveData();
+    this.updateAccountDisplay();
+    this.closeAuthModal();
+    this.showToast(`Bienvenido de vuelta, ${user.name}`, 'success');
+  } else {
+    this.showToast('Credenciales incorrectas', 'error');
+  }
+};
+
+FinanceApp.prototype.showInvitationModal = function() {
+  if (this.accountType !== 'shared' || this.accountUsers.length >= 2) {
+    this.showToast('Solo las cuentas compartidas pueden tener invitaciones', 'info');
+    return;
+  }
+
+  document.getElementById('invitationModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+
+  // Reset modal to step 1
+  document.querySelectorAll('.step-item').forEach(step => {
+    step.classList.remove('active');
+  });
+  document.querySelector('.step-item[data-step="1"]').classList.add('active');
+};
+
+FinanceApp.prototype.generateInviteCode = function() {
+  const inviteeName = document.getElementById('inviteeName').value.trim();
+
+  if (!inviteeName) {
+    this.showToast('Ingresa el nombre de la persona a invitar', 'error');
+    return;
+  }
+
+  const code = this.generateRandomCode();
+  this.inviteCodes[code] = {
+    inviteeName: inviteeName,
+    createdBy: this.currentUser,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days
+  };
+
+  this.saveData();
+  this.logActivity('invite_created', `Invitación creada para ${inviteeName}`, this.currentUser);
+
+  // Show step 2
+  document.querySelectorAll('.step-item').forEach(step => {
+    step.classList.remove('active');
+  });
+  document.querySelector('.step-item[data-step="2"]').classList.add('active');
+
+  // Display code
+  document.getElementById('generatedInviteCode').textContent = code;
+  document.getElementById('generatedInviteCode').classList.add('invite-code-generated');
+
+  this.showToast('Código de invitación generado', 'success');
+};
+
+FinanceApp.prototype.copyInviteCodeToClipboard = function() {
+  const code = document.getElementById('generatedInviteCode').textContent;
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(code).then(() => {
+      this.showToast('Código copiado al portapapeles', 'success');
+      const copyBtn = document.getElementById('copyInviteCode');
+      copyBtn.classList.add('copied');
+      setTimeout(() => copyBtn.classList.remove('copied'), 1000);
+    });
+  } else {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = code;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    this.showToast('Código copiado al portapapeles', 'success');
+  }
+};
+
+FinanceApp.prototype.updateAccountDisplay = function() {
+  const accountTypeBadge = document.getElementById('accountTypeBadge');
+  const accountTypeText = document.getElementById('accountTypeText');
+  const currentUserName = document.getElementById('currentUserName');
+  const invitedUserInfo = document.getElementById('invitedUserInfo');
+  const invitedUserName = document.getElementById('invitedUserName');
+  const inviteUserBtn = document.getElementById('inviteUserBtn');
+  const activityLogSection = document.getElementById('activityLogSection');
+
+  if (this.accountType === 'shared') {
+    accountTypeBadge.classList.add('shared');
+    accountTypeText.innerHTML = '<i class="fas fa-users"></i> Cuenta Mancomunada';
+
+    if (this.accountUsers.length === 1) {
+      inviteUserBtn.classList.remove('hidden');
+    } else {
+      inviteUserBtn.classList.add('hidden');
+      invitedUserInfo.classList.remove('hidden');
+      const otherUser = this.accountUsers.find(u => u.id !== this.currentUser);
+      if (otherUser) {
+        invitedUserName.textContent = otherUser.name;
+      }
+    }
+
+    activityLogSection.classList.remove('hidden');
+    this.updateActivityLog();
+  } else {
+    accountTypeBadge.classList.remove('shared');
+    accountTypeText.innerHTML = '<i class="fas fa-user"></i> Cuenta Personal';
+    inviteUserBtn.classList.add('hidden');
+    invitedUserInfo.classList.add('hidden');
+    activityLogSection.classList.add('hidden');
+  }
+
+  const currentUser = this.accountUsers.find(u => u.id === this.currentUser);
+  if (currentUser) {
+    currentUserName.textContent = currentUser.name;
+  }
+};
+
+FinanceApp.prototype.updateUserSelectionDropdown = function() {
+  const userSelect = document.getElementById('user');
+  if (!userSelect) return;
+
+  userSelect.innerHTML = '<option value="">Selecciona usuario</option>';
+
+  if (this.accountType === 'shared') {
+    this.accountUsers.forEach(user => {
+      const option = document.createElement('option');
+      option.value = user.name;
+      option.textContent = user.name;
+      userSelect.appendChild(option);
+    });
+  } else if (this.accountType === 'personal') {
+    const currentUser = this.accountUsers.find(u => u.id === this.currentUser);
+    if (currentUser) {
+      const option = document.createElement('option');
+      option.value = currentUser.name;
+      option.textContent = currentUser.name;
+      option.selected = true;
+      userSelect.appendChild(option);
+    }
+  }
+};
+
+FinanceApp.prototype.updateActivityLog = function() {
+  const activityList = document.getElementById('activityList');
+  const activityCount = document.getElementById('activityCount');
+
+  if (!activityList) return;
+
+  const recentActivities = this.activityLog.slice(-20).reverse();
+  activityCount.textContent = `${recentActivities.length} actividades`;
+
+  activityList.innerHTML = '';
+
+  recentActivities.forEach(activity => {
+    const activityItem = document.createElement('div');
+    activityItem.className = 'activity-item';
+
+    const user = this.accountUsers.find(u => u.id === activity.userId);
+    const userName = user ? user.name : 'Usuario desconocido';
+
+    activityItem.innerHTML = `
+      <div class="activity-icon ${activity.type}">
+        <i class="fas ${this.getActivityIcon(activity.type)}"></i>
+      </div>
+      <div class="activity-content">
+        <div class="activity-title">${activity.description}</div>
+        <div class="activity-description">${this.formatActivityTime(activity.timestamp)}</div>
+      </div>
+      <div class="activity-meta">
+        <span class="activity-user">${userName}</span>
+        <span class="activity-time">${this.formatRelativeTime(activity.timestamp)}</span>
+      </div>
+    `;
+
+    activityList.appendChild(activityItem);
+  });
+};
+
+FinanceApp.prototype.logActivity = function(type, description, userId = null) {
+  this.activityLog.push({
+    id: Date.now(),
+    type: type,
+    description: description,
+    userId: userId || this.currentUser,
+    timestamp: Date.now()
+  });
+
+  // Keep only last 100 activities
+  if (this.activityLog.length > 100) {
+    this.activityLog = this.activityLog.slice(-100);
+  }
+};
+
+FinanceApp.prototype.getActivityIcon = function(type) {
+  const icons = {
+    'expense': 'fa-minus-circle',
+    'goal': 'fa-bullseye',
+    'edit': 'fa-edit',
+    'delete': 'fa-trash',
+    'account_created': 'fa-user-plus',
+    'user_joined': 'fa-user-friends',
+    'user_login': 'fa-sign-in-alt',
+    'invite_created': 'fa-envelope'
+  };
+  return icons[type] || 'fa-info-circle';
+};
+
+FinanceApp.prototype.formatActivityTime = function(timestamp) {
+  return new Date(timestamp).toLocaleString('es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+FinanceApp.prototype.formatRelativeTime = function(timestamp) {
+  const diff = Date.now() - timestamp;
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `Hace ${days} día${days > 1 ? 's' : ''}`;
+  if (hours > 0) return `Hace ${hours} hora${hours > 1 ? 's' : ''}`;
+  if (minutes > 0) return `Hace ${minutes} minuto${minutes > 1 ? 's' : ''}`;
+  return 'Hace un momento';
+};
+
+FinanceApp.prototype.generateUserId = function() {
+  return 'user_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+};
+
+FinanceApp.prototype.generateRandomCode = function() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 8; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
+FinanceApp.prototype.validateInviteCode = function(code) {
+  const invite = this.inviteCodes[code];
+  return invite && invite.expiresAt > Date.now();
+};
+
+FinanceApp.prototype.closeAuthModal = function() {
+  document.getElementById('authModal').classList.remove('show');
+  document.getElementById('accountTypeModal').classList.remove('show');
+  document.body.style.overflow = '';
+};
+
+FinanceApp.prototype.showChangePasswordModal = function() {
+  this.showToast('Función de cambio de contraseña próximamente', 'info');
+};
+
+FinanceApp.prototype.showAccountTypeSwitch = function() {
+  this.showToast('Función de cambio de tipo de cuenta próximamente', 'info');
+};
+
+// Override expense addition to include activity logging
+FinanceApp.prototype.addExpenseOriginal = FinanceApp.prototype.addExpense;
+FinanceApp.prototype.addExpense = function() {
+  const description = document.getElementById('description').value;
+  const amount = parseFloat(document.getElementById('amount').value);
+  const user = document.getElementById('user').value;
+
+  // Call original method
+  this.addExpenseOriginal();
+
+  // Add activity logging
+  this.logActivity('expense', `Gasto agregado: ${description} - $${amount}`, this.currentUser);
+
+  if (this.accountType === 'shared' && this.accountUsers.length > 1) {
+    // Notify other user
+    const otherUser = this.accountUsers.find(u => u.id !== this.currentUser);
+    if (otherUser) {
+      this.addNotification({
+        id: Date.now(),
+        type: 'expense_added',
+        title: 'Nuevo Gasto Registrado',
+        message: `${user} registró un gasto: ${description} - $${amount}`,
+        timestamp: Date.now(),
+        read: false,
+        priority: 'normal'
+      });
+    }
+  }
+};
+
+if (typeof window !== 'undefined') {
+  window.FinanceApp = FinanceApp;
+  window.selectAccountType = selectAccountType;
+  window.switchToLogin = switchToLogin;
+  window.showAccountTypeSelection = showAccountTypeSelection;
+}

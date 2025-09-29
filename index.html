@@ -13,6 +13,8 @@
     />
 
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="user-system.css" />
+    <link rel="stylesheet" href="store.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -287,6 +289,10 @@
         <button class="nav-item" data-section="shopping">
           <i class="fas fa-shopping-cart"></i>
           <span>Lista de Compras</span>
+        </button>
+        <button class="nav-item premium-only" data-section="store" style="display: none;">
+          <i class="fas fa-store"></i>
+          <span>Tienda</span>
         </button>
         <button class="nav-item" data-section="config">
           <i class="fas fa-cog"></i>
@@ -905,74 +911,75 @@
           <p>Añade tus gastos de manera rápida y organizada</p>
         </div>
         <div class="form-container">
-          <form id="expenseForm" class="expense-form">
-            <div class="form-grid">
-              <div class="form-group">
-                <label class="form-label" for="description"
-                  >Descripción del Gasto</label
-                >
-                <input
-                  type="text"
-                  id="description"
-                  class="form-control"
-                  placeholder="Ej. Almuerzo, Gasolina"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="amount">Monto ($)</label>
-                <input
-                  type="number"
-                  id="amount"
-                  class="form-control"
-                  placeholder="0.00"
-                  step="0.01"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="category">Categoría</label>
-                <select id="category" class="form-control" required>
-                  <option value="">Selecciona una categoría</option>
-                  <option value="Alimentación">Alimentación</option>
-                  <option value="Transporte">Transporte</option>
-                  <option value="Entretenimiento">Entretenimiento</option>
-                  <option value="Salud">Salud</option>
-                  <option value="Servicios">Servicios</option>
-                  <option value="Compras">Compras</option>
-                  <option value="Otros">Otros</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="necessity"
-                  >Grado de Necesidad</label
-                >
-                <select id="necessity" class="form-control" required>
-                  <option value="">Selecciona el grado</option>
-                  <option value="Muy Necesario">Muy Necesario</option>
-                  <option value="Necesario">Necesario</option>
-                  <option value="Poco Necesario">Poco Necesario</option>
-                  <option value="No Necesario">No Necesario</option>
-                  <option value="Compra por Impulso">Compra por Impulso</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="date">Fecha</label>
-                <input type="date" id="date" class="form-control" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="user">Usuario</label>
-                <select id="user" class="form-control" required>
-                  <option value="">Selecciona usuario</option>
-                  <option value="Daniel">Daniel</option>
-                  <option value="Givonik">Givonik</option>
-                  <option value="Otro">Otro</option>
-                </select>
-              </div>
+          <form id="expenseForm">
+            <div class="form-group">
+              <label for="description">Descripción del Gasto</label>
+              <input
+                type="text"
+                id="description"
+                class="form-control"
+                placeholder="Ej. Almuerzo, Gasolina, Compras..."
+                required
+              />
             </div>
+
+            <div class="form-group">
+              <label for="amount">Monto</label>
+              <input
+                type="number"
+                id="amount"
+                class="form-control"
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="category">Categoría</label>
+              <select id="category" class="form-control" required>
+                <option value="">Selecciona una categoría</option>
+                <option value="Alimentación">🍽️ Alimentación</option>
+                <option value="Transporte">🚗 Transporte</option>
+                <option value="Entretenimiento">🎬 Entretenimiento</option>
+                <option value="Salud">🏥 Salud</option>
+                <option value="Servicios">⚡ Servicios</option>
+                <option value="Compras">🛍️ Compras</option>
+                <option value="Otros">📦 Otros</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="necessity">Grado de Necesidad</label>
+              <select id="necessity" class="form-control" required>
+                <option value="">Selecciona nivel de necesidad</option>
+                <option value="Muy Necesario">Muy Necesario</option>
+                <option value="Necesario">Necesario</option>
+                <option value="Poco Necesario">Poco Necesario</option>
+                <option value="No Necesario">No Necesario</option>
+                <option value="Compra por Impulso">Compra por Impulso</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="date">Fecha</label>
+              <input type="date" id="date" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+              <label for="user">Usuario</label>
+              <select id="user" class="form-control" required>
+                <option value="">Selecciona usuario</option>
+                <option value="Daniel">Daniel</option>
+                <option value="Givonik">Givonik</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+
             <div class="form-actions">
-              <button type="submit" class="btn btn--primary btn--lg">
-                <i class="fas fa-plus"></i> Registrar Gasto
+              <button type="submit" class="btn btn-primary">
+                Registrar Gasto
               </button>
             </div>
           </form>
@@ -1208,6 +1215,27 @@
         </div>
       </section>
 
+      <!-- Store Section -->
+      <section id="store" class="section">
+        <div class="section-header">
+          <h1>Tienda de Estilos</h1>
+          <p>Personaliza la apariencia de tus gráficos</p>
+        </div>
+
+        <div class="store-container">
+          <div class="store-header">
+            <div class="coins-display">
+              <i class="fas fa-coins"></i>
+              <span id="userCoins">0</span> monedas
+            </div>
+          </div>
+
+          <div class="store-grid" id="storeGrid">
+            <!-- Las tarjetas de productos se generarán dinámicamente aquí -->
+          </div>
+        </div>
+      </section>
+
       <!-- Configuration Section -->
       <section id="config" class="section">
         <div class="section-header">
@@ -1270,19 +1298,98 @@
               </form>
             </div>
           </div>
-          <div class="card mt-16">
-            <div class="card__header"><h3>Seguridad</h3></div>
+
+          <!-- Dashboard Customization (Style Manager) -->
+          <div class="card mt-16 style-manager-card" id="styleManagerCard" style="display: none;">
+            <div class="card__header">
+              <h3>Personalización de Dashboard</h3>
+              <p>Cambia la apariencia de tus gráficos</p>
+            </div>
             <div class="card__body">
-              <button id="changePasswordsBtn" class="btn btn--secondary">
-                <i class="fas fa-key"></i> Cambiar Contraseñas
-              </button>
-              <button
-                id="resetPasswordsBtn"
-                class="btn btn--danger"
-                style="margin-top: 8px"
-              >
-                <i class="fas fa-undo"></i> Resetear Contraseñas
-              </button>
+              <div class="current-style-preview">
+                <h4>Estilo Actual</h4>
+                <div class="current-style-display" id="currentStyleDisplay">
+                  <div class="style-preview-mini">
+                    <div class="mini-chart"></div>
+                  </div>
+                  <span class="style-name" id="currentStyleName">Clásico</span>
+                </div>
+              </div>
+
+              <div class="owned-styles-section">
+                <h4>Mis Estilos</h4>
+                <div class="owned-styles-grid" id="ownedStylesGrid">
+                  <!-- Los estilos desbloqueados se mostrarán aquí -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account Management Section -->
+          <div class="card mt-16">
+            <div class="card__header">
+              <h3>Gestión de Cuenta</h3>
+            </div>
+            <div class="card__body">
+              <div class="account-info" id="accountInfo">
+                <div class="account-type-display">
+                  <div class="account-type-badge" id="accountTypeBadge">
+                    <i class="fas fa-user"></i>
+                    <span id="accountTypeText">Cuenta Personal</span>
+                  </div>
+                </div>
+
+                <div class="account-users" id="accountUsers">
+                  <div class="user-list">
+                    <div class="user-item current-user" id="currentUserInfo">
+                      <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                      </div>
+                      <div class="user-details">
+                        <span class="user-name" id="currentUserName">Usuario</span>
+                        <span class="user-role">Propietario</span>
+                      </div>
+                    </div>
+
+                    <div class="user-item invited-user hidden" id="invitedUserInfo">
+                      <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                      </div>
+                      <div class="user-details">
+                        <span class="user-name" id="invitedUserName">Usuario Invitado</span>
+                        <span class="user-role">Miembro</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="account-actions">
+                  <button id="inviteUserBtn" class="btn btn--primary hidden">
+                    <i class="fas fa-user-plus"></i> Invitar Usuario
+                  </button>
+
+                  <button id="changePasswordBtn" class="btn btn--secondary">
+                    <i class="fas fa-key"></i> Cambiar Contraseña
+                  </button>
+
+                  <button id="switchAccountTypeBtn" class="btn btn--outline">
+                    <i class="fas fa-exchange-alt"></i> Cambiar Tipo de Cuenta
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Log Section (for shared accounts) -->
+          <div class="card mt-16 hidden" id="activityLogSection">
+            <div class="card__header">
+              <h3>Registro de Actividad</h3>
+              <span class="activity-count" id="activityCount">0 actividades</span>
+            </div>
+            <div class="card__body">
+              <div class="activity-list" id="activityList">
+                <!-- Activities will be populated here -->
+              </div>
             </div>
           </div>
         </div>
@@ -1563,6 +1670,62 @@
       });
     </script>
 
+    <!-- Account Type Selection Modal -->
+    <div class="modal" id="accountTypeModal">
+      <div class="modal-dialog account-type-dialog-premium">
+        <div class="modal-content account-type-modal-premium">
+          <button
+            class="modal-close-premium"
+            type="button"
+            aria-label="Cerrar"
+            data-close-modal="accountTypeModal"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+
+          <div class="modal-header-premium">
+            <h2 class="modal-title-premium">Elige tu tipo de cuenta</h2>
+            <p class="modal-subtitle-premium">Selecciona la opción que mejor se adapte a tus necesidades</p>
+          </div>
+
+          <div class="account-cards-container">
+            <div class="account-card personal-card" onclick="selectAccountType('personal')" data-type="personal">
+              <div class="account-card-glow"></div>
+              <div class="account-card-content">
+                <div class="account-card-icon personal-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <h3 class="account-card-title">Personal</h3>
+                <p class="account-card-description">Para tus finanzas individuales</p>
+              </div>
+              <div class="account-card-footer">
+                <div class="account-card-arrow">
+                  <i class="fas fa-arrow-right"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="account-card shared-card" onclick="selectAccountType('shared')" data-type="shared">
+              <div class="account-card-glow"></div>
+              <div class="account-card-content">
+                <div class="account-card-icon shared-icon">
+                  <i class="fas fa-users"></i>
+                </div>
+                <h3 class="account-card-title">Mancomunada</h3>
+                <p class="account-card-description">Para compartir finanzas en pareja o grupo</p>
+              </div>
+              <div class="account-card-footer">
+                <div class="account-card-arrow">
+                  <i class="fas fa-arrow-right"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auth Modal -->
     <div class="modal" id="authModal">
       <div class="modal-dialog auth-dialog">
         <div class="modal-illustration">
@@ -1622,7 +1785,7 @@
                 <input
                   type="text"
                   id="registerName"
-                  placeholder="Tu nombre"
+                  placeholder="Tu nombre o seudónimo"
                   required
                   autocomplete="name"
                 />
@@ -1651,6 +1814,15 @@
                   data-target="registerPassword"
                 ></i>
               </div>
+              <div id="inviteCodeGroup" class="input-group hidden">
+                <i class="fas fa-key"></i>
+                <input
+                  type="text"
+                  id="inviteCode"
+                  placeholder="Código de invitación"
+                  autocomplete="off"
+                />
+              </div>
               <button type="submit" class="btn btn--primary btn--full-width">
                 Crear Cuenta
               </button>
@@ -1660,6 +1832,75 @@
             <p id="authSwitchLink">
               ¿No tienes una cuenta? <a href="#">Regístrate aquí</a>
             </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invitation Modal -->
+    <div class="modal" id="invitationModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Invitar Usuario</h2>
+            <button
+              class="modal-close"
+              type="button"
+              aria-label="Cerrar"
+              data-close-modal="invitationModal"
+            >
+              &times;
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="invitation-steps">
+              <div class="step-item active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                  <h4>Generar Invitación</h4>
+                  <p>Crea un código único para invitar a tu pareja o familiar.</p>
+                  <form id="generateInviteForm">
+                    <div class="input-group">
+                      <i class="fas fa-user"></i>
+                      <input
+                        type="text"
+                        id="inviteeName"
+                        placeholder="Nombre de la persona a invitar"
+                        required
+                      />
+                    </div>
+                    <button type="submit" class="btn btn--primary">
+                      <i class="fas fa-plus"></i> Generar Invitación
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              <div class="step-item" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                  <h4>Compartir Código</h4>
+                  <p>Comparte este código con la persona que quieres invitar:</p>
+                  <div class="invite-code-display">
+                    <div class="code-container">
+                      <span id="generatedInviteCode">-----</span>
+                      <button class="copy-btn" id="copyInviteCode">
+                        <i class="fas fa-copy"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="invite-instructions">
+                    <p><strong>Instrucciones:</strong></p>
+                    <ol>
+                      <li>Comparte este código con la persona</li>
+                      <li>Pídele que se registre en la aplicación</li>
+                      <li>Durante el registro, debe ingresar este código</li>
+                      <li>Una vez registrado, tendrán acceso compartido</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

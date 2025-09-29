@@ -1,0 +1,635 @@
+/* Premium Account Type Selection Modal */
+.account-type-dialog-premium {
+  max-width: 720px;
+  width: 90vw;
+}
+
+.account-type-modal-premium {
+  position: relative;
+  padding: 0;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-raised);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.modal-close-premium {
+  position: absolute;
+  top: var(--space-20);
+  right: var(--space-20);
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: var(--color-surface);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-close-premium:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+  transform: scale(1.1);
+}
+
+.modal-header-premium {
+  text-align: center;
+  padding: var(--space-48) var(--space-32) var(--space-32);
+  background: linear-gradient(135deg, var(--color-surface-raised) 0%, var(--color-surface) 100%);
+}
+
+.modal-title-premium {
+  margin: 0 0 var(--space-12);
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.025em;
+}
+
+.modal-subtitle-premium {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+.account-cards-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-24);
+  padding: var(--space-32);
+  background: var(--color-surface);
+}
+
+.account-card {
+  position: relative;
+  background: var(--color-surface-raised);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-32);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.account-card-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+}
+
+.account-card:hover .account-card-glow {
+  opacity: 0.05;
+}
+
+.account-card-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.account-card-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-24);
+  font-size: 32px;
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.personal-icon {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  color: var(--color-white);
+}
+
+.shared-icon {
+  background: linear-gradient(135deg, var(--color-teal-600), var(--color-teal-700));
+  color: var(--color-white);
+}
+
+.account-card-title {
+  margin: 0 0 var(--space-12);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.025em;
+}
+
+.account-card-description {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.account-card-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-20);
+}
+
+.account-card-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  transition: all 0.4s ease;
+}
+
+.account-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-primary);
+}
+
+.account-card:hover .account-card-icon {
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.account-card:hover .account-card-arrow {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
+  transform: translateX(4px);
+}
+
+.personal-card:hover {
+  border-color: var(--color-primary);
+}
+
+.shared-card:hover {
+  border-color: var(--color-teal-600);
+}
+
+.shared-card:hover .account-card-arrow {
+  background: var(--color-teal-600);
+  border-color: var(--color-teal-600);
+}
+
+/* Account Management Styles */
+.account-info {
+  space-y: var(--space-24);
+}
+
+.account-type-display {
+  margin-bottom: var(--space-24);
+}
+
+.account-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-16);
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+}
+
+.account-type-badge.shared {
+  background: var(--color-secondary-light);
+  color: var(--color-secondary-dark);
+}
+
+.account-users {
+  margin-bottom: var(--space-24);
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-12);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.user-item.current-user {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: var(--font-size-sm);
+}
+
+.user-details {
+  flex: 1;
+}
+
+.user-name {
+  display: block;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.user-role {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-12);
+}
+
+/* Invitation Modal Styles */
+.invitation-steps {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.step-item {
+  display: none;
+  opacity: 0;
+  transform: translateX(20px);
+  transition: all 0.3s ease;
+}
+
+.step-item.active {
+  display: block;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.step-item {
+  display: flex;
+  gap: var(--space-16);
+  align-items: flex-start;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h4 {
+  margin: 0 0 var(--space-8);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+}
+
+.step-content p {
+  margin: 0 0 var(--space-16);
+  color: var(--color-text-secondary);
+}
+
+.invite-code-display {
+  margin: var(--space-16) 0;
+  padding: var(--space-16);
+  background: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.code-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  justify-content: center;
+}
+
+#generatedInviteCode {
+  font-family: 'Courier New', monospace;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 2px;
+  padding: var(--space-8) var(--space-16);
+  background: white;
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--color-primary);
+}
+
+.copy-btn {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+  background: var(--color-primary-dark);
+  transform: scale(1.05);
+}
+
+.invite-instructions {
+  margin-top: var(--space-16);
+  padding: var(--space-12);
+  background: var(--color-info-light);
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--color-info);
+}
+
+.invite-instructions p {
+  margin: 0 0 var(--space-8);
+  font-weight: 500;
+  color: var(--color-info-dark);
+}
+
+.invite-instructions ol {
+  margin: 0;
+  padding-left: var(--space-20);
+  color: var(--color-text-secondary);
+}
+
+.invite-instructions li {
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-sm);
+}
+
+/* Activity Log Styles */
+.activity-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-12);
+  padding: var(--space-12);
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.2s ease;
+}
+
+.activity-item:hover {
+  background: var(--color-surface-secondary);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.activity-icon.expense {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.activity-icon.goal {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.activity-icon.edit {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.activity-icon.delete {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-sm);
+}
+
+.activity-description {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  margin: 0;
+}
+
+.activity-meta {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.activity-time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  display: block;
+}
+
+.activity-user {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  display: block;
+  margin-top: var(--space-2);
+}
+
+.activity-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .account-type-dialog-premium {
+    max-width: 95vw;
+    margin: var(--space-16);
+  }
+
+  .modal-header-premium {
+    padding: var(--space-32) var(--space-24) var(--space-24);
+  }
+
+  .modal-title-premium {
+    font-size: var(--font-size-xl);
+  }
+
+  .modal-subtitle-premium {
+    font-size: var(--font-size-sm);
+  }
+
+  .account-cards-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-20);
+    padding: var(--space-24);
+  }
+
+  .account-card {
+    min-height: 200px;
+    padding: var(--space-24);
+  }
+
+  .account-card-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 24px;
+    margin-bottom: var(--space-20);
+  }
+
+  .account-card-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .account-card-description {
+    font-size: var(--font-size-sm);
+  }
+
+  .modal-close-premium {
+    width: 36px;
+    height: 36px;
+    top: var(--space-16);
+    right: var(--space-16);
+  }
+
+  .account-actions {
+    flex-direction: column;
+  }
+
+  .account-actions .btn {
+    width: 100%;
+  }
+
+  .step-item {
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+
+  .step-number {
+    align-self: flex-start;
+  }
+
+  .invite-instructions ol {
+    padding-left: var(--space-16);
+  }
+}
+
+@media (max-width: 480px) {
+  .account-type-dialog-premium {
+    max-width: 100vw;
+    margin: 0;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .account-type-modal-premium {
+    border-radius: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .account-cards-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+/* Animation for step transitions */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.step-item.active {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* Success states */
+.invite-code-generated {
+  animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Copy button success state */
+.copy-btn.copied {
+  background: var(--color-success);
+  animation: pulse 0.3s ease-in-out;
+}
+
+.copy-btn.copied::before {
+  content: "✓ ";
+}
