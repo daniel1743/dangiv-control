@@ -576,24 +576,67 @@
 
 @media (max-width: 480px) {
   .account-type-dialog-premium {
-    max-width: 100vw;
-    margin: 0;
-    height: 100vh;
-    border-radius: 0;
+    max-width: 90vw;
+    max-height: 85vh;
+    margin: auto;
+    border-radius: var(--radius-xl);
+    overflow-y: auto;
   }
 
   .account-type-modal-premium {
-    border-radius: 0;
-    height: 100vh;
+    border-radius: var(--radius-xl);
     display: flex;
     flex-direction: column;
   }
 
+  .modal-header-premium {
+    padding: var(--space-24) var(--space-20);
+    flex-shrink: 0;
+  }
+
+  .modal-title-premium {
+    font-size: var(--font-size-lg);
+  }
+
+  .modal-subtitle-premium {
+    font-size: var(--font-size-xs);
+  }
+
   .account-cards-container {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: var(--space-16);
+    padding: var(--space-20);
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .account-card {
+    min-height: auto;
+    padding: var(--space-20);
+    flex-shrink: 0;
+  }
+
+  .account-card-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    margin-bottom: var(--space-12);
+  }
+
+  .account-card-title {
+    font-size: var(--font-size-md);
+    margin-bottom: var(--space-8);
+  }
+
+  .account-card-description {
+    font-size: var(--font-size-xs);
+  }
+
+  .account-card-arrow {
+    width: 32px;
+    height: 32px;
+    font-size: var(--font-size-sm);
   }
 }
 
