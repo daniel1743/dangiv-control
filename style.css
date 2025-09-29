@@ -3788,6 +3788,7 @@ select.form-control {
 
 /* === INPUT GROUP COMPONENTS === */
 .input-group {
+  position: relative;
   display: flex;
   align-items: center;
   background: var(--color-surface);
@@ -3823,14 +3824,20 @@ select.form-control {
   color: var(--color-text-secondary);
 }
 
-.input-group .toggle-pass {
+.input-group .password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
   color: var(--color-text-secondary);
-  flex-shrink: 0;
-  transition: color var(--duration-fast);
+  font-size: 16px;
+  z-index: 10;
+  padding: 8px;
+  transition: color 0.2s;
 }
 
-.input-group .toggle-pass:hover {
+.input-group .password-toggle:hover {
   color: var(--color-primary);
 }
 

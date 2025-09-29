@@ -758,6 +758,7 @@ class FinanceApp {
           await FB.signOut(FB.auth);
           this.showToast('Sesión cerrada correctamente 👋', 'success');
           profileDropdown.classList.add('hidden');
+          this.showSection('dashboard');
         } catch (e) {
           this.showToast('Error al cerrar sesión', 'error');
         }
@@ -4943,27 +4944,22 @@ document.addEventListener('DOMContentLoaded', () => {
 // === INICIO DE SECCIÃƒâ€œN: HELPERS GLOBALES (EVENTOS Y CONSOLA) ===
 
 // 1. Funcionalidad para mostrar/ocultar contraseÃ±as (toggle pass)
-// QuedarÃ¡ asÃ­
-// 1. Funcionalidad para mostrar/ocultar contraseÃ±as (toggle pass)
-document.addEventListener('click', function (e) {
-  if (e.target.classList.contains('toggle-pass')) {
-    // CORRECCIÃƒâ€œN: Usamos el data-target para encontrar el input correcto.
-    const inputId = e.target.dataset.target;
-    const input = document.getElementById(inputId);
-
-    if (input) {
-      if (input.type === 'password') {
-        input.type = 'text';
-        e.target.classList.remove('fa-eye');
-        e.target.classList.add('fa-eye-slash');
-      } else {
-        input.type = 'password';
-        e.target.classList.remove('fa-eye-slash');
-        e.target.classList.add('fa-eye');
-      }
+// Password visibility toggle
+function togglePasswordVisibility(inputId, icon) {
+  const input = document.getElementById(inputId);
+  if (input) {
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
     }
   }
-});
+}
+window.togglePasswordVisibility = togglePasswordVisibility;
 // 2. Publicar una funciÃ³n global para verificar contraseÃ±as desde la consola.
 window.verificarPassword = function (userName, plainPassword) {
   if (window.app && typeof window.app.verifyPassword === 'function') {
