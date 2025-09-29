@@ -1350,7 +1350,7 @@ body {
   border: none;
   cursor: pointer;
   padding: 0;
-  border-radius: 50%;
+  border-radius: 80%;
   transition: all var(--duration-fast) ease;
   position: relative;
 }
@@ -1370,8 +1370,7 @@ body {
 
 /* Profile Avatar */
 .profile-avatar {
-  width: 40px;
-  height: 40px;
+ 
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid rgba(255, 255, 255, 0.8);
@@ -4839,10 +4838,31 @@ select.form-control {
     height: 100vh;
     width: 280px;
     padding-top: 100px;
+    left: 0;
+    position: fixed;
   }
 
   .sidebar.open {
-    transform: translateX(0);
+    transform: translateX(0) !important;
+  }
+
+  .sidebar .nav-auth {
+    display: flex !important;
+  }
+
+  .overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+
+  .overlay.active {
+    display: block;
   }
 
   .main-content {

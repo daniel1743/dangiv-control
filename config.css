@@ -79,8 +79,7 @@
 }
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
+  
   border-radius: 50%;
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
   color: var(--color-white);
@@ -812,23 +811,29 @@
   box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb), 0.1);
 }
 
-.input-with-currency {
+.input-con-simbolo {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.currency-symbol {
+.simbolo-moneda {
   position: absolute;
   left: var(--space-16);
-  font-size: var(--font-size-md);
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  z-index: 2;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  z-index: 10;
+  pointer-events: none;
 }
 
-.input-with-currency .form-input {
-  padding-left: var(--space-40);
+.input-con-simbolo .form-input {
+  padding-left: calc(var(--space-16) + 20px);
+  width: 100%;
+}
+
+.input-con-padding {
+  padding-left: 32px !important;
 }
 
 .form-actions {

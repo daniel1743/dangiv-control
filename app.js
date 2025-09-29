@@ -35,7 +35,7 @@ class FinanceApp {
     }
 
     // Account system properties
-    this.accountType = savedData.accountType || null; // 'personal' | 'shared'
+    this.accountType = savedData.accountType || localStorage.getItem('financia_account_type') || 'personal';
     this.currentUser = savedData.currentUser || 'anonymous';
     this.accountOwner = savedData.accountOwner || null;
     this.accountUsers = savedData.accountUsers || [];
@@ -1232,21 +1232,19 @@ class FinanceApp {
 
       hamburgerBtn.addEventListener('click', () => {
         sidebar.classList.toggle('open');
-        overlay.style.display = sidebar.classList.contains('open')
-          ? 'block'
-          : 'none';
+        overlay.classList.toggle('active');
       });
 
       overlay.addEventListener('click', () => {
         sidebar.classList.remove('open');
-        overlay.style.display = 'none';
+        overlay.classList.remove('active');
       });
 
       document.querySelectorAll('.sidebar .nav-item').forEach((item) => {
         item.addEventListener('click', () => {
           if (window.innerWidth <= 768) {
             sidebar.classList.remove('open');
-            overlay.style.display = 'none';
+            overlay.classList.remove('active');
           }
         });
       });
@@ -4224,72 +4222,70 @@ class FinanceApp {
     });
   }
 
-  savePasswordsFromModal() {
-    // Si estamos en modo eliminar
-    if (this.pendingDeleteId) {
-      this.confirmDeleteFromModal();
-      return;
-    }
+  async savePasswordsFromModal() {
+    const currentPasswordEl = document.getElementById('currentPassword');
+    const newPasswordEl = document.getElementById('newPassword');
+    const confirmPasswordEl = document.getElementById('confirmPassword');
 
-    const curDanielEl = document.getElementById('curDaniel');
-    const curGivonikEl = document.getElementById('curGivonik');
-    const newDanielEl = document.getElementById('newDaniel');
-    const confirmDanielEl = document.getElementById('confirmDaniel');
-    const newGivonikEl = document.getElementById('newGivonik');
-    const confirmGivonikEl = document.getElementById('confirmGivonik');
-
-    if (
-      !curDanielEl ||
-      !curGivonikEl ||
-      !newDanielEl ||
-      !confirmDanielEl ||
-      !newGivonikEl ||
-      !confirmGivonikEl
-    ) {
+    if (!currentPasswordEl || !newPasswordEl || !confirmPasswordEl) {
       this.showToast('Campos del modal incompletos', 'error');
       return;
     }
 
-    const curDaniel = curDanielEl.value || '';
-    const curGivonik = curGivonikEl.value || '';
-    const newDaniel = newDanielEl.value || '';
-    const confirmDaniel = confirmDanielEl.value || '';
-    const newGivonik = newGivonikEl.value || '';
-    const confirmGivonik = confirmGivonikEl.value || '';
+    const currentPassword = currentPasswordEl.value || '';
+    const newPassword = newPasswordEl.value || '';
+    const confirmPassword = confirmPasswordEl.value || '';
 
-    if (!this.verifyPassword('Daniel', curDaniel)) {
-      this.showToast('Contraseña actual de Daniel incorrecta', 'error');
-      return;
-    }
-    if (!this.verifyPassword('Givonik', curGivonik)) {
-      this.showToast('Contraseña actual de Givonik incorrecta', 'error');
+    // Validar campos
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      this.showToast('Por favor completa todos los campos', 'error');
       return;
     }
 
-    if (newDaniel.trim().length < 4 || newGivonik.trim().length < 4) {
-      this.showToast(
-        'Las nuevas contraseñas deben tener al menos 4 caracteres',
-        'error'
-      );
-      return;
-    }
-    if (newDaniel !== confirmDaniel) {
-      this.showToast('Confirmación de Daniel no coincide', 'error');
-      return;
-    }
-    if (newGivonik !== confirmGivonik) {
-      this.showToast('Confirmación de Givonik no coincide', 'error');
+    if (newPassword.length < 6) {
+      this.showToast('La nueva contraseña debe tener al menos 6 caracteres', 'error');
       return;
     }
 
-    this.updatePassword('Daniel', newDaniel);
-    this.updatePassword('Givonik', newGivonik);
+    if (newPassword !== confirmPassword) {
+      this.showToast('Las contraseñas no coinciden', 'error');
+      return;
+    }
 
-    document.getElementById('securityModal').classList.remove('show');
-    this.showToast(
-      'Contraseñas actualizadas con doble autorización',
-      'success'
-    );
+    // Verificar con Firebase Authentication si está logueado
+    const FB = window.FB;
+    if (FB?.auth && this.firebaseUser) {
+      try {
+        // Reautenticar usuario
+        const credential = FB.EmailAuthProvider.credential(
+          this.firebaseUser.email,
+          currentPassword
+        );
+        await FB.reauthenticateWithCredential(this.firebaseUser, credential);
+
+        // Cambiar contraseña
+        await FB.updatePassword(this.firebaseUser, newPassword);
+
+        // Actualizar en Firestore
+        const userDocRef = FB.doc(FB.db, 'userData', this.firebaseUser.uid);
+        await FB.updateDoc(userDocRef, {
+          passwordUpdatedAt: Date.now()
+        });
+
+        document.getElementById('securityModal').classList.remove('show');
+        document.body.style.overflow = '';
+        this.showToast('Contraseña actualizada correctamente', 'success');
+      } catch (error) {
+        console.error('Error changing password:', error);
+        if (error.code === 'auth/wrong-password') {
+          this.showToast('Contraseña actual incorrecta', 'error');
+        } else {
+          this.showToast('Error al cambiar contraseña: ' + error.message, 'error');
+        }
+      }
+    } else {
+      this.showToast('Debes iniciar sesión para cambiar tu contraseña', 'error');
+    }
   }
 
   // Goals Methods
@@ -6496,11 +6492,60 @@ FinanceApp.prototype.closeAuthModal = function() {
 };
 
 FinanceApp.prototype.showChangePasswordModal = function() {
-  this.showToast('Función de cambio de contraseña próximamente', 'info');
+  const modal = document.getElementById('securityModal');
+  if (!modal) return;
+
+  // Limpiar campos
+  const currentPassword = document.getElementById('currentPassword');
+  const newPassword = document.getElementById('newPassword');
+  const confirmPassword = document.getElementById('confirmPassword');
+
+  if (currentPassword) currentPassword.value = '';
+  if (newPassword) newPassword.value = '';
+  if (confirmPassword) confirmPassword.value = '';
+
+  // Configurar modal para cambio de contraseña
+  const titleEl = document.getElementById('securityModalTitle');
+  const saveBtn = document.getElementById('modalSavePasswordsBtn');
+  const newPasswordSection = document.getElementById('newPasswordSection');
+
+  if (titleEl) titleEl.textContent = 'Cambiar Contraseña';
+  if (saveBtn) saveBtn.textContent = 'Guardar';
+  if (newPasswordSection) newPasswordSection.style.display = 'block';
+
+  // Abrir modal
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
 };
 
 FinanceApp.prototype.showAccountTypeSwitch = function() {
-  this.showToast('Función de cambio de tipo de cuenta próximamente', 'info');
+  const modal = document.getElementById('accountTypeModal');
+  if (modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+// Function to select account type
+window.selectAccountType = function(type) {
+  if (!window.app) return;
+
+  window.app.accountType = type;
+  localStorage.setItem('financia_account_type', type);
+
+  window.app.updateConfigurationDisplay();
+
+  const modal = document.getElementById('accountTypeModal');
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  const message = type === 'shared'
+    ? 'Cuenta cambiada a Mancomunada. Ahora puedes invitar a tu socio.'
+    : 'Cuenta cambiada a Personal.';
+
+  window.app.showToast(message, 'success');
 };
 
 // Override expense addition to include activity logging
@@ -6891,19 +6936,27 @@ FinanceApp.prototype.setupProfileHandlers = function() {
 
   if (changeAvatarBtn) {
     changeAvatarBtn.addEventListener('click', () => {
-      this.showAvatarSelector();
+      this.openAvatarUploader();
     });
   }
 
-  // Auto-save on input change
-  if (profileNameInput) {
-    profileNameInput.addEventListener('blur', () => {
+  // Format monthly income with thousand separators while typing
+  if (monthlyIncomeInput) {
+    monthlyIncomeInput.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/[^\d]/g, '');
+      if (value) {
+        e.target.value = this.formatNumberWithSeparators(value);
+      }
+    });
+
+    monthlyIncomeInput.addEventListener('blur', () => {
       this.saveProfileSettings();
     });
   }
 
-  if (monthlyIncomeInput) {
-    monthlyIncomeInput.addEventListener('blur', () => {
+  // Auto-save on name change
+  if (profileNameInput) {
+    profileNameInput.addEventListener('blur', () => {
       this.saveProfileSettings();
     });
   }
@@ -6974,28 +7027,138 @@ FinanceApp.prototype.setupAppearanceHandlers = function() {
   }
 };
 
-FinanceApp.prototype.saveProfileSettings = function() {
+FinanceApp.prototype.saveProfileSettings = async function() {
   const profileNameInput = document.getElementById('profileNameInput');
   const monthlyIncomeInput = document.getElementById('monthlyIncomeInput');
 
+  let updated = false;
+
   if (profileNameInput && profileNameInput.value.trim()) {
-    this.currentUser = profileNameInput.value.trim();
-    localStorage.setItem('financia_current_user', this.currentUser);
+    const newName = profileNameInput.value.trim();
+    if (newName !== this.userProfile.name) {
+      this.userProfile.name = newName;
+      updated = true;
+    }
   }
 
   if (monthlyIncomeInput && monthlyIncomeInput.value) {
-    this.monthlyIncome = parseFloat(monthlyIncomeInput.value);
-    localStorage.setItem('financia_monthly_income', this.monthlyIncome.toString());
+    const cleanValue = monthlyIncomeInput.value.replace(/[^\d]/g, '');
+    const newIncome = parseFloat(cleanValue);
+    if (newIncome !== this.monthlyIncome) {
+      this.monthlyIncome = newIncome;
+      localStorage.setItem('financia_monthly_income', this.monthlyIncome.toString());
+      updated = true;
+    }
   }
 
-  this.updateConfigurationDisplay();
-  this.showToast('Perfil actualizado correctamente', 'success');
+  if (updated) {
+    // Update local storage
+    this.saveData();
+
+    // Update Firebase if logged in
+    const FB = window.FB;
+    if (FB?.auth && this.firebaseUser) {
+      try {
+        const userDocRef = FB.doc(FB.db, 'userData', this.firebaseUser.uid);
+        await FB.updateDoc(userDocRef, {
+          userName: this.userProfile.name,
+          monthlyIncome: this.monthlyIncome,
+          updatedAt: Date.now()
+        });
+      } catch (error) {
+        console.error('Error updating Firebase:', error);
+      }
+    }
+
+    // Update UI across the app
+    this.updateConfigurationDisplay();
+    this.updateProfileDisplay();
+    this.renderDashboard();
+
+    this.showToast('Perfil actualizado correctamente', 'success');
+  }
 };
 
 FinanceApp.prototype.showAvatarSelector = function() {
   // Navigate to store section for avatar selection
   this.showSection('store');
   this.showToast('Selecciona un nuevo avatar en la tienda', 'info');
+};
+
+FinanceApp.prototype.openAvatarUploader = function() {
+  // Create file input
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+
+  input.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      this.showToast('La imagen debe ser menor a 5MB', 'error');
+      return;
+    }
+
+    // Show loading
+    this.showToast('Subiendo avatar...', 'info');
+
+    try {
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const imageData = event.target.result;
+
+        // Update profile
+        this.userProfile.avatar = imageData;
+        this.userProfile.avatarType = 'custom';
+
+        // Save to local storage
+        this.saveData();
+
+        // Upload to Firebase Storage if logged in
+        const FB = window.FB;
+        if (FB?.auth && this.firebaseUser) {
+          try {
+            const storageRef = FB.ref(FB.storage, `avatars/${this.firebaseUser.uid}`);
+            await FB.uploadString(storageRef, imageData, 'data_url');
+            const downloadURL = await FB.getDownloadURL(storageRef);
+
+            // Update Firestore with image URL
+            const userDocRef = FB.doc(FB.db, 'userData', this.firebaseUser.uid);
+            await FB.updateDoc(userDocRef, {
+              avatar: downloadURL,
+              avatarType: 'custom',
+              updatedAt: Date.now()
+            });
+
+            this.userProfile.avatar = downloadURL;
+          } catch (error) {
+            console.error('Error uploading to Firebase:', error);
+          }
+        }
+
+        // Update UI
+        this.updateConfigurationDisplay();
+        this.updateProfileDisplay();
+
+        this.showToast('Avatar actualizado correctamente', 'success');
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      this.showToast('Error al subir el avatar', 'error');
+    }
+  });
+
+  input.click();
+};
+
+FinanceApp.prototype.formatNumberWithSeparators = function(value) {
+  const number = value.replace(/\D/g, '');
+  return number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };
 
 FinanceApp.prototype.showPartnerInviteModal = function() {
@@ -7072,7 +7235,7 @@ FinanceApp.prototype.setupInviteModalHandlers = function() {
   }
 };
 
-FinanceApp.prototype.generateInviteLink = function() {
+FinanceApp.prototype.generateInviteLink = async function() {
   // Generate a unique secure invitation link
   const inviteCode = this.generateSecureInviteCode();
   const inviteLink = `${window.location.origin}${window.location.pathname}?invite=${inviteCode}`;
@@ -7083,10 +7246,22 @@ FinanceApp.prototype.generateInviteLink = function() {
     link: inviteLink,
     createdAt: Date.now(),
     expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
-    used: false
+    used: false,
+    createdBy: this.firebaseUser?.uid || 'anonymous'
   };
 
   localStorage.setItem('financia_pending_invitation', JSON.stringify(invitation));
+
+  // Save to Firebase if logged in
+  const FB = window.FB;
+  if (FB?.auth && this.firebaseUser) {
+    try {
+      const invitesRef = FB.collection(FB.db, 'invitations');
+      await FB.addDoc(invitesRef, invitation);
+    } catch (error) {
+      console.error('Error saving invitation to Firebase:', error);
+    }
+  }
 
   // Update UI
   const linkInput = document.getElementById('generatedInviteLink');
@@ -7197,21 +7372,35 @@ FinanceApp.prototype.updateConfigurationDisplay = function() {
   const configAccountTypeText = document.getElementById('configAccountTypeText');
   const configAccountDescription = document.getElementById('configAccountDescription');
   const configInviteSection = document.getElementById('configInviteSection');
+  const currentProfileAvatar = document.getElementById('currentProfileAvatar');
+
+  // Update avatar preview
+  if (currentProfileAvatar) {
+    const avatarPreview = currentProfileAvatar.querySelector('.avatar-preview');
+    if (avatarPreview) {
+      if (this.userProfile.avatar) {
+        avatarPreview.innerHTML = `<img src="${this.userProfile.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Avatar">`;
+      } else {
+        avatarPreview.innerHTML = '<i class="fas fa-user"></i>';
+      }
+    }
+  }
 
   if (profileUserName) {
-    profileUserName.textContent = this.currentUser || 'Usuario';
+    profileUserName.textContent = this.userProfile.name || 'Usuario';
   }
 
   if (profileNameInput) {
-    profileNameInput.value = this.currentUser || '';
+    profileNameInput.value = this.userProfile.name || '';
   }
 
   if (monthlyIncomeInput) {
-    monthlyIncomeInput.value = this.monthlyIncome || '';
+    const formattedIncome = this.monthlyIncome ? this.formatNumberWithSeparators(this.monthlyIncome.toString()) : '';
+    monthlyIncomeInput.value = formattedIncome;
   }
 
   if (configMemberName) {
-    configMemberName.textContent = this.currentUser || 'Usuario';
+    configMemberName.textContent = this.userProfile.name || 'Usuario';
   }
 
   // Update account type information
