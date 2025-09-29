@@ -1150,6 +1150,15 @@ class FinanceApp {
       });
     }
 
+    // Expense filtering and search functionality
+    this.setupExpenseFilters();
+
+    // Setup onboarding tour system
+    this.setupOnboardingTour();
+
+    // Setup new configuration handlers
+    this.setupConfigurationHandlers();
+
 
     const goalForm = document.getElementById('goalForm');
     if (goalForm) {
@@ -3672,6 +3681,13 @@ class FinanceApp {
   }
 
   renderExpenses() {
+    // If filters are initialized, use filtered rendering
+    if (this.expenseFilters) {
+      this.renderExpensesWithFilters();
+      return;
+    }
+
+    // Fallback to original method for initialization
     const container = document.getElementById('expenseList');
     if (!container) return;
 
@@ -3723,6 +3739,291 @@ class FinanceApp {
         });
       }
     });
+  }
+
+  // Setup expense filtering and search functionality
+  setupExpenseFilters() {
+    const searchInput = document.getElementById('expenseSearch');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const necessityFilter = document.getElementById('necessityFilter');
+    const userFilter = document.getElementById('userFilter');
+    const dateFromFilter = document.getElementById('dateFromFilter');
+    const dateToFilter = document.getElementById('dateToFilter');
+    const clearFiltersBtn = document.getElementById('clearFilters');
+    const exportCSVBtn = document.getElementById('exportCSV');
+
+    // Initialize filters
+    this.expenseFilters = {
+      search: '',
+      category: '',
+      necessity: '',
+      user: '',
+      dateFrom: '',
+      dateTo: ''
+    };
+
+    // Add event listeners for all filters
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        this.expenseFilters.search = e.target.value.toLowerCase();
+        this.renderExpensesWithFilters();
+      });
+    }
+
+    if (categoryFilter) {
+      categoryFilter.addEventListener('change', (e) => {
+        this.expenseFilters.category = e.target.value;
+        this.renderExpensesWithFilters();
+      });
+    }
+
+    if (necessityFilter) {
+      necessityFilter.addEventListener('change', (e) => {
+        this.expenseFilters.necessity = e.target.value;
+        this.renderExpensesWithFilters();
+      });
+    }
+
+    if (userFilter) {
+      userFilter.addEventListener('change', (e) => {
+        this.expenseFilters.user = e.target.value;
+        this.renderExpensesWithFilters();
+      });
+    }
+
+    if (dateFromFilter) {
+      dateFromFilter.addEventListener('change', (e) => {
+        this.expenseFilters.dateFrom = e.target.value;
+        this.renderExpensesWithFilters();
+      });
+    }
+
+    if (dateToFilter) {
+      dateToFilter.addEventListener('change', (e) => {
+        this.expenseFilters.dateTo = e.target.value;
+        this.renderExpensesWithFilters();
+      });
+    }
+
+    // Clear filters button
+    if (clearFiltersBtn) {
+      clearFiltersBtn.addEventListener('click', () => {
+        this.clearExpenseFilters();
+      });
+    }
+
+    // Export CSV button
+    if (exportCSVBtn) {
+      exportCSVBtn.addEventListener('click', () => {
+        this.exportExpensesToCSV();
+      });
+    }
+  }
+
+  // Filter expenses based on current filter settings
+  filterExpenses(expenses) {
+    return expenses.filter(expense => {
+      // Search filter
+      if (this.expenseFilters.search) {
+        const searchText = this.expenseFilters.search;
+        const description = this.fixLegacyEncoding(expense.description).toLowerCase();
+        if (!description.includes(searchText)) {
+          return false;
+        }
+      }
+
+      // Category filter
+      if (this.expenseFilters.category && expense.category !== this.expenseFilters.category) {
+        return false;
+      }
+
+      // Necessity filter
+      if (this.expenseFilters.necessity && expense.necessity !== this.expenseFilters.necessity) {
+        return false;
+      }
+
+      // User filter
+      if (this.expenseFilters.user && expense.user !== this.expenseFilters.user) {
+        return false;
+      }
+
+      // Date range filter
+      if (this.expenseFilters.dateFrom || this.expenseFilters.dateTo) {
+        const expenseDate = new Date(expense.date);
+
+        if (this.expenseFilters.dateFrom) {
+          const fromDate = new Date(this.expenseFilters.dateFrom);
+          if (expenseDate < fromDate) {
+            return false;
+          }
+        }
+
+        if (this.expenseFilters.dateTo) {
+          const toDate = new Date(this.expenseFilters.dateTo);
+          // Set time to end of day for dateTo comparison
+          toDate.setHours(23, 59, 59, 999);
+          if (expenseDate > toDate) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    });
+  }
+
+  // Clear all expense filters
+  clearExpenseFilters() {
+    this.expenseFilters = {
+      search: '',
+      category: '',
+      necessity: '',
+      user: '',
+      dateFrom: '',
+      dateTo: ''
+    };
+
+    // Clear form inputs
+    const searchInput = document.getElementById('expenseSearch');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const necessityFilter = document.getElementById('necessityFilter');
+    const userFilter = document.getElementById('userFilter');
+    const dateFromFilter = document.getElementById('dateFromFilter');
+    const dateToFilter = document.getElementById('dateToFilter');
+
+    if (searchInput) searchInput.value = '';
+    if (categoryFilter) categoryFilter.selectedIndex = 0;
+    if (necessityFilter) necessityFilter.selectedIndex = 0;
+    if (userFilter) userFilter.selectedIndex = 0;
+    if (dateFromFilter) dateFromFilter.value = '';
+    if (dateToFilter) dateToFilter.value = '';
+
+    this.renderExpensesWithFilters();
+  }
+
+  // Update expense summary stats
+  updateExpenseSummary(filteredExpenses) {
+    const countElement = document.getElementById('expenseCount');
+    const totalElement = document.getElementById('expenseTotal');
+
+    if (countElement) {
+      const count = filteredExpenses.length;
+      countElement.textContent = `${count} gasto${count !== 1 ? 's' : ''}`;
+    }
+
+    if (totalElement) {
+      const total = filteredExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+      totalElement.textContent = `$${total.toFixed(2)}`;
+    }
+  }
+
+  // Render expenses with current filters applied
+  renderExpensesWithFilters() {
+    const container = document.getElementById('expenseList');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    // Apply filters
+    const filteredExpenses = this.filterExpenses(this.expenses);
+
+    // Update summary
+    this.updateExpenseSummary(filteredExpenses);
+
+    if (filteredExpenses.length === 0) {
+      container.innerHTML =
+        '<div class="empty-state"><i class="fas fa-search"></i><h3>No se encontraron gastos con los filtros aplicados</h3><p>Prueba ajustando los criterios de búsqueda</p></div>';
+      return;
+    }
+
+    const sortedExpenses = [...filteredExpenses].sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
+    );
+
+    sortedExpenses.forEach((expense) => {
+      const expenseEl = document.createElement('div');
+      expenseEl.className = 'transaction-item';
+      const metaLine = this.formatMetaLine([
+        expense.date,
+        expense.user,
+        expense.category,
+        expense.necessity,
+        expense.protected ? 'PROTEGIDO' : '',
+      ]);
+      expenseEl.innerHTML = `
+        <div class="transaction-info">
+          <h4>${this.fixLegacyEncoding(expense.description)}</h4>
+          <div class="transaction-meta">${metaLine}</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="transaction-amount expense">$${expense.amount}</div>
+          <button type="button" class="btn btn-danger btn-delete" data-id="${
+            expense.id
+          }">
+            Eliminar
+          </button>
+        </div>
+      `;
+
+      container.appendChild(expenseEl);
+
+      const delBtn = expenseEl.querySelector('.btn-delete');
+      if (delBtn) {
+        delBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.deleteExpense(expense.id);
+        });
+      }
+    });
+  }
+
+  // Export expenses to CSV
+  exportExpensesToCSV() {
+    const filteredExpenses = this.filterExpenses(this.expenses);
+
+    if (filteredExpenses.length === 0) {
+      this.showToast('No hay gastos para exportar', 'warning');
+      return;
+    }
+
+    // CSV headers
+    const headers = ['Fecha', 'Descripción', 'Categoría', 'Monto', 'Usuario', 'Necesidad'];
+
+    // Convert expenses to CSV format
+    const csvData = [
+      headers.join(','),
+      ...filteredExpenses.map(expense => [
+        expense.date,
+        `"${this.fixLegacyEncoding(expense.description).replace(/"/g, '""')}"`,
+        expense.category,
+        expense.amount,
+        expense.user,
+        expense.necessity
+      ].join(','))
+    ].join('\n');
+
+    // Create and download file
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+
+      const today = new Date().toISOString().split('T')[0];
+      const filename = `gastos_${today}.csv`;
+      link.setAttribute('download', filename);
+
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      this.showToast(`Archivo ${filename} descargado exitosamente`, 'success');
+    } else {
+      this.showToast('Error al exportar archivo', 'error');
+    }
   }
 
   deleteExpense(id) {
@@ -6230,6 +6531,745 @@ FinanceApp.prototype.addExpense = function() {
       });
     }
   }
+};
+
+// Setup onboarding tour system
+FinanceApp.prototype.setupOnboardingTour = function() {
+  this.tourSteps = [
+    {
+      element: '.navbar__logo',
+      title: '¡Bienvenido a FinanciaPro Suite!',
+      description: 'Esta es tu nueva herramienta para el control financiero personal. Te guiaremos por las principales funciones.',
+      position: 'bottom'
+    },
+    {
+      element: '[data-section="dashboard"]',
+      title: 'Panel Principal',
+      description: 'Aquí verás un resumen de tus finanzas: gastos totales, metas y gráficos de análisis.',
+      position: 'bottom'
+    },
+    {
+      element: '[data-section="expenses"]',
+      title: 'Registro de Gastos',
+      description: 'Registra todos tus gastos de forma rápida y organizada por categorías y nivel de necesidad.',
+      position: 'bottom'
+    },
+    {
+      element: '[data-section="goals"]',
+      title: 'Metas Financieras',
+      description: 'Define y hace seguimiento a tus objetivos de ahorro. Mantente motivado con el progreso visual.',
+      position: 'bottom'
+    },
+    {
+      element: '[data-section="analysis"]',
+      title: 'Análisis Detallado',
+      description: 'Visualiza patrones en tus gastos con gráficos interactivos y estadísticas útiles.',
+      position: 'bottom'
+    },
+    {
+      element: '[data-section="store"]',
+      title: 'Tienda de Estilos',
+      description: 'Personaliza la apariencia de tus gráficos con diferentes temas y estilos visuales.',
+      position: 'bottom'
+    },
+    {
+      element: '[data-section="config"]',
+      title: 'Configuración',
+      description: 'Administra tu perfil, configuración de cuenta y preferencias de la aplicación.',
+      position: 'bottom'
+    },
+    {
+      element: '#expenseForm',
+      title: 'Registrar tu Primer Gasto',
+      description: 'Comienza registrando un gasto. Completa la descripción, monto, categoría y nivel de necesidad.',
+      position: 'top'
+    }
+  ];
+
+  this.currentTourStep = 0;
+  this.tourActive = false;
+
+  // Initialize tour elements
+  this.tourOverlay = document.getElementById('tourOverlay');
+  this.tourSpotlight = this.tourOverlay?.querySelector('.tour-spotlight');
+  this.tourTooltip = this.tourOverlay?.querySelector('.tour-tooltip');
+  this.tourStartBtn = document.getElementById('startTourBtn');
+
+  // Setup event listeners
+  this.setupTourEventListeners();
+
+  // Show tour start button after a delay if user hasn't seen tour
+  setTimeout(() => {
+    if (!localStorage.getItem('financia_tour_completed') && this.tourStartBtn) {
+      this.tourStartBtn.classList.add('show');
+    }
+  }, 3000);
+};
+
+FinanceApp.prototype.setupTourEventListeners = function() {
+  // Tour start button
+  if (this.tourStartBtn) {
+    this.tourStartBtn.addEventListener('click', () => {
+      this.startTour();
+    });
+  }
+
+  if (!this.tourOverlay) return;
+
+  // Tour navigation buttons
+  const nextBtn = this.tourOverlay.querySelector('.tour-next');
+  const prevBtn = this.tourOverlay.querySelector('.tour-prev');
+  const skipBtn = this.tourOverlay.querySelector('.tour-skip');
+  const finishBtn = this.tourOverlay.querySelector('.tour-finish');
+  const closeBtn = this.tourOverlay.querySelector('.tour-close');
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      this.nextTourStep();
+    });
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      this.prevTourStep();
+    });
+  }
+
+  if (skipBtn) {
+    skipBtn.addEventListener('click', () => {
+      this.endTour();
+    });
+  }
+
+  if (finishBtn) {
+    finishBtn.addEventListener('click', () => {
+      this.endTour();
+      this.showSection('expenses'); // Navigate to expenses section to start
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      this.endTour();
+    });
+  }
+
+  // Close tour on backdrop click
+  const backdrop = this.tourOverlay.querySelector('.tour-backdrop');
+  if (backdrop) {
+    backdrop.addEventListener('click', () => {
+      this.endTour();
+    });
+  }
+
+  // Close tour on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && this.tourActive) {
+      this.endTour();
+    }
+  });
+};
+
+FinanceApp.prototype.startTour = function() {
+  if (!this.tourOverlay || this.tourActive) return;
+
+  this.tourActive = true;
+  this.currentTourStep = 0;
+  this.tourOverlay.classList.remove('hidden');
+
+  // Hide tour start button
+  if (this.tourStartBtn) {
+    this.tourStartBtn.classList.remove('show');
+  }
+
+  // Start with first step
+  this.showTourStep(0);
+};
+
+FinanceApp.prototype.showTourStep = function(stepIndex) {
+  if (stepIndex < 0 || stepIndex >= this.tourSteps.length) return;
+
+  const step = this.tourSteps[stepIndex];
+  const targetElement = document.querySelector(step.element);
+
+  if (!targetElement) {
+    // Skip to next step if element not found
+    if (stepIndex < this.tourSteps.length - 1) {
+      this.showTourStep(stepIndex + 1);
+    } else {
+      this.endTour();
+    }
+    return;
+  }
+
+  // Update tour content
+  const titleEl = this.tourOverlay.querySelector('.tour-title');
+  const descEl = this.tourOverlay.querySelector('.tour-description');
+  const counterEl = this.tourOverlay.querySelector('.tour-step-counter');
+  const progressFill = this.tourOverlay.querySelector('.tour-progress-fill');
+
+  if (titleEl) titleEl.textContent = step.title;
+  if (descEl) descEl.textContent = step.description;
+  if (counterEl) counterEl.textContent = `${stepIndex + 1} de ${this.tourSteps.length}`;
+  if (progressFill) {
+    const progress = ((stepIndex + 1) / this.tourSteps.length) * 100;
+    progressFill.style.width = `${progress}%`;
+  }
+
+  // Update navigation buttons
+  const prevBtn = this.tourOverlay.querySelector('.tour-prev');
+  const nextBtn = this.tourOverlay.querySelector('.tour-next');
+  const finishBtn = this.tourOverlay.querySelector('.tour-finish');
+
+  if (prevBtn) {
+    prevBtn.style.display = stepIndex === 0 ? 'none' : 'block';
+  }
+
+  const isLastStep = stepIndex === this.tourSteps.length - 1;
+  if (nextBtn) {
+    nextBtn.style.display = isLastStep ? 'none' : 'block';
+  }
+  if (finishBtn) {
+    finishBtn.style.display = isLastStep ? 'block' : 'none';
+  }
+
+  // Position spotlight and tooltip
+  this.positionTourElements(targetElement, step.position);
+
+  // Highlight target element
+  this.highlightElement(targetElement);
+
+  // Show tooltip with animation
+  setTimeout(() => {
+    if (this.tourTooltip) {
+      this.tourTooltip.classList.add('show');
+    }
+  }, 100);
+};
+
+FinanceApp.prototype.positionTourElements = function(targetElement, position) {
+  if (!this.tourSpotlight || !this.tourTooltip) return;
+
+  const rect = targetElement.getBoundingClientRect();
+  const padding = 8;
+
+  // Position spotlight
+  this.tourSpotlight.style.left = `${rect.left - padding}px`;
+  this.tourSpotlight.style.top = `${rect.top - padding}px`;
+  this.tourSpotlight.style.width = `${rect.width + padding * 2}px`;
+  this.tourSpotlight.style.height = `${rect.height + padding * 2}px`;
+
+  // Position tooltip
+  const tooltipRect = this.tourTooltip.getBoundingClientRect();
+  let left, top;
+
+  switch (position) {
+    case 'top':
+      left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+      top = rect.top - tooltipRect.height - 20;
+      break;
+    case 'bottom':
+      left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+      top = rect.bottom + 20;
+      break;
+    case 'left':
+      left = rect.left - tooltipRect.width - 20;
+      top = rect.top + rect.height / 2 - tooltipRect.height / 2;
+      break;
+    case 'right':
+      left = rect.right + 20;
+      top = rect.top + rect.height / 2 - tooltipRect.height / 2;
+      break;
+    default:
+      left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+      top = rect.bottom + 20;
+  }
+
+  // Ensure tooltip stays within viewport
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  if (left < 10) left = 10;
+  if (left + tooltipRect.width > viewportWidth - 10) {
+    left = viewportWidth - tooltipRect.width - 10;
+  }
+  if (top < 10) top = 10;
+  if (top + tooltipRect.height > viewportHeight - 10) {
+    top = viewportHeight - tooltipRect.height - 10;
+  }
+
+  this.tourTooltip.style.left = `${left}px`;
+  this.tourTooltip.style.top = `${top}px`;
+  this.tourTooltip.classList.remove('position-top', 'position-bottom', 'position-left', 'position-right');
+  this.tourTooltip.classList.add(`position-${position}`);
+};
+
+FinanceApp.prototype.highlightElement = function(element) {
+  // Remove previous highlights
+  const prevHighlighted = document.querySelector('.tour-highlighted');
+  if (prevHighlighted) {
+    prevHighlighted.classList.remove('tour-highlighted');
+  }
+
+  // Add highlight to current element
+  element.classList.add('tour-highlighted');
+};
+
+FinanceApp.prototype.nextTourStep = function() {
+  if (this.currentTourStep < this.tourSteps.length - 1) {
+    this.tourTooltip?.classList.remove('show');
+    setTimeout(() => {
+      this.currentTourStep++;
+      this.showTourStep(this.currentTourStep);
+    }, 150);
+  }
+};
+
+FinanceApp.prototype.prevTourStep = function() {
+  if (this.currentTourStep > 0) {
+    this.tourTooltip?.classList.remove('show');
+    setTimeout(() => {
+      this.currentTourStep--;
+      this.showTourStep(this.currentTourStep);
+    }, 150);
+  }
+};
+
+FinanceApp.prototype.endTour = function() {
+  if (!this.tourActive) return;
+
+  this.tourActive = false;
+
+  // Remove highlights
+  const highlighted = document.querySelector('.tour-highlighted');
+  if (highlighted) {
+    highlighted.classList.remove('tour-highlighted');
+  }
+
+  // Hide tour overlay
+  if (this.tourOverlay) {
+    this.tourTooltip?.classList.remove('show');
+    setTimeout(() => {
+      this.tourOverlay.classList.add('hidden');
+    }, 150);
+  }
+
+  // Mark tour as completed
+  localStorage.setItem('financia_tour_completed', 'true');
+  localStorage.setItem('financia_tour_date', new Date().toISOString());
+
+  // Show completion message
+  this.showToast('¡Tour completado! Ya puedes comenzar a usar FinanciaPro Suite.', 'success');
+};
+
+// Setup new configuration functionality
+FinanceApp.prototype.setupConfigurationHandlers = function() {
+  // Profile section handlers
+  this.setupProfileHandlers();
+
+  // Account section handlers
+  this.setupAccountHandlers();
+
+  // Appearance section handlers
+  this.setupAppearanceHandlers();
+
+  // Update config display with current data
+  this.updateConfigurationDisplay();
+};
+
+FinanceApp.prototype.setupProfileHandlers = function() {
+  const saveProfileBtn = document.getElementById('saveProfileBtn');
+  const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+  const profileNameInput = document.getElementById('profileNameInput');
+  const monthlyIncomeInput = document.getElementById('monthlyIncomeInput');
+
+  if (saveProfileBtn) {
+    saveProfileBtn.addEventListener('click', () => {
+      this.saveProfileSettings();
+    });
+  }
+
+  if (changeAvatarBtn) {
+    changeAvatarBtn.addEventListener('click', () => {
+      this.showAvatarSelector();
+    });
+  }
+
+  // Auto-save on input change
+  if (profileNameInput) {
+    profileNameInput.addEventListener('blur', () => {
+      this.saveProfileSettings();
+    });
+  }
+
+  if (monthlyIncomeInput) {
+    monthlyIncomeInput.addEventListener('blur', () => {
+      this.saveProfileSettings();
+    });
+  }
+};
+
+FinanceApp.prototype.setupAccountHandlers = function() {
+  const invitePartnerBtn = document.getElementById('configInvitePartnerBtn');
+  const changePasswordBtn = document.getElementById('configChangePasswordBtn');
+  const switchAccountBtn = document.getElementById('configSwitchAccountBtn');
+
+  if (invitePartnerBtn) {
+    invitePartnerBtn.addEventListener('click', () => {
+      this.showPartnerInviteModal();
+    });
+  }
+
+  if (changePasswordBtn) {
+    changePasswordBtn.addEventListener('click', () => {
+      this.showChangePasswordModal();
+    });
+  }
+
+  if (switchAccountBtn) {
+    switchAccountBtn.addEventListener('click', () => {
+      this.showAccountTypeSwitch();
+    });
+  }
+
+  // Setup modal handlers
+  this.setupInviteModalHandlers();
+};
+
+FinanceApp.prototype.setupAppearanceHandlers = function() {
+  const themeOptions = document.querySelectorAll('.theme-option');
+  const changeChartStyleBtn = document.getElementById('configChangeChartStyleBtn');
+  const animationsToggle = document.getElementById('animationsToggle');
+  const goalNotificationsToggle = document.getElementById('goalNotificationsToggle');
+  const demoModeToggle = document.getElementById('demoModeToggle');
+
+  themeOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      this.changeTheme(option.dataset.theme);
+    });
+  });
+
+  if (changeChartStyleBtn) {
+    changeChartStyleBtn.addEventListener('click', () => {
+      this.showSection('store');
+    });
+  }
+
+  if (animationsToggle) {
+    animationsToggle.addEventListener('change', () => {
+      this.toggleAnimations(animationsToggle.checked);
+    });
+  }
+
+  if (goalNotificationsToggle) {
+    goalNotificationsToggle.addEventListener('change', () => {
+      this.toggleGoalNotifications(goalNotificationsToggle.checked);
+    });
+  }
+
+  if (demoModeToggle) {
+    demoModeToggle.addEventListener('change', () => {
+      this.toggleDemoMode(demoModeToggle.checked);
+    });
+  }
+};
+
+FinanceApp.prototype.saveProfileSettings = function() {
+  const profileNameInput = document.getElementById('profileNameInput');
+  const monthlyIncomeInput = document.getElementById('monthlyIncomeInput');
+
+  if (profileNameInput && profileNameInput.value.trim()) {
+    this.currentUser = profileNameInput.value.trim();
+    localStorage.setItem('financia_current_user', this.currentUser);
+  }
+
+  if (monthlyIncomeInput && monthlyIncomeInput.value) {
+    this.monthlyIncome = parseFloat(monthlyIncomeInput.value);
+    localStorage.setItem('financia_monthly_income', this.monthlyIncome.toString());
+  }
+
+  this.updateConfigurationDisplay();
+  this.showToast('Perfil actualizado correctamente', 'success');
+};
+
+FinanceApp.prototype.showAvatarSelector = function() {
+  // Navigate to store section for avatar selection
+  this.showSection('store');
+  this.showToast('Selecciona un nuevo avatar en la tienda', 'info');
+};
+
+FinanceApp.prototype.showPartnerInviteModal = function() {
+  const modal = document.getElementById('partnerInviteModal');
+  if (!modal) return;
+
+  // Reset modal to first step
+  const step1 = document.getElementById('inviteStep1');
+  const step2 = document.getElementById('inviteStep2');
+
+  if (step1 && step2) {
+    step1.classList.add('active');
+    step1.classList.remove('hidden');
+    step2.classList.remove('active');
+    step2.classList.add('hidden');
+  }
+
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+};
+
+FinanceApp.prototype.setupInviteModalHandlers = function() {
+  const modal = document.getElementById('partnerInviteModal');
+  const closeBtn = document.getElementById('closeInviteModalBtn');
+  const cancelBtn = document.getElementById('cancelInviteBtn');
+  const proceedBtn = document.getElementById('proceedInviteBtn');
+  const copyLinkBtn = document.getElementById('copyInviteLinkBtn');
+  const generateNewLinkBtn = document.getElementById('generateNewLinkBtn');
+  const finishBtn = document.getElementById('finishInviteBtn');
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      this.closePartnerInviteModal();
+    });
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      this.closePartnerInviteModal();
+    });
+  }
+
+  if (proceedBtn) {
+    proceedBtn.addEventListener('click', () => {
+      this.generateInviteLink();
+    });
+  }
+
+  if (copyLinkBtn) {
+    copyLinkBtn.addEventListener('click', () => {
+      this.copyInviteLink();
+    });
+  }
+
+  if (generateNewLinkBtn) {
+    generateNewLinkBtn.addEventListener('click', () => {
+      this.generateInviteLink();
+    });
+  }
+
+  if (finishBtn) {
+    finishBtn.addEventListener('click', () => {
+      this.closePartnerInviteModal();
+    });
+  }
+
+  // Close on backdrop click
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        this.closePartnerInviteModal();
+      }
+    });
+  }
+};
+
+FinanceApp.prototype.generateInviteLink = function() {
+  // Generate a unique secure invitation link
+  const inviteCode = this.generateSecureInviteCode();
+  const inviteLink = `${window.location.origin}${window.location.pathname}?invite=${inviteCode}`;
+
+  // Store invitation details
+  const invitation = {
+    code: inviteCode,
+    link: inviteLink,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
+    used: false
+  };
+
+  localStorage.setItem('financia_pending_invitation', JSON.stringify(invitation));
+
+  // Update UI
+  const linkInput = document.getElementById('generatedInviteLink');
+  if (linkInput) {
+    linkInput.value = inviteLink;
+  }
+
+  // Switch to step 2
+  const step1 = document.getElementById('inviteStep1');
+  const step2 = document.getElementById('inviteStep2');
+
+  if (step1 && step2) {
+    step1.classList.remove('active');
+    step1.classList.add('hidden');
+    step2.classList.add('active');
+    step2.classList.remove('hidden');
+  }
+
+  this.showToast('Enlace de invitación generado', 'success');
+};
+
+FinanceApp.prototype.generateSecureInviteCode = function() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < 32; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
+
+FinanceApp.prototype.copyInviteLink = function() {
+  const linkInput = document.getElementById('generatedInviteLink');
+  const copyBtn = document.getElementById('copyInviteLinkBtn');
+
+  if (linkInput && copyBtn) {
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999);
+
+    try {
+      document.execCommand('copy');
+
+      // Visual feedback
+      copyBtn.classList.add('copied');
+      copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+
+      setTimeout(() => {
+        copyBtn.classList.remove('copied');
+        copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+      }, 2000);
+
+      this.showToast('Enlace copiado al portapapeles', 'success');
+    } catch (err) {
+      this.showToast('Error al copiar el enlace', 'error');
+    }
+  }
+};
+
+FinanceApp.prototype.closePartnerInviteModal = function() {
+  const modal = document.getElementById('partnerInviteModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+};
+
+FinanceApp.prototype.changeTheme = function(theme) {
+  // Update active theme option
+  const themeOptions = document.querySelectorAll('.theme-option');
+  themeOptions.forEach(option => {
+    option.classList.remove('active');
+    if (option.dataset.theme === theme) {
+      option.classList.add('active');
+    }
+  });
+
+  // Apply theme logic (you can extend this based on your theme system)
+  localStorage.setItem('financia_theme', theme);
+  this.showToast(`Tema ${theme} aplicado`, 'success');
+};
+
+FinanceApp.prototype.toggleAnimations = function(enabled) {
+  localStorage.setItem('financia_animations', enabled.toString());
+  if (enabled) {
+    document.body.classList.remove('no-animations');
+  } else {
+    document.body.classList.add('no-animations');
+  }
+  this.showToast(`Animaciones ${enabled ? 'activadas' : 'desactivadas'}`, 'success');
+};
+
+FinanceApp.prototype.toggleGoalNotifications = function(enabled) {
+  localStorage.setItem('financia_goal_notifications', enabled.toString());
+  this.showToast(`Notificaciones de metas ${enabled ? 'activadas' : 'desactivadas'}`, 'success');
+};
+
+FinanceApp.prototype.toggleDemoMode = function(enabled) {
+  localStorage.setItem('financia_demo_mode', enabled.toString());
+  this.showToast(`Modo demostración ${enabled ? 'activado' : 'desactivado'}`, 'success');
+};
+
+FinanceApp.prototype.updateConfigurationDisplay = function() {
+  // Update profile information
+  const profileUserName = document.getElementById('profileUserName');
+  const profileNameInput = document.getElementById('profileNameInput');
+  const monthlyIncomeInput = document.getElementById('monthlyIncomeInput');
+  const configMemberName = document.getElementById('configMemberName');
+  const configAccountBadge = document.getElementById('configAccountBadge');
+  const configAccountTypeText = document.getElementById('configAccountTypeText');
+  const configAccountDescription = document.getElementById('configAccountDescription');
+  const configInviteSection = document.getElementById('configInviteSection');
+
+  if (profileUserName) {
+    profileUserName.textContent = this.currentUser || 'Usuario';
+  }
+
+  if (profileNameInput) {
+    profileNameInput.value = this.currentUser || '';
+  }
+
+  if (monthlyIncomeInput) {
+    monthlyIncomeInput.value = this.monthlyIncome || '';
+  }
+
+  if (configMemberName) {
+    configMemberName.textContent = this.currentUser || 'Usuario';
+  }
+
+  // Update account type information
+  const accountType = this.accountType || 'personal';
+  if (configAccountBadge && configAccountTypeText) {
+    if (accountType === 'shared') {
+      configAccountBadge.innerHTML = '<i class="fas fa-users"></i><span>Cuenta Mancomunada</span>';
+      configAccountTypeText.textContent = 'Cuenta Mancomunada';
+      if (configAccountDescription) {
+        configAccountDescription.textContent = 'Cuenta compartida para gestión financiera en pareja o familia.';
+      }
+      if (configInviteSection) {
+        configInviteSection.classList.remove('hidden');
+      }
+    } else {
+      configAccountBadge.innerHTML = '<i class="fas fa-user"></i><span>Cuenta Personal</span>';
+      configAccountTypeText.textContent = 'Cuenta Personal';
+      if (configAccountDescription) {
+        configAccountDescription.textContent = 'Tu cuenta personal para el control de finanzas individuales.';
+      }
+      if (configInviteSection) {
+        configInviteSection.classList.add('hidden');
+      }
+    }
+  }
+
+  // Update chart style display
+  const chartStyleName = document.getElementById('configChartStyleName');
+  if (chartStyleName && this.currentChartStyle) {
+    chartStyleName.textContent = this.chartStyles[this.currentChartStyle]?.name || 'Clásico';
+  }
+
+  // Update preference toggles based on stored values
+  const animationsToggle = document.getElementById('animationsToggle');
+  const goalNotificationsToggle = document.getElementById('goalNotificationsToggle');
+  const demoModeToggle = document.getElementById('demoModeToggle');
+
+  if (animationsToggle) {
+    animationsToggle.checked = localStorage.getItem('financia_animations') !== 'false';
+  }
+
+  if (goalNotificationsToggle) {
+    goalNotificationsToggle.checked = localStorage.getItem('financia_goal_notifications') !== 'false';
+  }
+
+  if (demoModeToggle) {
+    demoModeToggle.checked = localStorage.getItem('financia_demo_mode') === 'true';
+  }
+
+  // Update theme selection
+  const selectedTheme = localStorage.getItem('financia_theme') || 'light';
+  const themeOptions = document.querySelectorAll('.theme-option');
+  themeOptions.forEach(option => {
+    option.classList.remove('active');
+    if (option.dataset.theme === selectedTheme) {
+      option.classList.add('active');
+    }
+  });
 };
 
 if (typeof window !== 'undefined') {

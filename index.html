@@ -3,7 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FinanciaPro Suite</title>
+    <meta name="theme-color" content="#6366f1" />
+
+    <!-- SEO Meta Tags -->
+    <title>FinanciaPro Suite - Gestor Financiero Personal Inteligente</title>
+    <meta name="description" content="Controla tus finanzas con FinanciaPro Suite: gestor de gastos, metas financieras, análisis inteligente y asistente IA. Gratis, seguro y fácil de usar." />
+    <meta name="keywords" content="finanzas personales, control gastos, metas financieras, presupuesto, ahorro, asistente financiero, inteligencia artificial, gestión dinero" />
+    <meta name="author" content="FinanciaPro Suite" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://financiaprosuite.com" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://financiaprosuite.com/" />
+    <meta property="og:title" content="FinanciaPro Suite - Tu Gestor Financiero Personal" />
+    <meta property="og:description" content="Transforma tu relación con el dinero. Controla gastos, establece metas y recibe consejos personalizados con IA." />
+    <meta property="og:image" content="https://financiaprosuite.com/assets/og-image.jpg" />
+    <meta property="og:site_name" content="FinanciaPro Suite" />
+    <meta property="og:locale" content="es_ES" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://financiaprosuite.com/" />
+    <meta name="twitter:title" content="FinanciaPro Suite - Gestor Financiero Inteligente" />
+    <meta name="twitter:description" content="Controla tus finanzas con herramientas inteligentes y asistente IA personalizado." />
+    <meta name="twitter:image" content="https://financiaprosuite.com/assets/twitter-image.jpg" />
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Performance & Security -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,6 +51,7 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="user-system.css" />
     <link rel="stylesheet" href="store.css" />
+    <link rel="stylesheet" href="config.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -989,6 +1026,63 @@
         <div class="card">
           <div class="card__header">
             <h3>Historial de Gastos</h3>
+            <!-- Filter and Search Controls -->
+            <div class="expense-controls">
+              <div class="expense-filters">
+                <input
+                  type="text"
+                  id="expenseSearch"
+                  class="filter-input"
+                  placeholder="🔍 Buscar gastos..."
+                />
+                <select id="categoryFilter" class="filter-select">
+                  <option value="">Todas las categorías</option>
+                  <option value="Alimentación">🍽️ Alimentación</option>
+                  <option value="Transporte">🚗 Transporte</option>
+                  <option value="Entretenimiento">🎬 Entretenimiento</option>
+                  <option value="Salud">🏥 Salud</option>
+                  <option value="Servicios">⚡ Servicios</option>
+                  <option value="Compras">🛍️ Compras</option>
+                  <option value="Otros">📦 Otros</option>
+                </select>
+                <select id="necessityFilter" class="filter-select">
+                  <option value="">Todos los niveles</option>
+                  <option value="Muy Necesario">Muy Necesario</option>
+                  <option value="Necesario">Necesario</option>
+                  <option value="Poco Necesario">Poco Necesario</option>
+                  <option value="No Necesario">No Necesario</option>
+                  <option value="Compra por Impulso">Compra por Impulso</option>
+                </select>
+                <select id="userFilter" class="filter-select">
+                  <option value="">Todos los usuarios</option>
+                  <option value="Daniel">Daniel</option>
+                  <option value="Givonik">Givonik</option>
+                  <option value="Otro">Otro</option>
+                </select>
+                <input
+                  type="date"
+                  id="dateFromFilter"
+                  class="filter-input"
+                  title="Fecha desde"
+                />
+                <input
+                  type="date"
+                  id="dateToFilter"
+                  class="filter-input"
+                  title="Fecha hasta"
+                />
+                <button id="clearFilters" class="btn-secondary">
+                  <i class="fas fa-times"></i> Limpiar
+                </button>
+                <button id="exportCSV" class="btn-export">
+                  <i class="fas fa-download"></i> Exportar CSV
+                </button>
+              </div>
+              <div class="expense-summary">
+                <span id="expenseCount" class="expense-stat">0 gastos</span>
+                <span id="expenseTotal" class="expense-stat">$0.00</span>
+              </div>
+            </div>
           </div>
           <div class="card__body">
             <div id="expenseList"></div>
@@ -1240,272 +1334,218 @@
       <section id="config" class="section">
         <div class="section-header">
           <h1>Configuración</h1>
-          <p>Personaliza tu experiencia financiera</p>
+          <p>Administra tu cuenta y personaliza tu experiencia</p>
         </div>
 
-        <div id="onboardingChoiceContainer" class="card">
-          <div class="card__header">
-            <h3>Tu Punto de Partida</h3>
-          </div>
-          <div class="card__body" style="text-align: center">
-            <p
-              style="
-                color: var(--color-text-secondary);
-                max-width: 500px;
-                margin: 0 auto var(--space-24);
-              "
-            >
-              Elige cómo quieres configurar tu plan financiero. Puedes hacerlo
-              rápidamente de forma manual o dejar que nuestro asistente de IA te
-              guíe en un proceso personalizado.
-            </p>
-            <div style="display: flex; gap: 16px; justify-content: center">
-              <button id="startAISetupBtn" class="btn btn--primary btn--lg">
-                <i class="fas fa-wand-magic-sparkles"></i> Dejar que la IA me
-                guíe
-              </button>
-              <button
-                id="startManualSetupBtn"
-                class="btn btn--secondary btn--lg"
-              >
-                <i class="fas fa-edit"></i> Configuración Rápida Manual
-              </button>
+        <div class="config-container">
+          <!-- Profile Card -->
+          <div class="config-card profile-card">
+            <div class="config-card-header">
+              <div class="config-card-icon">
+                <i class="fas fa-user-circle"></i>
+              </div>
+              <div class="config-card-title">
+                <h3>Perfil</h3>
+                <p>Información personal y avatar</p>
+              </div>
             </div>
-          </div>
-        </div>
-
-        <div id="manualSetupContainer" class="hidden">
-          <div class="card mt-16">
-            <div class="card__header"><h3>Ingresos Mensuales</h3></div>
-            <div class="card__body">
-              <form id="incomeForm">
-                <div class="form-group">
-                  <label class="form-label" for="monthlyIncome"
-                    >Dinero Total del Mes ($)</label
-                  >
-                  <input
-                    type="number"
-                    id="monthlyIncome"
-                    class="form-control"
-                    placeholder="2500"
-                    step="0.01"
-                  />
-                  <small>Ingresa tu salario total o ingresos del mes</small>
-                </div>
-                <button type="submit" class="btn btn--primary">
-                  <i class="fas fa-save"></i> Guardar Configuración
-                </button>
-              </form>
-            </div>
-          </div>
-
-          <!-- Dashboard Customization (Style Manager) -->
-          <div class="card mt-16 style-manager-card" id="styleManagerCard" style="display: none;">
-            <div class="card__header">
-              <h3>Personalización de Dashboard</h3>
-              <p>Cambia la apariencia de tus gráficos</p>
-            </div>
-            <div class="card__body">
-              <div class="current-style-preview">
-                <h4>Estilo Actual</h4>
-                <div class="current-style-display" id="currentStyleDisplay">
-                  <div class="style-preview-mini">
-                    <div class="mini-chart"></div>
+            <div class="config-card-body">
+              <div class="profile-section">
+                <div class="profile-avatar-section">
+                  <div class="current-avatar" id="currentProfileAvatar">
+                    <div class="avatar-preview">
+                      <i class="fas fa-user"></i>
+                    </div>
                   </div>
-                  <span class="style-name" id="currentStyleName">Clásico</span>
+                  <div class="profile-info">
+                    <h4 id="profileUserName">Usuario</h4>
+                    <p class="profile-email">usuario@financiapro.com</p>
+                    <button class="btn-text" id="changeAvatarBtn">
+                      <i class="fas fa-edit"></i> Cambiar avatar
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <div class="owned-styles-section">
-                <h4>Mis Estilos</h4>
-                <div class="owned-styles-grid" id="ownedStylesGrid">
-                  <!-- Los estilos desbloqueados se mostrarán aquí -->
+                <div class="profile-form">
+                  <div class="form-group">
+                    <label class="form-label">Nombre de usuario</label>
+                    <input type="text" class="form-input" id="profileNameInput" placeholder="Tu nombre">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Ingresos mensuales</label>
+                    <div class="input-with-currency">
+                      <span class="currency-symbol">$</span>
+                      <input type="number" class="form-input" id="monthlyIncomeInput" placeholder="0.00" step="0.01">
+                    </div>
+                  </div>
+                  <div class="form-actions">
+                    <button class="btn-primary" id="saveProfileBtn">
+                      <i class="fas fa-save"></i> Guardar cambios
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Account Management Section -->
-          <div class="card mt-16">
-            <div class="card__header">
-              <h3>Gestión de Cuenta</h3>
+          <!-- Account Card -->
+          <div class="config-card account-card">
+            <div class="config-card-header">
+              <div class="config-card-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <div class="config-card-title">
+                <h3>Cuenta</h3>
+                <p>Seguridad y configuración de cuenta</p>
+              </div>
             </div>
-            <div class="card__body">
-              <div class="account-info" id="accountInfo">
-                <div class="account-type-display">
-                  <div class="account-type-badge" id="accountTypeBadge">
+            <div class="config-card-body">
+              <div class="account-section">
+                <div class="account-type-section">
+                  <div class="account-badge" id="configAccountBadge">
                     <i class="fas fa-user"></i>
-                    <span id="accountTypeText">Cuenta Personal</span>
+                    <span id="configAccountTypeText">Cuenta Personal</span>
+                  </div>
+                  <p class="account-description" id="configAccountDescription">
+                    Tu cuenta personal para el control de finanzas individuales.
+                  </p>
+                </div>
+
+                <div class="account-members" id="configAccountMembers">
+                  <div class="member-item current-member">
+                    <div class="member-avatar">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <div class="member-info">
+                      <span class="member-name" id="configMemberName">Usuario</span>
+                      <span class="member-role">Propietario</span>
+                    </div>
                   </div>
                 </div>
 
-                <div class="account-users" id="accountUsers">
-                  <div class="user-list">
-                    <div class="user-item current-user" id="currentUserInfo">
-                      <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                      </div>
-                      <div class="user-details">
-                        <span class="user-name" id="currentUserName">Usuario</span>
-                        <span class="user-role">Propietario</span>
-                      </div>
+                <div class="account-invite-section hidden" id="configInviteSection">
+                  <div class="invite-card">
+                    <div class="invite-icon">
+                      <i class="fas fa-user-plus"></i>
                     </div>
-
-                    <div class="user-item invited-user hidden" id="invitedUserInfo">
-                      <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                      </div>
-                      <div class="user-details">
-                        <span class="user-name" id="invitedUserName">Usuario Invitado</span>
-                        <span class="user-role">Miembro</span>
-                      </div>
+                    <div class="invite-content">
+                      <h5>Invitar a un socio</h5>
+                      <p>Comparte el control financiero con otra persona de confianza</p>
                     </div>
+                    <button class="btn-primary" id="configInvitePartnerBtn">
+                      <i class="fas fa-share"></i> Generar invitación
+                    </button>
                   </div>
                 </div>
 
                 <div class="account-actions">
-                  <button id="inviteUserBtn" class="btn btn--primary hidden">
-                    <i class="fas fa-user-plus"></i> Invitar Usuario
+                  <button class="btn-secondary" id="configChangePasswordBtn">
+                    <i class="fas fa-key"></i> Cambiar contraseña
                   </button>
-
-                  <button id="changePasswordBtn" class="btn btn--secondary">
-                    <i class="fas fa-key"></i> Cambiar Contraseña
-                  </button>
-
-                  <button id="switchAccountTypeBtn" class="btn btn--outline">
-                    <i class="fas fa-exchange-alt"></i> Cambiar Tipo de Cuenta
+                  <button class="btn-outline" id="configSwitchAccountBtn">
+                    <i class="fas fa-exchange-alt"></i> Cambiar tipo de cuenta
                   </button>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Activity Log Section (for shared accounts) -->
-          <div class="card mt-16 hidden" id="activityLogSection">
-            <div class="card__header">
-              <h3>Registro de Actividad</h3>
-              <span class="activity-count" id="activityCount">0 actividades</span>
-            </div>
-            <div class="card__body">
-              <div class="activity-list" id="activityList">
-                <!-- Activities will be populated here -->
+          <!-- Appearance Card -->
+          <div class="config-card appearance-card">
+            <div class="config-card-header">
+              <div class="config-card-icon">
+                <i class="fas fa-palette"></i>
+              </div>
+              <div class="config-card-title">
+                <h3>Apariencia</h3>
+                <p>Personaliza la interfaz y estilos visuales</p>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div id="aiSetupContainer" class="hidden">
-          <div class="card mt-16">
-            <div
-              class="card__header"
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-              "
-            >
-              <h3>
-                <i
-                  class="fas fa-wand-magic-sparkles"
-                  style="margin-right: 8px"
-                ></i>
-                Tu Plan Financiero Personalizado
-              </h3>
-              <span
-                style="
-                  font-size: 0.8rem;
-                  color: var(--color-primary);
-                  font-weight: 500;
-                "
-                >Potenciado por IA</span
-              >
-            </div>
-            <div class="card__body">
-              <div id="aiOnboardingContainer">
-                <div class="insight-card" style="margin-bottom: 24px">
-                  <div class="insight-card__icon">
-                    <i class="fas fa-robot"></i>
-                  </div>
-                  <div class="insight-card__content">
-                    <h5 class="insight-card__title">
-                      ¡Hola! Estoy aquí para ayudarte.
-                    </h5>
-                    <p class="insight-card__text">
-                      Estás en el lugar correcto para tomar el control de tus
-                      finanzas. Para empezar, solo necesito un par de detalles y
-                      tus metas comenzarán a tomar forma.
-                    </p>
+            <div class="config-card-body">
+              <div class="appearance-section">
+                <div class="theme-section">
+                  <h5>Tema de la aplicación</h5>
+                  <div class="theme-options">
+                    <button class="theme-option active" data-theme="light">
+                      <div class="theme-preview theme-light">
+                        <div class="theme-circle"></div>
+                        <div class="theme-circle"></div>
+                        <div class="theme-circle"></div>
+                      </div>
+                      <span>Claro</span>
+                    </button>
+                    <button class="theme-option" data-theme="dark">
+                      <div class="theme-preview theme-dark">
+                        <div class="theme-circle"></div>
+                        <div class="theme-circle"></div>
+                        <div class="theme-circle"></div>
+                      </div>
+                      <span>Oscuro</span>
+                    </button>
+                    <button class="theme-option" data-theme="auto">
+                      <div class="theme-preview theme-auto">
+                        <div class="theme-circle"></div>
+                        <div class="theme-circle"></div>
+                        <div class="theme-circle"></div>
+                      </div>
+                      <span>Automático</span>
+                    </button>
                   </div>
                 </div>
-                <form id="aiOnboardingForm">
-                  <div class="form-grid" style="grid-template-columns: 1fr 1fr">
-                    <div class="form-group">
-                      <label class="form-label" for="userNickname"
-                        >Primero, ¿cómo te gustaría que te llame?</label
-                      >
-                      <input
-                        type="text"
-                        id="userNickname"
-                        class="form-control"
-                        placeholder="Ej. Viajero, Futuro Dueño, etc."
-                        required
-                      />
+
+                <div class="chart-style-section">
+                  <h5>Estilo de gráficos</h5>
+                  <div class="current-chart-style" id="configCurrentChartStyle">
+                    <div class="chart-style-preview">
+                      <div class="mini-chart-dots">
+                        <div class="chart-dot" style="background: var(--color-primary);"></div>
+                        <div class="chart-dot" style="background: var(--color-secondary);"></div>
+                        <div class="chart-dot" style="background: var(--color-accent);"></div>
+                      </div>
                     </div>
-                    <div class="form-group">
-                      <label class="form-label" for="mainGoal"
-                        >¿Cuál es tu principal meta de ahorro ahora?</label
-                      >
-                      <input
-                        type="text"
-                        id="mainGoal"
-                        class="form-control"
-                        placeholder="Ej. Viaje a Japón, inicial de mi casa"
-                        required
-                      />
+                    <div class="chart-style-info">
+                      <span class="chart-style-name" id="configChartStyleName">Clásico</span>
+                      <p>Colores tradicionales y elegantes</p>
                     </div>
+                    <button class="btn-text" id="configChangeChartStyleBtn">
+                      <i class="fas fa-paint-brush"></i> Cambiar
+                    </button>
                   </div>
-                  <div class="form-group">
-                    <label class="form-label" for="goalAmount"
-                      >¿Cuánto estimas que necesitas para esa meta? ($)</label
-                    >
-                    <input
-                      type="number"
-                      id="goalAmount"
-                      class="form-control"
-                      placeholder="Ej. 5000"
-                      step="100"
-                      required
-                    />
+                </div>
+
+                <div class="preferences-section">
+                  <h5>Preferencias</h5>
+                  <div class="preference-item">
+                    <div class="preference-info">
+                      <span class="preference-label">Animaciones</span>
+                      <p class="preference-desc">Efectos de transición y animaciones</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="animationsToggle" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
                   </div>
-                  <button
-                    type="submit"
-                    id="startAIPlanBtn"
-                    class="btn btn--primary btn--full-width"
-                    style="margin-top: 16px"
-                  >
-                    <i class="fas fa-check"></i> Crear mi Primer Plan
-                  </button>
-                </form>
-              </div>
-              <div id="chatInterface" class="hidden">
-                <div id="chatHistory" class="chat-history"></div>
-                <form id="chatForm" class="chat-form">
-                  <input
-                    type="text"
-                    id="chatInput"
-                    class="form-control"
-                    placeholder="Escribe tu respuesta..."
-                    autocomplete="off"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    id="sendChatBtn"
-                    class="btn btn--primary"
-                  >
-                    <i class="fas fa-paper-plane"></i>
-                  </button>
-                </form>
+                  <div class="preference-item">
+                    <div class="preference-info">
+                      <span class="preference-label">Notificaciones de metas</span>
+                      <p class="preference-desc">Recordatorios de progreso de objetivos</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="goalNotificationsToggle" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  <div class="preference-item">
+                    <div class="preference-info">
+                      <span class="preference-label">Modo de demostración</span>
+                      <p class="preference-desc">Datos de ejemplo para nuevos usuarios</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="demoModeToggle">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -2067,6 +2107,144 @@
         </div>
       </div>
     </footer>
+
+    <!-- Onboarding Tour Overlay -->
+    <div id="tourOverlay" class="tour-overlay hidden">
+      <div class="tour-backdrop"></div>
+      <div class="tour-spotlight"></div>
+      <div class="tour-tooltip">
+        <div class="tour-tooltip-content">
+          <div class="tour-header">
+            <h3 class="tour-title"></h3>
+            <button class="tour-close" aria-label="Cerrar tour">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="tour-body">
+            <p class="tour-description"></p>
+          </div>
+          <div class="tour-footer">
+            <div class="tour-progress">
+              <span class="tour-step-counter"></span>
+              <div class="tour-progress-bar">
+                <div class="tour-progress-fill"></div>
+              </div>
+            </div>
+            <div class="tour-actions">
+              <button class="tour-btn tour-skip">Omitir tour</button>
+              <button class="tour-btn tour-prev">Anterior</button>
+              <button class="tour-btn tour-next">Siguiente</button>
+              <button class="tour-btn tour-finish hidden">¡Empezar!</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tour Start Button (floating) -->
+    <button id="startTourBtn" class="tour-start-btn" title="Iniciar tour de la aplicación">
+      <i class="fas fa-question-circle"></i>
+    </button>
+
+    <!-- Partner Invitation Modal -->
+    <div id="partnerInviteModal" class="modal-overlay hidden">
+      <div class="modal-dialog invitation-modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div class="modal-icon warning">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="modal-title-section">
+              <h3 class="modal-title">Invitar a un socio</h3>
+              <p class="modal-subtitle">Compartirás el control total de esta cuenta</p>
+            </div>
+            <button class="modal-close" id="closeInviteModalBtn">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <div class="invitation-steps">
+              <div class="step-item active" id="inviteStep1">
+                <div class="step-content">
+                  <div class="warning-message">
+                    <div class="warning-icon">
+                      <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="warning-text">
+                      <h4>⚠️ Importante: Acceso completo</h4>
+                      <p>La persona invitada tendrá acceso total a:</p>
+                      <ul>
+                        <li>Ver, editar y eliminar todos los gastos</li>
+                        <li>Crear y modificar metas financieras</li>
+                        <li>Acceder a todos los datos y análisis</li>
+                        <li>Cambiar configuraciones de la cuenta</li>
+                      </ul>
+                      <p><strong>Solo invita a personas de absoluta confianza.</strong></p>
+                    </div>
+                  </div>
+                  <div class="step-actions">
+                    <button class="btn-secondary" id="cancelInviteBtn">
+                      <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn-primary" id="proceedInviteBtn">
+                      <i class="fas fa-check"></i> Continuar
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-item hidden" id="inviteStep2">
+                <div class="step-content">
+                  <div class="success-message">
+                    <div class="success-icon">
+                      <i class="fas fa-link"></i>
+                    </div>
+                    <div class="success-text">
+                      <h4>✅ Enlace de invitación generado</h4>
+                      <p>Comparte este enlace seguro con tu socio:</p>
+                    </div>
+                  </div>
+
+                  <div class="invite-link-container">
+                    <div class="invite-link-display">
+                      <input type="text" class="invite-link-input" id="generatedInviteLink" readonly>
+                      <button class="copy-link-btn" id="copyInviteLinkBtn">
+                        <i class="fas fa-copy"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="invite-instructions">
+                    <div class="instruction-icon">
+                      <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="instruction-text">
+                      <p><strong>Instrucciones:</strong></p>
+                      <ol>
+                        <li>Copia el enlace usando el botón de copiar</li>
+                        <li>Envíalo de forma segura a tu socio</li>
+                        <li>El enlace expira en 24 horas</li>
+                        <li>Solo puede ser usado una vez</li>
+                      </ol>
+                    </div>
+                  </div>
+
+                  <div class="step-actions">
+                    <button class="btn-secondary" id="generateNewLinkBtn">
+                      <i class="fas fa-redo"></i> Generar nuevo enlace
+                    </button>
+                    <button class="btn-primary" id="finishInviteBtn">
+                      <i class="fas fa-check"></i> Finalizar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
