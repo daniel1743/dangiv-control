@@ -6526,14 +6526,12 @@ FinanceApp.prototype.showAccountTypeSwitch = function() {
   }
 };
 
-// Function to select account type
-window.selectAccountType = function(type) {
-  if (!window.app) return;
-
-  window.app.accountType = type;
+FinanceApp.prototype.changeAccountType = function(type) {
+  this.accountType = type;
   localStorage.setItem('financia_account_type', type);
+  this.saveData();
 
-  window.app.updateConfigurationDisplay();
+  this.updateConfigurationDisplay();
 
   const modal = document.getElementById('accountTypeModal');
   if (modal) {
@@ -6545,7 +6543,7 @@ window.selectAccountType = function(type) {
     ? 'Cuenta cambiada a Mancomunada. Ahora puedes invitar a tu socio.'
     : 'Cuenta cambiada a Personal.';
 
-  window.app.showToast(message, 'success');
+  this.showToast(message, 'success');
 };
 
 // Override expense addition to include activity logging

@@ -4900,12 +4900,62 @@ select.form-control {
   .modal-dialog {
     flex-direction: column;
     width: 95%;
-    max-height: 90vh;
+    max-width: 95vw;
+    max-height: 85vh;
+    margin: auto;
     overflow-y: auto;
   }
 
   .modal-illustration {
-    min-height: 200px;
+    display: none;
+  }
+
+  .modal-illustration h3 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-4);
+  }
+
+  .modal-illustration p {
+    font-size: var(--font-size-sm);
+  }
+
+  .modal-content {
+    padding: var(--space-24) var(--space-20);
+  }
+
+  .modal-header {
+    position: relative;
+    margin-bottom: var(--space-20);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--color-surface-raised);
+    border: 2px solid var(--color-border);
+  }
+
+  .modal-title {
+    font-size: var(--font-size-lg);
+    padding-right: var(--space-32);
+  }
+
+  .input-group {
+    position: relative;
+  }
+
+  .input-group .toggle-pass {
+    position: absolute;
+    right: var(--space-12);
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    z-index: 10;
   }
 
   .toast {
