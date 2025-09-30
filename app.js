@@ -1760,6 +1760,13 @@ class FinanceApp {
 
     this.currentSection = sectionId;
 
+    // Start/stop inspiration images for goals
+    if (sectionId === 'goals') {
+      this.startInspirationRotation();
+    } else {
+      this.stopInspirationRotation();
+    }
+
     // Render section-specific content
     setTimeout(() => {
       if (sectionId === 'analysis') {
@@ -3058,7 +3065,7 @@ class FinanceApp {
         chartData.datasets[0].data;
       this.charts.expenseChart.data.datasets[0].backgroundColor = modernColors;
       this.charts.expenseChart.options.plugins.title.text = chartTitle;
-      this.charts.expenseChart.update('none');
+      this.charts.expenseChart.update('active');
     } else {
       // Registrar el plugin globalmente si no está registrado
       if (
@@ -3074,18 +3081,89 @@ class FinanceApp {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          cutout: '60%',
+          cutout: '85%',
           layout: {
             padding: {
-              top: 60,
-              bottom: 60,
-              left: 60,
-              right: 60,
+              top: 40,
+              bottom: 80,
+              left: 40,
+              right: 40,
             },
           },
           animation: {
-            duration: 1200,
-            easing: 'easeInOutQuart',
+            animateRotate: true,
+            animateScale: true,
+            duration: 1800,
+            easing: 'easeInOutCubic',
+            onProgress: function(animation) {
+              const centerValue = document.getElementById('chartCenterValue');
+              if (centerValue && animation.currentStep === animation.numSteps) {
+                centerValue.style.opacity = '1';
+              }
+            }
+          },
+          onHover: (event, activeElements) => {
+            const canvas = event.native.target;
+            canvas.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+
+            if (activeElements.length > 0) {
+              const index = activeElements[0].index;
+              const value = chartData.datasets[0].data[index];
+              const categoryLabel = chartData.labels[index];
+              const centerValue = document.getElementById('chartCenterValue');
+              const centerLabel = document.getElementById('chartCenterLabel');
+
+              if (centerValue && centerLabel) {
+                const total = chartData.datasets[0].data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+
+                centerValue.textContent = `$${value.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+
+                let labelText = '';
+                let colorValue = '#10b981';
+
+                const categoryLower = categoryLabel.toLowerCase();
+                if (categoryLower.includes('ganancia') || categoryLower.includes('ingreso')) {
+                  labelText = 'Ganancias';
+                  colorValue = '#10b981';
+                } else if (categoryLower.includes('ahorro')) {
+                  labelText = 'Ahorros';
+                  colorValue = '#10b981';
+                } else if (categoryLower.includes('meta') || categoryLower.includes('objetivo')) {
+                  labelText = 'Metas';
+                  colorValue = '#f97316';
+                } else if (categoryLower.includes('pérdida') || categoryLower.includes('perdida') || categoryLower.includes('deuda')) {
+                  labelText = 'Pérdidas';
+                  colorValue = '#ef4444';
+                } else {
+                  labelText = categoryLabel;
+                  if (percentage >= 30) {
+                    colorValue = '#ef4444';
+                  } else if (percentage >= 15) {
+                    colorValue = '#f97316';
+                  } else {
+                    colorValue = '#10b981';
+                  }
+                }
+
+                centerLabel.textContent = labelText;
+                centerValue.style.color = colorValue;
+
+                centerValue.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                  centerValue.style.transform = 'scale(1)';
+                }, 200);
+              }
+            } else {
+              const centerValue = document.getElementById('chartCenterValue');
+              const centerLabel = document.getElementById('chartCenterLabel');
+              if (centerValue && centerLabel) {
+                const total = chartData.datasets[0].data.reduce((a, b) => a + b, 0);
+                centerValue.textContent = `$${total.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+                centerLabel.textContent = 'Total Gastos';
+                centerValue.style.color = '#1e293b';
+              }
+            }
           },
           plugins: {
             title: {
@@ -3097,12 +3175,13 @@ class FinanceApp {
               labels: {
                 usePointStyle: true,
                 pointStyle: 'circle',
-                padding: 15,
+                padding: 18,
                 font: {
-                  size: 11,
+                  size: 12,
                   family: 'Inter, sans-serif',
+                  weight: '500',
                 },
-                color: 'var(--color-text-secondary)',
+                color: '#64748b',
                 generateLabels: function (chart) {
                   const data = chart.data;
                   if (data.labels.length && data.datasets.length) {
@@ -3114,7 +3193,7 @@ class FinanceApp {
                       const percentage = ((value / total) * 100).toFixed(1);
 
                       return {
-                        text: `${label} (${percentage}%)`,
+                        text: `${label} ${percentage}%`,
                         fillStyle: backgroundColor,
                         strokeStyle: backgroundColor,
                         lineWidth: 0,
@@ -3127,57 +3206,130 @@ class FinanceApp {
                   return [];
                 },
               },
+              onHover: function(event, legendItem, legend) {
+                legend.chart.canvas.style.cursor = 'pointer';
+                const legendItems = document.querySelectorAll('#expenseChart').length > 0
+                  ? document.querySelectorAll('.chartjs-legend li')
+                  : [];
+                legendItems.forEach((item, index) => {
+                  if (index === legendItem.index) {
+                    item.style.transform = 'translateX(5px)';
+                    item.style.transition = 'transform 0.3s ease';
+                  }
+                });
+              },
+              onLeave: function(event, legendItem, legend) {
+                legend.chart.canvas.style.cursor = 'default';
+                const legendItems = document.querySelectorAll('#expenseChart').length > 0
+                  ? document.querySelectorAll('.chartjs-legend li')
+                  : [];
+                legendItems.forEach((item) => {
+                  item.style.transform = 'translateX(0)';
+                });
+              },
+              onClick: function(e, legendItem, legend) {
+                const index = legendItem.index;
+                const chart = legend.chart;
+                const meta = chart.getDatasetMeta(0);
+
+                meta.data[index].hidden = !meta.data[index].hidden;
+                chart.update('active');
+              }
             },
             datalabels: {
-              display: true,
-              color: '#ffffff',
-              backgroundColor: function (context) {
-                return context.dataset.backgroundColor[context.dataIndex];
-              },
-              borderColor: '#ffffff',
-              borderRadius: 6,
-              borderWidth: 1,
-              font: {
-                weight: 'bold',
-                size: 10,
-                family: 'Inter, sans-serif',
-              },
-              padding: 4,
-              formatter: function (value, context) {
-                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                const percentage = (value / total) * 100;
-                if (percentage < 5) return '';
-                return context.chart.data.labels[context.dataIndex];
-              },
-              anchor: 'end',
-              align: 'end',
-              offset: 20,
-              clip: false,
+              display: false,
             },
             tooltip: {
               enabled: true,
-              backgroundColor: 'var(--color-surface-raised)',
-              titleColor: 'var(--color-text)',
-              bodyColor: 'var(--color-text-secondary)',
-              borderColor: 'var(--color-border)',
+              backgroundColor: 'rgba(15, 23, 42, 0.95)',
+              titleColor: '#f1f5f9',
+              bodyColor: '#cbd5e1',
+              borderColor: 'rgba(148, 163, 184, 0.3)',
               borderWidth: 1,
-              padding: 10,
-              cornerRadius: 8,
+              padding: 16,
+              cornerRadius: 12,
               displayColors: true,
-              boxPadding: 4,
+              boxPadding: 8,
+              titleFont: {
+                size: 14,
+                weight: 'bold',
+                family: 'Inter, sans-serif',
+              },
+              bodyFont: {
+                size: 13,
+                family: 'Inter, sans-serif',
+              },
               callbacks: {
                 label: function (context) {
                   const label = context.label || '';
                   const value = context.raw || 0;
                   const total = context.chart.getDatasetMeta(0).total;
                   const percentage = ((value / total) * 100).toFixed(1);
-                  return ` ${label}: $${value.toFixed(2)} (${percentage}%)`;
+                  return ` ${label}: $${value.toLocaleString('es-MX', {minimumFractionDigits: 2})} (${percentage}%)`;
                 },
               },
             },
           },
         },
+        plugins: [{
+          id: 'centerText',
+          beforeDraw: function(chart) {
+            const ctx = chart.ctx;
+            const width = chart.width;
+            const height = chart.height;
+            const centerX = width / 2;
+            const centerY = height / 2 - 20;
+
+            ctx.restore();
+
+            const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+
+            ctx.font = 'bold 28px Inter, sans-serif';
+            ctx.fillStyle = '#1e293b';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            const centerValue = document.getElementById('chartCenterValue');
+            const valueText = centerValue ? centerValue.textContent : `$${total.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+            ctx.fillText(valueText, centerX, centerY);
+
+            ctx.font = '500 13px Inter, sans-serif';
+            ctx.fillStyle = '#64748b';
+            const centerLabel = document.getElementById('chartCenterLabel');
+            const labelText = centerLabel && centerLabel.textContent !== 'Total Gastos'
+              ? centerLabel.textContent
+              : 'Total Gastos';
+            ctx.fillText(labelText, centerX, centerY + 30);
+
+            ctx.save();
+          }
+        }]
       });
+
+      const chartContainer = canvas.parentElement;
+      if (!document.getElementById('chartCenterValue')) {
+        const centerDiv = document.createElement('div');
+        centerDiv.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; z-index: 10;';
+
+        const valueSpan = document.createElement('span');
+        valueSpan.id = 'chartCenterValue';
+        valueSpan.style.cssText = 'display: block; font-size: 28px; font-weight: bold; color: #1e293b; transition: all 0.3s ease; opacity: 0;';
+        const total = chartData.datasets[0].data.reduce((a, b) => a + b, 0);
+        valueSpan.textContent = `$${total.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+
+        const labelSpan = document.createElement('span');
+        labelSpan.id = 'chartCenterLabel';
+        labelSpan.style.cssText = 'display: block; font-size: 13px; color: #64748b; margin-top: 8px; font-weight: 500;';
+        labelSpan.textContent = 'Total Gastos';
+
+        centerDiv.appendChild(valueSpan);
+        centerDiv.appendChild(labelSpan);
+
+        if (chartContainer.style.position !== 'relative' && chartContainer.style.position !== 'absolute') {
+          chartContainer.style.position = 'relative';
+        }
+        chartContainer.appendChild(centerDiv);
+      }
     }
   }
 
@@ -4960,6 +5112,93 @@ function togglePasswordVisibility(inputId, icon) {
   }
 }
 window.togglePasswordVisibility = togglePasswordVisibility;
+
+// Unsplash API for goal inspiration
+const UNSPLASH_ACCESS_KEY = import.meta.env?.VITE_UNSPLASH_ACCESS_KEY || '';
+const goalCategories = ['vacation', 'beach', 'travel', 'shopping', 'luxury fashion', 'technology gadgets'];
+let currentCategoryIndex = 0;
+
+FinanceApp.prototype.loadInspirationImage = async function() {
+  const img = document.getElementById('inspirationImage');
+  const overlay = document.querySelector('.inspiration-text');
+
+  if (!img) return;
+
+  const category = goalCategories[currentCategoryIndex];
+  currentCategoryIndex = (currentCategoryIndex + 1) % goalCategories.length;
+
+  try {
+    const response = await fetch(`https://api.unsplash.com/photos/random?query=${category}&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`);
+    const data = await response.json();
+
+    img.style.opacity = '0';
+    setTimeout(() => {
+      img.src = data.urls.regular;
+      img.style.opacity = '1';
+      if (overlay) {
+        overlay.textContent = `✨ ${category === 'luxury fashion' ? 'Moda de lujo' : category === 'technology gadgets' ? 'Tecnología' : category === 'vacation' ? 'Vacaciones' : category === 'beach' ? 'Playa' : category === 'travel' ? 'Viajes' : 'Compras'}`;
+      }
+    }, 300);
+  } catch (error) {
+    console.error('Error loading inspiration:', error);
+    img.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800';
+  }
+};
+
+FinanceApp.prototype.startInspirationRotation = function() {
+  if (this.inspirationInterval) clearInterval(this.inspirationInterval);
+
+  this.loadInspirationImage();
+  this.inspirationInterval = setInterval(() => {
+    this.loadInspirationImage();
+  }, 5000);
+};
+
+FinanceApp.prototype.stopInspirationRotation = function() {
+  if (this.inspirationInterval) {
+    clearInterval(this.inspirationInterval);
+    this.inspirationInterval = null;
+  }
+};
+
+// Social login methods
+FinanceApp.prototype.loginWithGoogle = async function() {
+  const FB = window.FB;
+  if (!FB?.auth) {
+    this.showToast('Firebase no está configurado', 'error');
+    return;
+  }
+
+  try {
+    const provider = new FB.GoogleAuthProvider();
+    await FB.signInWithPopup(FB.auth, provider);
+    this.showToast('Sesión iniciada con Google', 'success');
+    document.getElementById('authModal').classList.remove('show');
+    document.body.style.overflow = '';
+  } catch (error) {
+    console.error('Error Google login:', error);
+    this.showToast('Error al iniciar con Google', 'error');
+  }
+};
+
+FinanceApp.prototype.loginWithFacebook = async function() {
+  const FB = window.FB;
+  if (!FB?.auth) {
+    this.showToast('Firebase no está configurado', 'error');
+    return;
+  }
+
+  try {
+    const provider = new FB.FacebookAuthProvider();
+    await FB.signInWithPopup(FB.auth, provider);
+    this.showToast('Sesión iniciada con Facebook', 'success');
+    document.getElementById('authModal').classList.remove('show');
+    document.body.style.overflow = '';
+  } catch (error) {
+    console.error('Error Facebook login:', error);
+    this.showToast('Error al iniciar con Facebook', 'error');
+  }
+};
 // 2. Publicar una funciÃ³n global para verificar contraseÃ±as desde la consola.
 window.verificarPassword = function (userName, plainPassword) {
   if (window.app && typeof window.app.verifyPassword === 'function') {

@@ -1129,49 +1129,54 @@
             <h3>Nueva Meta Financiera</h3>
           </div>
           <div class="card__body">
-            <form id="goalForm">
-              <div class="form-grid">
-                <div class="form-group">
-                  <label class="form-label" for="goalName"
-                    >Nombre de la Meta</label
-                  >
-                  <input
-                    type="text"
-                    id="goalName"
-                    class="form-control"
-                    placeholder="Ej. Vacaciones en la playa"
-                    required
-                  />
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="goalTarget"
-                    >Cantidad Objetivo ($)</label
-                  >
-                  <input
-                    type="number"
-                    id="goalTarget"
-                    class="form-control"
-                    placeholder="1000"
-                    step="0.01"
-                    required
-                  />
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="goalDeadline"
-                    >Fecha Límite</label
-                  >
-                  <input
-                    type="date"
-                    id="goalDeadline"
-                    class="form-control"
-                    required
-                  />
+            <div class="goal-form-container">
+              <div class="goal-inspiration-panel" id="goalInspirationPanel">
+                <div class="inspiration-image-wrapper">
+                  <img id="inspirationImage" src="" alt="Inspiración" class="inspiration-image">
+                  <div class="inspiration-overlay">
+                    <p class="inspiration-text">✨ Visualiza tu meta</p>
+                  </div>
                 </div>
               </div>
+
+              <form id="goalForm">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="goalName">Nombre de la Meta</label>
+                    <input
+                      type="text"
+                      id="goalName"
+                      class="form-control"
+                      placeholder="Ej. Vacaciones en la playa"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="goalTarget">Cantidad Objetivo ($)</label>
+                    <input
+                      type="number"
+                      id="goalTarget"
+                      class="form-control"
+                      placeholder="1000"
+                      step="0.01"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="goalDeadline">Fecha Límite</label>
+                    <input
+                      type="date"
+                      id="goalDeadline"
+                      class="form-control"
+                      required
+                    />
+                  </div>
+                </div>
               <button type="submit" class="btn btn--primary">
                 <i class="fas fa-target"></i> Crear Meta
               </button>
             </form>
+            </div>
           </div>
         </div>
 
@@ -1850,15 +1855,27 @@
                   required
                   autocomplete="current-password"
                 />
-                <i
-                  class="fas fa-eye toggle-pass"
-                  data-target="loginPassword"
-                ></i>
+                <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('loginPassword', this)"></i>
               </div>
               <a href="#" class="form-link">¿Olvidaste tu contraseña?</a>
               <button type="submit" class="btn btn--primary btn--full-width">
                 Iniciar Sesión
               </button>
+
+              <div class="auth-divider">
+                <span>O continúa con</span>
+              </div>
+
+              <div class="social-login-buttons">
+                <button type="button" class="btn-social btn-google" onclick="window.app?.loginWithGoogle()">
+                  <i class="fab fa-google"></i>
+                  <span>Google</span>
+                </button>
+                <button type="button" class="btn-social btn-facebook" onclick="window.app?.loginWithFacebook()">
+                  <i class="fab fa-facebook-f"></i>
+                  <span>Facebook</span>
+                </button>
+              </div>
             </form>
             <form id="registerForm" class="hidden">
               <div class="input-group">
@@ -1904,6 +1921,21 @@
               <button type="submit" class="btn btn--primary btn--full-width">
                 Crear Cuenta
               </button>
+
+              <div class="auth-divider">
+                <span>O continúa con</span>
+              </div>
+
+              <div class="social-login-buttons">
+                <button type="button" class="btn-social btn-google" onclick="window.app?.loginWithGoogle()">
+                  <i class="fab fa-google"></i>
+                  <span>Google</span>
+                </button>
+                <button type="button" class="btn-social btn-facebook" onclick="window.app?.loginWithFacebook()">
+                  <i class="fab fa-facebook-f"></i>
+                  <span>Facebook</span>
+                </button>
+              </div>
             </form>
           </div>
           <div class="modal-footer auth-footer">

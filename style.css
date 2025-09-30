@@ -3841,6 +3841,132 @@ select.form-control {
   color: var(--color-primary);
 }
 
+/* Auth divider */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: var(--space-24) 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.auth-divider span {
+  padding: 0 var(--space-16);
+}
+
+/* Social login buttons */
+.social-login-buttons {
+  display: flex;
+  gap: var(--space-12);
+  margin-top: var(--space-16);
+}
+
+.btn-social {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-12);
+  padding: var(--space-12);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-base);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-social:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.btn-google:hover {
+  border-color: #4285f4;
+  color: #4285f4;
+}
+
+.btn-facebook:hover {
+  border-color: #1877f2;
+  color: #1877f2;
+}
+
+/* Goal Inspiration Panel */
+.goal-form-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-32);
+  align-items: start;
+}
+
+.goal-inspiration-panel {
+  position: sticky;
+  top: var(--space-24);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+
+.inspiration-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.inspiration-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.inspiration-image-wrapper:hover .inspiration-image {
+  transform: scale(1.05);
+}
+
+.inspiration-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  padding: var(--space-24);
+  color: white;
+}
+
+.inspiration-text {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin: 0;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+@media (max-width: 768px) {
+  .goal-form-container {
+    grid-template-columns: 1fr;
+  }
+
+  .goal-inspiration-panel {
+    position: relative;
+    top: 0;
+    margin-bottom: var(--space-24);
+  }
+
+  .inspiration-image-wrapper {
+    height: 250px;
+  }
+}
+
 /* === NOTIFICATION COMPONENTS === */
 .notifications {
   position: relative;
