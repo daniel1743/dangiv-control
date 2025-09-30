@@ -1,12 +1,46 @@
 {
   "name": "financia-suite-pro",
   "version": "1.0.0",
+  "description": "Gestor financiero personal inteligente con IA - Control de gastos, metas financieras y análisis",
   "private": true,
+  "type": "module",
+  "author": "FinanciaPro Suite Team",
+  "license": "MIT",
+  "keywords": [
+    "finanzas",
+    "personal-finance",
+    "expense-tracker",
+    "financial-goals",
+    "budget",
+    "savings",
+    "ai-assistant",
+    "firebase",
+    "pwa"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/financia-suite-pro.git"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "dev": "vercel dev",
-    "build": "echo no-build-step"
+    "build": "echo 'No build step required for static frontend'",
+    "start": "vercel dev",
+    "deploy": "vercel --prod",
+    "preview": "vercel",
+    "lint": "echo 'Add linting configuration'",
+    "test": "echo 'Add tests'"
   },
   "dependencies": {
     "playwright": "^1.48.0"
-  }
+  },
+  "devDependencies": {},
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "maintained node versions"
+  ]
 }
