@@ -1220,6 +1220,41 @@ class FinanceApp {
       });
     }
 
+    // === SELECTORES DE TEMA EN CONFIGURACIÃƒâ€œN ===
+    document.querySelectorAll('.theme-option').forEach((option) => {
+      option.addEventListener('click', (e) => {
+        const theme = e.currentTarget.getAttribute('data-theme');
+        this.applyTheme(theme);
+
+        // Actualizar clase active
+        document.querySelectorAll('.theme-option').forEach((opt) => {
+          opt.classList.remove('active');
+        });
+        e.currentTarget.classList.add('active');
+
+        // Guardar preferencia
+        localStorage.setItem('financia_theme', theme);
+
+        this.showToast(`Tema ${theme === 'light' ? 'claro' : theme === 'dark' ? 'oscuro' : 'automático'} aplicado`, 'success');
+      });
+    });
+
+    // === SELECTORES DE AVATAR EN TIENDA ===
+    document.querySelectorAll('.avatar-option').forEach((option) => {
+      option.addEventListener('click', (e) => {
+        const avatarId = e.currentTarget.getAttribute('data-avatar');
+        this.selectAvatar(avatarId);
+
+        // Actualizar clase selected
+        document.querySelectorAll('.avatar-option').forEach((opt) => {
+          opt.classList.remove('selected');
+        });
+        e.currentTarget.classList.add('selected');
+
+        this.showToast('Avatar seleccionado correctamente', 'success');
+      });
+    });
+
     // === LÃƒâ€œGICA PARA EL MENÃƒÅ¡ HAMBURGUESA (MÃƒâ€œVIL) ===
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const sidebar = document.querySelector('.sidebar');
@@ -2849,8 +2884,11 @@ class FinanceApp {
     let unnecessaryAmount = 0;
 
     if (demoData) {
-      necessaryAmount = 1200;
-      unnecessaryAmount = 800;
+      // Generar valores dinámicos aleatorios en modo demo
+      const baseNecessary = 800 + Math.random() * 800; // 800-1600
+      const baseUnnecessary = 400 + Math.random() * 800; // 400-1200
+      necessaryAmount = Math.round(baseNecessary / 50) * 50; // Redondear a 50
+      unnecessaryAmount = Math.round(baseUnnecessary / 50) * 50;
     } else {
       this.expenses.forEach((expense) => {
         if (
@@ -2912,34 +2950,49 @@ class FinanceApp {
     animateNumber(necessaryValue, currentNecessary, necessaryAmount, 1000);
     animateNumber(unnecessaryValue, currentUnnecessary, unnecessaryAmount, 1000);
 
-    // Animar barras de progreso con efecto dinámico
+    // Animar barras de progreso con patrones variados
     const necessaryProgress = document.getElementById('necessaryProgress');
     const unnecessaryProgress = document.getElementById('unnecessaryProgress');
 
-    if (necessaryProgress && total > 0) {
-      const targetWidth = (necessaryAmount / total) * 100;
+    if (necessaryProgress && unnecessaryProgress && total > 0) {
+      const targetNecessary = (necessaryAmount / total) * 100;
+      const targetUnnecessary = (unnecessaryAmount / total) * 100;
 
-      // Reset y animar
+      // Generar patrón de animación aleatorio
+      const patterns = [
+        // Patrón 1: Verde primero, luego rojo
+        { necessaryDelay: 100, unnecessaryDelay: 700, necessaryDuration: 1000, unnecessaryDuration: 800 },
+        // Patrón 2: Rojo primero, luego verde
+        { necessaryDelay: 800, unnecessaryDelay: 100, necessaryDuration: 900, unnecessaryDuration: 1100 },
+        // Patrón 3: Ambos simultáneos pero diferentes velocidades
+        { necessaryDelay: 150, unnecessaryDelay: 200, necessaryDuration: 1400, unnecessaryDuration: 800 },
+        // Patrón 4: Verde lento, rojo rápido
+        { necessaryDelay: 100, unnecessaryDelay: 500, necessaryDuration: 1600, unnecessaryDuration: 600 },
+        // Patrón 5: Secuencial con pausa
+        { necessaryDelay: 100, unnecessaryDelay: 1000, necessaryDuration: 800, unnecessaryDuration: 900 },
+        // Patrón 6: Inicio simultáneo, velocidades variadas
+        { necessaryDelay: 100, unnecessaryDelay: 100, necessaryDuration: 1100, unnecessaryDuration: 1400 }
+      ];
+
+      const randomPattern = patterns[Math.floor(Math.random() * patterns.length)];
+
+      // Animar barra verde (necesario)
       necessaryProgress.style.transition = 'none';
       necessaryProgress.style.width = '0%';
 
       setTimeout(() => {
-        necessaryProgress.style.transition = 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
-        necessaryProgress.style.width = `${targetWidth}%`;
-      }, 100);
-    }
+        necessaryProgress.style.transition = `width ${randomPattern.necessaryDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+        necessaryProgress.style.width = `${targetNecessary}%`;
+      }, randomPattern.necessaryDelay);
 
-    if (unnecessaryProgress && total > 0) {
-      const targetWidth = (unnecessaryAmount / total) * 100;
-
-      // Reset y animar
+      // Animar barra roja (innecesario)
       unnecessaryProgress.style.transition = 'none';
       unnecessaryProgress.style.width = '0%';
 
       setTimeout(() => {
-        unnecessaryProgress.style.transition = 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
-        unnecessaryProgress.style.width = `${targetWidth}%`;
-      }, 250);
+        unnecessaryProgress.style.transition = `width ${randomPattern.unnecessaryDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+        unnecessaryProgress.style.width = `${targetUnnecessary}%`;
+      }, randomPattern.unnecessaryDelay);
     }
   }
 
@@ -3016,9 +3069,13 @@ class FinanceApp {
     let percentage = 0;
 
     if (demoData) {
-      current = 4200;
-      target = 6000;
-      percentage = Math.round((current / target) * 100);
+      // Generar porcentaje aleatorio dinámico (10% - 100%)
+      const randomPercentage = 10 + Math.random() * 90;
+      percentage = Math.round(randomPercentage);
+
+      // Calcular valores basados en el porcentaje
+      target = 5000 + Math.round(Math.random() * 5000); // $5,000 - $10,000
+      current = Math.round((target * percentage) / 100);
     } else {
       // Calcular datos reales de metas
       if (this.goals.length > 0) {
@@ -3036,23 +3093,75 @@ class FinanceApp {
       }
     }
 
-    // Actualizar textos
+    // Determinar color según porcentaje
+    let strokeColor = '#ef4444'; // Rojo por defecto (bajo)
+    if (percentage >= 100) {
+      strokeColor = '#10b981'; // Verde (completado)
+    } else if (percentage >= 50) {
+      strokeColor = '#f97316'; // Naranja (medio)
+    }
+
+    // Actualizar textos con animación
+    const animateNumber = (element, start, end, duration, isPercentage = false) => {
+      if (!element) return;
+      const startTime = performance.now();
+      const difference = end - start;
+
+      const step = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const currentValue = start + (difference * easeProgress);
+
+        if (isPercentage) {
+          element.textContent = `${Math.round(currentValue)}%`;
+        } else {
+          element.textContent = `$${Math.round(currentValue).toLocaleString()}`;
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        }
+      };
+
+      requestAnimationFrame(step);
+    };
+
+    // Obtener valores actuales
+    const getCurrentValue = (element) => {
+      if (!element || !element.textContent) return 0;
+      return parseInt(element.textContent.replace(/\$|,|%/g, '')) || 0;
+    };
+
     if (goalsProgressText) {
-      goalsProgressText.textContent = `$${current.toLocaleString()} / $${target.toLocaleString()}`;
+      const currentDisplayed = getCurrentValue(goalsProgressText);
+      animateNumber(goalsProgressText, currentDisplayed, current, 1000);
+
+      // Actualizar también el target (no animado)
+      setTimeout(() => {
+        goalsProgressText.textContent = `$${current.toLocaleString()} / $${target.toLocaleString()}`;
+      }, 1000);
     }
 
     if (goalsProgressPercentage) {
-      goalsProgressPercentage.textContent = `${percentage}%`;
+      const currentPercentage = getCurrentValue(goalsProgressPercentage);
+      animateNumber(goalsProgressPercentage, currentPercentage, percentage, 1200, true);
     }
 
-    // Animar anillo de progreso
+    // Animar anillo de progreso con color dinámico
     if (goalsProgressRing) {
       const circumference = 2 * Math.PI * 35; // r=35
       const offset = circumference - (percentage / 100) * circumference;
 
+      // Reset y animar
+      goalsProgressRing.style.transition = 'none';
+      goalsProgressRing.style.strokeDashoffset = circumference;
+      goalsProgressRing.style.stroke = strokeColor;
+
       setTimeout(() => {
+        goalsProgressRing.style.transition = 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.6s ease';
         goalsProgressRing.style.strokeDashoffset = offset;
-      }, 800);
+      }, 200);
     }
 
     // Configurar botón CTA
@@ -5004,6 +5113,94 @@ class FinanceApp {
     if (icon) {
       icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
     }
+
+    // Guardar preferencia
+    localStorage.setItem('financia_theme', newTheme);
+  }
+
+  applyTheme(theme) {
+    if (theme === 'auto') {
+      // Detectar preferencia del sistema
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const systemTheme = prefersDark ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-color-scheme', systemTheme);
+    } else {
+      document.documentElement.setAttribute('data-color-scheme', theme);
+    }
+
+    // Actualizar icono del toggle en navbar
+    const icon = document.querySelector('#themeToggle i');
+    if (icon) {
+      const currentTheme = document.documentElement.getAttribute('data-color-scheme');
+      icon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+  }
+
+  loadThemePreference() {
+    const savedTheme = localStorage.getItem('financia_theme') || 'light';
+    this.applyTheme(savedTheme);
+
+    // Actualizar botón activo en config
+    document.querySelectorAll('.theme-option').forEach((opt) => {
+      if (opt.getAttribute('data-theme') === savedTheme) {
+        opt.classList.add('active');
+      } else {
+        opt.classList.remove('active');
+      }
+    });
+  }
+
+  selectAvatar(avatarId) {
+    // Guardar avatar seleccionado
+    localStorage.setItem('financia_avatar', avatarId);
+
+    // Actualizar avatar en todas las ubicaciones
+    this.updateAvatarDisplay(avatarId);
+  }
+
+  updateAvatarDisplay(avatarId) {
+    // Encontrar el avatar seleccionado
+    const selectedOption = document.querySelector(`[data-avatar="${avatarId}"]`);
+    if (!selectedOption) return;
+
+    const avatarIcon = selectedOption.querySelector('.avatar-icon');
+    if (!avatarIcon) return;
+
+    // Clonar el icono y gradiente
+    const iconClone = avatarIcon.cloneNode(true);
+
+    // Actualizar en configuración (perfil)
+    const profileAvatar = document.getElementById('currentProfileAvatar');
+    if (profileAvatar) {
+      const avatarPreview = profileAvatar.querySelector('.avatar-preview');
+      if (avatarPreview) {
+        avatarPreview.innerHTML = '';
+        avatarPreview.appendChild(iconClone.cloneNode(true));
+      }
+    }
+
+    // Actualizar en sidebar si existe
+    const sidebarAvatar = document.querySelector('.sidebar .user-avatar');
+    if (sidebarAvatar) {
+      sidebarAvatar.innerHTML = '';
+      sidebarAvatar.appendChild(iconClone.cloneNode(true));
+    }
+  }
+
+  loadAvatarPreference() {
+    const savedAvatar = localStorage.getItem('financia_avatar') || 'avatar-1';
+
+    // Actualizar display
+    this.updateAvatarDisplay(savedAvatar);
+
+    // Actualizar selección en tienda
+    document.querySelectorAll('.avatar-option').forEach((opt) => {
+      if (opt.getAttribute('data-avatar') === savedAvatar) {
+        opt.classList.add('selected');
+      } else {
+        opt.classList.remove('selected');
+      }
+    });
   }
 
   // PEGA EL NUEVO CÃƒâ€œDIGO JS AQUÃ
@@ -5121,6 +5318,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!window.app) {
     window.app = new FinanceApp();
     window.app.init();
+    // Cargar preferencias guardadas
+    window.app.loadThemePreference();
+    window.app.loadAvatarPreference();
   }
 
   // 2. Configura las animaciones de scroll.

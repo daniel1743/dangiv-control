@@ -30,6 +30,112 @@
   font-size: var(--font-size-xl);
 }
 
+/* Store Sections */
+.store-section {
+  margin-bottom: var(--space-48);
+}
+
+.store-section-header {
+  margin-bottom: var(--space-24);
+  padding-bottom: var(--space-16);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.store-section-header h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 var(--space-8) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.store-section-header h2 i {
+  color: var(--color-primary);
+}
+
+.store-section-header p {
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-size: var(--font-size-base);
+}
+
+/* Avatar Gallery */
+.avatar-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-20);
+}
+
+.avatar-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-20);
+  background: var(--color-surface-raised);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.avatar-option:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-primary);
+}
+
+.avatar-option.selected {
+  border-color: var(--color-primary);
+  border-width: 3px;
+  background: linear-gradient(135deg, var(--color-surface-raised), rgba(14, 165, 233, 0.05));
+}
+
+.avatar-option.selected::after {
+  content: '\f00c';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--color-primary);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.avatar-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: white;
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.avatar-option:hover .avatar-icon {
+  transform: rotate(5deg) scale(1.1);
+}
+
+.avatar-name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: center;
+}
+
 .store-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
