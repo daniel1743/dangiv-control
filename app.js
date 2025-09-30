@@ -288,6 +288,9 @@ class FinanceApp {
 
     this.conversationHistory = []; // Para guardar el historial del chat
     this.conversationState = 'START'; // Para saber en quÃ© punto del chat estamos
+
+    // Detectar enlace de invitación en la URL
+    this.checkInvitationLink();
   }
 
   startDemoMode() {
@@ -6678,8 +6681,17 @@ FinanceApp.prototype.handleRegistration = async function() {
     return;
   }
 
+  // Verificar si estamos en modo invitación
+  if (window.isJoiningSharedAccount && window.invitationData) {
+    console.log('DEBUG: Modo invitación detectado, uniendo a cuenta existente...');
+    const { code, accountId } = window.invitationData;
+    await this.joinSharedAccountWithInvite(name, email, password, code, accountId);
+    return;
+  }
+
+  // Flujo normal de registro
   const accountType = window.selectedAccountType || 'personal';
-  console.log('DEBUG: Iniciando registro con Firebase Auth...');
+  console.log('DEBUG: Iniciando registro normal con Firebase Auth...');
 
   try {
     // Primero registrar en Firebase Auth
@@ -8273,6 +8285,225 @@ FinanceApp.prototype.closeSharedAccountInviteModal = function() {
   if (this.inviteLinkTimerInterval) {
     clearInterval(this.inviteLinkTimerInterval);
     this.inviteLinkTimerInterval = null;
+  }
+};
+
+// ============================================
+// Invitation Link Detection and Handling
+// ============================================
+
+FinanceApp.prototype.checkInvitationLink = function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const inviteCode = urlParams.get('invite');
+  const accountId = urlParams.get('account');
+
+  console.log('DEBUG: Chequeando URL params:', { inviteCode, accountId });
+
+  if (inviteCode && accountId) {
+    console.log('DEBUG: ¡Enlace de invitación detectado!');
+
+    // Guardar datos de invitación temporalmente
+    this.pendingInvitation = {
+      code: inviteCode,
+      accountId: accountId,
+      timestamp: Date.now()
+    };
+
+    // Validar si el enlace está vigente
+    this.validateAndShowInvitation(inviteCode, accountId);
+  }
+};
+
+FinanceApp.prototype.validateAndShowInvitation = function(inviteCode, accountId) {
+  console.log('DEBUG: Validando enlace de invitación...');
+
+  // TODO: Aquí deberías validar contra Firestore si el enlace es válido
+  // Por ahora, asumimos que es válido si tiene menos de 24 horas
+
+  // Verificar si ya está autenticado
+  if (this.currentUser && this.currentUser !== 'anonymous') {
+    this.showToast('Ya tienes una sesión activa. Cierra sesión primero para unirte a otra cuenta.', 'warning');
+    return;
+  }
+
+  // Mostrar modal especial de invitación
+  setTimeout(() => {
+    this.showInvitationWelcomeModal(inviteCode, accountId);
+  }, 500);
+};
+
+FinanceApp.prototype.showInvitationWelcomeModal = function(inviteCode, accountId) {
+  console.log('DEBUG: Mostrando modal de bienvenida de invitación');
+
+  // Cerrar modal de tipo de cuenta si está abierto
+  const accountTypeModal = document.getElementById('accountTypeModal');
+  if (accountTypeModal) {
+    accountTypeModal.classList.remove('show');
+  }
+
+  // Abrir modal de autenticación en modo registro
+  const authModal = document.getElementById('authModal');
+  if (!authModal) {
+    console.error('Modal de autenticación no encontrado');
+    return;
+  }
+
+  // Configurar para registro
+  document.getElementById('authModalTitle').textContent = '¡Te han invitado a una cuenta mancomunada!';
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('registerForm').classList.remove('hidden');
+
+  // Agregar mensaje de invitación
+  const registerForm = document.getElementById('registerForm');
+  let inviteMessage = document.getElementById('invitationMessage');
+
+  if (!inviteMessage) {
+    inviteMessage = document.createElement('div');
+    inviteMessage.id = 'invitationMessage';
+    inviteMessage.className = 'invitation-welcome-message';
+    inviteMessage.innerHTML = `
+      <div class="invite-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <h3>¡Has sido invitado!</h3>
+      <p>Alguien te ha invitado a unirte a su cuenta mancomunada.</p>
+      <p><strong>Completa el registro para aceptar la invitación.</strong></p>
+    `;
+    registerForm.insertBefore(inviteMessage, registerForm.firstChild);
+  }
+
+  // Guardar que estamos en modo invitación
+  window.isJoiningSharedAccount = true;
+  window.invitationData = { code: inviteCode, accountId: accountId };
+
+  authModal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+
+  this.showToast('Completa tu registro para unirte a la cuenta compartida', 'info');
+};
+
+FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, password, inviteCode, accountId) {
+  console.log('DEBUG: Uniendo a cuenta compartida con invitación');
+
+  try {
+    // 1. Registrar usuario en Firebase Auth
+    const userCredential = await FB.createUserWithEmailAndPassword(
+      FB.auth,
+      email,
+      password
+    );
+
+    const userId = userCredential.user.uid;
+    console.log('DEBUG: Usuario creado:', userId);
+
+    // 2. Cargar datos de la cuenta existente desde Firestore
+    const accountDocRef = FB.doc(FB.db, 'userData', accountId);
+    const accountDoc = await FB.getDoc(accountDocRef);
+
+    if (!accountDoc.exists()) {
+      throw new Error('La cuenta de invitación no existe o ha sido eliminada');
+    }
+
+    const accountData = accountDoc.data();
+    console.log('DEBUG: Datos de cuenta cargados');
+
+    // 3. Agregar nuevo usuario a la cuenta
+    const newUser = {
+      id: userId,
+      name: name,
+      email: email,
+      role: 'member',
+      joinedAt: Date.now()
+    };
+
+    accountData.accountUsers.push(newUser);
+
+    // 4. Marcar el enlace de invitación como usado
+    if (accountData.currentInviteLink) {
+      accountData.currentInviteLink.used = true;
+      accountData.currentInviteLink.usedBy = userId;
+      accountData.currentInviteLink.usedAt = Date.now();
+    }
+
+    // 5. Agregar log de actividad
+    if (!accountData.activityLog) {
+      accountData.activityLog = [];
+    }
+    accountData.activityLog.unshift({
+      id: 'activity_' + Date.now(),
+      type: 'user_joined',
+      description: `${name} se unió a la cuenta`,
+      userId: userId,
+      timestamp: Date.now()
+    });
+
+    // 6. Guardar datos actualizados en la cuenta original
+    await FB.setDoc(accountDocRef, accountData);
+
+    // 7. También crear documento del nuevo usuario con referencia a la cuenta compartida
+    const userDocRef = FB.doc(FB.db, 'userData', userId);
+    await FB.setDoc(userDocRef, {
+      ...accountData,
+      currentUser: userId,
+      sharedAccountRef: accountId // Referencia a la cuenta principal
+    });
+
+    // 8. Actualizar datos locales
+    this.accountType = accountData.accountType;
+    this.currentUser = userId;
+    this.accountOwner = accountData.accountOwner;
+    this.accountUsers = accountData.accountUsers;
+    this.expenses = accountData.expenses || [];
+    this.goals = accountData.goals || [];
+    this.shoppingItems = accountData.shoppingItems || [];
+    this.monthlyIncome = accountData.monthlyIncome || 2500;
+    this.inviteCodes = accountData.inviteCodes || {};
+    this.activityLog = accountData.activityLog || [];
+
+    // 9. Guardar en localStorage
+    localStorage.setItem('financiaProData', JSON.stringify({
+      accountType: this.accountType,
+      currentUser: this.currentUser,
+      accountOwner: this.accountOwner,
+      accountUsers: this.accountUsers,
+      expenses: this.expenses,
+      goals: this.goals,
+      shoppingItems: this.shoppingItems,
+      monthlyIncome: this.monthlyIncome,
+      inviteCodes: this.inviteCodes,
+      activityLog: this.activityLog,
+      lastUpdate: Date.now()
+    }));
+
+    // 10. Limpiar URL y datos de invitación
+    window.history.replaceState({}, document.title, window.location.pathname);
+    delete this.pendingInvitation;
+    delete window.isJoiningSharedAccount;
+    delete window.invitationData;
+
+    // 11. Cerrar modal y mostrar éxito
+    this.closeAuthModal();
+    this.showToast('¡Te has unido exitosamente a la cuenta compartida!', 'success');
+
+    // 12. Actualizar UI
+    this.updateAccountDisplay();
+    this.updateUserSelectionDropdown();
+    this.renderDashboard();
+    this.renderExpenses();
+    this.renderGoals();
+
+    console.log('DEBUG: ¡Usuario unido exitosamente!');
+
+  } catch (error) {
+    console.error('Error al unirse a cuenta compartida:', error);
+
+    if (error.code === 'auth/email-already-in-use') {
+      this.showToast('Este email ya está registrado', 'error');
+    } else if (error.message.includes('no existe')) {
+      this.showToast('Este enlace de invitación ya no es válido', 'error');
+    } else {
+      this.showToast('Error al unirse a la cuenta: ' + error.message, 'error');
+    }
   }
 };
 
