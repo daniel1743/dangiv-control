@@ -3802,6 +3802,40 @@ select.form-control {
   box-shadow: var(--shadow-lg);
 }
 
+/* Branding sutil para modales grandes */
+.modal-lg {
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  border-top: 3px solid var(--color-primary);
+}
+
+.modal-lg .modal-body {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(90vh - 80px);
+  padding-right: var(--space-16);
+}
+
+.modal-lg .modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-lg .modal-body::-webkit-scrollbar-track {
+  background: var(--color-background);
+  border-radius: var(--border-radius-sm);
+}
+
+.modal-lg .modal-body::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--border-radius-sm);
+}
+
+.modal-lg .modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
 .auth-dialog {
   max-width: 800px;
 }
@@ -7130,6 +7164,8 @@ select.form-control {
   max-height: 90vh;
   display: flex;
   flex-direction: column;
+  border-top: 3px solid var(--color-primary);
+  box-shadow: 0 -3px 0 0 rgba(var(--color-primary-rgb), 0.1);
 }
 
 .modal-xl .modal-content {

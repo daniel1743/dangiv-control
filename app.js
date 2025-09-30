@@ -8832,6 +8832,8 @@ FinanceApp.prototype.setupPaymentsListeners = function() {
   const paymentsModal = document.getElementById('paymentsDetailModal');
   const closePaymentsDetail = document.getElementById('closePaymentsDetail');
 
+  console.log('Setup payments listeners - Card:', upcomingPaymentsCard, 'Modal:', paymentsModal);
+
   if (paymentForm) {
     paymentForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -8841,6 +8843,7 @@ FinanceApp.prototype.setupPaymentsListeners = function() {
 
   if (upcomingPaymentsCard) {
     upcomingPaymentsCard.addEventListener('click', () => {
+      console.log('Payments card clicked');
       this.showPaymentsDetailModal();
     });
   }
@@ -9102,7 +9105,9 @@ FinanceApp.prototype.updateDashboardPayments = function() {
 };
 
 FinanceApp.prototype.showPaymentsDetailModal = function() {
+  console.log('showPaymentsDetailModal called');
   const modal = document.getElementById('paymentsDetailModal');
+  console.log('Modal element:', modal);
   if (!modal) return;
 
   this.checkMonthlyReset();
