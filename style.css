@@ -5744,7 +5744,6 @@ select.form-control {
   gap: var(--space-4);
 }
 
-/* Expense Filtering and Search Styles */
 /* Onboarding Tour Styles */
 .tour-overlay {
   position: fixed;
