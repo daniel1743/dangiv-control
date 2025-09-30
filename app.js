@@ -45,6 +45,8 @@ class FinanceApp {
     this.activityLog = savedData.activityLog || [];
     this.auditLog = savedData.auditLog || []; // Sistema de auditoría
     this.customUsers = savedData.customUsers || []; // Usuarios personalizados para gastos
+    this.savingsAccounts = savedData.savingsAccounts || []; // Cuentas de ahorro
+    this.recurringPayments = savedData.recurringPayments || []; // Pagos recurrentes mensuales
     this.isRegistering = false; // Flag to prevent race condition during registration
 
     this.expenses = savedData.expenses || [];
@@ -264,6 +266,20 @@ class FinanceApp {
       'Compra por Impulso',
     ];
     this.users = ['Daniel', 'Givonik', 'Otro'];
+
+    // Tipos de servicios recurrentes para pagos
+    this.paymentServiceTypes = [
+      { id: 'electricity', name: 'Luz', icon: 'fas fa-lightbulb', color: '#f59e0b' },
+      { id: 'water', name: 'Agua', icon: 'fas fa-tint', color: '#3b82f6' },
+      { id: 'phone', name: 'Teléfono', icon: 'fas fa-phone', color: '#8b5cf6' },
+      { id: 'internet', name: 'Internet/WiFi', icon: 'fas fa-wifi', color: '#06b6d4' },
+      { id: 'tv', name: 'TV/Cable', icon: 'fas fa-tv', color: '#ec4899' },
+      { id: 'rent', name: 'Alquiler', icon: 'fas fa-home', color: '#ef4444' },
+      { id: 'gas', name: 'Gas', icon: 'fas fa-fire', color: '#f97316' },
+      { id: 'insurance', name: 'Seguro', icon: 'fas fa-shield-alt', color: '#10b981' },
+      { id: 'subscription', name: 'Suscripción', icon: 'fas fa-star', color: '#6366f1' },
+      { id: 'other', name: 'Otros Servicios', icon: 'fas fa-receipt', color: '#64748b' }
+    ];
     this.charts = {};
     this.currentSection = 'dashboard';
     this.currentUser = 'anonymous'; // Â¡CORRECCIÃƒâ€œN APLICADA!
@@ -563,6 +579,10 @@ class FinanceApp {
       inviteCodes: this.inviteCodes,
       currentInviteLink: this.currentInviteLink,
       activityLog: this.activityLog,
+      auditLog: this.auditLog,
+      customUsers: this.customUsers,
+      savingsAccounts: this.savingsAccounts,
+      recurringPayments: this.recurringPayments,
       expenses: this.expenses,
       goals: this.goals,
       shoppingItems: this.shoppingItems,
@@ -1106,6 +1126,8 @@ class FinanceApp {
     this.setupAuth();
     this.setupEventListeners(); // ¡CORRECCIÓN! Llamamos a la función correcta.
     this.setupAuditListeners(); // Sistema de auditoría
+    this.setupSavingsListeners(); // Sistema de ahorros
+    this.setupPaymentsListeners(); // Sistema de pagos recurrentes
     this.setupNotificationBell();
     this.setupScrollOptimization();
     this.initQuickAccess(); // Optimización sutil del scroll
@@ -1114,6 +1136,10 @@ class FinanceApp {
     this.forceDataNormalization();
 
     this.renderDashboard();
+    this.renderSavingsAccountsList();
+    this.updateDashboardSavings();
+    this.renderRecurringPaymentsList();
+    this.updateDashboardPayments();
     this.initTrendChart();
     this.initSidebarScrollBehavior();
     this.initLazyLoading();
@@ -1903,6 +1929,7 @@ class FinanceApp {
     // Para un usuario real (incluso sin datos), detenemos el demo y mostramos su dashboard.
     this.stopDemoMode();
     this.updateStats();
+    this.updateDashboardSavings(); // Actualizar total de ahorros
     this.renderPremiumChart();
     this.renderInteractiveSummary();
     this.renderGoalsProgress();
@@ -4134,7 +4161,6 @@ class FinanceApp {
         expense.user,
         expense.category,
         expense.necessity,
-        expense.protected ? 'PROTEGIDO' : '',
       ]);
       expenseEl.innerHTML = `
         <div class="transaction-info">
@@ -4173,97 +4199,84 @@ class FinanceApp {
 
     const item = this.expenses[idx];
 
-    if (!item.protected) {
-      // Registrar en auditoría
-      this.logAudit(
-        'expense_deleted',
-        'deleted',
-        `Gasto eliminado: $${item.amount} - ${item.description}`,
-        '',
-        { amount: item.amount, category: item.category, description: item.description }
-      );
+    // Registrar en auditoría antes de eliminar
+    this.logAudit(
+      'expense_deleted',
+      'deleted',
+      `Gasto eliminado: $${item.amount} - ${item.description}`,
+      '',
+      { amount: item.amount, category: item.category, description: item.description }
+    );
 
-      this.expenses.splice(idx, 1);
-      this.saveData();
-      this.renderDashboard();
-      this.renderExpenses();
-      this.showToast('Gasto eliminado', 'success');
-      return;
-    }
-
-    const modal = document.getElementById('securityModal');
-    if (!modal) {
-      this.showToast('Modal de seguridad no disponible', 'error');
-      return;
-    }
-
-    this.openDeleteModal(id);
+    // Eliminar directamente sin verificación de protección
+    this.expenses.splice(idx, 1);
+    this.saveData();
+    this.renderDashboard();
+    this.renderExpenses();
+    this.showToast('Gasto eliminado', 'success');
   }
 
-  openDeleteModal(expenseId) {
-    const modal = document.getElementById('securityModal');
-    const titleEl = modal.querySelector('.modal-title');
-    const saveBtn = document.getElementById('modalSavePasswordsBtn');
-    const newPassSection = document.getElementById('newPassSection');
+  // DESHABILITADO - Sistema de gastos protegidos
+  // openDeleteModal(expenseId) {
+  //   const modal = document.getElementById('securityModal');
+  //   const titleEl = modal.querySelector('.modal-title');
+  //   const saveBtn = document.getElementById('modalSavePasswordsBtn');
+  //   const newPassSection = document.getElementById('newPassSection');
+  //
+  //   if (titleEl)
+  //     titleEl.innerHTML = `<i class="fas fa-key"></i> Confirmar eliminación`;
+  //   if (saveBtn) saveBtn.textContent = 'Eliminar';
+  //   if (newPassSection) newPassSection.style.display = 'none';
+  //
+  //   const curDanielEl = document.getElementById('curDaniel');
+  //   const curGivonikEl = document.getElementById('curGivonik');
+  //   if (curDanielEl) curDanielEl.value = '';
+  //   if (curGivonikEl) curGivonikEl.value = '';
+  //
+  //   this.pendingDeleteId = expenseId;
+  //   modal.classList.add('show');
+  // }
 
-    if (titleEl)
-      titleEl.innerHTML = `<i class="fas fa-key"></i> Confirmar eliminaciÃ³n`;
-    if (saveBtn) saveBtn.textContent = 'Eliminar';
-    if (newPassSection) newPassSection.style.display = 'none';
-
-    // Limpiar campos
-    const curDanielEl = document.getElementById('curDaniel');
-    const curGivonikEl = document.getElementById('curGivonik');
-    if (curDanielEl) curDanielEl.value = '';
-    if (curGivonikEl) curGivonikEl.value = '';
-
-    // Configurar evento de eliminaciÃ³n
-    this.pendingDeleteId = expenseId;
-    modal.classList.add('show');
-  }
-
-  confirmDeleteFromModal() {
-    const curDanielEl = document.getElementById('curDaniel');
-    const curGivonikEl = document.getElementById('curGivonik');
-
-    if (!curDanielEl || !curGivonikEl) return;
-
-    const curDaniel = curDanielEl.value || '';
-    const curGivonik = curGivonikEl.value || '';
-
-    if (!this.verifyPassword('Daniel', curDaniel)) {
-      this.showToast('Contraseña actual de Daniel incorrecta', 'error');
-      return;
-    }
-    if (!this.verifyPassword('Givonik', curGivonik)) {
-      this.showToast('Contraseña actual de Givonik incorrecta', 'error');
-      return;
-    }
-
-    // Eliminar gasto
-    const idx = this.expenses.findIndex((e) => e.id === this.pendingDeleteId);
-    if (idx !== -1) {
-      const item = this.expenses[idx];
-
-      // Registrar en auditoría
-      this.logAudit(
-        'expense_deleted',
-        'deleted',
-        `Gasto protegido eliminado: $${item.amount} - ${item.description}`,
-        'Eliminación autorizada con doble contraseña',
-        { amount: item.amount, category: item.category, description: item.description, protected: true }
-      );
-
-      this.expenses.splice(idx, 1);
-      this.saveData();
-      this.renderDashboard();
-      this.renderExpenses();
-      this.showToast('Gasto eliminado', 'success');
-    }
-
-    document.getElementById('securityModal').classList.remove('show');
-    this.pendingDeleteId = null;
-  }
+  // confirmDeleteFromModal() {
+  //   const curDanielEl = document.getElementById('curDaniel');
+  //   const curGivonikEl = document.getElementById('curGivonik');
+  //
+  //   if (!curDanielEl || !curGivonikEl) return;
+  //
+  //   const curDaniel = curDanielEl.value || '';
+  //   const curGivonik = curGivonikEl.value || '';
+  //
+  //   if (!this.verifyPassword('Daniel', curDaniel)) {
+  //     this.showToast('Contraseña actual de Daniel incorrecta', 'error');
+  //     return;
+  //   }
+  //   if (!this.verifyPassword('Givonik', curGivonik)) {
+  //     this.showToast('Contraseña actual de Givonik incorrecta', 'error');
+  //     return;
+  //   }
+  //
+  //   const idx = this.expenses.findIndex((e) => e.id === this.pendingDeleteId);
+  //   if (idx !== -1) {
+  //     const item = this.expenses[idx];
+  //
+  //     this.logAudit(
+  //       'expense_deleted',
+  //       'deleted',
+  //       `Gasto protegido eliminado: $${item.amount} - ${item.description}`,
+  //       'Eliminación autorizada con doble contraseña',
+  //       { amount: item.amount, category: item.category, description: item.description, protected: true }
+  //     );
+  //
+  //     this.expenses.splice(idx, 1);
+  //     this.saveData();
+  //     this.renderDashboard();
+  //     this.renderExpenses();
+  //     this.showToast('Gasto eliminado', 'success');
+  //   }
+  //
+  //   document.getElementById('securityModal').classList.remove('show');
+  //   this.pendingDeleteId = null;
+  // }
 
   // Recomendado: soporta modos 'change' y 'delete' y bloquea el scroll
   openSecurityModal(mode = 'change') {
@@ -8502,6 +8515,707 @@ FinanceApp.prototype.setupAuditListeners = function() {
       this.renderAuditLog();
     });
   }
+};
+
+// ========================================
+// SAVINGS MANAGEMENT SYSTEM
+// ========================================
+
+FinanceApp.prototype.setupSavingsListeners = function() {
+  const savingsForm = document.getElementById('savingsAccountForm');
+  const savingsCard = document.getElementById('savingsCard');
+  const closeSavingsDetail = document.getElementById('closeSavingsDetail');
+
+  if (savingsForm) {
+    savingsForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.addSavingsAccount();
+    });
+  }
+
+  if (savingsCard) {
+    savingsCard.addEventListener('click', () => {
+      this.showSavingsDetailModal();
+    });
+    savingsCard.style.cursor = 'pointer';
+  }
+
+  if (closeSavingsDetail) {
+    closeSavingsDetail.addEventListener('click', () => {
+      document.getElementById('savingsDetailModal').classList.remove('show');
+    });
+  }
+};
+
+FinanceApp.prototype.addSavingsAccount = function() {
+  const sourceName = document.getElementById('savingsSourceName').value.trim();
+  const amount = parseFloat(document.getElementById('savingsAmount').value);
+  const type = document.getElementById('savingsType').value;
+  const description = document.getElementById('savingsDescription').value.trim();
+
+  if (!sourceName || !amount || amount < 0 || !type) {
+    this.showToast('Complete todos los campos requeridos', 'error');
+    return;
+  }
+
+  const savingsAccount = {
+    id: Date.now().toString(),
+    sourceName: sourceName,
+    amount: amount,
+    type: type,
+    description: description,
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  };
+
+  this.savingsAccounts.push(savingsAccount);
+
+  this.logAudit(
+    'savings_added',
+    'added',
+    `Nueva fuente de ahorro: ${sourceName} - $${amount}`,
+    '',
+    { sourceName, amount, type }
+  );
+
+  this.saveData();
+  this.renderSavingsAccountsList();
+  this.updateDashboardSavings();
+  this.showToast('Fuente de ahorro agregada', 'success');
+
+  document.getElementById('savingsAccountForm').reset();
+};
+
+FinanceApp.prototype.deleteSavingsAccount = function(id) {
+  const index = this.savingsAccounts.findIndex(acc => acc.id === id);
+  if (index === -1) return;
+
+  const account = this.savingsAccounts[index];
+
+  this.logAudit(
+    'savings_deleted',
+    'deleted',
+    `Fuente de ahorro eliminada: ${account.sourceName} - $${account.amount}`,
+    '',
+    { sourceName: account.sourceName, amount: account.amount, type: account.type }
+  );
+
+  this.savingsAccounts.splice(index, 1);
+  this.saveData();
+  this.renderSavingsAccountsList();
+  this.updateDashboardSavings();
+  this.showToast('Fuente de ahorro eliminada', 'success');
+};
+
+FinanceApp.prototype.updateSavingsAmount = function(id, newAmount) {
+  const account = this.savingsAccounts.find(acc => acc.id === id);
+  if (!account) return;
+
+  const oldAmount = account.amount;
+  account.amount = parseFloat(newAmount);
+  account.updatedAt = Date.now();
+
+  this.logAudit(
+    'savings_edited',
+    'edited',
+    `Monto actualizado: ${account.sourceName} de $${oldAmount} a $${account.amount}`,
+    '',
+    { sourceName: account.sourceName, oldAmount, newAmount: account.amount }
+  );
+
+  this.saveData();
+  this.renderSavingsAccountsList();
+  this.updateDashboardSavings();
+};
+
+FinanceApp.prototype.renderSavingsAccountsList = function() {
+  const container = document.getElementById('savingsAccountsList');
+  if (!container) return;
+
+  const totalAmount = document.getElementById('totalSavingsAmount');
+  const totalSources = document.getElementById('totalSavingsSources');
+
+  if (this.savingsAccounts.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state-small">
+        <i class="fas fa-wallet"></i>
+        <p>No hay fuentes de ahorro registradas</p>
+      </div>
+    `;
+    if (totalAmount) totalAmount.textContent = '$0';
+    if (totalSources) totalSources.textContent = '0';
+    return;
+  }
+
+  const total = this.savingsAccounts.reduce((sum, acc) => sum + acc.amount, 0);
+
+  if (totalAmount) totalAmount.textContent = `$${total.toLocaleString()}`;
+  if (totalSources) totalSources.textContent = this.savingsAccounts.length;
+
+  container.innerHTML = this.savingsAccounts.map(account => {
+    const icon = this.getSavingsTypeIcon(account.type);
+    const typeName = this.getSavingsTypeName(account.type);
+
+    return `
+      <div class="savings-account-item">
+        <div class="savings-account-icon ${account.type}">
+          <i class="${icon}"></i>
+        </div>
+        <div class="savings-account-info">
+          <div class="savings-account-name">${account.sourceName}</div>
+          <div class="savings-account-meta">
+            <span><i class="fas fa-tag"></i> ${typeName}</span>
+            ${account.description ? `<span><i class="fas fa-info-circle"></i> ${account.description}</span>` : ''}
+          </div>
+        </div>
+        <div class="savings-account-amount">$${account.amount.toLocaleString()}</div>
+        <div class="savings-account-actions">
+          <button class="btn-icon" onclick="app.editSavingsAmount('${account.id}')">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn-icon delete" onclick="app.deleteSavingsAccount('${account.id}')">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+FinanceApp.prototype.editSavingsAmount = function(id) {
+  const account = this.savingsAccounts.find(acc => acc.id === id);
+  if (!account) return;
+
+  const newAmount = prompt(`Nuevo monto para ${account.sourceName}:`, account.amount);
+  if (newAmount !== null && !isNaN(newAmount) && parseFloat(newAmount) >= 0) {
+    this.updateSavingsAmount(id, newAmount);
+  }
+};
+
+FinanceApp.prototype.showSavingsDetailModal = function() {
+  const modal = document.getElementById('savingsDetailModal');
+  if (!modal) return;
+
+  const modalTotal = document.getElementById('modalTotalSavings');
+  const modalSources = document.getElementById('modalTotalSources');
+  const breakdownList = document.getElementById('savingsBreakdownList');
+
+  const total = this.savingsAccounts.reduce((sum, acc) => sum + acc.amount, 0);
+
+  if (modalTotal) modalTotal.textContent = `$${total.toLocaleString()}`;
+  if (modalSources) modalSources.textContent = this.savingsAccounts.length;
+
+  if (this.savingsAccounts.length === 0) {
+    breakdownList.innerHTML = `
+      <div class="empty-state-small">
+        <i class="fas fa-piggy-bank"></i>
+        <p>No hay fuentes de ahorro para mostrar</p>
+      </div>
+    `;
+  } else {
+    breakdownList.innerHTML = this.savingsAccounts.map(account => {
+      const icon = this.getSavingsTypeIcon(account.type);
+      const typeName = this.getSavingsTypeName(account.type);
+      const percentage = total > 0 ? ((account.amount / total) * 100).toFixed(1) : 0;
+
+      return `
+        <div class="breakdown-item">
+          <div class="breakdown-icon ${account.type}">
+            <i class="${icon}"></i>
+          </div>
+          <div class="breakdown-info">
+            <div class="breakdown-name">${account.sourceName}</div>
+            <div class="breakdown-meta">
+              <span class="breakdown-meta-item"><i class="fas fa-tag"></i> ${typeName}</span>
+              ${account.description ? `<span class="breakdown-meta-item"><i class="fas fa-info-circle"></i> ${account.description}</span>` : ''}
+            </div>
+            <div class="breakdown-percentage">${percentage}% del total</div>
+          </div>
+          <div class="breakdown-amount">$${account.amount.toLocaleString()}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  modal.classList.add('show');
+};
+
+FinanceApp.prototype.updateDashboardSavings = function() {
+  const totalSavingsEl = document.getElementById('totalSavings');
+  if (!totalSavingsEl) return;
+
+  const total = this.savingsAccounts.reduce((sum, acc) => sum + acc.amount, 0);
+  totalSavingsEl.textContent = `$${total.toLocaleString()}`;
+};
+
+FinanceApp.prototype.getSavingsTypeIcon = function(type) {
+  const icons = {
+    retirement: 'fas fa-umbrella',
+    emergency: 'fas fa-shield-alt',
+    investment: 'fas fa-chart-line',
+    savings_account: 'fas fa-university',
+    cash: 'fas fa-money-bill-wave',
+    goal: 'fas fa-bullseye',
+    other: 'fas fa-wallet'
+  };
+  return icons[type] || 'fas fa-wallet';
+};
+
+FinanceApp.prototype.getSavingsTypeName = function(type) {
+  const names = {
+    retirement: 'Jubilación',
+    emergency: 'Emergencia',
+    investment: 'Inversión',
+    savings_account: 'Cuenta de ahorros',
+    cash: 'Efectivo',
+    goal: 'Meta específica',
+    other: 'Otro'
+  };
+  return names[type] || 'Otro';
+};
+
+/* ============================================
+   RECURRING PAYMENTS SYSTEM
+   ============================================ */
+
+FinanceApp.prototype.setupPaymentsListeners = function() {
+  const paymentForm = document.getElementById('recurringPaymentForm');
+  const upcomingPaymentsCard = document.getElementById('upcomingPaymentsCard');
+  const paymentsModal = document.getElementById('paymentsDetailModal');
+  const closePaymentsDetail = document.getElementById('closePaymentsDetail');
+
+  if (paymentForm) {
+    paymentForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.addRecurringPayment();
+    });
+  }
+
+  if (upcomingPaymentsCard) {
+    upcomingPaymentsCard.addEventListener('click', () => {
+      this.showPaymentsDetailModal();
+    });
+  }
+
+  if (closePaymentsDetail) {
+    closePaymentsDetail.addEventListener('click', () => {
+      paymentsModal?.classList.remove('show');
+    });
+  }
+
+  if (paymentsModal) {
+    paymentsModal.addEventListener('click', (e) => {
+      if (e.target === paymentsModal) {
+        paymentsModal.classList.remove('show');
+      }
+    });
+  }
+};
+
+FinanceApp.prototype.addRecurringPayment = function() {
+  const serviceName = document.getElementById('paymentServiceName')?.value.trim();
+  const serviceType = document.getElementById('paymentServiceType')?.value;
+  const amount = parseFloat(document.getElementById('paymentAmount')?.value) || null;
+  const dueDay = parseInt(document.getElementById('paymentDueDay')?.value);
+  const notes = document.getElementById('paymentNotes')?.value.trim();
+
+  if (!serviceName || !serviceType || !dueDay || dueDay < 1 || dueDay > 31) {
+    this.showToast('Por favor completa todos los campos requeridos', 'error');
+    return;
+  }
+
+  const payment = {
+    id: Date.now().toString(),
+    serviceName,
+    serviceType,
+    amount,
+    dueDay,
+    notes,
+    isPaid: false,
+    paidDate: null,
+    paidAmount: null,
+    currentMonth: new Date().getMonth(),
+    currentYear: new Date().getFullYear(),
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  };
+
+  this.recurringPayments.push(payment);
+  this.saveData();
+
+  const typeInfo = this.getPaymentTypeInfo(serviceType);
+  this.logAudit(
+    'payment_added',
+    'added',
+    `Pago recurrente agregado: ${serviceName} (${typeInfo.name})`,
+    '',
+    { serviceName, serviceType, amount, dueDay }
+  );
+
+  this.showToast(`Pago recurrente "${serviceName}" agregado exitosamente`, 'success');
+  this.renderRecurringPaymentsList();
+  this.updateDashboardPayments();
+  document.getElementById('recurringPaymentForm')?.reset();
+};
+
+FinanceApp.prototype.renderRecurringPaymentsList = function() {
+  const container = document.getElementById('recurringPaymentsList');
+  if (!container) return;
+
+  if (this.recurringPayments.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state-small">
+        <i class="fas fa-money-bill-wave"></i>
+        <p>No hay pagos recurrentes registrados</p>
+      </div>
+    `;
+    this.updatePaymentsSummary();
+    return;
+  }
+
+  container.innerHTML = this.recurringPayments
+    .map(payment => {
+      const typeInfo = this.getPaymentTypeInfo(payment.serviceType);
+      const amountDisplay = payment.amount ? `$${payment.amount.toLocaleString()}` : 'Variable';
+      const statusClass = payment.isPaid ? 'paid' : 'pending';
+      const statusText = payment.isPaid ? 'Pagado' : 'Pendiente';
+
+      return `
+        <div class="payment-item ${statusClass}">
+          <div class="payment-item-icon ${payment.serviceType}">
+            <i class="${typeInfo.icon}"></i>
+          </div>
+          <div class="payment-item-info">
+            <div class="payment-item-name">${payment.serviceName}</div>
+            <div class="payment-item-meta">
+              <span><i class="fas fa-tag"></i> ${typeInfo.name}</span>
+              <span><i class="fas fa-calendar-day"></i> Día ${payment.dueDay}</span>
+              <span class="payment-item-status ${statusClass}">
+                <i class="fas fa-${payment.isPaid ? 'check-circle' : 'clock'}"></i>
+                ${statusText}
+              </span>
+            </div>
+          </div>
+          <div class="payment-item-amount">${amountDisplay}</div>
+          <div class="payment-item-actions">
+            <button class="btn-icon" onclick="app.editRecurringPayment('${payment.id}')" title="Editar">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-icon delete" onclick="app.deleteRecurringPayment('${payment.id}')" title="Eliminar">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    })
+    .join('');
+
+  this.updatePaymentsSummary();
+};
+
+FinanceApp.prototype.updatePaymentsSummary = function() {
+  const totalEl = document.getElementById('totalMonthlyPayments');
+  const countEl = document.getElementById('totalPaymentServices');
+
+  const total = this.recurringPayments
+    .filter(p => p.amount)
+    .reduce((sum, p) => sum + p.amount, 0);
+
+  if (totalEl) {
+    totalEl.textContent = `$${total.toLocaleString()}`;
+  }
+
+  if (countEl) {
+    countEl.textContent = this.recurringPayments.length;
+  }
+};
+
+FinanceApp.prototype.deleteRecurringPayment = function(id) {
+  if (!confirm('¿Estás seguro de que deseas eliminar este pago recurrente?')) {
+    return;
+  }
+
+  const index = this.recurringPayments.findIndex(p => p.id === id);
+  if (index === -1) return;
+
+  const payment = this.recurringPayments[index];
+  this.recurringPayments.splice(index, 1);
+  this.saveData();
+
+  this.logAudit(
+    'payment_deleted',
+    'deleted',
+    `Pago recurrente eliminado: ${payment.serviceName}`,
+    '',
+    { serviceName: payment.serviceName, serviceType: payment.serviceType }
+  );
+
+  this.showToast('Pago recurrente eliminado', 'success');
+  this.renderRecurringPaymentsList();
+  this.updateDashboardPayments();
+};
+
+FinanceApp.prototype.editRecurringPayment = function(id) {
+  const payment = this.recurringPayments.find(p => p.id === id);
+  if (!payment) return;
+
+  document.getElementById('paymentServiceName').value = payment.serviceName;
+  document.getElementById('paymentServiceType').value = payment.serviceType;
+  document.getElementById('paymentAmount').value = payment.amount || '';
+  document.getElementById('paymentDueDay').value = payment.dueDay;
+  document.getElementById('paymentNotes').value = payment.notes || '';
+
+  this.deleteRecurringPayment(id);
+  document.getElementById('paymentServiceName').focus();
+  this.showToast('Editando pago. Modifica los campos y guarda', 'info');
+};
+
+FinanceApp.prototype.updateDashboardPayments = function() {
+  this.checkMonthlyReset();
+
+  const paymentsList = document.getElementById('paymentsList');
+  const paymentCount = document.getElementById('paymentCount');
+
+  if (!paymentsList) return;
+
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+
+  const currentMonthPayments = this.recurringPayments.map(payment => {
+    if (payment.currentMonth !== currentMonth || payment.currentYear !== currentYear) {
+      payment.isPaid = false;
+      payment.paidDate = null;
+      payment.paidAmount = null;
+      payment.currentMonth = currentMonth;
+      payment.currentYear = currentYear;
+    }
+    return payment;
+  });
+
+  this.saveData();
+
+  const pendingPayments = currentMonthPayments.filter(p => !p.isPaid);
+  const paidPayments = currentMonthPayments.filter(p => p.isPaid);
+
+  const allPayments = [...pendingPayments, ...paidPayments];
+
+  if (allPayments.length === 0) {
+    paymentsList.innerHTML = `
+      <div class="empty-state-small">
+        <i class="fas fa-money-bill-wave"></i>
+        <p>No hay pagos registrados</p>
+        <p class="empty-state-hint">Configura tus pagos recurrentes en Configuración</p>
+      </div>
+    `;
+    if (paymentCount) {
+      paymentCount.textContent = '0 pendientes';
+    }
+    return;
+  }
+
+  paymentsList.innerHTML = allPayments
+    .map(payment => {
+      const typeInfo = this.getPaymentTypeInfo(payment.serviceType);
+      const amountDisplay = payment.isPaid && payment.paidAmount
+        ? `$${payment.paidAmount.toLocaleString()}`
+        : payment.amount
+        ? `$${payment.amount.toLocaleString()}`
+        : 'Variable';
+
+      const statusClass = payment.isPaid ? 'paid' : 'pending';
+      const statusIcon = payment.isPaid ? 'check-circle' : 'exclamation-circle';
+      const statusText = payment.isPaid ? 'Pagado' : `Vence el ${payment.dueDay}`;
+
+      return `
+        <div class="payment-item-compact ${statusClass}">
+          <div class="payment-item-icon ${payment.serviceType}">
+            <i class="${typeInfo.icon}"></i>
+          </div>
+          <div class="payment-item-info">
+            <div class="payment-item-name">${payment.serviceName}</div>
+            <div class="payment-item-meta">
+              <span class="payment-date-badge">
+                <i class="fas fa-calendar-day"></i> ${statusText}
+              </span>
+            </div>
+          </div>
+          <div class="payment-item-status ${statusClass}">
+            <i class="fas fa-${statusIcon}"></i>
+            ${amountDisplay}
+          </div>
+        </div>
+      `;
+    })
+    .join('');
+
+  if (paymentCount) {
+    paymentCount.textContent = `${pendingPayments.length} pendiente${pendingPayments.length !== 1 ? 's' : ''}`;
+  }
+};
+
+FinanceApp.prototype.showPaymentsDetailModal = function() {
+  const modal = document.getElementById('paymentsDetailModal');
+  if (!modal) return;
+
+  this.checkMonthlyReset();
+
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+
+  const pendingPayments = this.recurringPayments.filter(p => !p.isPaid);
+  const paidPayments = this.recurringPayments.filter(p => p.isPaid);
+
+  const totalMonthly = this.recurringPayments
+    .filter(p => p.amount)
+    .reduce((sum, p) => sum + p.amount, 0);
+
+  document.getElementById('modalPendingPayments').textContent = pendingPayments.length;
+  document.getElementById('modalPaidPayments').textContent = paidPayments.length;
+  document.getElementById('modalTotalMonthlyAmount').textContent = `$${totalMonthly.toLocaleString()}`;
+
+  const pendingList = document.getElementById('pendingPaymentsList');
+  const paidList = document.getElementById('paidPaymentsList');
+
+  if (pendingPayments.length === 0) {
+    pendingList.innerHTML = `
+      <div class="empty-state-small">
+        <i class="fas fa-check-circle"></i>
+        <p>¡Todos los pagos están al día!</p>
+      </div>
+    `;
+  } else {
+    pendingList.innerHTML = pendingPayments.map(payment =>
+      this.renderPaymentDetailItem(payment, 'pending')
+    ).join('');
+  }
+
+  if (paidPayments.length === 0) {
+    paidList.innerHTML = `
+      <div class="empty-state-small">
+        <i class="fas fa-info-circle"></i>
+        <p>Aún no hay pagos realizados este mes</p>
+      </div>
+    `;
+  } else {
+    paidList.innerHTML = paidPayments.map(payment =>
+      this.renderPaymentDetailItem(payment, 'paid')
+    ).join('');
+  }
+
+  modal.classList.add('show');
+};
+
+FinanceApp.prototype.renderPaymentDetailItem = function(payment, status) {
+  const typeInfo = this.getPaymentTypeInfo(payment.serviceType);
+  const amountDisplay = status === 'paid' && payment.paidAmount
+    ? `$${payment.paidAmount.toLocaleString()}`
+    : payment.amount
+    ? `$${payment.amount.toLocaleString()}`
+    : 'Sin monto fijo';
+
+  const statusBadge = status === 'pending'
+    ? `<span class="payment-status-badge pending"><i class="fas fa-clock"></i> Pendiente</span>`
+    : `<span class="payment-status-badge paid"><i class="fas fa-check-circle"></i> Pagado</span>`;
+
+  const actionButton = status === 'pending'
+    ? `<button class="payment-action-button mark-paid" onclick="app.markPaymentAsPaid('${payment.id}')">
+         <i class="fas fa-check"></i> Marcar como pagado
+       </button>`
+    : payment.paidDate
+    ? `<div class="payment-paid-date">
+         <i class="fas fa-calendar-check"></i>
+         ${new Date(payment.paidDate).toLocaleDateString('es-ES')}
+       </div>`
+    : '';
+
+  return `
+    <div class="payment-detail-item ${status}">
+      <div class="payment-detail-icon ${payment.serviceType}">
+        <i class="${typeInfo.icon}"></i>
+      </div>
+      <div class="payment-detail-info">
+        <div class="payment-detail-name">${payment.serviceName}</div>
+        <div class="payment-detail-meta">
+          <span class="payment-detail-meta-item">
+            <i class="fas fa-tag"></i> ${typeInfo.name}
+          </span>
+          <span class="payment-detail-meta-item">
+            <i class="fas fa-calendar-day"></i> Vence el día ${payment.dueDay}
+          </span>
+          ${payment.notes ? `<span class="payment-detail-meta-item"><i class="fas fa-sticky-note"></i> ${payment.notes}</span>` : ''}
+        </div>
+      </div>
+      <div class="payment-detail-amount">${amountDisplay}</div>
+      <div class="payment-detail-status">
+        ${statusBadge}
+        ${actionButton}
+      </div>
+    </div>
+  `;
+};
+
+FinanceApp.prototype.markPaymentAsPaid = function(id) {
+  const payment = this.recurringPayments.find(p => p.id === id);
+  if (!payment) return;
+
+  let paidAmount = payment.amount;
+
+  if (!payment.amount) {
+    const input = prompt(`¿Cuánto pagaste por "${payment.serviceName}"?`);
+    if (input === null) return;
+    paidAmount = parseFloat(input);
+    if (isNaN(paidAmount) || paidAmount <= 0) {
+      this.showToast('Monto inválido', 'error');
+      return;
+    }
+  }
+
+  payment.isPaid = true;
+  payment.paidDate = Date.now();
+  payment.paidAmount = paidAmount;
+  payment.updatedAt = Date.now();
+
+  this.saveData();
+
+  const typeInfo = this.getPaymentTypeInfo(payment.serviceType);
+  this.logAudit(
+    'payment_paid',
+    'edited',
+    `Pago marcado como pagado: ${payment.serviceName} - $${paidAmount.toLocaleString()}`,
+    '',
+    { serviceName: payment.serviceName, amount: paidAmount, paidDate: new Date(payment.paidDate).toLocaleDateString('es-ES') }
+  );
+
+  this.showToast(`Pago de "${payment.serviceName}" marcado como pagado`, 'success');
+  this.updateDashboardPayments();
+  this.showPaymentsDetailModal();
+};
+
+FinanceApp.prototype.checkMonthlyReset = function() {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  let needsUpdate = false;
+
+  this.recurringPayments.forEach(payment => {
+    if (payment.currentMonth !== currentMonth || payment.currentYear !== currentYear) {
+      payment.isPaid = false;
+      payment.paidDate = null;
+      payment.paidAmount = null;
+      payment.currentMonth = currentMonth;
+      payment.currentYear = currentYear;
+      needsUpdate = true;
+    }
+  });
+
+  if (needsUpdate) {
+    this.saveData();
+  }
+};
+
+FinanceApp.prototype.getPaymentTypeInfo = function(typeId) {
+  return this.paymentServiceTypes.find(t => t.id === typeId) || this.paymentServiceTypes[this.paymentServiceTypes.length - 1];
 };
 
 if (typeof window !== 'undefined') {

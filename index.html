@@ -595,16 +595,23 @@
               </div>
 
               <!-- Upcoming Payments Card -->
-              <div class="card">
+              <div class="card upcoming-payments-card" id="upcomingPaymentsCard">
                 <div class="card__header">
                   <h3>Próximos Pagos</h3>
                   <span class="payment-count" id="paymentCount"
-                    >3 pendientes</span
+                    >0 pendientes</span
                   >
                 </div>
                 <div class="card__body">
-                  <div class="payments-list" id="paymentsList">
-                    <!-- Payments will be dynamically inserted -->
+                  <div class="payments-scroll-container" id="paymentsScrollContainer">
+                    <div class="payments-list" id="paymentsList">
+                      <!-- Payments will be dynamically inserted -->
+                      <div class="empty-state-small">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <p>No hay pagos registrados</p>
+                        <p class="empty-state-hint">Configura tus pagos recurrentes en Configuración</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1578,6 +1585,204 @@
             </div>
           </div>
 
+          <!-- Savings Management Card -->
+          <div class="config-card savings-config-card">
+            <div class="config-card-header">
+              <div class="config-card-icon">
+                <i class="fas fa-wallet"></i>
+              </div>
+              <div class="config-card-title">
+                <h3>Gestión de Ahorros</h3>
+                <p>Organiza tus ahorros por fuente y propósito</p>
+              </div>
+            </div>
+            <div class="config-card-body">
+              <div class="savings-section">
+                <div class="savings-form-section">
+                  <form id="savingsAccountForm" class="savings-form">
+                    <div class="form-row">
+                      <div class="form-group form-group-flex">
+                        <label for="savingsSourceName">Fuente de ahorro</label>
+                        <input
+                          type="text"
+                          id="savingsSourceName"
+                          class="form-control"
+                          placeholder="Ej: AFP, Banco Santander, Efectivo"
+                          required
+                        />
+                      </div>
+                      <div class="form-group form-group-flex">
+                        <label for="savingsAmount">Monto actual</label>
+                        <input
+                          type="number"
+                          id="savingsAmount"
+                          class="form-control"
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="savingsType">Tipo de ahorro</label>
+                      <select id="savingsType" class="form-control" required>
+                        <option value="">Selecciona un tipo</option>
+                        <option value="retirement">Jubilación (AFP/Pensión)</option>
+                        <option value="emergency">Fondo de emergencia</option>
+                        <option value="investment">Inversiones</option>
+                        <option value="savings_account">Cuenta de ahorros</option>
+                        <option value="cash">Efectivo</option>
+                        <option value="goal">Meta específica</option>
+                        <option value="other">Otro</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="savingsDescription">Descripción (opcional)</label>
+                      <input
+                        type="text"
+                        id="savingsDescription"
+                        class="form-control"
+                        placeholder="Para qué es este ahorro..."
+                      />
+                    </div>
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Agregar fuente de ahorro
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="savings-list-section">
+                  <div class="savings-summary">
+                    <div class="summary-item">
+                      <span class="summary-label">Total ahorrado</span>
+                      <span class="summary-value" id="totalSavingsAmount">$0</span>
+                    </div>
+                    <div class="summary-item">
+                      <span class="summary-label">Fuentes activas</span>
+                      <span class="summary-value" id="totalSavingsSources">0</span>
+                    </div>
+                  </div>
+                  <div id="savingsAccountsList" class="savings-accounts-list">
+                    <div class="empty-state-small">
+                      <i class="fas fa-wallet"></i>
+                      <p>No hay fuentes de ahorro registradas</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recurring Payments Management Card -->
+          <div class="config-card payments-config-card">
+            <div class="config-card-header">
+              <div class="config-card-icon">
+                <i class="fas fa-money-bill-wave"></i>
+              </div>
+              <div class="config-card-title">
+                <h3>Próximos Pagos</h3>
+                <p>Gestiona tus pagos recurrentes mensuales</p>
+              </div>
+            </div>
+            <div class="config-card-body">
+              <div class="payments-section">
+                <div class="payments-form-section">
+                  <form id="recurringPaymentForm" class="payments-form">
+                    <div class="form-row">
+                      <div class="form-group form-group-flex">
+                        <label for="paymentServiceName">Nombre del servicio</label>
+                        <input
+                          type="text"
+                          id="paymentServiceName"
+                          class="form-control"
+                          placeholder="Ej: Luz del hogar"
+                          required
+                        />
+                      </div>
+                      <div class="form-group form-group-flex">
+                        <label for="paymentServiceType">Tipo de servicio</label>
+                        <select id="paymentServiceType" class="form-control" required>
+                          <option value="">Selecciona un tipo</option>
+                          <option value="electricity">Luz</option>
+                          <option value="water">Agua</option>
+                          <option value="phone">Teléfono</option>
+                          <option value="internet">Internet/WiFi</option>
+                          <option value="tv">TV/Cable</option>
+                          <option value="rent">Alquiler</option>
+                          <option value="gas">Gas</option>
+                          <option value="insurance">Seguro</option>
+                          <option value="subscription">Suscripción</option>
+                          <option value="other">Otros Servicios</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group form-group-flex">
+                        <label for="paymentAmount">Monto (opcional si varía)</label>
+                        <input
+                          type="number"
+                          id="paymentAmount"
+                          class="form-control"
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                        />
+                      </div>
+                      <div class="form-group form-group-flex">
+                        <label for="paymentDueDay">Día de vencimiento</label>
+                        <input
+                          type="number"
+                          id="paymentDueDay"
+                          class="form-control"
+                          placeholder="1-31"
+                          min="1"
+                          max="31"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="paymentNotes">Notas (opcional)</label>
+                      <input
+                        type="text"
+                        id="paymentNotes"
+                        class="form-control"
+                        placeholder="Detalles adicionales..."
+                      />
+                    </div>
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Agregar pago recurrente
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="payments-list-section">
+                  <div class="payments-summary">
+                    <div class="summary-item">
+                      <span class="summary-label">Total mensual estimado</span>
+                      <span class="summary-value" id="totalMonthlyPayments">$0</span>
+                    </div>
+                    <div class="summary-item">
+                      <span class="summary-label">Servicios registrados</span>
+                      <span class="summary-value" id="totalPaymentServices">0</span>
+                    </div>
+                  </div>
+                  <div id="recurringPaymentsList" class="payments-list">
+                    <div class="empty-state-small">
+                      <i class="fas fa-money-bill-wave"></i>
+                      <p>No hay pagos recurrentes registrados</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Appearance Card -->
           <div class="config-card appearance-card">
             <div class="config-card-header">
@@ -2374,6 +2579,101 @@
                     </button>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Detalle de Ahorros -->
+    <div class="modal" id="savingsDetailModal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">
+              <i class="fas fa-piggy-bank"></i> Desglose de Ahorros
+            </h3>
+            <button class="modal-close" id="closeSavingsDetail">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="savings-detail-summary">
+              <div class="detail-summary-card">
+                <i class="fas fa-wallet"></i>
+                <div>
+                  <p>Total Ahorrado</p>
+                  <h2 id="modalTotalSavings">$0</h2>
+                </div>
+              </div>
+              <div class="detail-summary-card">
+                <i class="fas fa-layer-group"></i>
+                <div>
+                  <p>Fuentes Activas</p>
+                  <h2 id="modalTotalSources">0</h2>
+                </div>
+              </div>
+            </div>
+            <div class="savings-breakdown" id="savingsBreakdownList">
+              <!-- Se llenará dinámicamente -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payments Detail Modal -->
+    <div class="modal" id="paymentsDetailModal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">
+              <i class="fas fa-money-bill-wave"></i> Pagos Recurrentes del Mes
+            </h3>
+            <button class="modal-close" id="closePaymentsDetail">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="payments-detail-summary">
+              <div class="detail-summary-card pending-card">
+                <i class="fas fa-exclamation-circle"></i>
+                <div>
+                  <p>Por Pagar</p>
+                  <h2 id="modalPendingPayments">0</h2>
+                </div>
+              </div>
+              <div class="detail-summary-card paid-card">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                  <p>Pagados</p>
+                  <h2 id="modalPaidPayments">0</h2>
+                </div>
+              </div>
+              <div class="detail-summary-card total-card">
+                <i class="fas fa-calculator"></i>
+                <div>
+                  <p>Total del Mes</p>
+                  <h2 id="modalTotalMonthlyAmount">$0</h2>
+                </div>
+              </div>
+            </div>
+            <div class="payments-breakdown">
+              <div class="payments-section-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h4>Pendientes de Pago</h4>
+              </div>
+              <div id="pendingPaymentsList" class="payment-items-list">
+                <!-- Se llenará dinámicamente -->
+              </div>
+
+              <div class="payments-section-title paid-section">
+                <i class="fas fa-check-circle"></i>
+                <h4>Pagados este mes</h4>
+              </div>
+              <div id="paidPaymentsList" class="payment-items-list">
+                <!-- Se llenará dinámicamente -->
               </div>
             </div>
           </div>
