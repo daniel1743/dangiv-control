@@ -359,6 +359,10 @@
           <i class="fas fa-store"></i>
           <span>Tienda</span>
         </button>
+        <button class="nav-item" data-section="audit">
+          <i class="fas fa-history"></i>
+          <span>Historial de Cambios</span>
+        </button>
         <button class="nav-item" data-section="config">
           <i class="fas fa-cog"></i>
           <span>Configuración</span>
@@ -1033,13 +1037,21 @@
             </div>
 
             <div class="form-group">
-              <label for="user">Usuario</label>
-              <select id="user" class="form-control" required>
-                <option value="">Selecciona usuario</option>
-                <option value="Daniel">Daniel</option>
-                <option value="Givonik">Givonik</option>
-                <option value="Otro">Otro</option>
+              <label for="user">Usuario (opcional)</label>
+              <select id="user" class="form-control">
+                <option value="">Sin usuario asignado</option>
+                <option value="__add_new__">+ Añadir nuevo usuario</option>
               </select>
+            </div>
+
+            <div class="form-group hidden" id="newUserGroup">
+              <label for="newUserName">Nombre del nuevo usuario</label>
+              <input
+                type="text"
+                id="newUserName"
+                class="form-control"
+                placeholder="Presiona Enter para guardar"
+              />
             </div>
 
             <div class="form-actions">
@@ -1378,6 +1390,51 @@
             </div>
             <div class="store-grid" id="storeGrid">
               <!-- Las tarjetas de productos se generarán dinámicamente aquí -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Audit History Section -->
+      <section id="audit" class="section">
+        <div class="section-header">
+          <h1>Historial de Cambios</h1>
+          <p>Registro completo de todas las modificaciones realizadas</p>
+        </div>
+
+        <div class="audit-container">
+          <!-- Filtros de auditoría -->
+          <div class="audit-filters">
+            <div class="filter-group">
+              <label for="auditTypeFilter">Tipo de cambio</label>
+              <select id="auditTypeFilter">
+                <option value="all">Todos</option>
+                <option value="expense_added">Gasto añadido</option>
+                <option value="expense_edited">Gasto editado</option>
+                <option value="expense_deleted">Gasto eliminado</option>
+                <option value="goal_added">Meta añadida</option>
+                <option value="goal_edited">Meta editada</option>
+                <option value="goal_deleted">Meta eliminada</option>
+                <option value="payment_added">Pago añadido</option>
+                <option value="payment_deleted">Pago eliminado</option>
+                <option value="shopping_added">Compra añadida</option>
+                <option value="shopping_deleted">Compra eliminada</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="auditDateFilter">Fecha</label>
+              <input type="date" id="auditDateFilter">
+            </div>
+            <button class="btn btn--secondary" id="clearAuditFilters">
+              <i class="fas fa-times"></i> Limpiar filtros
+            </button>
+          </div>
+
+          <!-- Lista de cambios -->
+          <div class="audit-list" id="auditList">
+            <div class="audit-empty">
+              <i class="fas fa-history"></i>
+              <p>No hay cambios registrados</p>
             </div>
           </div>
         </div>

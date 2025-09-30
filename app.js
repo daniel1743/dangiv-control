@@ -43,6 +43,8 @@ class FinanceApp {
     this.inviteCodes = savedData.inviteCodes || {};
     this.currentInviteLink = savedData.currentInviteLink || null;
     this.activityLog = savedData.activityLog || [];
+    this.auditLog = savedData.auditLog || []; // Sistema de auditoría
+    this.customUsers = savedData.customUsers || []; // Usuarios personalizados para gastos
     this.isRegistering = false; // Flag to prevent race condition during registration
 
     this.expenses = savedData.expenses || [];
@@ -1103,6 +1105,7 @@ class FinanceApp {
     // Esta función ahora solo llama directamente a los métodos de configuración.
     this.setupAuth();
     this.setupEventListeners(); // ¡CORRECCIÓN! Llamamos a la función correcta.
+    this.setupAuditListeners(); // Sistema de auditoría
     this.setupNotificationBell();
     this.setupScrollOptimization();
     this.initQuickAccess(); // Optimización sutil del scroll
@@ -1174,6 +1177,46 @@ class FinanceApp {
       expenseForm.addEventListener('submit', (e) => {
         e.preventDefault();
         this.addExpense(e);
+      });
+    }
+
+    // Manejo del selector de usuarios
+    const userSelect = document.getElementById('user');
+    const newUserGroup = document.getElementById('newUserGroup');
+    const newUserNameInput = document.getElementById('newUserName');
+
+    if (userSelect) {
+      userSelect.addEventListener('change', (e) => {
+        if (e.target.value === '__add_new__') {
+          newUserGroup?.classList.remove('hidden');
+          newUserNameInput?.focus();
+        } else {
+          newUserGroup?.classList.add('hidden');
+        }
+      });
+    }
+
+    if (newUserNameInput) {
+      newUserNameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const newUserName = newUserNameInput.value.trim();
+
+          if (newUserName && !this.customUsers.includes(newUserName)) {
+            this.customUsers.push(newUserName);
+            this.saveData();
+            this.updateUserSelectionDropdown();
+
+            // Seleccionar el usuario recién creado
+            userSelect.value = newUserName;
+            newUserGroup.classList.add('hidden');
+            newUserNameInput.value = '';
+
+            this.showToast(`Usuario "${newUserName}" añadido`, 'success');
+          } else if (this.customUsers.includes(newUserName)) {
+            this.showToast('Este usuario ya existe', 'error');
+          }
+        }
       });
     }
 
@@ -1835,6 +1878,8 @@ class FinanceApp {
         this.renderDashboard();
       } else if (sectionId === 'achievements') {
         this.renderAchievements();
+      } else if (sectionId === 'audit') {
+        this.renderAuditLog();
       }
     }, 100);
   }
@@ -4022,8 +4067,7 @@ class FinanceApp {
       amount <= 0 ||
       !category ||
       !necessity ||
-      !date ||
-      !user
+      !date
     ) {
       this.showToast(
         'Por favor completa todos los campos correctamente',
@@ -4039,11 +4083,21 @@ class FinanceApp {
       category: category,
       necessity: necessity,
       date: date,
-      user: user,
-      protected: user === 'Daniel' || user === 'Givonik',
+      user: user || 'Sin usuario',
+      protected: false,
     };
 
     this.expenses.push(expense);
+
+    // Registrar en auditoría
+    this.logAudit(
+      'expense_added',
+      'added',
+      `Nuevo gasto: $${amount} - ${description}`,
+      '',
+      { amount, category, description, user }
+    );
+
     this.saveData();
     this.renderDashboard();
     this.renderExpenses();
@@ -4120,6 +4174,15 @@ class FinanceApp {
     const item = this.expenses[idx];
 
     if (!item.protected) {
+      // Registrar en auditoría
+      this.logAudit(
+        'expense_deleted',
+        'deleted',
+        `Gasto eliminado: $${item.amount} - ${item.description}`,
+        '',
+        { amount: item.amount, category: item.category, description: item.description }
+      );
+
       this.expenses.splice(idx, 1);
       this.saveData();
       this.renderDashboard();
@@ -4180,6 +4243,17 @@ class FinanceApp {
     // Eliminar gasto
     const idx = this.expenses.findIndex((e) => e.id === this.pendingDeleteId);
     if (idx !== -1) {
+      const item = this.expenses[idx];
+
+      // Registrar en auditoría
+      this.logAudit(
+        'expense_deleted',
+        'deleted',
+        `Gasto protegido eliminado: $${item.amount} - ${item.description}`,
+        'Eliminación autorizada con doble contraseña',
+        { amount: item.amount, category: item.category, description: item.description, protected: true }
+      );
+
       this.expenses.splice(idx, 1);
       this.saveData();
       this.renderDashboard();
@@ -4399,6 +4473,16 @@ class FinanceApp {
     };
 
     this.goals.push(goal);
+
+    // Registrar en auditoría
+    this.logAudit(
+      'goal_added',
+      'added',
+      `Nueva meta: ${name} - $${target}`,
+      '',
+      { name, target, deadline }
+    );
+
     this.saveData();
     this.renderGoals();
     this.renderGoalsProgress();
@@ -4696,6 +4780,16 @@ class FinanceApp {
     };
 
     this.shoppingItems.push(item);
+
+    // Registrar en auditoría
+    this.logAudit(
+      'shopping_added',
+      'added',
+      `Producto añadido: ${product} (x${quantity})`,
+      '',
+      { product, quantity, necessary: necessary === 'true' }
+    );
+
     this.saveData();
     this.renderShoppingList();
     this.showToast('Producto agregado a la lista', 'success');
@@ -5828,29 +5922,28 @@ FinanceApp.prototype.updateDashboardWelcome = function () {
   if (this.currentUser && this.currentUser !== 'anonymous') {
     const userName = this.userProfile.name || 'Usuario';
 
-    // Professional welcome messages for authenticated users
+    // Mensajes personalizados y amigables
     const welcomeMessages = [
-      `¡Hola ${userName}! Este es tu dashboard financiero`,
-      `Bienvenido de vuelta, ${userName}`,
-      `Tu centro de control financiero, ${userName}`,
-      `Dashboard financiero de ${userName}`,
+      `¡Échale un vistazo a tus finanzas, ${userName}!`,
+      `Aquí está tu resumen financiero, ${userName}`,
+      `¿Cómo van tus finanzas hoy, ${userName}?`,
+      `Tu control financiero te espera, ${userName}`,
     ];
 
-    const professionalSubtitles = [
-      'Gestiona tus inversiones, controla gastos y alcanza tus objetivos financieros',
-      'Analiza tu rendimiento financiero y toma decisiones estratégicas',
-      'Monitorea tu patrimonio y optimiza tu flujo de caja',
-      'Supervisa tus finanzas como un experto en inversiones',
-      'Controla cada aspecto de tu economía personal',
-      'Tu herramienta profesional para la excelencia financiera',
+    const friendlySubtitles = [
+      'Revisa tus gastos, metas y progreso en un solo lugar',
+      'Mantén el control de tu dinero de forma simple',
+      'Todo tu panorama financiero al alcance de tu mano',
+      'Visualiza cómo avanzas hacia tus objetivos',
+      'Tu centro personal de finanzas',
     ];
 
     // Select random messages to keep it fresh
     const randomWelcome =
       welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
     const randomSubtitle =
-      professionalSubtitles[
-        Math.floor(Math.random() * professionalSubtitles.length)
+      friendlySubtitles[
+        Math.floor(Math.random() * friendlySubtitles.length)
       ];
 
     titleElement.textContent = randomWelcome;
@@ -6275,29 +6368,29 @@ FinanceApp.prototype.revealSequentially = function (elements, delay = 100) {
 
 // === NEW USER SYSTEM METHODS ===
 
-// Global function for account type selection
-function selectAccountType(type) {
-  console.log('DEBUG: selectAccountType llamado con:', type);
-  window.selectedAccountType = type;
-  console.log('DEBUG: window.selectedAccountType establecido a:', window.selectedAccountType);
-
-  document.getElementById('accountTypeModal').classList.remove('show');
-  document.body.style.overflow = '';
-
-  // Show registration form with account type pre-selected
-  document.getElementById('authModal').classList.add('show');
-  document.getElementById('authModalTitle').textContent =
-    type === 'personal' ? 'Crear Cuenta Personal' : 'Crear Cuenta Compartida';
-
-  // Show register form
-  document.getElementById('loginForm').classList.add('hidden');
-  document.getElementById('registerForm').classList.remove('hidden');
-  document.getElementById('authSwitchLink').innerHTML =
-    '¿Ya tienes una cuenta? <a href="#" onclick="switchToLogin()">Inicia sesión aquí</a>';
-
-  // Nota: Ya no hay campo inviteCode, se eliminó según requisitos
-  console.log('DEBUG: Formulario de registro mostrado para tipo:', type);
-}
+// DESHABILITADO - Solo usuarios individuales
+// function selectAccountType(type) {
+//   console.log('DEBUG: selectAccountType llamado con:', type);
+//   window.selectedAccountType = type;
+//   console.log('DEBUG: window.selectedAccountType establecido a:', window.selectedAccountType);
+//
+//   document.getElementById('accountTypeModal').classList.remove('show');
+//   document.body.style.overflow = '';
+//
+//   // Show registration form with account type pre-selected
+//   document.getElementById('authModal').classList.add('show');
+//   document.getElementById('authModalTitle').textContent =
+//     type === 'personal' ? 'Crear Cuenta Personal' : 'Crear Cuenta Compartida';
+//
+//   // Show register form
+//   document.getElementById('loginForm').classList.add('hidden');
+//   document.getElementById('registerForm').classList.remove('hidden');
+//   document.getElementById('authSwitchLink').innerHTML =
+//     '¿Ya tienes una cuenta? <a href="#" onclick="switchToLogin()">Inicia sesión aquí</a>';
+//
+//   // Nota: Ya no hay campo inviteCode, se eliminó según requisitos
+//   console.log('DEBUG: Formulario de registro mostrado para tipo:', type);
+// }
 
 function switchToLogin() {
   document.getElementById('loginForm').classList.remove('hidden');
@@ -6313,14 +6406,30 @@ function showAccountTypeSelection() {
 }
 
 FinanceApp.prototype.setupUserSystemListeners = function() {
-  // Auth form switch
+  // Auth form switch - Manejar cambio entre login y registro
   const authSwitchLink = document.getElementById('authSwitchLink');
   if (authSwitchLink) {
     authSwitchLink.addEventListener('click', (e) => {
       if (e.target.tagName === 'A') {
         e.preventDefault();
-        if (e.target.onclick) {
-          e.target.onclick();
+
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const authModalTitle = document.getElementById('authModalTitle');
+
+        // Si está en login, cambiar a registro
+        if (!loginForm.classList.contains('hidden')) {
+          loginForm.classList.add('hidden');
+          registerForm.classList.remove('hidden');
+          authModalTitle.textContent = 'Crear nueva cuenta';
+          authSwitchLink.innerHTML = '¿Ya tienes una cuenta? <a href="#">Inicia sesión aquí</a>';
+        }
+        // Si está en registro, cambiar a login
+        else {
+          registerForm.classList.add('hidden');
+          loginForm.classList.remove('hidden');
+          authModalTitle.textContent = '¡Bienvenido de vuelta!';
+          authSwitchLink.innerHTML = '¿No tienes una cuenta? <a href="#">Regístrate aquí</a>';
         }
       }
     });
@@ -6383,18 +6492,18 @@ FinanceApp.prototype.setupUserSystemListeners = function() {
     });
   }
 
-  // Show account type selection on first register click
+  // Ir directo al modal de auth (login/registro)
   const navbarLoginBtn = document.getElementById('navbarLoginBtn');
   if (navbarLoginBtn) {
     navbarLoginBtn.addEventListener('click', () => {
-      showAccountTypeSelection();
+      this.showAuthModal();
     });
   }
 
   const sidebarLoginBtn = document.getElementById('sidebarLoginBtn');
   if (sidebarLoginBtn) {
     sidebarLoginBtn.addEventListener('click', () => {
-      showAccountTypeSelection();
+      this.showAuthModal();
     });
   }
 
@@ -6412,16 +6521,16 @@ FinanceApp.prototype.handleRegistration = async function() {
     return;
   }
 
-  // Verificar si estamos en modo invitación
-  if (window.isJoiningSharedAccount && window.invitationData) {
-    console.log('DEBUG: Modo invitación detectado, uniendo a cuenta existente...');
-    const { code, accountId } = window.invitationData;
-    await this.joinSharedAccountWithInvite(name, email, password, code, accountId);
-    return;
-  }
+  // DESHABILITADO - Modo invitación
+  // if (window.isJoiningSharedAccount && window.invitationData) {
+  //   console.log('DEBUG: Modo invitación detectado, uniendo a cuenta existente...');
+  //   const { code, accountId } = window.invitationData;
+  //   await this.joinSharedAccountWithInvite(name, email, password, code, accountId);
+  //   return;
+  // }
 
-  // Flujo normal de registro
-  const accountType = window.selectedAccountType || 'personal';
+  // Flujo normal de registro - siempre personal
+  const accountType = 'personal';
   console.log('DEBUG: Iniciando registro normal con Firebase Auth...');
 
   try {
@@ -6552,22 +6661,25 @@ FinanceApp.prototype.handleLogin = function() {
     return;
   }
 
-  // Simple authentication simulation
-  const user = this.accountUsers.find(u => u.email === email);
-  if (user) {
-    this.currentUser = user.id;
-    this.logActivity('user_login', `${user.name} inició sesión`, user.id);
+  // MODIFICADO - Solo un usuario (accountUsers es objeto)
+  const userEntry = Object.entries(this.accountUsers || {}).find(([id, userData]) => userData.email === email);
+  if (userEntry) {
+    const [userId, userData] = userEntry;
+    this.currentUser = userId;
+    this.logActivity('user_login', `${userData.name} inició sesión`, userId);
     this.saveData();
     this.updateAccountDisplay();
     this.closeAuthModal();
-    this.showToast(`Bienvenido de vuelta, ${user.name}`, 'success');
+    this.showToast(`Bienvenido de vuelta, ${userData.name}`, 'success');
   } else {
     this.showToast('Credenciales incorrectas', 'error');
   }
 };
 
+// DESHABILITADO - Ya no se usa showInvitationModal
 FinanceApp.prototype.showInvitationModal = function() {
-  if (this.accountType !== 'shared' || this.accountUsers.length >= 2) {
+  return; // Deshabilitado
+  if (this.accountType !== 'shared' || Object.keys(this.accountUsers).length >= 2) {
     this.showToast('Solo las cuentas compartidas pueden tener invitaciones', 'info');
     return;
   }
@@ -6688,25 +6800,30 @@ FinanceApp.prototype.updateUserSelectionDropdown = function() {
   const userSelect = document.getElementById('user');
   if (!userSelect) return;
 
-  userSelect.innerHTML = '<option value="">Selecciona usuario</option>';
+  // Limpiar y agregar opciones base
+  userSelect.innerHTML = '<option value="">Sin usuario asignado</option>';
 
-  if (this.accountType === 'shared') {
-    this.accountUsers.forEach(user => {
-      const option = document.createElement('option');
-      option.value = user.name;
-      option.textContent = user.name;
-      userSelect.appendChild(option);
-    });
-  } else if (this.accountType === 'personal') {
-    const currentUser = this.accountUsers.find(u => u.id === this.currentUser);
-    if (currentUser) {
-      const option = document.createElement('option');
-      option.value = currentUser.name;
-      option.textContent = currentUser.name;
-      option.selected = true;
-      userSelect.appendChild(option);
-    }
+  // Agregar usuario del perfil si existe
+  if (this.userProfile.name && this.userProfile.name !== 'Usuario') {
+    const option = document.createElement('option');
+    option.value = this.userProfile.name;
+    option.textContent = this.userProfile.name;
+    userSelect.appendChild(option);
   }
+
+  // Agregar usuarios personalizados
+  this.customUsers.forEach(userName => {
+    const option = document.createElement('option');
+    option.value = userName;
+    option.textContent = userName;
+    userSelect.appendChild(option);
+  });
+
+  // Opción para añadir nuevo usuario
+  const addNewOption = document.createElement('option');
+  addNewOption.value = '__add_new__';
+  addNewOption.textContent = '+ Añadir nuevo usuario';
+  userSelect.appendChild(addNewOption);
 };
 
 FinanceApp.prototype.updateActivityLog = function() {
@@ -8048,7 +8165,9 @@ FinanceApp.prototype.closeSharedAccountInviteModal = function() {
 // Invitation Link Detection and Handling
 // ============================================
 
+// DESHABILITADO - Funcionalidad de invitación
 FinanceApp.prototype.checkInvitationLink = function() {
+  return; // Deshabilitado temporalmente
   const urlParams = new URLSearchParams(window.location.search);
   const inviteCode = urlParams.get('invite');
   const accountId = urlParams.get('account');
@@ -8138,7 +8257,9 @@ FinanceApp.prototype.showInvitationWelcomeModal = function(inviteCode, accountId
   this.showToast('Completa tu registro para unirte a la cuenta compartida', 'info');
 };
 
+// DESHABILITADO - Funcionalidad de invitación
 FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, password, inviteCode, accountId) {
+  return; // Deshabilitado temporalmente
   console.log('DEBUG: Uniendo a cuenta compartida con invitación');
 
   try {
@@ -8264,9 +8385,129 @@ FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, p
   }
 };
 
+// ========================================
+// AUDIT SYSTEM
+// ========================================
+
+FinanceApp.prototype.logAudit = function(type, action, description, reason = '', details = {}) {
+  const entry = {
+    id: Date.now().toString(),
+    type: type,
+    action: action,
+    description: description,
+    reason: reason,
+    details: details,
+    timestamp: Date.now(),
+    date: new Date().toISOString(),
+    user: this.currentUser || 'anonymous'
+  };
+
+  this.auditLog.unshift(entry);
+  this.saveData();
+};
+
+FinanceApp.prototype.renderAuditLog = function() {
+  const auditList = document.getElementById('auditList');
+  if (!auditList) return;
+
+  const typeFilter = document.getElementById('auditTypeFilter')?.value || 'all';
+  const dateFilter = document.getElementById('auditDateFilter')?.value || '';
+
+  let filteredLog = this.auditLog;
+
+  if (typeFilter !== 'all') {
+    filteredLog = filteredLog.filter(entry => entry.type === typeFilter);
+  }
+
+  if (dateFilter) {
+    const filterDate = new Date(dateFilter).toDateString();
+    filteredLog = filteredLog.filter(entry => {
+      const entryDate = new Date(entry.timestamp).toDateString();
+      return entryDate === filterDate;
+    });
+  }
+
+  if (filteredLog.length === 0) {
+    auditList.innerHTML = `
+      <div class="audit-empty">
+        <i class="fas fa-history"></i>
+        <p>No hay cambios registrados</p>
+      </div>
+    `;
+    return;
+  }
+
+  auditList.innerHTML = filteredLog.map(entry => {
+    const date = new Date(entry.timestamp);
+    const dateStr = date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    let icon = 'fas fa-edit';
+    let actionClass = 'edited';
+
+    if (entry.action === 'added') {
+      icon = 'fas fa-plus';
+      actionClass = 'added';
+    } else if (entry.action === 'deleted') {
+      icon = 'fas fa-trash';
+      actionClass = 'deleted';
+    } else if (entry.action === 'edited') {
+      icon = 'fas fa-edit';
+      actionClass = 'edited';
+    }
+
+    const reasonHtml = entry.reason
+      ? `<div class="audit-reason"><strong>Motivo:</strong> ${entry.reason}</div>`
+      : '';
+
+    return `
+      <div class="audit-item">
+        <div class="audit-icon ${actionClass}">
+          <i class="${icon}"></i>
+        </div>
+        <div class="audit-content">
+          <div class="audit-header">
+            <div class="audit-title">${entry.description}</div>
+            <div class="audit-date">${dateStr}</div>
+          </div>
+          ${reasonHtml}
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+FinanceApp.prototype.setupAuditListeners = function() {
+  const typeFilter = document.getElementById('auditTypeFilter');
+  const dateFilter = document.getElementById('auditDateFilter');
+  const clearFilters = document.getElementById('clearAuditFilters');
+
+  if (typeFilter) {
+    typeFilter.addEventListener('change', () => this.renderAuditLog());
+  }
+
+  if (dateFilter) {
+    dateFilter.addEventListener('change', () => this.renderAuditLog());
+  }
+
+  if (clearFilters) {
+    clearFilters.addEventListener('click', () => {
+      if (typeFilter) typeFilter.value = 'all';
+      if (dateFilter) dateFilter.value = '';
+      this.renderAuditLog();
+    });
+  }
+};
+
 if (typeof window !== 'undefined') {
   window.FinanceApp = FinanceApp;
-  window.selectAccountType = selectAccountType;
+  // window.selectAccountType = selectAccountType; // DESHABILITADO
   window.switchToLogin = switchToLogin;
-  window.showAccountTypeSelection = showAccountTypeSelection;
+  window.switchToRegister = switchToRegister;
+  // window.showAccountTypeSelection = showAccountTypeSelection; // DESHABILITADO
 }
