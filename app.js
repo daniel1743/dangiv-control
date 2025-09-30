@@ -284,7 +284,7 @@ class FinanceApp {
     this.currentSection = 'dashboard';
     this.currentUser = 'anonymous'; // Â¡CORRECCIÃƒâ€œN APLICADA!
     this.userPlan = 'free'; // free or pro
-    this.userProfile = {
+    this.userProfile = savedData.userProfile || {
       name: 'Usuario',
       email: '',
       avatar:
@@ -573,6 +573,7 @@ class FinanceApp {
     const dataToSave = {
       accountType: this.accountType,
       currentUser: this.currentUser,
+      userProfile: this.userProfile,
       sharedAccountId: this.sharedAccountId,
       accountOwner: this.accountOwner,
       accountUsers: this.accountUsers,
@@ -622,7 +623,19 @@ class FinanceApp {
       console.log('DEBUG: Guardando en Firestore con ID:', firestoreDocId);
       console.log('DEBUG: Es cuenta compartida?', this.sharedAccountId ? 'SÍ' : 'NO');
 
-      await FB.setDoc(userDocRef, normalizedData);
+      // Limpiar userProfile para Firebase - solo guardar datos serializables
+      const cleanedData = {
+        ...normalizedData,
+        userProfile: normalizedData.userProfile ? {
+          name: normalizedData.userProfile.name || 'Usuario',
+          email: normalizedData.userProfile.email || '',
+          avatar: normalizedData.userProfile.avatar || '',
+          avatarType: normalizedData.userProfile.avatarType || 'default',
+          selectedAvatar: normalizedData.userProfile.selectedAvatar || 0
+        } : undefined
+      };
+
+      await FB.setDoc(userDocRef, cleanedData);
 
       if (localSaveOk) {
         this.showToast(
@@ -1019,6 +1032,23 @@ class FinanceApp {
         this.monthlyIncome = cloudData.monthlyIncome || 2500;
         this.securityPasswords = cloudData.securityPasswords || {};
 
+        // Sincronizar datos adicionales
+        if (cloudData.userProfile) {
+          this.userProfile = cloudData.userProfile;
+        }
+        if (cloudData.auditLog) {
+          this.auditLog = cloudData.auditLog;
+        }
+        if (cloudData.customUsers) {
+          this.customUsers = cloudData.customUsers;
+        }
+        if (cloudData.savingsAccounts) {
+          this.savingsAccounts = cloudData.savingsAccounts;
+        }
+        if (cloudData.recurringPayments) {
+          this.recurringPayments = cloudData.recurringPayments;
+        }
+
         try {
           localStorage.setItem('danGivControlData', JSON.stringify(cloudData));
         } catch (error) {
@@ -1045,6 +1075,13 @@ class FinanceApp {
       this.renderGoals();
       this.renderShoppingList();
       this.renderConfig();
+      this.updateProfileDisplay();
+      this.updateUserSelectionDropdown();
+      this.updateDashboardWelcome();
+      this.renderSavingsAccountsList();
+      this.updateDashboardSavings();
+      this.renderRecurringPaymentsList();
+      this.updateDashboardPayments();
     } catch (error) {
       console.error('Error al sincronizar desde Firestore:', error);
       this.showToast('No se pudieron cargar tus datos desde la nube.', 'error');
@@ -1128,6 +1165,7 @@ class FinanceApp {
     this.setupAuditListeners(); // Sistema de auditoría
     this.setupSavingsListeners(); // Sistema de ahorros
     this.setupPaymentsListeners(); // Sistema de pagos recurrentes
+    this.setupExpensesModalListener(); // Modal de detalle de gastos
     this.setupNotificationBell();
     this.setupScrollOptimization();
     this.initQuickAccess(); // Optimización sutil del scroll
@@ -6410,7 +6448,15 @@ function switchToLogin() {
   document.getElementById('registerForm').classList.add('hidden');
   document.getElementById('authModalTitle').textContent = '¡Bienvenido de vuelta!';
   document.getElementById('authSwitchLink').innerHTML =
-    '¿No tienes una cuenta? <a href="#" onclick="showAccountTypeSelection()">Regístrate aquí</a>';
+    '¿No tienes una cuenta? <a href="#" onclick="switchToRegister()">Regístrate aquí</a>';
+}
+
+function switchToRegister() {
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('registerForm').classList.remove('hidden');
+  document.getElementById('authModalTitle').textContent = 'Crear nueva cuenta';
+  document.getElementById('authSwitchLink').innerHTML =
+    '¿Ya tienes una cuenta? <a href="#" onclick="switchToLogin()">Inicia sesión aquí</a>';
 }
 
 function showAccountTypeSelection() {
@@ -7534,6 +7580,8 @@ FinanceApp.prototype.saveProfileSettings = async function() {
     // Update UI across the app
     this.updateConfigurationDisplay();
     this.updateProfileDisplay();
+    this.updateUserSelectionDropdown();
+    this.updateDashboardWelcome();
     this.renderDashboard();
 
     this.showToast('Perfil actualizado correctamente', 'success');
@@ -9216,6 +9264,311 @@ FinanceApp.prototype.checkMonthlyReset = function() {
 
 FinanceApp.prototype.getPaymentTypeInfo = function(typeId) {
   return this.paymentServiceTypes.find(t => t.id === typeId) || this.paymentServiceTypes[this.paymentServiceTypes.length - 1];
+};
+
+/* ============================================
+   EXPENSES DETAIL MODAL SYSTEM
+   ============================================ */
+
+FinanceApp.prototype.setupExpensesModalListener = function() {
+  const expensesCard = document.getElementById('totalExpensesCard');
+  const expensesModal = document.getElementById('expensesDetailModal');
+  const closeExpensesDetail = document.getElementById('closeExpensesDetail');
+
+  console.log('Setup expenses modal - Card:', expensesCard, 'Modal:', expensesModal);
+
+  if (expensesCard) {
+    expensesCard.addEventListener('click', () => {
+      console.log('Expenses card clicked');
+      this.showExpensesDetailModal();
+    });
+  } else {
+    console.warn('Total expenses card not found');
+  }
+
+  if (closeExpensesDetail) {
+    closeExpensesDetail.addEventListener('click', () => {
+      expensesModal?.classList.remove('show');
+    });
+  }
+
+  if (expensesModal) {
+    expensesModal.addEventListener('click', (e) => {
+      if (e.target === expensesModal) {
+        expensesModal.classList.remove('show');
+      }
+    });
+  }
+};
+
+FinanceApp.prototype.showExpensesDetailModal = function() {
+  console.log('showExpensesDetailModal called');
+  const modal = document.getElementById('expensesDetailModal');
+  if (!modal) {
+    console.error('Modal expensesDetailModal not found');
+    return;
+  }
+
+  // Obtener gastos del mes actual
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+
+  const monthlyExpenses = this.expenses.filter(expense => {
+    const expenseDate = new Date(expense.date);
+    return expenseDate >= firstDayOfMonth;
+  });
+
+  console.log('Monthly expenses:', monthlyExpenses.length);
+
+  // Calcular total de gastos
+  const totalAmount = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+
+  // Actualizar período
+  const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  document.getElementById('expensesPeriod').textContent =
+    `1 de ${monthNames[currentMonth]} - ${now.getDate()} de ${monthNames[currentMonth]}`;
+
+  // Actualizar total
+  document.getElementById('modalTotalExpenses').textContent = `$${totalAmount.toLocaleString()}`;
+
+  // Estadísticas generales
+  document.getElementById('modalTotalTransactions').textContent = monthlyExpenses.length;
+
+  // Análisis por necesidad
+  const necessityAnalysis = this.analyzeNecessity(monthlyExpenses, totalAmount);
+  document.getElementById('modalNecessaryPercentage').textContent = `${necessityAnalysis.necessaryPercent}%`;
+  document.getElementById('modalNecessaryAmount').textContent = `$${necessityAnalysis.necessaryAmount.toLocaleString()} en gastos esenciales`;
+  document.getElementById('modalUnnecessaryPercentage').textContent = `${necessityAnalysis.unnecessaryPercent}%`;
+  document.getElementById('modalUnnecessaryAmount').textContent = `$${necessityAnalysis.unnecessaryAmount.toLocaleString()} en gastos prescindibles`;
+
+  // Servicios pagados
+  const servicesPaid = this.getServicesPaid(monthlyExpenses);
+  document.getElementById('modalServicesPaid').textContent = servicesPaid.count;
+  document.getElementById('modalServicesAmount').textContent = `$${servicesPaid.amount.toLocaleString()} en servicios`;
+
+  // Renderizar secciones
+  this.renderNecessityBars(monthlyExpenses, totalAmount);
+  this.renderServicesPaidList(servicesPaid.services);
+  this.renderCategoriesBreakdown(monthlyExpenses);
+  this.renderMonthlyTransactions(monthlyExpenses);
+  this.renderFinancialInsight(monthlyExpenses, totalAmount, necessityAnalysis);
+
+  console.log('Opening modal...');
+  modal.classList.add('show');
+  console.log('Modal classes:', modal.classList);
+};
+
+FinanceApp.prototype.analyzeNecessity = function(expenses, total) {
+  const necessary = ['Muy Necesario', 'Necesario'];
+  const unnecessary = ['Poco Necesario', 'No Necesario', 'Compra por Impulso'];
+
+  const necessaryExpenses = expenses.filter(e => necessary.includes(e.necessity));
+  const unnecessaryExpenses = expenses.filter(e => unnecessary.includes(e.necessity));
+
+  const necessaryAmount = necessaryExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const unnecessaryAmount = unnecessaryExpenses.reduce((sum, e) => sum + e.amount, 0);
+
+  return {
+    necessaryAmount,
+    unnecessaryAmount,
+    necessaryPercent: total > 0 ? Math.round((necessaryAmount / total) * 100) : 0,
+    unnecessaryPercent: total > 0 ? Math.round((unnecessaryAmount / total) * 100) : 0
+  };
+};
+
+FinanceApp.prototype.getServicesPaid = function(expenses) {
+  const serviceCategories = ['Servicios'];
+  const services = expenses.filter(e => serviceCategories.includes(e.category));
+  const amount = services.reduce((sum, e) => sum + e.amount, 0);
+
+  return {
+    count: services.length,
+    amount,
+    services
+  };
+};
+
+FinanceApp.prototype.renderNecessityBars = function(expenses, total) {
+  const container = document.getElementById('necessityBarsContainer');
+  if (!container) return;
+
+  const necessityLevels = [
+    { name: 'Muy Necesario', class: 'very-necessary' },
+    { name: 'Necesario', class: 'necessary' },
+    { name: 'Poco Necesario', class: 'little-necessary' },
+    { name: 'No Necesario', class: 'not-necessary' },
+    { name: 'Compra por Impulso', class: 'impulse' }
+  ];
+
+  container.innerHTML = necessityLevels.map(level => {
+    const levelExpenses = expenses.filter(e => e.necessity === level.name);
+    const levelAmount = levelExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const percentage = total > 0 ? Math.round((levelAmount / total) * 100) : 0;
+
+    return `
+      <div class="necessity-bar-item">
+        <div class="necessity-bar-label">${level.name}</div>
+        <div class="necessity-bar-wrapper">
+          <div class="necessity-bar-fill ${level.class}" style="width: ${percentage}%">
+            ${percentage}%
+          </div>
+        </div>
+        <div class="necessity-bar-value">$${levelAmount.toLocaleString()}</div>
+      </div>
+    `;
+  }).join('');
+};
+
+FinanceApp.prototype.renderServicesPaidList = function(services) {
+  const container = document.getElementById('servicesPaidList');
+  if (!container) return;
+
+  if (services.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state-small">
+        <i class="fas fa-hand-holding-usd"></i>
+        <p>No hay servicios pagados este mes</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = services.map(service => {
+    const typeInfo = this.paymentServiceTypes.find(t =>
+      service.description.toLowerCase().includes(t.name.toLowerCase())
+    ) || this.paymentServiceTypes[this.paymentServiceTypes.length - 1];
+
+    return `
+      <div class="service-paid-item">
+        <div class="service-paid-icon ${typeInfo.id}">
+          <i class="${typeInfo.icon}"></i>
+        </div>
+        <div class="service-paid-info">
+          <div class="service-paid-name">${service.description}</div>
+          <div class="service-paid-amount">$${service.amount.toLocaleString()}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+FinanceApp.prototype.renderCategoriesBreakdown = function(expenses) {
+  const container = document.getElementById('categoriesBreakdown');
+  if (!container) return;
+
+  const categoryTotals = {};
+  expenses.forEach(expense => {
+    if (!categoryTotals[expense.category]) {
+      categoryTotals[expense.category] = { amount: 0, count: 0 };
+    }
+    categoryTotals[expense.category].amount += expense.amount;
+    categoryTotals[expense.category].count++;
+  });
+
+  const categoryIcons = {
+    'Alimentación': 'fas fa-utensils',
+    'Transporte': 'fas fa-car',
+    'Entretenimiento': 'fas fa-gamepad',
+    'Salud': 'fas fa-heartbeat',
+    'Servicios': 'fas fa-receipt',
+    'Compras': 'fas fa-shopping-bag',
+    'Otros': 'fas fa-ellipsis-h'
+  };
+
+  container.innerHTML = Object.entries(categoryTotals)
+    .sort(([, a], [, b]) => b.amount - a.amount)
+    .map(([category, data]) => `
+      <div class="category-item">
+        <div class="category-header">
+          <div class="category-icon">
+            <i class="${categoryIcons[category] || 'fas fa-tag'}"></i>
+          </div>
+          <div class="category-name">${category}</div>
+        </div>
+        <div class="category-amount">$${data.amount.toLocaleString()}</div>
+        <div class="category-count">${data.count} transaccion${data.count !== 1 ? 'es' : ''}</div>
+      </div>
+    `).join('');
+};
+
+FinanceApp.prototype.renderMonthlyTransactions = function(expenses) {
+  const container = document.getElementById('recentTransactionsList');
+  if (!container) return;
+
+  const recentExpenses = [...expenses]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 10);
+
+  if (recentExpenses.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state-small">
+        <i class="fas fa-receipt"></i>
+        <p>No hay transacciones este mes</p>
+      </div>
+    `;
+    return;
+  }
+
+  const categoryIcons = {
+    'Alimentación': 'fas fa-utensils',
+    'Transporte': 'fas fa-car',
+    'Entretenimiento': 'fas fa-gamepad',
+    'Salud': 'fas fa-heartbeat',
+    'Servicios': 'fas fa-receipt',
+    'Compras': 'fas fa-shopping-bag',
+    'Otros': 'fas fa-ellipsis-h'
+  };
+
+  container.innerHTML = recentExpenses.map(expense => {
+    const date = new Date(expense.date);
+    const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+
+    return `
+      <div class="transaction-item">
+        <div class="transaction-icon">
+          <i class="${categoryIcons[expense.category] || 'fas fa-receipt'}"></i>
+        </div>
+        <div class="transaction-info">
+          <div class="transaction-description">${expense.description}</div>
+          <div class="transaction-meta">
+            <span><i class="fas fa-tag"></i> ${expense.category}</span>
+            <span><i class="fas fa-calendar"></i> ${formattedDate}</span>
+            ${expense.user ? `<span><i class="fas fa-user"></i> ${expense.user}</span>` : ''}
+          </div>
+        </div>
+        <div class="transaction-amount">$${expense.amount.toLocaleString()}</div>
+      </div>
+    `;
+  }).join('');
+};
+
+FinanceApp.prototype.renderFinancialInsight = function(expenses, total, analysis) {
+  const insightEl = document.getElementById('financialInsight');
+  if (!insightEl) return;
+
+  let insight = `Este mes has realizado <strong>${expenses.length} transacciones</strong> por un total de <strong>$${total.toLocaleString()}</strong>. `;
+
+  if (analysis.necessaryPercent >= 70) {
+    insight += `¡Excelente! El <strong>${analysis.necessaryPercent}%</strong> de tus gastos son necesarios, lo que demuestra una gestión financiera muy responsable. `;
+  } else if (analysis.necessaryPercent >= 50) {
+    insight += `El <strong>${analysis.necessaryPercent}%</strong> de tus gastos son necesarios. Hay margen para optimizar, pero vas por buen camino. `;
+  } else {
+    insight += `Solo el <strong>${analysis.necessaryPercent}%</strong> de tus gastos son necesarios. Considera reducir gastos prescindibles para mejorar tu salud financiera. `;
+  }
+
+  if (analysis.unnecessaryAmount > 0) {
+    insight += `Has gastado <strong>$${analysis.unnecessaryAmount.toLocaleString()}</strong> en compras no esenciales. `;
+    if (analysis.unnecessaryPercent > 30) {
+      insight += `<strong>Recomendación:</strong> Intenta reducir este tipo de gastos en un 20% el próximo mes para aumentar tu capacidad de ahorro.`;
+    } else {
+      insight += `Mantén este balance para alcanzar tus metas financieras más rápido.`;
+    }
+  }
+
+  insightEl.innerHTML = insight;
 };
 
 if (typeof window !== 'undefined') {

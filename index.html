@@ -410,7 +410,8 @@
 
           <!-- Tarjeta de Gastos Totales -->
           <div
-            class="stat-card animate-on-scroll"
+            class="stat-card stat-card--clickable animate-on-scroll"
+            id="totalExpensesCard"
             data-animation="fadeInUp"
             data-delay="200"
           >
@@ -2674,6 +2675,138 @@
               </div>
               <div id="paidPaymentsList" class="payment-items-list">
                 <!-- Se llenará dinámicamente -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expenses Detail Modal -->
+    <div class="modal" id="expensesDetailModal">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">
+              <i class="fas fa-chart-line"></i> Resumen Financiero del Mes
+            </h3>
+            <button class="modal-close" id="closeExpensesDetail">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Summary Section -->
+            <div class="expenses-summary-header">
+              <div class="summary-period">
+                <i class="fas fa-calendar-alt"></i>
+                <div>
+                  <h4>Período analizado</h4>
+                  <p id="expensesPeriod">1 de Enero - Hoy</p>
+                </div>
+              </div>
+              <div class="summary-total-expenses">
+                <h4>Total gastado este mes</h4>
+                <h2 id="modalTotalExpenses">$0</h2>
+              </div>
+            </div>
+
+            <!-- Statistics Grid -->
+            <div class="expenses-stats-grid">
+              <div class="expense-stat-card transactions">
+                <div class="stat-icon">
+                  <i class="fas fa-receipt"></i>
+                </div>
+                <div class="stat-content">
+                  <h4>Transacciones</h4>
+                  <p class="stat-number" id="modalTotalTransactions">0</p>
+                  <span class="stat-label">operaciones realizadas</span>
+                </div>
+              </div>
+
+              <div class="expense-stat-card necessity">
+                <div class="stat-icon">
+                  <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="stat-content">
+                  <h4>Gastos Necesarios</h4>
+                  <p class="stat-number" id="modalNecessaryPercentage">0%</p>
+                  <span class="stat-label" id="modalNecessaryAmount">$0 en gastos esenciales</span>
+                </div>
+              </div>
+
+              <div class="expense-stat-card unnecessary">
+                <div class="stat-icon">
+                  <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="stat-content">
+                  <h4>Gastos No Necesarios</h4>
+                  <p class="stat-number" id="modalUnnecessaryPercentage">0%</p>
+                  <span class="stat-label" id="modalUnnecessaryAmount">$0 en gastos prescindibles</span>
+                </div>
+              </div>
+
+              <div class="expense-stat-card services">
+                <div class="stat-icon">
+                  <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <div class="stat-content">
+                  <h4>Servicios Pagados</h4>
+                  <p class="stat-number" id="modalServicesPaid">0</p>
+                  <span class="stat-label" id="modalServicesAmount">$0 en servicios</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Necessity Breakdown -->
+            <div class="expenses-necessity-section">
+              <div class="section-title-row">
+                <h4><i class="fas fa-chart-pie"></i> Distribución por Necesidad</h4>
+              </div>
+              <div class="necessity-bars" id="necessityBarsContainer">
+                <!-- Se llenará dinámicamente -->
+              </div>
+            </div>
+
+            <!-- Services Paid Section -->
+            <div class="expenses-services-section">
+              <div class="section-title-row">
+                <h4><i class="fas fa-money-check-alt"></i> Servicios Pagados Este Mes</h4>
+              </div>
+              <div class="services-paid-list" id="servicesPaidList">
+                <!-- Se llenará dinámicamente -->
+              </div>
+            </div>
+
+            <!-- Category Breakdown -->
+            <div class="expenses-categories-section">
+              <div class="section-title-row">
+                <h4><i class="fas fa-tags"></i> Gastos por Categoría</h4>
+              </div>
+              <div class="categories-breakdown" id="categoriesBreakdown">
+                <!-- Se llenará dinámicamente -->
+              </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="expenses-transactions-section">
+              <div class="section-title-row">
+                <h4><i class="fas fa-history"></i> Últimas Transacciones</h4>
+              </div>
+              <div class="transactions-list" id="recentTransactionsList">
+                <!-- Se llenará dinámicamente -->
+              </div>
+            </div>
+
+            <!-- Financial Insights -->
+            <div class="financial-insights">
+              <div class="insight-card">
+                <i class="fas fa-lightbulb"></i>
+                <div class="insight-content">
+                  <h5>Análisis Financiero</h5>
+                  <p id="financialInsight">
+                    <!-- Se llenará dinámicamente con recomendaciones -->
+                  </p>
+                </div>
               </div>
             </div>
           </div>
