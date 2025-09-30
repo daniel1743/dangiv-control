@@ -2866,33 +2866,80 @@ class FinanceApp {
 
     const total = necessaryAmount + unnecessaryAmount;
 
-    // Actualizar valores
+    // Actualizar valores con animación de conteo
     const cashFlowTotal = document.getElementById('cashFlowTotal');
     const necessaryValue = document.getElementById('necessaryValue');
     const unnecessaryValue = document.getElementById('unnecessaryValue');
 
-    if (cashFlowTotal) cashFlowTotal.textContent = `$${total.toLocaleString()}`;
-    if (necessaryValue)
-      necessaryValue.textContent = `$${necessaryAmount.toLocaleString()}`;
-    if (unnecessaryValue)
-      unnecessaryValue.textContent = `$${unnecessaryAmount.toLocaleString()}`;
+    // Función para animar números
+    const animateNumber = (element, start, end, duration) => {
+      if (!element) return;
+      const startTime = performance.now();
+      const difference = end - start;
 
-    // Animar barras de progreso
+      const step = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Easing function (easeOutCubic)
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const currentValue = start + (difference * easeProgress);
+
+        element.textContent = `$${Math.round(currentValue).toLocaleString()}`;
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          element.textContent = `$${end.toLocaleString()}`;
+        }
+      };
+
+      requestAnimationFrame(step);
+    };
+
+    // Obtener valores actuales o empezar desde 0
+    const getCurrentValue = (element) => {
+      if (!element || !element.textContent) return 0;
+      return parseInt(element.textContent.replace(/\$|,/g, '')) || 0;
+    };
+
+    const currentTotal = getCurrentValue(cashFlowTotal);
+    const currentNecessary = getCurrentValue(necessaryValue);
+    const currentUnnecessary = getCurrentValue(unnecessaryValue);
+
+    // Animar los números
+    animateNumber(cashFlowTotal, currentTotal, total, 1200);
+    animateNumber(necessaryValue, currentNecessary, necessaryAmount, 1000);
+    animateNumber(unnecessaryValue, currentUnnecessary, unnecessaryAmount, 1000);
+
+    // Animar barras de progreso con efecto dinámico
     const necessaryProgress = document.getElementById('necessaryProgress');
     const unnecessaryProgress = document.getElementById('unnecessaryProgress');
 
     if (necessaryProgress && total > 0) {
+      const targetWidth = (necessaryAmount / total) * 100;
+
+      // Reset y animar
+      necessaryProgress.style.transition = 'none';
+      necessaryProgress.style.width = '0%';
+
       setTimeout(() => {
-        necessaryProgress.style.width = `${(necessaryAmount / total) * 100}%`;
-      }, 300);
+        necessaryProgress.style.transition = 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+        necessaryProgress.style.width = `${targetWidth}%`;
+      }, 100);
     }
 
     if (unnecessaryProgress && total > 0) {
+      const targetWidth = (unnecessaryAmount / total) * 100;
+
+      // Reset y animar
+      unnecessaryProgress.style.transition = 'none';
+      unnecessaryProgress.style.width = '0%';
+
       setTimeout(() => {
-        unnecessaryProgress.style.width = `${
-          (unnecessaryAmount / total) * 100
-        }%`;
-      }, 600);
+        unnecessaryProgress.style.transition = 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+        unnecessaryProgress.style.width = `${targetWidth}%`;
+      }, 250);
     }
   }
 
@@ -6854,7 +6901,7 @@ FinanceApp.prototype.setupOnboardingTour = function() {
       element: '[data-section="config"]',
       title: 'Configuración',
       description: 'Administra tu perfil, configuración de cuenta y preferencias de la aplicación.',
-      position: 'bottom'
+      position: 'right'
     },
     {
       element: '#expenseForm',
