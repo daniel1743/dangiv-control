@@ -40,7 +40,9 @@ class FinanceApp {
     this.accountOwner = savedData.accountOwner || null;
     this.accountUsers = savedData.accountUsers || [];
     this.inviteCodes = savedData.inviteCodes || {};
+    this.currentInviteLink = savedData.currentInviteLink || null;
     this.activityLog = savedData.activityLog || [];
+    this.isRegistering = false; // Flag to prevent race condition during registration
 
     this.expenses = savedData.expenses || [];
     this.goals = savedData.goals || [];
@@ -555,6 +557,7 @@ class FinanceApp {
       accountOwner: this.accountOwner,
       accountUsers: this.accountUsers,
       inviteCodes: this.inviteCodes,
+      currentInviteLink: this.currentInviteLink,
       activityLog: this.activityLog,
       expenses: this.expenses,
       goals: this.goals,
@@ -956,6 +959,12 @@ class FinanceApp {
   async syncFromFirebase() {
     if (!this.currentUser || this.currentUser === 'anonymous') {
       // Si no hay usuario, no hay nada que sincronizar.
+      return;
+    }
+
+    // Skip sync if we're in the middle of registration
+    if (this.isRegistering) {
+      console.log('DEBUG: Registro en proceso, saltando sincronización para evitar race condition');
       return;
     }
 
@@ -2215,6 +2224,8 @@ class FinanceApp {
 
     // Add invite link notification if exists
     if (this.currentInviteLink && !this.currentInviteLink.used) {
+      console.log('DEBUG: Agregando notificación de enlace a la lista');
+      console.log('DEBUG: currentInviteLink:', this.currentInviteLink);
       const isExpired = Date.now() > this.currentInviteLink.expiresAt;
       const timeRemaining = this.currentInviteLink.expiresAt - Date.now();
       const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
@@ -2223,8 +2234,8 @@ class FinanceApp {
         id: 'invite_link_current',
         type: 'invite_link',
         category: 'link',
-        title: isExpired ? '❌ Enlace de Invitación Expirado' : '🔗 Enlace de Invitación Activo',
-        subtitle: isExpired ? 'Este enlace ya no es válido' : `Expira en ${hoursRemaining}h`,
+        title: isExpired ? '❌ Enlace de Invitación Expirado' : '🔗 Creaste un Enlace de Invitación',
+        subtitle: isExpired ? 'Este enlace ya no es válido' : `Haz clic para copiar • Expira en ${hoursRemaining}h`,
         amount: '',
         time: this.getRelativeTime(new Date(this.currentInviteLink.createdAt)),
         priority: isExpired ? 'low' : 'high',
@@ -6694,6 +6705,10 @@ FinanceApp.prototype.handleRegistration = async function() {
   console.log('DEBUG: Iniciando registro normal con Firebase Auth...');
 
   try {
+    // Activar bandera para prevenir race condition con syncFromFirebase
+    this.isRegistering = true;
+    console.log('DEBUG: Bandera isRegistering activada');
+
     // Primero registrar en Firebase Auth
     const userCredential = await FB.createUserWithEmailAndPassword(
       FB.auth,
@@ -6706,7 +6721,15 @@ FinanceApp.prototype.handleRegistration = async function() {
     // Ahora crear la cuenta con el UID de Firebase
     await this.createNewAccount(name, email, password, accountType, userCredential.user.uid);
 
+    // Desactivar bandera después de completar el registro
+    this.isRegistering = false;
+    console.log('DEBUG: Bandera isRegistering desactivada');
+
   } catch (error) {
+    // Desactivar bandera en caso de error
+    this.isRegistering = false;
+    console.log('DEBUG: Bandera isRegistering desactivada (error)');
+
     console.error('Error en registro:', error);
 
     if (error.code === 'auth/email-already-in-use') {
@@ -8041,7 +8064,7 @@ FinanceApp.prototype.updateConfigurationDisplay = function() {
 // Shared Account Invite Modal Functions
 // ============================================
 
-FinanceApp.prototype.showSharedAccountInviteModal = function() {
+FinanceApp.prototype.showSharedAccountInviteModal = async function() {
   console.log('DEBUG: showSharedAccountInviteModal llamada');
   console.log('DEBUG: Buscando modal con ID: sharedAccountInviteModal');
 
@@ -8074,8 +8097,9 @@ FinanceApp.prototype.showSharedAccountInviteModal = function() {
     used: false
   };
 
-  this.saveData();
-  console.log('DEBUG: Datos guardados');
+  console.log('DEBUG: currentInviteLink creado:', this.currentInviteLink);
+  await this.saveData();
+  console.log('DEBUG: Datos guardados con currentInviteLink');
 
   // Add notification with the invite link
   this.addInviteLinkNotification(inviteLink);
