@@ -1054,63 +1054,6 @@
         <div class="card">
           <div class="card__header">
             <h3>Historial de Gastos</h3>
-            <!-- Filter and Search Controls -->
-            <div class="expense-controls">
-              <div class="expense-filters">
-                <input
-                  type="text"
-                  id="expenseSearch"
-                  class="filter-input"
-                  placeholder="🔍 Buscar gastos..."
-                />
-                <select id="categoryFilter" class="filter-select">
-                  <option value="">Todas las categorías</option>
-                  <option value="Alimentación">🍽️ Alimentación</option>
-                  <option value="Transporte">🚗 Transporte</option>
-                  <option value="Entretenimiento">🎬 Entretenimiento</option>
-                  <option value="Salud">🏥 Salud</option>
-                  <option value="Servicios">⚡ Servicios</option>
-                  <option value="Compras">🛍️ Compras</option>
-                  <option value="Otros">📦 Otros</option>
-                </select>
-                <select id="necessityFilter" class="filter-select">
-                  <option value="">Todos los niveles</option>
-                  <option value="Muy Necesario">Muy Necesario</option>
-                  <option value="Necesario">Necesario</option>
-                  <option value="Poco Necesario">Poco Necesario</option>
-                  <option value="No Necesario">No Necesario</option>
-                  <option value="Compra por Impulso">Compra por Impulso</option>
-                </select>
-                <select id="userFilter" class="filter-select">
-                  <option value="">Todos los usuarios</option>
-                  <option value="Daniel">Daniel</option>
-                  <option value="Givonik">Givonik</option>
-                  <option value="Otro">Otro</option>
-                </select>
-                <input
-                  type="date"
-                  id="dateFromFilter"
-                  class="filter-input"
-                  title="Fecha desde"
-                />
-                <input
-                  type="date"
-                  id="dateToFilter"
-                  class="filter-input"
-                  title="Fecha hasta"
-                />
-                <button id="clearFilters" class="btn-secondary">
-                  <i class="fas fa-times"></i> Limpiar
-                </button>
-                <button id="exportCSV" class="btn-export">
-                  <i class="fas fa-download"></i> Exportar CSV
-                </button>
-              </div>
-              <div class="expense-summary">
-                <span id="expenseCount" class="expense-stat">0 gastos</span>
-                <span id="expenseTotal" class="expense-stat">$0.00</span>
-              </div>
-            </div>
           </div>
           <div class="card__body">
             <div id="expenseList"></div>

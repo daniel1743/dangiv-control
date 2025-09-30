@@ -37,6 +37,7 @@ class FinanceApp {
     // Account system properties
     this.accountType = savedData.accountType || localStorage.getItem('financia_account_type') || 'personal';
     this.currentUser = savedData.currentUser || 'anonymous';
+    this.sharedAccountId = savedData.sharedAccountId || null; // ID of shared Firestore document
     this.accountOwner = savedData.accountOwner || null;
     this.accountUsers = savedData.accountUsers || [];
     this.inviteCodes = savedData.inviteCodes || {};
@@ -554,6 +555,7 @@ class FinanceApp {
     const dataToSave = {
       accountType: this.accountType,
       currentUser: this.currentUser,
+      sharedAccountId: this.sharedAccountId,
       accountOwner: this.accountOwner,
       accountUsers: this.accountUsers,
       inviteCodes: this.inviteCodes,
@@ -591,7 +593,13 @@ class FinanceApp {
     }
 
     try {
-      const userDocRef = FB.doc(FB.db, 'userData', this.currentUser);
+      // Use sharedAccountId if it exists (for shared accounts), otherwise use currentUser
+      const firestoreDocId = this.sharedAccountId || this.currentUser;
+      const userDocRef = FB.doc(FB.db, 'userData', firestoreDocId);
+
+      console.log('DEBUG: Guardando en Firestore con ID:', firestoreDocId);
+      console.log('DEBUG: Es cuenta compartida?', this.sharedAccountId ? 'SÍ' : 'NO');
+
       await FB.setDoc(userDocRef, normalizedData);
 
       if (localSaveOk) {
@@ -969,7 +977,13 @@ class FinanceApp {
     }
 
     try {
-      const userDocRef = FB.doc(FB.db, 'userData', this.currentUser);
+      // Use sharedAccountId if it exists (for shared accounts), otherwise use currentUser
+      const firestoreDocId = this.sharedAccountId || this.currentUser;
+      const userDocRef = FB.doc(FB.db, 'userData', firestoreDocId);
+
+      console.log('DEBUG: Sincronizando desde Firestore con ID:', firestoreDocId);
+      console.log('DEBUG: Es cuenta compartida?', this.sharedAccountId ? 'SÍ' : 'NO');
+
       const docSnap = await FB.getDoc(userDocRef);
 
       if (docSnap.exists()) {
@@ -6752,6 +6766,15 @@ FinanceApp.prototype.createNewAccount = async function(name, email, password, ac
   this.accountType = accountType;
   this.currentUser = userId;
   this.accountOwner = userId;
+
+  // For shared accounts, use the owner's ID as the shared document ID
+  if (accountType === 'shared') {
+    this.sharedAccountId = userId;
+    console.log('DEBUG: Cuenta compartida - sharedAccountId establecido a:', userId);
+  } else {
+    this.sharedAccountId = null;
+  }
+
   this.accountUsers = [{
     id: userId,
     name: name,
@@ -7149,30 +7172,33 @@ FinanceApp.prototype.changeAccountType = function(type) {
 
 // Override expense addition to include activity logging
 FinanceApp.prototype.addExpenseOriginal = FinanceApp.prototype.addExpense;
-FinanceApp.prototype.addExpense = function() {
+FinanceApp.prototype.addExpense = function(e) {
+  // Call original method with event parameter
+  this.addExpenseOriginal(e);
+
+  // Get values after successful registration
   const description = document.getElementById('description').value;
   const amount = parseFloat(document.getElementById('amount').value);
   const user = document.getElementById('user').value;
 
-  // Call original method
-  this.addExpenseOriginal();
-
   // Add activity logging
-  this.logActivity('expense', `Gasto agregado: ${description} - $${amount}`, this.currentUser);
+  if (description && amount && user) {
+    this.logActivity('expense', `Gasto agregado: ${description} - $${amount}`, this.currentUser);
 
-  if (this.accountType === 'shared' && this.accountUsers.length > 1) {
-    // Notify other user
-    const otherUser = this.accountUsers.find(u => u.id !== this.currentUser);
-    if (otherUser) {
-      this.addNotification({
-        id: Date.now(),
-        type: 'expense_added',
-        title: 'Nuevo Gasto Registrado',
-        message: `${user} registró un gasto: ${description} - $${amount}`,
-        timestamp: Date.now(),
-        read: false,
-        priority: 'normal'
-      });
+    if (this.accountType === 'shared' && this.accountUsers.length > 1) {
+      // Notify other user
+      const otherUser = this.accountUsers.find(u => u.id !== this.currentUser);
+      if (otherUser) {
+        this.addNotification({
+          id: Date.now(),
+          type: 'expense_added',
+          title: 'Nuevo Gasto Registrado',
+          message: `${user} registró un gasto: ${description} - $${amount}`,
+          timestamp: Date.now(),
+          read: false,
+          priority: 'normal'
+        });
+      }
     }
   }
 };
@@ -8461,20 +8487,18 @@ FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, p
       timestamp: Date.now()
     });
 
-    // 6. Guardar datos actualizados en la cuenta original
+    // 6. Guardar datos actualizados en la cuenta original (el ÚNICO documento compartido)
     await FB.setDoc(accountDocRef, accountData);
+    console.log('DEBUG: Cuenta compartida actualizada en Firestore');
 
-    // 7. También crear documento del nuevo usuario con referencia a la cuenta compartida
-    const userDocRef = FB.doc(FB.db, 'userData', userId);
-    await FB.setDoc(userDocRef, {
-      ...accountData,
-      currentUser: userId,
-      sharedAccountRef: accountId // Referencia a la cuenta principal
-    });
+    // 7. NO crear documento separado para el nuevo usuario
+    // En su lugar, el nuevo usuario usará el accountId como su currentUser para acceder al documento compartido
+    // Esto asegura que ambos usuarios lean y escriban en el MISMO documento
 
     // 8. Actualizar datos locales
     this.accountType = accountData.accountType;
-    this.currentUser = userId;
+    this.currentUser = userId; // ID del usuario autenticado en Firebase Auth
+    this.sharedAccountId = accountId; // ID del documento compartido en Firestore
     this.accountOwner = accountData.accountOwner;
     this.accountUsers = accountData.accountUsers;
     this.expenses = accountData.expenses || [];
@@ -8482,12 +8506,14 @@ FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, p
     this.shoppingItems = accountData.shoppingItems || [];
     this.monthlyIncome = accountData.monthlyIncome || 2500;
     this.inviteCodes = accountData.inviteCodes || {};
+    this.currentInviteLink = accountData.currentInviteLink || null;
     this.activityLog = accountData.activityLog || [];
 
     // 9. Guardar en localStorage
     localStorage.setItem('financiaProData', JSON.stringify({
       accountType: this.accountType,
       currentUser: this.currentUser,
+      sharedAccountId: this.sharedAccountId,
       accountOwner: this.accountOwner,
       accountUsers: this.accountUsers,
       expenses: this.expenses,
@@ -8495,6 +8521,7 @@ FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, p
       shoppingItems: this.shoppingItems,
       monthlyIncome: this.monthlyIncome,
       inviteCodes: this.inviteCodes,
+      currentInviteLink: this.currentInviteLink,
       activityLog: this.activityLog,
       lastUpdate: Date.now()
     }));
