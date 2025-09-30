@@ -2210,6 +2210,32 @@ class FinanceApp {
     let notifications = [];
     const today = new Date();
 
+    // Add invite link notification if exists
+    if (this.currentInviteLink && !this.currentInviteLink.used) {
+      const isExpired = Date.now() > this.currentInviteLink.expiresAt;
+      const timeRemaining = this.currentInviteLink.expiresAt - Date.now();
+      const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
+
+      notifications.push({
+        id: 'invite_link_current',
+        type: 'invite_link',
+        category: 'link',
+        title: isExpired ? '❌ Enlace de Invitación Expirado' : '🔗 Enlace de Invitación Activo',
+        subtitle: isExpired ? 'Este enlace ya no es válido' : `Expira en ${hoursRemaining}h`,
+        amount: '',
+        time: this.getRelativeTime(new Date(this.currentInviteLink.createdAt)),
+        priority: isExpired ? 'low' : 'high',
+        data: {
+          link: this.currentInviteLink.link,
+          section: 'invite',
+          expired: isExpired
+        },
+        isRead: this.notificationStates.get('invite_link_current') || false,
+        link: this.currentInviteLink.link,
+        expired: isExpired
+      });
+    }
+
     // Generate goal notifications
     this.goals.forEach((goal, index) => {
       const deadline = new Date(goal.deadline);
@@ -2475,8 +2501,25 @@ class FinanceApp {
     // Mark as read when clicked
     this.markNotificationAsRead(notificationId);
 
-    // Navigate to relevant section (placeholder for future implementation)
-    this.showToast('Navegación a sección específica próximamente', 'info');
+    // Handle invite link notification
+    if (notificationId === 'invite_link_current' && this.currentInviteLink) {
+      if (!this.currentInviteLink.expired && Date.now() < this.currentInviteLink.expiresAt) {
+        // Copy link to clipboard
+        const tempInput = document.createElement('input');
+        tempInput.value = this.currentInviteLink.link;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+
+        this.showToast('Enlace de invitación copiado al portapapeles', 'success');
+      } else {
+        this.showToast('Este enlace ha expirado', 'error');
+      }
+    } else {
+      // Navigate to relevant section (placeholder for future implementation)
+      this.showToast('Navegación a sección específica próximamente', 'info');
+    }
 
     // Close dropdown
     const dropdown = document.getElementById('notificationDropdown');
@@ -6500,7 +6543,9 @@ FinanceApp.prototype.revealSequentially = function (elements, delay = 100) {
 
 // Global function for account type selection
 function selectAccountType(type) {
+  console.log('DEBUG: selectAccountType llamado con:', type);
   window.selectedAccountType = type;
+  console.log('DEBUG: window.selectedAccountType establecido a:', window.selectedAccountType);
 
   document.getElementById('accountTypeModal').classList.remove('show');
   document.body.style.overflow = '';
@@ -6516,12 +6561,8 @@ function selectAccountType(type) {
   document.getElementById('authSwitchLink').innerHTML =
     '¿Ya tienes una cuenta? <a href="#" onclick="switchToLogin()">Inicia sesión aquí</a>';
 
-  // Show invite code field for shared accounts
-  if (type === 'shared') {
-    document.getElementById('inviteCodeGroup').classList.remove('hidden');
-  } else {
-    document.getElementById('inviteCodeGroup').classList.add('hidden');
-  }
+  // Nota: Ya no hay campo inviteCode, se eliminó según requisitos
+  console.log('DEBUG: Formulario de registro mostrado para tipo:', type);
 }
 
 function switchToLogin() {
@@ -6627,11 +6668,10 @@ FinanceApp.prototype.setupUserSystemListeners = function() {
   this.updateUserSelectionDropdown();
 };
 
-FinanceApp.prototype.handleRegistration = function() {
+FinanceApp.prototype.handleRegistration = async function() {
   const name = document.getElementById('registerName').value.trim();
   const email = document.getElementById('registerEmail').value.trim();
   const password = document.getElementById('registerPassword').value;
-  const inviteCode = document.getElementById('inviteCode').value.trim();
 
   if (!name || !email || !password) {
     this.showToast('Todos los campos son obligatorios', 'error');
@@ -6639,23 +6679,40 @@ FinanceApp.prototype.handleRegistration = function() {
   }
 
   const accountType = window.selectedAccountType || 'personal';
+  console.log('DEBUG: Iniciando registro con Firebase Auth...');
 
-  if (accountType === 'shared' && inviteCode) {
-    // Joining existing shared account
-    if (this.validateInviteCode(inviteCode)) {
-      this.joinSharedAccount(name, email, password, inviteCode);
+  try {
+    // Primero registrar en Firebase Auth
+    const userCredential = await FB.createUserWithEmailAndPassword(
+      FB.auth,
+      email,
+      password
+    );
+
+    console.log('DEBUG: Usuario creado en Firebase Auth:', userCredential.user.uid);
+
+    // Ahora crear la cuenta con el UID de Firebase
+    await this.createNewAccount(name, email, password, accountType, userCredential.user.uid);
+
+  } catch (error) {
+    console.error('Error en registro:', error);
+
+    if (error.code === 'auth/email-already-in-use') {
+      this.showToast('Este email ya está registrado', 'error');
+    } else if (error.code === 'auth/weak-password') {
+      this.showToast('La contraseña debe tener al menos 6 caracteres', 'error');
+    } else if (error.code === 'auth/invalid-email') {
+      this.showToast('Email inválido', 'error');
     } else {
-      this.showToast('Código de invitación inválido', 'error');
-      return;
+      this.showToast('Error al registrar: ' + error.message, 'error');
     }
-  } else {
-    // Creating new account
-    this.createNewAccount(name, email, password, accountType);
   }
 };
 
-FinanceApp.prototype.createNewAccount = function(name, email, password, accountType) {
-  const userId = this.generateUserId();
+FinanceApp.prototype.createNewAccount = async function(name, email, password, accountType, firebaseUid) {
+  // Usar el UID de Firebase si se proporciona, sino generar uno local
+  const userId = firebaseUid || this.generateUserId();
+  console.log('DEBUG: Creando cuenta con userId:', userId);
 
   this.accountType = accountType;
   this.currentUser = userId;
@@ -6670,12 +6727,30 @@ FinanceApp.prototype.createNewAccount = function(name, email, password, accountT
 
   this.logActivity('account_created', `Cuenta ${accountType} creada`, userId);
 
-  this.saveData();
+  // Guardar datos (ahora con autenticación correcta)
+  await this.saveData();
+
   this.updateAccountDisplay();
   this.updateUserSelectionDropdown();
 
   this.closeAuthModal();
   this.showToast(`Cuenta ${accountType} creada exitosamente`, 'success');
+
+  console.log('DEBUG: Cuenta creada con tipo:', accountType);
+
+  // Si es cuenta mancomunada, generar enlace de invitación automáticamente
+  if (accountType === 'shared') {
+    console.log('DEBUG: ✅ Es cuenta mancomunada! Preparando modal...');
+    console.log('DEBUG: Esperando 300ms para cerrar modal de auth...');
+
+    // Pequeño delay para asegurar que el modal de auth se cierre primero
+    setTimeout(() => {
+      console.log('DEBUG: 300ms transcurridos. Llamando a showSharedAccountInviteModal...');
+      this.showSharedAccountInviteModal();
+    }, 300);
+  } else {
+    console.log('DEBUG: ❌ NO es cuenta mancomunada (es:', accountType, ')');
+  }
 };
 
 FinanceApp.prototype.joinSharedAccount = function(name, email, password, inviteCode) {
@@ -6806,33 +6881,41 @@ FinanceApp.prototype.updateAccountDisplay = function() {
   const inviteUserBtn = document.getElementById('inviteUserBtn');
   const activityLogSection = document.getElementById('activityLogSection');
 
+  // Validar que los elementos existen antes de manipularlos
+  if (!accountTypeBadge || !accountTypeText) {
+    console.log('DEBUG: Elementos de account display no encontrados en DOM, saltando actualización');
+    return;
+  }
+
   if (this.accountType === 'shared') {
     accountTypeBadge.classList.add('shared');
     accountTypeText.innerHTML = '<i class="fas fa-users"></i> Cuenta Mancomunada';
 
     if (this.accountUsers.length === 1) {
-      inviteUserBtn.classList.remove('hidden');
+      if (inviteUserBtn) inviteUserBtn.classList.remove('hidden');
     } else {
-      inviteUserBtn.classList.add('hidden');
-      invitedUserInfo.classList.remove('hidden');
+      if (inviteUserBtn) inviteUserBtn.classList.add('hidden');
+      if (invitedUserInfo) invitedUserInfo.classList.remove('hidden');
       const otherUser = this.accountUsers.find(u => u.id !== this.currentUser);
-      if (otherUser) {
+      if (otherUser && invitedUserName) {
         invitedUserName.textContent = otherUser.name;
       }
     }
 
-    activityLogSection.classList.remove('hidden');
-    this.updateActivityLog();
+    if (activityLogSection) {
+      activityLogSection.classList.remove('hidden');
+      this.updateActivityLog();
+    }
   } else {
     accountTypeBadge.classList.remove('shared');
     accountTypeText.innerHTML = '<i class="fas fa-user"></i> Cuenta Personal';
-    inviteUserBtn.classList.add('hidden');
-    invitedUserInfo.classList.add('hidden');
-    activityLogSection.classList.add('hidden');
+    if (inviteUserBtn) inviteUserBtn.classList.add('hidden');
+    if (invitedUserInfo) invitedUserInfo.classList.add('hidden');
+    if (activityLogSection) activityLogSection.classList.add('hidden');
   }
 
   const currentUser = this.accountUsers.find(u => u.id === this.currentUser);
-  if (currentUser) {
+  if (currentUser && currentUserName) {
     currentUserName.textContent = currentUser.name;
   }
 };
@@ -6953,10 +7036,11 @@ FinanceApp.prototype.generateUserId = function() {
   return 'user_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
 };
 
-FinanceApp.prototype.generateRandomCode = function() {
+FinanceApp.prototype.generateRandomCode = function(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
-  for (let i = 0; i < 8; i++) {
+  const codeLength = length || 8; // Default 8 si no se especifica
+  for (let i = 0; i < codeLength; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
@@ -7939,6 +8023,257 @@ FinanceApp.prototype.updateConfigurationDisplay = function() {
       option.classList.add('active');
     }
   });
+};
+
+// ============================================
+// Shared Account Invite Modal Functions
+// ============================================
+
+FinanceApp.prototype.showSharedAccountInviteModal = function() {
+  console.log('DEBUG: showSharedAccountInviteModal llamada');
+  console.log('DEBUG: Buscando modal con ID: sharedAccountInviteModal');
+
+  const modal = document.getElementById('sharedAccountInviteModal');
+  console.log('DEBUG: Modal encontrado:', modal);
+  console.log('DEBUG: Clases del modal:', modal ? modal.className : 'Modal es null');
+
+  if (!modal) {
+    console.error('ERROR: Modal sharedAccountInviteModal no encontrado en el DOM');
+    console.log('DEBUG: Todos los elementos con class modal:', document.querySelectorAll('.modal'));
+    return;
+  }
+
+  // Generate unique invite link
+  const inviteLink = this.generateUniqueInviteLink();
+  console.log('DEBUG: Enlace generado:', inviteLink);
+
+  const inviteLinkInput = document.getElementById('sharedAccountInviteLink');
+  console.log('DEBUG: Input encontrado:', inviteLinkInput);
+
+  if (inviteLinkInput) {
+    inviteLinkInput.value = inviteLink;
+  }
+
+  // Store invite link data
+  this.currentInviteLink = {
+    link: inviteLink,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
+    used: false
+  };
+
+  this.saveData();
+  console.log('DEBUG: Datos guardados');
+
+  // Add notification with the invite link
+  this.addInviteLinkNotification(inviteLink);
+  console.log('DEBUG: Notificación agregada');
+
+  // Start timer countdown
+  this.startInviteLinkTimer();
+  console.log('DEBUG: Timer iniciado');
+
+  // Show modal
+  console.log('DEBUG: Agregando clase "show" al modal...');
+  modal.classList.add('show');
+  console.log('DEBUG: Clases después de agregar show:', modal.className);
+  console.log('DEBUG: Display computed del modal:', window.getComputedStyle(modal).display);
+
+  document.body.style.overflow = 'hidden';
+  console.log('DEBUG: Modal mostrado y body overflow hidden');
+
+  // Setup event listeners
+  this.setupSharedAccountInviteModalListeners();
+  console.log('DEBUG: Event listeners configurados');
+
+  // Verificación final
+  setTimeout(() => {
+    console.log('DEBUG: [500ms después] Display del modal:', window.getComputedStyle(modal).display);
+    console.log('DEBUG: [500ms después] Modal visible?', modal.offsetParent !== null);
+  }, 500);
+};
+
+FinanceApp.prototype.generateUniqueInviteLink = function() {
+  const baseUrl = window.location.origin;
+  const inviteCode = this.generateRandomCode(16);
+  const accountId = this.accountOwner || this.generateUserId().substring(0, 8);
+
+  return `${baseUrl}/?invite=${inviteCode}&account=${accountId}`;
+};
+
+FinanceApp.prototype.startInviteLinkTimer = function() {
+  const timerElement = document.getElementById('inviteLinkTimer');
+  if (!timerElement || !this.currentInviteLink) return;
+
+  // Clear any existing timer
+  if (this.inviteLinkTimerInterval) {
+    clearInterval(this.inviteLinkTimerInterval);
+  }
+
+  this.inviteLinkTimerInterval = setInterval(() => {
+    const now = Date.now();
+    const remaining = this.currentInviteLink.expiresAt - now;
+
+    if (remaining <= 0) {
+      timerElement.textContent = 'Expirado';
+      timerElement.style.color = 'var(--color-error)';
+      clearInterval(this.inviteLinkTimerInterval);
+      this.markInviteLinkAsExpired();
+      return;
+    }
+
+    const hours = Math.floor(remaining / (1000 * 60 * 60));
+    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+    timerElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }, 1000);
+};
+
+FinanceApp.prototype.markInviteLinkAsExpired = function() {
+  if (this.currentInviteLink) {
+    this.currentInviteLink.expired = true;
+    this.saveData();
+
+    // Update notification
+    this.updateInviteLinkNotificationToExpired();
+  }
+};
+
+FinanceApp.prototype.addInviteLinkNotification = function(inviteLink) {
+  console.log('DEBUG: Agregando notificación de enlace:', inviteLink);
+  // La notificación se agregará automáticamente en updateNotifications()
+  // Solo necesitamos actualizar el sistema de notificaciones
+  this.updateNotifications();
+  console.log('DEBUG: Sistema de notificaciones actualizado');
+};
+
+FinanceApp.prototype.updateInviteLinkNotificationToExpired = function() {
+  // La notificación se actualiza automáticamente en updateNotifications()
+  // Solo marcamos el enlace como expirado y actualizamos
+  if (this.currentInviteLink) {
+    this.currentInviteLink.expired = true;
+    this.saveData();
+    this.updateNotifications();
+    console.log('DEBUG: Notificación actualizada a expirado');
+  }
+};
+
+FinanceApp.prototype.setupSharedAccountInviteModalListeners = function() {
+  const modal = document.getElementById('sharedAccountInviteModal');
+  if (!modal) return;
+
+  // Copy button
+  const copyBtn = document.getElementById('copySharedInviteLinkBtn');
+  if (copyBtn) {
+    copyBtn.onclick = () => this.copyInviteLinkToClipboard();
+  }
+
+  // Share button
+  const shareBtn = document.getElementById('shareSharedInviteLinkBtn');
+  if (shareBtn) {
+    shareBtn.onclick = () => this.shareInviteLink();
+  }
+
+  // View notifications button
+  const viewNotifBtn = document.getElementById('viewNotificationsBtn');
+  if (viewNotifBtn) {
+    viewNotifBtn.onclick = () => {
+      this.closeSharedAccountInviteModal();
+      // Abrir dropdown de notificaciones
+      const dropdown = document.getElementById('notificationDropdown');
+      if (dropdown) {
+        dropdown.classList.remove('hidden');
+      }
+    };
+  }
+
+  // Close buttons
+  const closeBtn = document.getElementById('closeSharedInviteModalBtn');
+  const finishBtn = document.getElementById('closeSharedInviteModalFinishBtn');
+
+  if (closeBtn) {
+    closeBtn.onclick = () => this.closeSharedAccountInviteModal();
+  }
+
+  if (finishBtn) {
+    finishBtn.onclick = () => this.closeSharedAccountInviteModal();
+  }
+
+  // Click outside to close
+  modal.onclick = (e) => {
+    if (e.target.id === 'sharedAccountInviteModal') {
+      this.closeSharedAccountInviteModal();
+    }
+  };
+};
+
+FinanceApp.prototype.copyInviteLinkToClipboard = function() {
+  const inviteLinkInput = document.getElementById('sharedAccountInviteLink');
+  const copyBtn = document.getElementById('copySharedInviteLinkBtn');
+
+  if (!inviteLinkInput) return;
+
+  inviteLinkInput.select();
+  document.execCommand('copy');
+
+  // Visual feedback
+  if (copyBtn) {
+    const originalHTML = copyBtn.innerHTML;
+    copyBtn.classList.add('copied');
+    copyBtn.innerHTML = '<i class="fas fa-check"></i><span>¡Copiado!</span>';
+
+    setTimeout(() => {
+      copyBtn.classList.remove('copied');
+      copyBtn.innerHTML = originalHTML;
+    }, 2000);
+  }
+
+  this.showToast('Enlace copiado al portapapeles', 'success');
+};
+
+FinanceApp.prototype.shareInviteLink = function() {
+  const inviteLink = this.currentInviteLink?.link;
+
+  if (!inviteLink) {
+    this.showToast('No hay enlace disponible', 'error');
+    return;
+  }
+
+  // Check if Web Share API is available
+  if (navigator.share) {
+    navigator.share({
+      title: 'Invitación a Cuenta Mancomunada - FinanciaPro Suite',
+      text: 'Te invito a unirte a mi cuenta mancomunada en FinanciaPro Suite',
+      url: inviteLink
+    })
+    .then(() => {
+      this.showToast('Enlace compartido exitosamente', 'success');
+    })
+    .catch((error) => {
+      console.log('Error sharing:', error);
+      // Fallback: copy to clipboard
+      this.copyInviteLinkToClipboard();
+    });
+  } else {
+    // Fallback for browsers without Web Share API
+    this.copyInviteLinkToClipboard();
+    this.showToast('Enlace copiado. Compártelo manualmente', 'info');
+  }
+};
+
+FinanceApp.prototype.closeSharedAccountInviteModal = function() {
+  const modal = document.getElementById('sharedAccountInviteModal');
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  // Stop timer
+  if (this.inviteLinkTimerInterval) {
+    clearInterval(this.inviteLinkTimerInterval);
+    this.inviteLinkTimerInterval = null;
+  }
 };
 
 if (typeof window !== 'undefined') {

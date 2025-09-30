@@ -1986,15 +1986,6 @@
                 />
                 <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('registerPassword', this)"></i>
               </div>
-              <div id="inviteCodeGroup" class="input-group hidden">
-                <i class="fas fa-key"></i>
-                <input
-                  type="text"
-                  id="inviteCode"
-                  placeholder="Código de invitación"
-                  autocomplete="off"
-                />
-              </div>
               <button type="submit" class="btn btn--primary btn--full-width">
                 Crear Cuenta
               </button>
@@ -2385,6 +2376,100 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Enlace de Invitación Después de Registro -->
+    <div class="modal" id="sharedAccountInviteModal">
+      <div class="modal-dialog invitation-success-modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div class="modal-icon success">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="modal-title-section">
+              <h3 class="modal-title">¡Cuenta Mancomunada Creada!</h3>
+              <p class="modal-subtitle">
+                Comparte este enlace con tu socio para que se una
+              </p>
+            </div>
+            <button class="modal-close" id="closeSharedInviteModalBtn">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <div class="invite-success-content">
+              <div class="success-message-box">
+                <div class="success-icon-large">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div class="success-text">
+                  <h4>🎉 Tu cuenta mancomunada está lista</h4>
+                  <p>Ahora puedes invitar a tu socio usando el enlace único generado</p>
+                </div>
+              </div>
+
+              <div class="invite-link-section">
+                <label class="invite-label">
+                  <i class="fas fa-link"></i> Enlace de Invitación
+                </label>
+                <div class="invite-link-display-modern">
+                  <input
+                    type="text"
+                    class="invite-link-input-modern"
+                    id="sharedAccountInviteLink"
+                    readonly
+                  />
+                  <button class="btn-copy-modern" id="copySharedInviteLinkBtn" title="Copiar enlace">
+                    <i class="fas fa-copy"></i>
+                    <span>Copiar</span>
+                  </button>
+                  <button class="btn-share-modern" id="shareSharedInviteLinkBtn" title="Compartir">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Compartir</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="invite-info-box">
+                <div class="info-icon">
+                  <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="info-content">
+                  <h5>Importante:</h5>
+                  <ul>
+                    <li><strong>El enlace expira en 24 horas</strong></li>
+                    <li>Solo puede ser usado una vez</li>
+                    <li>También puedes encontrarlo en tus notificaciones</li>
+                    <li>Comparte solo con personas de confianza</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="invite-timer-section">
+                <div class="timer-icon">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="timer-text">
+                  <span>Tiempo restante: </span>
+                  <strong id="inviteLinkTimer">24:00:00</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn-secondary" id="viewNotificationsBtn">
+              <i class="fas fa-bell"></i>
+              Ver en Notificaciones
+            </button>
+            <button class="btn-primary" id="closeSharedInviteModalFinishBtn">
+              <i class="fas fa-check"></i>
+              Entendido
+            </button>
           </div>
         </div>
       </div>
