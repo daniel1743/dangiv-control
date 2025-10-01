@@ -3211,24 +3211,16 @@ select.form-control {
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  color: white;
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
-.balance-card .stat-icon {
-  background: linear-gradient(135deg, #4f46e5, #3730a3);
-}
-
-.expenses-card .stat-icon {
-  background: linear-gradient(135deg, var(--color-red-400), var(--color-red-500));
-}
-
-.savings-card .stat-icon {
-  background: linear-gradient(135deg, var(--color-teal-500), var(--color-teal-700));
-}
-
+/* Unified monochrome icon style */
+.balance-card .stat-icon,
+.expenses-card .stat-icon,
+.savings-card .stat-icon,
 .goals-card .stat-icon {
-  background: linear-gradient(135deg, var(--color-orange-400), var(--color-orange-500));
+  color: var(--color-primary);
 }
 
 .stat-content h3 {
@@ -4872,7 +4864,7 @@ select.form-control {
   width: 80px;
   height: 80px;
   margin: 0 auto var(--space-16);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-teal-500));
+  background: rgba(var(--color-primary-rgb), 0.1);
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
@@ -4881,12 +4873,16 @@ select.form-control {
 }
 
 .achievement-card.locked .achievement-icon {
-  background: var(--color-text-secondary);
+  background: rgba(var(--color-text-secondary-rgb), 0.1);
 }
 
 .achievement-icon i {
   font-size: var(--font-size-2xl);
-  color: var(--color-surface);
+  color: var(--color-primary);
+}
+
+.achievement-card.locked .achievement-icon i {
+  color: var(--color-text-secondary);
 }
 
 .achievement-card.unlocked .achievement-icon::after {
@@ -7416,24 +7412,13 @@ select.form-control {
   flex-shrink: 0;
 }
 
-.expense-stat-card.transactions .stat-icon {
-  background: rgba(var(--color-teal-500-rgb), 0.1);
-  color: rgb(99, 102, 241);
-}
-
-.expense-stat-card.necessity .stat-icon {
-  background: rgba(16, 185, 129, 0.1);
-  color: rgb(16, 185, 129);
-}
-
-.expense-stat-card.unnecessary .stat-icon {
-  background: rgba(239, 68, 68, 0.1);
-  color: rgb(239, 68, 68);
-}
-
+/* Unified monochrome icon style */
+.expense-stat-card.transactions .stat-icon,
+.expense-stat-card.necessity .stat-icon,
+.expense-stat-card.unnecessary .stat-icon,
 .expense-stat-card.services .stat-icon {
-  background: rgba(245, 158, 11, 0.1);
-  color: rgb(245, 158, 11);
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
 }
 
 .expense-stat-card .stat-content {
@@ -7887,18 +7872,15 @@ select.form-control {
   justify-content: center;
   font-size: 1.5rem;
   flex-shrink: 0;
+  color: var(--color-primary);
 }
 
-.budget-stat-icon--primary {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.budget-stat-icon--warning {
-  background: rgba(251, 146, 60, 0.2);
-}
-
+/* Unified monochrome icon style */
+.budget-stat-icon--primary,
+.budget-stat-icon--warning,
 .budget-stat-icon--success {
-  background: rgba(34, 197, 94, 0.2);
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
 }
 
 .budget-stat-content {
@@ -7981,20 +7963,23 @@ select.form-control {
 .category-icon {
   width: 36px;
   height: 36px;
-  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.25rem;
+  color: var(--color-primary);
 }
 
-.category-icon--food { background: var(--color-cream-50); color: var(--color-orange-400); }
-.category-icon--transport { background: #dbeafe; color: #3b82f6; }
-.category-icon--entertainment { background: #fce7f3; color: #ec4899; }
-.category-icon--health { background: #dcfce7; color: #22c55e; }
-.category-icon--services { background: #f3e8ff; color: #a855f7; }
-.category-icon--shopping { background: #fce7f3; color: #ec4899; }
-.category-icon--other { background: #e5e7eb; color: #6b7280; }
+/* Unified monochrome icon style - using brand color only */
+.category-icon--food,
+.category-icon--transport,
+.category-icon--entertainment,
+.category-icon--health,
+.category-icon--services,
+.category-icon--shopping,
+.category-icon--other {
+  color: var(--color-primary);
+}
 
 .category-name {
   font-weight: 600;

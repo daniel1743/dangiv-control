@@ -2040,6 +2040,13 @@ class FinanceApp {
       targetSection.classList.add('active');
     }
 
+    // Scroll to top of page when changing sections
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
+
     this.currentSection = sectionId;
 
     // Show/hide FAB based on section
