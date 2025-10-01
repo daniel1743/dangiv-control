@@ -4,6 +4,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebas
 import {
   getAuth,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInAnonymously,
   signOut,
   createUserWithEmailAndPassword,
@@ -79,6 +80,7 @@ window.FB = {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
+  sendPasswordResetEmail,
   // Firestore methods
   doc,
   getDoc,
