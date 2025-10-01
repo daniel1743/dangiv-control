@@ -622,12 +622,11 @@ class FinanceApp {
     }
 
     if (!this.currentUser || this.currentUser === 'anonymous') {
-      this.showToast(
-        localSaveOk
-          ? 'Datos guardados en este dispositivo. Inicia sesión para sincronizarlos en la nube.'
-          : 'No se pudieron guardar los datos en este dispositivo.',
-        localSaveOk ? 'info' : 'error'
-      );
+      // Guardado silencioso para usuarios anónimos
+      // Solo mostrar error si falla
+      if (!localSaveOk) {
+        this.showToast('No se pudieron guardar los datos en este dispositivo.', 'error');
+      }
       return;
     }
 
@@ -653,17 +652,8 @@ class FinanceApp {
 
       await FB.setDoc(userDocRef, cleanedData);
 
-      if (localSaveOk) {
-        this.showToast(
-          'Datos guardados en la nube y en este dispositivo.',
-          'success'
-        );
-      } else {
-        this.showToast(
-          'Datos sincronizados en la nube. No se pudieron guardar de forma local.',
-          'info'
-        );
-      }
+      // Guardado silencioso - Solo mostrar errores, no éxitos
+      // Los usuarios no necesitan saber que cada acción se guarda
     } catch (error) {
       console.error('Error al guardar en Firestore:', error);
       const message = localSaveOk
