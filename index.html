@@ -339,6 +339,10 @@
           <i class="fas fa-bullseye"></i>
           <span>Metas Financieras</span>
         </button>
+        <button class="nav-item" data-section="budget">
+          <i class="fas fa-wallet"></i>
+          <span>Presupuesto</span>
+        </button>
         <button class="nav-item" data-section="analysis">
           <i class="fas fa-chart-pie"></i>
           <span>Análisis</span>
@@ -1268,6 +1272,219 @@
           </div>
           <div class="card__body">
             <div id="shoppingList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Budget Section -->
+      <section id="budget" class="section">
+        <div class="section-header">
+          <h1>💰 Presupuesto Mensual</h1>
+          <p>Controla tus gastos con el sistema de sobres (Envelope Budgeting)</p>
+        </div>
+
+        <!-- Budget Summary Card -->
+        <div class="card budget-summary-card">
+          <div class="card__header">
+            <h3>Resumen del Mes</h3>
+            <div class="budget-month-selector">
+              <button class="btn btn--icon" id="prevMonthBtn">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <span id="currentBudgetMonth" class="budget-month-label"></span>
+              <button class="btn btn--icon" id="nextMonthBtn">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card__body">
+            <div class="budget-summary-stats">
+              <div class="budget-stat">
+                <div class="budget-stat-icon budget-stat-icon--primary">
+                  <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <div class="budget-stat-content">
+                  <span class="budget-stat-label">Presupuesto Total</span>
+                  <span class="budget-stat-value" id="totalBudgetLimit">$0</span>
+                </div>
+              </div>
+              <div class="budget-stat">
+                <div class="budget-stat-icon budget-stat-icon--warning">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="budget-stat-content">
+                  <span class="budget-stat-label">Gastado</span>
+                  <span class="budget-stat-value" id="totalBudgetSpent">$0</span>
+                </div>
+              </div>
+              <div class="budget-stat">
+                <div class="budget-stat-icon budget-stat-icon--success">
+                  <i class="fas fa-piggy-bank"></i>
+                </div>
+                <div class="budget-stat-content">
+                  <span class="budget-stat-label">Disponible</span>
+                  <span class="budget-stat-value" id="totalBudgetAvailable">$0</span>
+                </div>
+              </div>
+            </div>
+            <div class="budget-overall-progress">
+              <div class="progress-header">
+                <span>Progreso General</span>
+                <span id="overallBudgetPercentage">0%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="overallBudgetProgress" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Budget Setup Card -->
+        <div class="card">
+          <div class="card__header">
+            <h3>Configurar Presupuesto</h3>
+            <button class="btn btn--secondary btn--sm" id="resetBudgetBtn">
+              <i class="fas fa-redo"></i> Restablecer
+            </button>
+          </div>
+          <div class="card__body">
+            <form id="budgetSetupForm">
+              <div class="budget-setup-grid">
+                <div class="budget-category-item">
+                  <div class="budget-category-header">
+                    <i class="fas fa-utensils category-icon category-icon--food"></i>
+                    <span class="category-name">Alimentación</span>
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="budget-Alimentación"
+                      placeholder="$0"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+
+                <div class="budget-category-item">
+                  <div class="budget-category-header">
+                    <i class="fas fa-bus category-icon category-icon--transport"></i>
+                    <span class="category-name">Transporte</span>
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="budget-Transporte"
+                      placeholder="$0"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+
+                <div class="budget-category-item">
+                  <div class="budget-category-header">
+                    <i class="fas fa-film category-icon category-icon--entertainment"></i>
+                    <span class="category-name">Entretenimiento</span>
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="budget-Entretenimiento"
+                      placeholder="$0"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+
+                <div class="budget-category-item">
+                  <div class="budget-category-header">
+                    <i class="fas fa-heartbeat category-icon category-icon--health"></i>
+                    <span class="category-name">Salud</span>
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="budget-Salud"
+                      placeholder="$0"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+
+                <div class="budget-category-item">
+                  <div class="budget-category-header">
+                    <i class="fas fa-wrench category-icon category-icon--services"></i>
+                    <span class="category-name">Servicios</span>
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="budget-Servicios"
+                      placeholder="$0"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+
+                <div class="budget-category-item">
+                  <div class="budget-category-header">
+                    <i class="fas fa-shopping-bag category-icon category-icon--shopping"></i>
+                    <span class="category-name">Compras</span>
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="budget-Compras"
+                      placeholder="$0"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+
+                <div class="budget-category-item">
+                  <div class="budget-category-header">
+                    <i class="fas fa-ellipsis-h category-icon category-icon--other"></i>
+                    <span class="category-name">Otros</span>
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="budget-Otros"
+                      placeholder="$0"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn--primary">
+                <i class="fas fa-save"></i> Guardar Presupuesto
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Budget Categories Progress -->
+        <div class="card">
+          <div class="card__header">
+            <h3>Estado por Categoría</h3>
+          </div>
+          <div class="card__body">
+            <div id="budgetCategoriesProgress">
+              <!-- Se llenará dinámicamente -->
+            </div>
           </div>
         </div>
       </section>
@@ -2214,7 +2431,7 @@
           </div>
           <div class="modal-footer auth-footer">
             <p id="authSwitchLink">
-              ¿No tienes una cuenta? <a href="#">Regístrate aquí</a>
+              ¿No tienes una cuenta? <a href="#" onclick="switchToRegister(); return false;">Regístrate aquí</a>
             </p>
           </div>
         </div>
@@ -2904,6 +3121,85 @@
               Entendido
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAB (Floating Action Button) for Quick Expense Entry -->
+    <button class="fab" id="fabQuickExpense" aria-label="Agregar gasto rápido">
+      <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Quick Expense Modal -->
+    <div class="modal" id="quickExpenseModal">
+      <div class="modal__content modal--sm">
+        <div class="modal__header">
+          <h2>⚡ Agregar Gasto Rápido</h2>
+          <button class="modal__close" id="closeQuickExpenseModal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal__body">
+          <!-- Expense Templates -->
+          <div class="quick-templates" id="quickTemplates">
+            <!-- Se llenará dinámicamente con plantillas -->
+          </div>
+
+          <!-- Quick Expense Form -->
+          <form id="quickExpenseForm">
+            <div class="form-group">
+              <label class="form-label" for="quickAmount">
+                <i class="fas fa-dollar-sign"></i> Monto
+              </label>
+              <input
+                type="number"
+                id="quickAmount"
+                class="form-control form-control--lg"
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                required
+                autofocus
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="quickCategory">
+                <i class="fas fa-tag"></i> Categoría
+              </label>
+              <select id="quickCategory" class="form-control" required>
+                <option value="">Selecciona una categoría</option>
+                <option value="Alimentación">🍽️ Alimentación</option>
+                <option value="Transporte">🚌 Transporte</option>
+                <option value="Entretenimiento">🎬 Entretenimiento</option>
+                <option value="Salud">❤️ Salud</option>
+                <option value="Servicios">🔧 Servicios</option>
+                <option value="Compras">🛍️ Compras</option>
+                <option value="Otros">📦 Otros</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="quickDescription">
+                <i class="fas fa-pencil-alt"></i> Descripción (opcional)
+              </label>
+              <input
+                type="text"
+                id="quickDescription"
+                class="form-control"
+                placeholder="Ej. Café Starbucks"
+              />
+            </div>
+
+            <div class="quick-actions">
+              <button type="button" class="btn btn--secondary" id="saveAsTemplateBtn">
+                <i class="fas fa-bookmark"></i> Guardar Plantilla
+              </button>
+              <button type="submit" class="btn btn--primary">
+                <i class="fas fa-check"></i> Guardar Gasto
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

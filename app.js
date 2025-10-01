@@ -57,6 +57,13 @@ class FinanceApp {
     this.ownedStyles = savedData.ownedStyles || ['classic'];
     this.currentStyle = savedData.currentStyle || 'classic';
 
+    // Budget System (Envelope Budgeting)
+    this.budgets = savedData.budgets || {};
+    this.currentBudgetMonth = this.getCurrentMonthKey();
+
+    // Expense Templates for Quick Entry
+    this.expenseTemplates = savedData.expenseTemplates || [];
+
     // Chart Styles System
     this.chartStyles = [
       {
@@ -591,6 +598,8 @@ class FinanceApp {
       userCoins: this.userCoins,
       ownedStyles: this.ownedStyles,
       currentStyle: this.currentStyle,
+      budgets: this.budgets,
+      expenseTemplates: this.expenseTemplates,
       lastUpdate: Date.now(),
     };
 
@@ -1169,6 +1178,10 @@ class FinanceApp {
     this.setupNotificationBell();
     this.setupScrollOptimization();
     this.initQuickAccess(); // Optimización sutil del scroll
+
+    // NEW: Budget & Quick Expense Systems
+    this.setupBudgetListeners(); // Sistema de presupuesto
+    this.setupQuickExpenseListeners(); // Entrada rápida de gastos
 
     // Forzar normalización de datos existentes al inicio
     this.forceDataNormalization();
@@ -1944,6 +1957,8 @@ class FinanceApp {
         this.renderAchievements();
       } else if (sectionId === 'audit') {
         this.renderAuditLog();
+      } else if (sectionId === 'budget') {
+        this.renderBudgetSection();
       }
     }, 100);
   }
@@ -4164,6 +4179,19 @@ class FinanceApp {
     );
 
     this.saveData();
+
+    // Update budget if exists for current month
+    const currentMonth = this.getCurrentMonthKey();
+    if (this.budgets[currentMonth]) {
+      this.updateBudgetSpending(currentMonth);
+
+      // Check for budget alerts
+      const alerts = this.checkBudgetAlerts(currentMonth);
+      alerts.forEach(alert => {
+        this.showToast(alert.message, alert.type);
+      });
+    }
+
     this.renderDashboard();
     this.renderExpenses();
     this.updateTrendChart();
@@ -4367,6 +4395,8 @@ class FinanceApp {
   openAuthModal() {
     const modal = document.getElementById('authModal');
     if (modal) {
+      // Asegurarse de que se muestra el formulario de login por defecto
+      switchToLogin();
       modal.classList.add('show');
       document.body.style.overflow = 'hidden';
     }
@@ -5293,21 +5323,105 @@ FinanceApp.prototype.loadInspirationImage = async function() {
 
   if (!img) return;
 
+  // Si no hay API key de Unsplash, usar imágenes estáticas
+  if (!UNSPLASH_ACCESS_KEY) {
+    const staticImages = [
+      // Vacaciones & Playa
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80',
+      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80',
+      'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=800&q=80',
+      // Viajes
+      'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80',
+      'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80',
+      'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80',
+      'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=800&q=80',
+      // Compras & Lujo
+      'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80',
+      'https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&q=80',
+      'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80',
+      'https://images.unsplash.com/photo-1558769132-cb1aea91c7ef?w=800&q=80',
+      // Tecnología
+      'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=800&q=80',
+      'https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=800&q=80',
+      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
+      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80',
+      // Naturaleza & Inspiración
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80',
+      'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80',
+      'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800&q=80'
+    ];
+
+    img.style.opacity = '0';
+    setTimeout(() => {
+      img.src = staticImages[currentCategoryIndex % staticImages.length];
+
+      // Aplicar efecto zoom + pan aleatorio
+      const zoomLevel = 1.05 + (Math.random() * 0.1); // 1.05 a 1.15
+      const panX = (Math.random() - 0.5) * 8; // -4% a 4%
+      const panY = (Math.random() - 0.5) * 8; // -4% a 4%
+
+      setTimeout(() => {
+        img.style.transform = `translate(-50%, -50%) scale(${zoomLevel}) translate(${panX}%, ${panY}%)`;
+        img.style.opacity = '1';
+      }, 50);
+
+      // Actualizar texto según categoría
+      const categories = ['Vacaciones', 'Playa', 'Viajes', 'Compras', 'Moda de lujo', 'Tecnología'];
+      if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.textContent = `✨ ${categories[Math.floor(currentCategoryIndex / 3) % categories.length]}`;
+          overlay.style.transition = 'opacity 1s ease-in-out';
+          overlay.style.opacity = '1';
+        }, 800);
+      }
+
+      currentCategoryIndex = (currentCategoryIndex + 1) % staticImages.length;
+    }, 1500);
+    return;
+  }
+
   const category = goalCategories[currentCategoryIndex];
   currentCategoryIndex = (currentCategoryIndex + 1) % goalCategories.length;
 
   try {
     const response = await fetch(`https://api.unsplash.com/photos/random?query=${category}&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`);
+
+    if (!response.ok) {
+      throw new Error(`Unsplash API error: ${response.status}`);
+    }
+
     const data = await response.json();
+
+    if (!data || !data.urls || !data.urls.regular) {
+      throw new Error('Invalid response from Unsplash API');
+    }
 
     img.style.opacity = '0';
     setTimeout(() => {
       img.src = data.urls.regular;
-      img.style.opacity = '1';
+
+      // Aplicar efecto zoom + pan aleatorio
+      const zoomLevel = 1.05 + (Math.random() * 0.1); // 1.05 a 1.15
+      const panX = (Math.random() - 0.5) * 8; // -4% a 4%
+      const panY = (Math.random() - 0.5) * 8; // -4% a 4%
+
+      setTimeout(() => {
+        img.style.transform = `translate(-50%, -50%) scale(${zoomLevel}) translate(${panX}%, ${panY}%)`;
+        img.style.opacity = '1';
+      }, 50);
+
       if (overlay) {
-        overlay.textContent = `✨ ${category === 'luxury fashion' ? 'Moda de lujo' : category === 'technology gadgets' ? 'Tecnología' : category === 'vacation' ? 'Vacaciones' : category === 'beach' ? 'Playa' : category === 'travel' ? 'Viajes' : 'Compras'}`;
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.textContent = `✨ ${category === 'luxury fashion' ? 'Moda de lujo' : category === 'technology gadgets' ? 'Tecnología' : category === 'vacation' ? 'Vacaciones' : category === 'beach' ? 'Playa' : category === 'travel' ? 'Viajes' : 'Compras'}`;
+          overlay.style.transition = 'opacity 1s ease-in-out';
+          overlay.style.opacity = '1';
+        }, 800);
       }
-    }, 300);
+    }, 1500);
   } catch (error) {
     console.error('Error loading inspiration:', error);
     img.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800';
@@ -5320,7 +5434,7 @@ FinanceApp.prototype.startInspirationRotation = function() {
   this.loadInspirationImage();
   this.inspirationInterval = setInterval(() => {
     this.loadInspirationImage();
-  }, 5000);
+  }, 8000); // Cambiado de 5000 a 8000ms (8 segundos)
 };
 
 FinanceApp.prototype.stopInspirationRotation = function() {
@@ -6448,7 +6562,7 @@ function switchToLogin() {
   document.getElementById('registerForm').classList.add('hidden');
   document.getElementById('authModalTitle').textContent = '¡Bienvenido de vuelta!';
   document.getElementById('authSwitchLink').innerHTML =
-    '¿No tienes una cuenta? <a href="#" onclick="switchToRegister()">Regístrate aquí</a>';
+    '¿No tienes una cuenta? <a href="#" onclick="switchToRegister(); return false;">Regístrate aquí</a>';
 }
 
 function switchToRegister() {
@@ -6456,7 +6570,7 @@ function switchToRegister() {
   document.getElementById('registerForm').classList.remove('hidden');
   document.getElementById('authModalTitle').textContent = 'Crear nueva cuenta';
   document.getElementById('authSwitchLink').innerHTML =
-    '¿Ya tienes una cuenta? <a href="#" onclick="switchToLogin()">Inicia sesión aquí</a>';
+    '¿Ya tienes una cuenta? <a href="#" onclick="switchToLogin(); return false;">Inicia sesión aquí</a>';
 }
 
 function showAccountTypeSelection() {
@@ -6473,22 +6587,14 @@ FinanceApp.prototype.setupUserSystemListeners = function() {
         e.preventDefault();
 
         const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const authModalTitle = document.getElementById('authModalTitle');
 
         // Si está en login, cambiar a registro
         if (!loginForm.classList.contains('hidden')) {
-          loginForm.classList.add('hidden');
-          registerForm.classList.remove('hidden');
-          authModalTitle.textContent = 'Crear nueva cuenta';
-          authSwitchLink.innerHTML = '¿Ya tienes una cuenta? <a href="#">Inicia sesión aquí</a>';
+          switchToRegister();
         }
         // Si está en registro, cambiar a login
         else {
-          registerForm.classList.add('hidden');
-          loginForm.classList.remove('hidden');
-          authModalTitle.textContent = '¡Bienvenido de vuelta!';
-          authSwitchLink.innerHTML = '¿No tienes una cuenta? <a href="#">Regístrate aquí</a>';
+          switchToLogin();
         }
       }
     });
@@ -6555,14 +6661,14 @@ FinanceApp.prototype.setupUserSystemListeners = function() {
   const navbarLoginBtn = document.getElementById('navbarLoginBtn');
   if (navbarLoginBtn) {
     navbarLoginBtn.addEventListener('click', () => {
-      this.showAuthModal();
+      this.openAuthModal();
     });
   }
 
   const sidebarLoginBtn = document.getElementById('sidebarLoginBtn');
   if (sidebarLoginBtn) {
     sidebarLoginBtn.addEventListener('click', () => {
-      this.showAuthModal();
+      this.openAuthModal();
     });
   }
 
@@ -9574,6 +9680,525 @@ FinanceApp.prototype.renderFinancialInsight = function(expenses, total, analysis
   }
 
   insightEl.innerHTML = insight;
+};
+
+// ========================================
+// BUDGET SYSTEM (Envelope Budgeting)
+// ========================================
+
+FinanceApp.prototype.getCurrentMonthKey = function() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`;
+};
+
+FinanceApp.prototype.getMonthName = function(monthKey) {
+  const [year, month] = monthKey.split('-');
+  const monthNames = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+  return `${monthNames[parseInt(month) - 1]} ${year}`;
+};
+
+FinanceApp.prototype.setupBudget = function(monthKey, budgetConfig) {
+  if (!this.budgets[monthKey]) {
+    this.budgets[monthKey] = {
+      categories: {},
+      totalLimit: 0,
+      totalSpent: 0,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  let totalLimit = 0;
+  const categories = ['Alimentación', 'Transporte', 'Entretenimiento', 'Salud', 'Servicios', 'Compras', 'Otros'];
+
+  categories.forEach(category => {
+    const limit = parseFloat(budgetConfig[category]) || 0;
+    this.budgets[monthKey].categories[category] = {
+      limit: limit,
+      spent: 0,
+      alerts: true
+    };
+    totalLimit += limit;
+  });
+
+  this.budgets[monthKey].totalLimit = totalLimit;
+  this.updateBudgetSpending(monthKey);
+  this.saveData();
+};
+
+FinanceApp.prototype.updateBudgetSpending = function(monthKey) {
+  if (!this.budgets[monthKey]) return;
+
+  const budget = this.budgets[monthKey];
+  const [year, month] = monthKey.split('-');
+
+  // Reset spent amounts
+  Object.keys(budget.categories).forEach(category => {
+    budget.categories[category].spent = 0;
+  });
+  budget.totalSpent = 0;
+
+  // Calculate spent amounts from expenses
+  this.expenses.forEach(expense => {
+    const expenseDate = new Date(expense.date);
+    const expenseYear = expenseDate.getFullYear();
+    const expenseMonth = String(expenseDate.getMonth() + 1).padStart(2, '0');
+    const expenseMonthKey = `${expenseYear}-${expenseMonth}`;
+
+    if (expenseMonthKey === monthKey && budget.categories[expense.category]) {
+      budget.categories[expense.category].spent += parseFloat(expense.amount);
+      budget.totalSpent += parseFloat(expense.amount);
+    }
+  });
+
+  this.saveData();
+};
+
+FinanceApp.prototype.checkBudgetAlerts = function(monthKey) {
+  if (!this.budgets[monthKey]) return [];
+
+  const alerts = [];
+  const budget = this.budgets[monthKey];
+
+  Object.entries(budget.categories).forEach(([category, data]) => {
+    if (data.limit === 0) return;
+
+    const percentage = (data.spent / data.limit) * 100;
+
+    if (percentage >= 100) {
+      alerts.push({
+        category,
+        type: 'danger',
+        message: `¡Has superado el presupuesto de ${category}! (${percentage.toFixed(0)}%)`
+      });
+    } else if (percentage >= 80) {
+      alerts.push({
+        category,
+        type: 'warning',
+        message: `Te acercas al límite en ${category} (${percentage.toFixed(0)}%)`
+      });
+    }
+  });
+
+  return alerts;
+};
+
+FinanceApp.prototype.renderBudgetSection = function() {
+  const monthKey = this.currentBudgetMonth;
+  const monthLabel = document.getElementById('currentBudgetMonth');
+  if (monthLabel) {
+    monthLabel.textContent = this.getMonthName(monthKey);
+  }
+
+  this.renderBudgetSummary(monthKey);
+  this.renderBudgetSetupForm(monthKey);
+  this.renderBudgetProgress(monthKey);
+};
+
+FinanceApp.prototype.renderBudgetSummary = function(monthKey) {
+  const budget = this.budgets[monthKey] || {
+    totalLimit: 0,
+    totalSpent: 0,
+    categories: {}
+  };
+
+  const available = budget.totalLimit - budget.totalSpent;
+  const percentage = budget.totalLimit > 0
+    ? Math.min((budget.totalSpent / budget.totalLimit) * 100, 100)
+    : 0;
+
+  document.getElementById('totalBudgetLimit').textContent =
+    `$${budget.totalLimit.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
+  document.getElementById('totalBudgetSpent').textContent =
+    `$${budget.totalSpent.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
+  document.getElementById('totalBudgetAvailable').textContent =
+    `$${Math.max(available, 0).toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
+  document.getElementById('overallBudgetPercentage').textContent =
+    `${percentage.toFixed(0)}%`;
+
+  const progressBar = document.getElementById('overallBudgetProgress');
+  if (progressBar) {
+    progressBar.style.width = `${percentage}%`;
+    progressBar.className = 'progress-fill';
+    if (percentage >= 100) {
+      progressBar.classList.add('danger');
+    } else if (percentage >= 80) {
+      progressBar.classList.add('warning');
+    }
+  }
+};
+
+FinanceApp.prototype.renderBudgetSetupForm = function(monthKey) {
+  const budget = this.budgets[monthKey];
+  const categories = ['Alimentación', 'Transporte', 'Entretenimiento', 'Salud', 'Servicios', 'Compras', 'Otros'];
+
+  categories.forEach(category => {
+    const input = document.getElementById(`budget-${category}`);
+    if (input && budget && budget.categories[category]) {
+      input.value = budget.categories[category].limit || '';
+    }
+  });
+};
+
+FinanceApp.prototype.renderBudgetProgress = function(monthKey) {
+  const container = document.getElementById('budgetCategoriesProgress');
+  if (!container) return;
+
+  const budget = this.budgets[monthKey];
+  if (!budget || Object.keys(budget.categories).length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-wallet"></i>
+        <p>No hay presupuesto configurado para este mes</p>
+        <p class="text-muted">Usa el formulario arriba para establecer límites por categoría</p>
+      </div>
+    `;
+    return;
+  }
+
+  const categoryIcons = {
+    'Alimentación': 'fas fa-utensils',
+    'Transporte': 'fas fa-bus',
+    'Entretenimiento': 'fas fa-film',
+    'Salud': 'fas fa-heartbeat',
+    'Servicios': 'fas fa-wrench',
+    'Compras': 'fas fa-shopping-bag',
+    'Otros': 'fas fa-ellipsis-h'
+  };
+
+  const categoryColors = {
+    'Alimentación': 'food',
+    'Transporte': 'transport',
+    'Entretenimiento': 'entertainment',
+    'Salud': 'health',
+    'Servicios': 'services',
+    'Compras': 'shopping',
+    'Otros': 'other'
+  };
+
+  container.innerHTML = Object.entries(budget.categories)
+    .filter(([, data]) => data.limit > 0)
+    .map(([category, data]) => {
+      const percentage = data.limit > 0 ? Math.min((data.spent / data.limit) * 100, 100) : 0;
+      const available = data.limit - data.spent;
+
+      let progressClass = 'progress-fill';
+      let alertHtml = '';
+
+      if (percentage >= 100) {
+        progressClass += ' danger';
+        alertHtml = `
+          <div class="budget-alert danger">
+            <i class="fas fa-exclamation-circle"></i>
+            ¡Presupuesto superado en $${Math.abs(available).toLocaleString('es-ES', {minimumFractionDigits: 2})}!
+          </div>
+        `;
+      } else if (percentage >= 80) {
+        progressClass += ' warning';
+        alertHtml = `
+          <div class="budget-alert warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            Te quedan $${available.toLocaleString('es-ES', {minimumFractionDigits: 2})} (${(100 - percentage).toFixed(0)}%)
+          </div>
+        `;
+      }
+
+      return `
+        <div class="budget-category-progress">
+          <div class="budget-category-progress-header">
+            <div class="budget-category-info">
+              <i class="${categoryIcons[category]} category-icon category-icon--${categoryColors[category]}"></i>
+              <span class="category-name">${category}</span>
+            </div>
+            <div class="budget-category-amounts">
+              <div class="budget-category-amounts-row">
+                <span class="budget-amount-label">Gastado:</span>
+                <span class="budget-amount-value spent">$${data.spent.toLocaleString('es-ES', {minimumFractionDigits: 2})}</span>
+              </div>
+              <div class="budget-category-amounts-row">
+                <span class="budget-amount-label">Límite:</span>
+                <span class="budget-amount-value">$${data.limit.toLocaleString('es-ES', {minimumFractionDigits: 2})}</span>
+              </div>
+            </div>
+          </div>
+          <div class="progress-header">
+            <span>${percentage.toFixed(0)}% utilizado</span>
+            <span class="budget-amount-value ${available < 0 ? 'exceeded' : 'available'}">
+              ${available >= 0 ? 'Disponible: ' : 'Excedido: '}$${Math.abs(available).toLocaleString('es-ES', {minimumFractionDigits: 2})}
+            </span>
+          </div>
+          <div class="progress-bar">
+            <div class="${progressClass}" style="width: ${percentage}%"></div>
+          </div>
+          ${alertHtml}
+        </div>
+      `;
+    }).join('');
+};
+
+FinanceApp.prototype.setupBudgetListeners = function() {
+  // Budget setup form
+  const budgetForm = document.getElementById('budgetSetupForm');
+  if (budgetForm) {
+    budgetForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const budgetConfig = {};
+      const categories = ['Alimentación', 'Transporte', 'Entretenimiento', 'Salud', 'Servicios', 'Compras', 'Otros'];
+
+      categories.forEach(category => {
+        const input = document.getElementById(`budget-${category}`);
+        budgetConfig[category] = input ? parseFloat(input.value) || 0 : 0;
+      });
+
+      this.setupBudget(this.currentBudgetMonth, budgetConfig);
+      this.renderBudgetSection();
+      this.showToast('Presupuesto configurado exitosamente', 'success');
+    });
+  }
+
+  // Reset budget button
+  const resetBtn = document.getElementById('resetBudgetBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (confirm('¿Estás seguro de que deseas restablecer el presupuesto de este mes?')) {
+        delete this.budgets[this.currentBudgetMonth];
+        this.saveData();
+        this.renderBudgetSection();
+        this.showToast('Presupuesto restablecido', 'info');
+      }
+    });
+  }
+
+  // Month navigation
+  const prevBtn = document.getElementById('prevMonthBtn');
+  const nextBtn = document.getElementById('nextMonthBtn');
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      const [year, month] = this.currentBudgetMonth.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 2);
+      this.currentBudgetMonth = this.getCurrentMonthKey.call({
+        getFullYear: () => date.getFullYear(),
+        getMonth: () => date.getMonth()
+      });
+      this.renderBudgetSection();
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      const [year, month] = this.currentBudgetMonth.split('-');
+      const date = new Date(parseInt(year), parseInt(month));
+      const newYear = date.getFullYear();
+      const newMonth = String(date.getMonth() + 1).padStart(2, '0');
+      this.currentBudgetMonth = `${newYear}-${newMonth}`;
+      this.renderBudgetSection();
+    });
+  }
+};
+
+// ========================================
+// QUICK EXPENSE ENTRY & TEMPLATES
+// ========================================
+
+FinanceApp.prototype.setupQuickExpenseListeners = function() {
+  // FAB button
+  const fab = document.getElementById('fabQuickExpense');
+  const modal = document.getElementById('quickExpenseModal');
+  const closeBtn = document.getElementById('closeQuickExpenseModal');
+
+  if (fab) {
+    fab.addEventListener('click', () => {
+      this.openQuickExpenseModal();
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+    });
+  }
+
+  // Close on backdrop click
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
+    });
+  }
+
+  // Quick expense form
+  const form = document.getElementById('quickExpenseForm');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.handleQuickExpenseSubmit();
+    });
+  }
+
+  // Save as template button
+  const saveTemplateBtn = document.getElementById('saveAsTemplateBtn');
+  if (saveTemplateBtn) {
+    saveTemplateBtn.addEventListener('click', () => {
+      this.saveExpenseTemplate();
+    });
+  }
+};
+
+FinanceApp.prototype.openQuickExpenseModal = function() {
+  const modal = document.getElementById('quickExpenseModal');
+  if (modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    this.renderExpenseTemplates();
+
+    // Focus on amount input
+    setTimeout(() => {
+      document.getElementById('quickAmount')?.focus();
+    }, 100);
+  }
+};
+
+FinanceApp.prototype.handleQuickExpenseSubmit = function() {
+  const amount = parseFloat(document.getElementById('quickAmount').value);
+  const category = document.getElementById('quickCategory').value;
+  const description = document.getElementById('quickDescription').value || 'Gasto rápido';
+
+  if (!amount || !category) {
+    this.showToast('Por favor completa los campos requeridos', 'error');
+    return;
+  }
+
+  // Create expense
+  const expense = {
+    id: Date.now(),
+    amount: amount,
+    category: category,
+    description: description,
+    date: new Date().toISOString().split('T')[0],
+    user: this.currentUser || 'anonymous',
+    necessity: 'Necesario',
+    createdAt: new Date().toISOString()
+  };
+
+  this.expenses.push(expense);
+  this.saveData();
+
+  // Update budget
+  const currentMonth = this.getCurrentMonthKey();
+  if (this.budgets[currentMonth]) {
+    this.updateBudgetSpending(currentMonth);
+
+    // Check for alerts
+    const alerts = this.checkBudgetAlerts(currentMonth);
+    alerts.forEach(alert => {
+      this.showToast(alert.message, alert.type);
+    });
+  }
+
+  // Close modal and reset form
+  document.getElementById('quickExpenseModal').classList.remove('show');
+  document.body.style.overflow = '';
+  document.getElementById('quickExpenseForm').reset();
+
+  // Update dashboard if visible
+  if (document.getElementById('dashboard').classList.contains('active')) {
+    this.renderDashboard();
+  }
+
+  this.showToast('Gasto registrado exitosamente', 'success');
+};
+
+FinanceApp.prototype.saveExpenseTemplate = function() {
+  const amount = parseFloat(document.getElementById('quickAmount').value);
+  const category = document.getElementById('quickCategory').value;
+  const description = document.getElementById('quickDescription').value;
+
+  if (!amount || !category || !description) {
+    this.showToast('Completa todos los campos para guardar una plantilla', 'warning');
+    return;
+  }
+
+  // Check if template already exists
+  const exists = this.expenseTemplates.some(t =>
+    t.description === description && t.category === category
+  );
+
+  if (exists) {
+    this.showToast('Esta plantilla ya existe', 'info');
+    return;
+  }
+
+  const template = {
+    id: Date.now(),
+    amount: amount,
+    category: category,
+    description: description,
+    createdAt: new Date().toISOString()
+  };
+
+  this.expenseTemplates.push(template);
+  this.saveData();
+  this.renderExpenseTemplates();
+  this.showToast('Plantilla guardada exitosamente', 'success');
+};
+
+FinanceApp.prototype.renderExpenseTemplates = function() {
+  const container = document.getElementById('quickTemplates');
+  if (!container) return;
+
+  if (this.expenseTemplates.length === 0) {
+    container.innerHTML = `
+      <div class="quick-templates-empty">
+        <i class="fas fa-bookmark"></i>
+        <p>No hay plantillas guardadas</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = this.expenseTemplates.map(template => `
+    <div class="quick-template" data-template-id="${template.id}">
+      <span>${template.description}</span>
+      <span>$${template.amount.toFixed(2)}</span>
+      <i class="fas fa-times" data-action="delete"></i>
+    </div>
+  `).join('');
+
+  // Add click listeners
+  container.querySelectorAll('.quick-template').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target.dataset.action === 'delete') {
+        this.deleteExpenseTemplate(parseInt(el.dataset.templateId));
+      } else {
+        this.applyExpenseTemplate(parseInt(el.dataset.templateId));
+      }
+    });
+  });
+};
+
+FinanceApp.prototype.applyExpenseTemplate = function(templateId) {
+  const template = this.expenseTemplates.find(t => t.id === templateId);
+  if (!template) return;
+
+  document.getElementById('quickAmount').value = template.amount;
+  document.getElementById('quickCategory').value = template.category;
+  document.getElementById('quickDescription').value = template.description;
+};
+
+FinanceApp.prototype.deleteExpenseTemplate = function(templateId) {
+  this.expenseTemplates = this.expenseTemplates.filter(t => t.id !== templateId);
+  this.saveData();
+  this.renderExpenseTemplates();
+  this.showToast('Plantilla eliminada', 'info');
 };
 
 if (typeof window !== 'undefined') {
