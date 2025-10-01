@@ -9685,6 +9685,62 @@ FinanceApp.prototype.showExpensesDetailModal = function() {
   console.log('Opening modal...');
   modal.classList.add('show');
   console.log('Modal classes:', modal.classList);
+
+  // Inicializar scroll horizontal para las tarjetas de estadísticas
+  this.initializeStatsScroll();
+};
+
+// Inicializar scroll horizontal para las tarjetas de estadísticas
+FinanceApp.prototype.initializeStatsScroll = function() {
+  const scrollContainer = document.getElementById('expensesStatsGrid');
+  const scrollLeftBtn = document.getElementById('scrollStatsLeft');
+  const scrollRightBtn = document.getElementById('scrollStatsRight');
+
+  if (!scrollContainer || !scrollLeftBtn || !scrollRightBtn) {
+    return;
+  }
+
+  // Función para actualizar visibilidad de botones
+  const updateButtonsVisibility = () => {
+    const scrollLeft = scrollContainer.scrollLeft;
+    const scrollWidth = scrollContainer.scrollWidth;
+    const clientWidth = scrollContainer.clientWidth;
+
+    // Ocultar botón izquierdo si está al inicio
+    if (scrollLeft <= 0) {
+      scrollLeftBtn.classList.add('hidden');
+    } else {
+      scrollLeftBtn.classList.remove('hidden');
+    }
+
+    // Ocultar botón derecho si está al final
+    if (scrollLeft + clientWidth >= scrollWidth - 1) {
+      scrollRightBtn.classList.add('hidden');
+    } else {
+      scrollRightBtn.classList.remove('hidden');
+    }
+  };
+
+  // Función para hacer scroll
+  const scrollCards = (direction) => {
+    const scrollAmount = 300; // Píxeles a desplazar
+    const targetScroll = scrollContainer.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
+
+    scrollContainer.scrollTo({
+      left: targetScroll,
+      behavior: 'smooth'
+    });
+  };
+
+  // Event listeners para los botones
+  scrollLeftBtn.addEventListener('click', () => scrollCards('left'));
+  scrollRightBtn.addEventListener('click', () => scrollCards('right'));
+
+  // Event listener para actualizar botones al hacer scroll
+  scrollContainer.addEventListener('scroll', updateButtonsVisibility);
+
+  // Inicializar visibilidad de botones
+  updateButtonsVisibility();
 };
 
 FinanceApp.prototype.analyzeNecessity = function(expenses, total) {

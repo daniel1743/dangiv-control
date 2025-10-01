@@ -3349,7 +3349,11 @@
             </div>
 
             <!-- Statistics Grid -->
-            <div class="expenses-stats-grid">
+            <div class="expenses-stats-container">
+              <button class="scroll-btn scroll-btn-left" id="scrollStatsLeft">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <div class="expenses-stats-grid" id="expensesStatsGrid">
               <div class="expense-stat-card transactions">
                 <div class="stat-icon">
                   <i class="fas fa-receipt"></i>
@@ -3393,6 +3397,10 @@
                   <span class="stat-label" id="modalServicesAmount">$0 en servicios</span>
                 </div>
               </div>
+              </div>
+              <button class="scroll-btn scroll-btn-right" id="scrollStatsRight">
+                <i class="fas fa-chevron-right"></i>
+              </button>
             </div>
 
             <!-- Necessity Breakdown -->

@@ -7613,14 +7613,32 @@ select.form-control {
   font-weight: var(--font-weight-bold);
 }
 
-.expenses-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-16);
+/* Container for horizontal scroll */
+.expenses-stats-container {
+  position: relative;
   margin-bottom: var(--space-32);
 }
 
+.expenses-stats-grid {
+  display: flex;
+  gap: var(--space-16);
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: var(--space-8) var(--space-4);
+
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.expenses-stats-grid::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 .expense-stat-card {
+  flex: 0 0 auto;
+  min-width: 250px;
+  max-width: 280px;
   display: flex;
   align-items: center;
   gap: var(--space-16);
@@ -7629,6 +7647,49 @@ select.form-control {
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   transition: all 0.2s;
+}
+
+/* Scroll Buttons */
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s;
+  opacity: 0.9;
+}
+
+.scroll-btn:hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.scroll-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.scroll-btn-left {
+  left: -10px;
+}
+
+.scroll-btn-right {
+  right: -10px;
+}
+
+.scroll-btn.hidden {
+  display: none;
 }
 
 .expense-stat-card:hover {
@@ -7979,16 +8040,18 @@ select.form-control {
 }
 
 @media (max-width: 1024px) {
-  .expenses-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .categories-breakdown {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .services-paid-list {
     grid-template-columns: 1fr;
+  }
+
+  /* Scroll buttons más pequeños en tablets */
+  .scroll-btn {
+    width: 36px;
+    height: 36px;
   }
 }
 
@@ -8008,13 +8071,25 @@ select.form-control {
     text-align: center;
   }
 
-  .expenses-stats-grid {
-    grid-template-columns: 1fr;
+  /* En mobile, las tarjetas se adaptan mejor al scroll horizontal */
+  .expense-stat-card {
+    min-width: 220px;
+    max-width: 240px;
   }
 
-  .expense-stat-card {
-    flex-direction: column;
-    text-align: center;
+  /* Scroll buttons aún más pequeños en mobile */
+  .scroll-btn {
+    width: 32px;
+    height: 32px;
+    font-size: var(--font-size-sm);
+  }
+
+  .scroll-btn-left {
+    left: 0;
+  }
+
+  .scroll-btn-right {
+    right: 0;
   }
 
   .categories-breakdown {
