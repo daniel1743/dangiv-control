@@ -44,13 +44,17 @@ const firebaseConfig = {
   appId: '1:1021023056126:web:0e6460f495c156b079f5af',
   measurementId: 'G-8YL7L3D5TC',
 };
-const geminiApiKey = 'TU_API_KEY_DE_GEMINI';
-const perplexityApiKey =
-  'Tpplx-oKfcPhGOZhJr8QYclMVcQTVNEoRo4vsKcrOaaXNpqUDLgHeJ';
+// API Keys - PROTEGIDAS (no incluir keys reales aquí)
+// Para desarrollo local: usa backend/.env
+// Para producción: configura variables de entorno en tu hosting (Vercel/Netlify)
+const geminiApiKey = '';
+const perplexityApiKey = '';
+const unsplashApiKey = '';
 
 // Exponer API keys globalmente
 window.geminiApiKey = geminiApiKey;
 window.perplexityApiKey = perplexityApiKey;
+window.unsplashApiKey = unsplashApiKey;
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);

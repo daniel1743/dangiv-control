@@ -4874,6 +4874,41 @@ select.form-control {
   }
 }
 
+/* Responsive: Mobile notifications */
+@media (max-width: 768px) {
+  .notification-dropdown {
+    position: fixed;
+    top: var(--navbar-height);
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100vh - var(--navbar-height));
+    margin-top: 0;
+    border-radius: 0;
+    border: none;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .notification-badge {
+    min-width: 20px;
+    height: 20px;
+    font-size: 11px;
+    top: -6px;
+    right: -2px;
+  }
+
+  /* Hacer el icono de notificaciones más visible en mobile */
+  .notifications {
+    font-size: 22px;
+    padding: var(--space-8);
+  }
+
+  .notifications i {
+    font-size: 22px;
+  }
+}
+
 @keyframes fadeOutNotification {
   from {
     opacity: 1;
@@ -4915,6 +4950,46 @@ select.form-control {
 
 .notification-item.priority-low::before {
   background: #22c55e;
+}
+
+/* Protected badge for sensitive notifications */
+.notification-protected-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: var(--radius-full);
+  margin-left: var(--space-4);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.notification-protected-badge i {
+  font-size: 10px;
+  color: white;
+}
+
+/* AI notification icon */
+.notification-icon.category-ai {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: white;
+}
+
+/* Change notification categories */
+.notification-icon.category-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.notification-icon.category-warning {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: white;
+}
+
+.notification-icon.category-success {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
 }
 
 /* === TOAST COMPONENTS === */

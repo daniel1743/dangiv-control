@@ -754,6 +754,9 @@ class FinanceApp {
         await this.saveData();
         this.updateCarouselWithMessages();
         console.log('Mensajes motivadores actualizados desde Gemini API');
+
+        // Actualizar notificaciones para mostrar la actualización de IA
+        this.updateNotifications();
       }
 
     } catch (error) {
@@ -890,6 +893,9 @@ class FinanceApp {
         this.fetchMotivationalMessages(); // Obtener mensajes si es necesario
         this.updateCarouselWithMessages(); // Actualizar carrusel con mensajes guardados
         this.scheduleDailyMessageUpdate(); // Programar actualización diaria a la 1 AM
+
+        // Actualizar notificaciones al iniciar sesión
+        this.updateNotifications();
       } else {
         this.currentUser = 'anonymous';
         this.userPlan = 'free';
@@ -2634,6 +2640,90 @@ class FinanceApp {
     let notifications = [];
     const today = new Date();
 
+    // === NOTIFICACIONES DESDE AUDIT LOG ===
+    // Solo cambios SENSIBLES: eliminaciones, modificaciones de montos, cambios de ingresos
+    const sensitiveTypes = ['expense_deleted', 'expense_modified', 'income_config', 'goal_deleted', 'goal_modified', 'budget_modified', 'budget_deleted'];
+
+    const sensitiveChanges = (this.auditLog || [])
+      .filter(entry => sensitiveTypes.includes(entry.type))
+      .slice(0, 10); // Últimos 10 cambios sensibles
+
+    sensitiveChanges.forEach((change, index) => {
+      const changeDate = new Date(change.timestamp);
+      const actionIcons = {
+        'added': 'fa-plus-circle',
+        'modified': 'fa-edit',
+        'deleted': 'fa-trash-alt',
+        'updated': 'fa-sync-alt'
+      };
+
+      const actionLabels = {
+        'added': 'Creado',
+        'modified': 'Modificado',
+        'deleted': 'Eliminado',
+        'updated': 'Actualizado'
+      };
+
+      // Determinar categoría y título desde el tipo de auditoría
+      let category = 'warning';
+      let priority = 'medium';
+      let title = change.description || 'Cambio registrado';
+      let subtitle = change.reason || '';
+      let amount = '';
+
+      // Categorías específicas por tipo
+      if (change.type.includes('deleted')) {
+        category = 'danger';
+        priority = 'high';
+      } else if (change.type.includes('modified') || change.type.includes('config')) {
+        category = 'warning';
+        priority = 'medium';
+      }
+
+      // Extraer monto si existe en details
+      if (change.details && change.details.amount) {
+        amount = `$${this.formatNumber(change.details.amount)}`;
+      }
+
+      notifications.push({
+        id: `audit-${change.id}`,
+        type: 'change',
+        category: category,
+        icon: actionIcons[change.action] || 'fa-exclamation-circle',
+        title: title,
+        subtitle: subtitle,
+        amount: amount,
+        time: this.getRelativeTime(changeDate),
+        priority: priority,
+        data: { auditId: change.id },
+        isRead: this.notificationStates.get(`audit-${change.id}`) || false,
+        isProtected: true
+      });
+    });
+
+    // === NOTIFICACIÓN DE MENSAJES MOTIVADORES (1 AM) ===
+    if (this.lastMessageUpdate && this.currentUser !== 'anonymous') {
+      const lastUpdate = new Date(this.lastMessageUpdate);
+      const hoursSinceUpdate = (Date.now() - this.lastMessageUpdate) / (1000 * 60 * 60);
+
+      // Mostrar notificación si la actualización fue reciente (menos de 6 horas)
+      if (hoursSinceUpdate < 6) {
+        notifications.push({
+          id: 'ai_messages_update',
+          type: 'ai',
+          category: 'ai',
+          icon: 'fa-robot',
+          title: '🌟 Mensajes Motivadores Actualizados',
+          subtitle: 'La IA generó nuevos mensajes inspiradores para ti',
+          amount: '8 mensajes',
+          time: this.getRelativeTime(lastUpdate),
+          priority: 'low',
+          data: { section: 'dashboard' },
+          isRead: this.notificationStates.get('ai_messages_update') || false
+        });
+      }
+    }
+
     // Add invite link notification if exists
     if (this.currentInviteLink && !this.currentInviteLink.used) {
       console.log('DEBUG: Agregando notificación de enlace a la lista');
@@ -2662,22 +2752,24 @@ class FinanceApp {
       });
     }
 
-    // Generate goal notifications
+    // === NOTIFICACIONES DE METAS (Solo urgentes) ===
     this.goals.forEach((goal, index) => {
       const deadline = new Date(goal.deadline);
       const diff = (deadline - today) / (1000 * 60 * 60 * 24);
       const progress = (goal.current / goal.target) * 100;
 
+      // Solo mostrar metas muy urgentes (2 días o menos) o cercanas al vencimiento (7 días)
       if (diff <= 7 && goal.current < goal.target) {
-        const priority = diff <= 2 ? 'high' : diff <= 5 ? 'medium' : 'low';
+        const priority = diff <= 2 ? 'high' : 'medium';
         const urgencyText = diff <= 1 ? 'mañana' : `${Math.ceil(diff)} días`;
 
         notifications.push({
           id: `goal-${index}-deadline`,
           type: 'goal',
           category: 'goal',
-          title: goal.name,
-          subtitle: `Meta vence en ${urgencyText}`,
+          icon: 'fa-bullseye',
+          title: `⚠️ Meta: ${goal.name}`,
+          subtitle: `Vence en ${urgencyText}`,
           amount: `$${this.formatCurrency(
             goal.target - goal.current
           )} restantes`,
@@ -2690,35 +2782,9 @@ class FinanceApp {
       }
     });
 
-    // Generate expense notifications for recent large expenses
-    const recentExpenses = this.expenses
-      .filter((exp) => {
-        const expDate = new Date(exp.date);
-        const daysDiff = (today - expDate) / (1000 * 60 * 60 * 24);
-        return daysDiff <= 3; // Last 3 days
-      })
-      .sort((a, b) => b.amount - a.amount);
-
-    recentExpenses.slice(0, 3).forEach((exp, index) => {
-      const isLarge = exp.amount > this.monthlyIncome * 0.1; // 10% of monthly income
-      const priority = exp.protected ? 'high' : isLarge ? 'medium' : 'low';
-
-      notifications.push({
-        id: `expense-${exp.date}-${index}`,
-        type: 'expense',
-        category: this.getCategoryIcon(exp.category),
-        title: exp.description,
-        subtitle: exp.protected
-          ? 'Gasto protegido'
-          : `Gasto en ${exp.category}`,
-        amount: `$${this.formatCurrency(exp.amount)}`,
-        time: this.getRelativeTime(new Date(exp.date)),
-        priority: priority,
-        data: { expenseId: index, section: 'expenses' },
-        isRead:
-          this.notificationStates.get(`expense-${exp.date}-${index}`) || false,
-      });
-    });
+    // === NOTIFICACIONES DE GASTOS Y COMPRAS DESHABILITADAS ===
+    // NO se muestran notificaciones de gastos recientes ni compras
+    // Solo se muestran cambios sensibles (modificaciones, borrados)
 
     // Update badge count (only unread notifications)
     const unreadCount = notifications.filter((n) => !n.isRead).length;
@@ -2808,15 +2874,26 @@ class FinanceApp {
     }`;
     item.dataset.notificationId = notification.id;
 
-    const emoji = this.getCategoryEmoji(notification.category);
+    // Si tiene icono de FontAwesome, usarlo; si no, usar emoji
+    const iconContent = notification.icon
+      ? `<i class="fas ${notification.icon}"></i>`
+      : this.getCategoryEmoji(notification.category);
+
+    // Badge especial para cambios protegidos
+    const protectedBadge = notification.isProtected
+      ? '<span class="notification-protected-badge"><i class="fas fa-shield-alt"></i></span>'
+      : '';
 
     item.innerHTML = `
       <div class="notification-icon category-${notification.category}">
-        ${emoji}
+        ${iconContent}
       </div>
 
       <div class="notification-content">
-        <h6 class="notification-title">${notification.title}</h6>
+        <h6 class="notification-title">
+          ${notification.title}
+          ${protectedBadge}
+        </h6>
         <p class="notification-subtitle">
           ${notification.subtitle}
           ${
@@ -2832,9 +2909,11 @@ class FinanceApp {
         <button class="notification-action-btn" data-action="read" title="Marcar como leída">
           <i class="fas fa-check"></i>
         </button>
+        ${notification.type !== 'ai' ? `
         <button class="notification-action-btn" data-action="view" title="Ver detalles">
           <i class="fas fa-external-link-alt"></i>
         </button>
+        ` : ''}
       </div>
     `;
 
@@ -5637,7 +5716,8 @@ function togglePasswordVisibility(inputId, icon) {
 window.togglePasswordVisibility = togglePasswordVisibility;
 
 // Unsplash API for goal inspiration
-const UNSPLASH_ACCESS_KEY = import.meta.env?.VITE_UNSPLASH_ACCESS_KEY || '';
+// PROTEGIDA: Configura en variables de entorno o backend/.env
+const UNSPLASH_ACCESS_KEY = window.unsplashApiKey || '';
 const goalCategories = ['vacation', 'beach', 'travel', 'shopping', 'luxury fashion', 'technology gadgets'];
 let currentCategoryIndex = 0;
 
@@ -8928,6 +9008,9 @@ FinanceApp.prototype.logAudit = function(type, action, description, reason = '',
 
   this.auditLog.unshift(entry);
   this.saveData();
+
+  // Actualizar notificaciones después de registrar el cambio
+  this.updateNotifications();
 };
 
 FinanceApp.prototype.renderAuditLog = function() {
