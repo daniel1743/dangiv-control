@@ -1418,6 +1418,87 @@ class FinanceApp {
       });
     });
 
+    // === MODALES DE GESTIÓn FINANCIERA ===
+    // Modal de Ahorros
+    const addSavingsBtn = document.getElementById('addSavingsBtn');
+    const addSavingsBtnEmpty = document.getElementById('addSavingsBtnEmpty');
+    const addSavingsModal = document.getElementById('addSavingsModal');
+    const closeSavingsModal = document.getElementById('closeSavingsModal');
+    const cancelSavingsBtn = document.getElementById('cancelSavingsBtn');
+
+    if (addSavingsBtn && addSavingsModal) {
+      addSavingsBtn.addEventListener('click', () => {
+        addSavingsModal.classList.add('show');
+      });
+    }
+
+    if (addSavingsBtnEmpty && addSavingsModal) {
+      addSavingsBtnEmpty.addEventListener('click', () => {
+        addSavingsModal.classList.add('show');
+      });
+    }
+
+    if (closeSavingsModal && addSavingsModal) {
+      closeSavingsModal.addEventListener('click', () => {
+        addSavingsModal.classList.remove('show');
+      });
+    }
+
+    if (cancelSavingsBtn && addSavingsModal) {
+      cancelSavingsBtn.addEventListener('click', () => {
+        addSavingsModal.classList.remove('show');
+      });
+    }
+
+    // Cerrar modal al hacer clic fuera
+    if (addSavingsModal) {
+      addSavingsModal.addEventListener('click', (e) => {
+        if (e.target === addSavingsModal) {
+          addSavingsModal.classList.remove('show');
+        }
+      });
+    }
+
+    // Modal de Pagos Recurrentes
+    const addPaymentBtn = document.getElementById('addPaymentBtn');
+    const addPaymentBtnEmpty = document.getElementById('addPaymentBtnEmpty');
+    const addPaymentModal = document.getElementById('addPaymentModal');
+    const closePaymentModal = document.getElementById('closePaymentModal');
+    const cancelPaymentBtn = document.getElementById('cancelPaymentBtn');
+
+    if (addPaymentBtn && addPaymentModal) {
+      addPaymentBtn.addEventListener('click', () => {
+        addPaymentModal.classList.add('show');
+      });
+    }
+
+    if (addPaymentBtnEmpty && addPaymentModal) {
+      addPaymentBtnEmpty.addEventListener('click', () => {
+        addPaymentModal.classList.add('show');
+      });
+    }
+
+    if (closePaymentModal && addPaymentModal) {
+      closePaymentModal.addEventListener('click', () => {
+        addPaymentModal.classList.remove('show');
+      });
+    }
+
+    if (cancelPaymentBtn && addPaymentModal) {
+      cancelPaymentBtn.addEventListener('click', () => {
+        addPaymentModal.classList.remove('show');
+      });
+    }
+
+    // Cerrar modal al hacer clic fuera
+    if (addPaymentModal) {
+      addPaymentModal.addEventListener('click', (e) => {
+        if (e.target === addPaymentModal) {
+          addPaymentModal.classList.remove('show');
+        }
+      });
+    }
+
     // === LÃƒâ€œGICA PARA EL MENÃƒÅ¡ HAMBURGUESA (MÃƒâ€œVIL) ===
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const sidebar = document.querySelector('.sidebar');
@@ -1448,6 +1529,9 @@ class FinanceApp {
         });
       });
     }
+
+    // === FORMATEO AUTOMÁTICO DE INPUTS NUMÉRICOS ===
+    this.setupAllNumberInputs();
 
     // === MODALES Y SEGURIDAD ===
     this.setupAuthModalListeners();
@@ -1958,6 +2042,16 @@ class FinanceApp {
 
     this.currentSection = sectionId;
 
+    // Show/hide FAB based on section
+    const fab = document.getElementById('fabQuickExpense');
+    if (fab) {
+      if (sectionId === 'config' || sectionId === 'store') {
+        fab.style.display = 'none';
+      } else {
+        fab.style.display = 'flex';
+      }
+    }
+
     // Start/stop inspiration images for goals
     if (sectionId === 'goals') {
       this.startInspirationRotation();
@@ -2216,7 +2310,7 @@ class FinanceApp {
       const avgDailySpend = totalExpenses / Math.max(1, this.expenses.length);
 
       recommendations = [
-        `💡 Tu gasto promedio diario es $${avgDailySpend.toFixed(2)}. Considera establecer un presupuesto diario.`,
+        `💡 Tu gasto promedio diario es $${this.formatNumber(avgDailySpend)}. Considera establecer un presupuesto diario.`,
         `📊 Has registrado ${this.expenses.length} transacciones. ¡Mantén el control de tus finanzas!`,
         `🎯 Revisa tus gastos semanalmente para identificar oportunidades de ahorro.`
       ];
@@ -2277,7 +2371,7 @@ class FinanceApp {
               <span class="transaction-date">${expense.date.toLocaleDateString()}</span>
             </div>
           </div>
-          <div class="transaction-amount">-$${expense.amount.toFixed(2)}</div>
+          <div class="transaction-amount">-$${this.formatNumber(expense.amount)}</div>
         `;
         container.appendChild(transactionEl);
       });
@@ -2921,6 +3015,9 @@ class FinanceApp {
       this.charts.premiumChart.destroy();
     }
 
+    // Guardar referencia a this para usar en callbacks
+    const self = this;
+
     // Crear nuevo gráfico tipo "hamburguesa"
     this.charts.premiumChart = new Chart(ctx, {
       type: 'doughnut',
@@ -2948,7 +3045,7 @@ class FinanceApp {
                 const value = context.raw || 0;
                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
                 const percentage = ((value / total) * 100).toFixed(1);
-                return ` ${label}: $${value.toFixed(2)} (${percentage}%)`;
+                return ` ${label}: $${self.formatNumber(value)} (${percentage}%)`;
               },
             },
           },
@@ -4113,7 +4210,7 @@ class FinanceApp {
               <span class="transaction-date">${expense.date.toLocaleDateString()}</span>
             </div>
           </div>
-          <div class="transaction-amount">-$${expense.amount.toFixed(2)}</div>
+          <div class="transaction-amount">-$${this.formatNumber(expense.amount)}</div>
         `;
         container.appendChild(transactionEl);
       });
@@ -4154,7 +4251,8 @@ class FinanceApp {
     e.preventDefault();
 
     const description = document.getElementById('description').value.trim();
-    const amount = parseFloat(document.getElementById('amount').value);
+    const amountInput = document.getElementById('amount');
+    const amount = this.unformatNumber(amountInput.value);
     const category = document.getElementById('category').value;
     const necessity = document.getElementById('necessity').value;
     const date = document.getElementById('date').value;
@@ -4554,7 +4652,8 @@ class FinanceApp {
     e.preventDefault();
 
     const name = document.getElementById('goalName').value.trim();
-    const target = parseFloat(document.getElementById('goalTarget').value);
+    const targetInput = document.getElementById('goalTarget');
+    const target = this.unformatNumber(targetInput.value);
     const deadline = document.getElementById('goalDeadline').value;
 
     if (!name || !target || target <= 0 || !deadline) {
@@ -4984,7 +5083,8 @@ class FinanceApp {
   updateIncome(e) {
     e.preventDefault();
 
-    const income = parseFloat(document.getElementById('monthlyIncome').value);
+    const incomeInput = document.getElementById('monthlyIncome');
+    const income = this.unformatNumber(incomeInput.value);
 
     if (!income || income <= 0) {
       this.showToast('Por favor ingresa un monto válido', 'error');
@@ -5981,6 +6081,9 @@ FinanceApp.prototype.renderRadarChart = function () {
     totalIncome > 0 ? (value / totalIncome) * 100 : 0
   );
 
+  // Guardar referencia a this para callbacks
+  const self = this;
+
   // Configuración del gráfico
   const config = {
     type: 'radar',
@@ -6040,7 +6143,7 @@ FinanceApp.prototype.renderRadarChart = function () {
             label: function (context) {
               const value = context.parsed.r.toFixed(1);
               const amount = Object.values(categories)[context.dataIndex];
-              return `${context.label}: ${value}% ($${amount.toFixed(2)})`;
+              return `${context.label}: ${value}% ($${self.formatNumber(amount)})`;
             },
           },
         },
@@ -7186,7 +7289,8 @@ FinanceApp.prototype.addExpense = function(e) {
 
   // Get values after successful registration
   const description = document.getElementById('description').value;
-  const amount = parseFloat(document.getElementById('amount').value);
+  const amountInput = document.getElementById('amount');
+  const amount = this.unformatNumber(amountInput.value);
   const user = document.getElementById('user').value;
 
   // Add activity logging
@@ -8723,7 +8827,8 @@ FinanceApp.prototype.setupSavingsListeners = function() {
 
 FinanceApp.prototype.addSavingsAccount = function() {
   const sourceName = document.getElementById('savingsSourceName').value.trim();
-  const amount = parseFloat(document.getElementById('savingsAmount').value);
+  const amountInput = document.getElementById('savingsAmount');
+  const amount = this.unformatNumber(amountInput.value);
   const type = document.getElementById('savingsType').value;
   const description = document.getElementById('savingsDescription').value.trim();
 
@@ -8992,7 +9097,8 @@ FinanceApp.prototype.setupPaymentsListeners = function() {
 FinanceApp.prototype.addRecurringPayment = function() {
   const serviceName = document.getElementById('paymentServiceName')?.value.trim();
   const serviceType = document.getElementById('paymentServiceType')?.value;
-  const amount = parseFloat(document.getElementById('paymentAmount')?.value) || null;
+  const amountInput = document.getElementById('paymentAmount');
+  const amount = amountInput ? this.unformatNumber(amountInput.value) : null;
   const dueDay = parseInt(document.getElementById('paymentDueDay')?.value);
   const notes = document.getElementById('paymentNotes')?.value.trim();
 
@@ -10088,7 +10194,8 @@ FinanceApp.prototype.openQuickExpenseModal = function() {
 };
 
 FinanceApp.prototype.handleQuickExpenseSubmit = function() {
-  const amount = parseFloat(document.getElementById('quickAmount').value);
+  const amountInput = document.getElementById('quickAmount');
+  const amount = this.unformatNumber(amountInput.value);
   const category = document.getElementById('quickCategory').value;
   const description = document.getElementById('quickDescription').value || 'Gasto rápido';
 
@@ -10139,7 +10246,8 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function() {
 };
 
 FinanceApp.prototype.saveExpenseTemplate = function() {
-  const amount = parseFloat(document.getElementById('quickAmount').value);
+  const amountInput = document.getElementById('quickAmount');
+  const amount = this.unformatNumber(amountInput.value);
   const category = document.getElementById('quickCategory').value;
   const description = document.getElementById('quickDescription').value;
 
@@ -10189,7 +10297,7 @@ FinanceApp.prototype.renderExpenseTemplates = function() {
   container.innerHTML = this.expenseTemplates.map(template => `
     <div class="quick-template" data-template-id="${template.id}">
       <span>${template.description}</span>
-      <span>$${template.amount.toFixed(2)}</span>
+      <span>$${this.formatNumber(template.amount)}</span>
       <i class="fas fa-times" data-action="delete"></i>
     </div>
   `).join('');
@@ -10507,8 +10615,132 @@ FinanceApp.prototype.updateExpenseStats = function() {
   const monthTotalEl = document.getElementById('monthExpensesTotal');
 
   if (todayCountEl) todayCountEl.textContent = todayExpenses.length;
-  if (todayTotalEl) todayTotalEl.textContent = `$${todayTotal.toFixed(2)}`;
-  if (monthTotalEl) monthTotalEl.textContent = `$${monthTotal.toFixed(2)}`;
+  if (todayTotalEl) todayTotalEl.textContent = `$${this.formatNumber(todayTotal)}`;
+  if (monthTotalEl) monthTotalEl.textContent = `$${this.formatNumber(monthTotal)}`;
+};
+
+// ============================================================================
+// UTILIDADES DE FORMATEO NUMÉRICO
+// ============================================================================
+
+// Formatea número con separadores de miles (formato chileno: 1.000.000)
+FinanceApp.prototype.formatNumber = function(number) {
+  if (number === null || number === undefined || isNaN(number)) return '0';
+
+  // Convertir a número si es string
+  const num = typeof number === 'string' ? parseFloat(number) : number;
+
+  // Separar parte entera y decimal
+  const parts = num.toFixed(2).split('.');
+  const integerPart = parts[0];
+  const decimalPart = parts[1];
+
+  // Formatear parte entera con puntos como separadores de miles
+  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+  // Retornar sin decimales si son .00, sino con decimales
+  return decimalPart === '00' ? formattedInteger : `${formattedInteger},${decimalPart}`;
+};
+
+// Limpia el formato de número para obtener valor numérico puro
+FinanceApp.prototype.unformatNumber = function(formattedNumber) {
+  if (typeof formattedNumber !== 'string') return formattedNumber;
+
+  // Remover puntos (separadores de miles) y reemplazar coma por punto (decimal)
+  const cleaned = formattedNumber.replace(/\./g, '').replace(/,/g, '.');
+  return parseFloat(cleaned) || 0;
+};
+
+// Configura formateo automático en un input numérico
+FinanceApp.prototype.setupNumberFormatting = function(inputElement) {
+  if (!inputElement) return;
+
+  // Cambiar tipo de input de 'number' a 'text' para permitir formato personalizado
+  inputElement.type = 'text';
+  inputElement.inputMode = 'decimal';
+
+  // Almacenar el valor sin formato
+  let rawValue = '';
+
+  // Evento al escribir
+  inputElement.addEventListener('input', (e) => {
+    let value = e.target.value;
+
+    // Permitir solo números, puntos y comas
+    value = value.replace(/[^\d.,]/g, '');
+
+    // Limpiar formato anterior
+    const numericValue = this.unformatNumber(value);
+
+    // Guardar posición del cursor
+    const cursorPosition = e.target.selectionStart;
+    const oldLength = e.target.value.length;
+
+    // Aplicar nuevo formato
+    if (!isNaN(numericValue) && value !== '') {
+      e.target.value = this.formatNumber(numericValue);
+      rawValue = numericValue;
+
+      // Ajustar posición del cursor
+      const newLength = e.target.value.length;
+      const lengthDiff = newLength - oldLength;
+      e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
+    } else if (value === '') {
+      e.target.value = '';
+      rawValue = '';
+    }
+  });
+
+  // Evento al perder foco - asegurar formato correcto
+  inputElement.addEventListener('blur', (e) => {
+    const value = e.target.value;
+    if (value === '') return;
+
+    const numericValue = this.unformatNumber(value);
+    if (!isNaN(numericValue)) {
+      e.target.value = this.formatNumber(numericValue);
+      rawValue = numericValue;
+    }
+  });
+
+  // Método para obtener valor numérico
+  inputElement.getNumericValue = () => {
+    return this.unformatNumber(inputElement.value);
+  };
+};
+
+// Configura formateo en todos los inputs numéricos de la aplicación
+FinanceApp.prototype.setupAllNumberInputs = function() {
+  // Lista de IDs de inputs numéricos en la aplicación
+  const numericInputIds = [
+    'amount',                    // Formulario de gastos
+    'monthlyIncome',             // Configuración de ingreso mensual
+    'goalAmount',                // Meta de ahorro
+    'budget-food',               // Presupuestos por categoría
+    'budget-transport',
+    'budget-entertainment',
+    'budget-health',
+    'budget-services',
+    'budget-shopping',
+    'budget-other',
+    'savingsAmount',             // Ahorro (modal)
+    'recurringPaymentAmount',    // Pago recurrente (modal)
+    'recurringPaymentDay'        // Día del mes
+  ];
+
+  // Aplicar formateo a cada input
+  numericInputIds.forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+      this.setupNumberFormatting(input);
+    }
+  });
+
+  // También buscar todos los inputs con type="number" en la página
+  const numberInputs = document.querySelectorAll('input[type="number"]');
+  numberInputs.forEach(input => {
+    this.setupNumberFormatting(input);
+  });
 };
 
 if (typeof window !== 'undefined') {
