@@ -1182,6 +1182,7 @@ class FinanceApp {
     // NEW: Budget & Quick Expense Systems
     this.setupBudgetListeners(); // Sistema de presupuesto
     this.setupQuickExpenseListeners(); // Entrada rápida de gastos
+    this.setupPremiumSettings(); // Premium Settings Navigation
 
     // Forzar normalización de datos existentes al inicio
     this.forceDataNormalization();
@@ -1256,6 +1257,24 @@ class FinanceApp {
         this.addExpense(e);
       });
     }
+
+    // Clear expense form button
+    const clearExpenseFormBtn = document.getElementById('clearExpenseForm');
+    if (clearExpenseFormBtn) {
+      clearExpenseFormBtn.addEventListener('click', () => {
+        document.getElementById('amount').value = '';
+        document.getElementById('description').value = '';
+        document.getElementById('category').value = '';
+        document.getElementById('necessity').value = '';
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('user').value = '';
+        document.getElementById('amount').focus();
+        this.showToast('Formulario limpiado', 'info');
+      });
+    }
+
+    // Update expense stats on page load
+    this.updateExpenseStats();
 
     // Manejo del selector de usuarios
     const userSelect = document.getElementById('user');
@@ -4197,6 +4216,7 @@ class FinanceApp {
     this.updateTrendChart();
     this.updateLastTransaction();
     this.checkAchievements();
+    this.updateExpenseStats(); // Update expense form stats
     this.showToast('Gasto registrado exitosamente', 'success');
 
     document.getElementById('expenseForm').reset();
@@ -10114,6 +10134,7 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function() {
     this.renderDashboard();
   }
 
+  this.updateExpenseStats(); // Update expense form stats
   this.showToast('Gasto registrado exitosamente', 'success');
 };
 
@@ -10199,6 +10220,295 @@ FinanceApp.prototype.deleteExpenseTemplate = function(templateId) {
   this.saveData();
   this.renderExpenseTemplates();
   this.showToast('Plantilla eliminada', 'info');
+};
+
+// ========================================
+// PREMIUM SETTINGS SYSTEM
+// ========================================
+
+FinanceApp.prototype.setupPremiumSettings = function() {
+  // Settings tab navigation
+  const settingsNavItems = document.querySelectorAll('.settings-nav-item');
+  const settingsTabs = document.querySelectorAll('.settings-tab');
+
+  settingsNavItems.forEach(navItem => {
+    navItem.addEventListener('click', () => {
+      const targetTab = navItem.dataset.settingsTab;
+
+      // Update active nav item
+      settingsNavItems.forEach(item => item.classList.remove('active'));
+      navItem.classList.add('active');
+
+      // Update active tab
+      settingsTabs.forEach(tab => tab.classList.remove('active'));
+      const targetTabElement = document.getElementById(`settings-${targetTab}`);
+      if (targetTabElement) {
+        targetTabElement.classList.add('active');
+      }
+
+      // Update statistics if on profile tab
+      if (targetTab === 'profile') {
+        this.updateUsageStatistics();
+      }
+    });
+  });
+
+  // Update stats on initial load
+  this.updateUsageStatistics();
+
+  // Export/Import buttons
+  const exportJSONBtn = document.getElementById('exportJSONBtn');
+  if (exportJSONBtn) {
+    exportJSONBtn.addEventListener('click', () => this.exportDataAsJSON());
+  }
+
+  const exportCSVBtn = document.getElementById('exportCSVBtn');
+  if (exportCSVBtn) {
+    exportCSVBtn.addEventListener('click', () => this.exportDataAsCSV());
+  }
+
+  const importJSONBtn = document.getElementById('importJSONBtn');
+  const importFileInput = document.getElementById('importFileInput');
+  if (importJSONBtn && importFileInput) {
+    importJSONBtn.addEventListener('click', () => {
+      importFileInput.click();
+    });
+
+    importFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        this.importDataFromJSON(file);
+      }
+    });
+  }
+
+  // Delete all data button
+  const deleteAllDataBtn = document.getElementById('deleteAllDataBtn');
+  if (deleteAllDataBtn) {
+    deleteAllDataBtn.addEventListener('click', () => {
+      const confirmed = confirm('⚠️ ADVERTENCIA: Esta acción borrará TODOS tus datos permanentemente.\n\n¿Estás completamente seguro de que deseas continuar?');
+      if (confirmed) {
+        const doubleConfirm = confirm('Esta es tu última oportunidad. ¿Realmente deseas borrar todos los datos?\n\nEsta acción NO se puede deshacer.');
+        if (doubleConfirm) {
+          localStorage.clear();
+          this.showToast('Todos los datos han sido eliminados', 'info');
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+        }
+      }
+    });
+  }
+
+  // System info
+  this.updateSystemInfo();
+};
+
+FinanceApp.prototype.updateUsageStatistics = function() {
+  // Total expenses count
+  const totalExpensesEl = document.getElementById('totalExpensesCount');
+  if (totalExpensesEl) {
+    totalExpensesEl.textContent = this.expenses.length;
+  }
+
+  // Total goals count
+  const totalGoalsEl = document.getElementById('totalGoalsCount');
+  if (totalGoalsEl) {
+    totalGoalsEl.textContent = this.goals.length;
+  }
+
+  // Account age (days since first expense or goal)
+  const accountAgeEl = document.getElementById('accountAge');
+  if (accountAgeEl) {
+    const allDates = [
+      ...this.expenses.map(e => new Date(e.date)),
+      ...this.goals.map(g => new Date(g.createdAt || Date.now()))
+    ];
+
+    if (allDates.length > 0) {
+      const oldestDate = new Date(Math.min(...allDates));
+      const daysDiff = Math.floor((new Date() - oldestDate) / (1000 * 60 * 60 * 24));
+      accountAgeEl.textContent = daysDiff;
+    } else {
+      accountAgeEl.textContent = '0';
+    }
+  }
+};
+
+// Export data as JSON
+FinanceApp.prototype.exportDataAsJSON = function() {
+  const dataToExport = {
+    expenses: this.expenses,
+    goals: this.goals,
+    shoppingItems: this.shoppingItems,
+    monthlyIncome: this.monthlyIncome,
+    budgets: this.budgets,
+    expenseTemplates: this.expenseTemplates,
+    savingsAccounts: this.savingsAccounts,
+    recurringPayments: this.recurringPayments,
+    exportDate: new Date().toISOString(),
+    version: '1.0'
+  };
+
+  const dataStr = JSON.stringify(dataToExport, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `financiapro-backup-${new Date().toISOString().split('T')[0]}.json`;
+  link.click();
+
+  URL.revokeObjectURL(url);
+  this.showToast('Datos exportados exitosamente', 'success');
+};
+
+// Export data as CSV
+FinanceApp.prototype.exportDataAsCSV = function() {
+  // Export expenses as CSV
+  let csvContent = 'Fecha,Descripción,Monto,Categoría,Necesidad,Usuario\n';
+
+  this.expenses.forEach(expense => {
+    const row = [
+      expense.date,
+      `"${expense.description}"`,
+      expense.amount,
+      expense.category,
+      expense.necessity,
+      expense.user
+    ].join(',');
+    csvContent += row + '\n';
+  });
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `financiapro-expenses-${new Date().toISOString().split('T')[0]}.csv`;
+  link.click();
+
+  URL.revokeObjectURL(url);
+  this.showToast('Gastos exportados como CSV', 'success');
+};
+
+// Import data from JSON
+FinanceApp.prototype.importDataFromJSON = function(file) {
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    try {
+      const importedData = JSON.parse(e.target.result);
+
+      // Validate data structure
+      if (!importedData.expenses && !importedData.goals) {
+        this.showToast('Archivo JSON inválido', 'error');
+        return;
+      }
+
+      // Confirm import
+      if (!confirm('¿Estás seguro de que deseas importar estos datos? Esto sobrescribirá tus datos actuales.')) {
+        return;
+      }
+
+      // Import data
+      if (importedData.expenses) this.expenses = importedData.expenses;
+      if (importedData.goals) this.goals = importedData.goals;
+      if (importedData.shoppingItems) this.shoppingItems = importedData.shoppingItems;
+      if (importedData.monthlyIncome) this.monthlyIncome = importedData.monthlyIncome;
+      if (importedData.budgets) this.budgets = importedData.budgets;
+      if (importedData.expenseTemplates) this.expenseTemplates = importedData.expenseTemplates;
+      if (importedData.savingsAccounts) this.savingsAccounts = importedData.savingsAccounts;
+      if (importedData.recurringPayments) this.recurringPayments = importedData.recurringPayments;
+
+      this.saveData();
+      this.renderDashboard();
+      this.showToast('Datos importados exitosamente', 'success');
+
+      // Reload page to reflect changes
+      setTimeout(() => {
+        location.reload();
+      }, 1500);
+
+    } catch (error) {
+      console.error('Error importing data:', error);
+      this.showToast('Error al importar datos', 'error');
+    }
+  };
+
+  reader.readAsText(file);
+};
+
+// Update system information in Advanced tab
+FinanceApp.prototype.updateSystemInfo = function() {
+  // Last update date
+  const lastUpdateEl = document.getElementById('lastUpdateDate');
+  if (lastUpdateEl) {
+    const savedData = localStorage.getItem('financeAppData');
+    if (savedData) {
+      try {
+        const data = JSON.parse(savedData);
+        if (data.lastUpdate) {
+          const date = new Date(data.lastUpdate);
+          lastUpdateEl.textContent = date.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          });
+        }
+      } catch (e) {
+        lastUpdateEl.textContent = 'No disponible';
+      }
+    } else {
+      lastUpdateEl.textContent = 'Sin datos';
+    }
+  }
+
+  // Data size
+  const dataSizeEl = document.getElementById('dataSize');
+  if (dataSizeEl) {
+    let totalSize = 0;
+    for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key)) {
+        totalSize += localStorage[key].length + key.length;
+      }
+    }
+    const sizeInKB = (totalSize / 1024).toFixed(2);
+    dataSizeEl.textContent = `${sizeInKB} KB`;
+  }
+};
+
+// Update expense form statistics
+FinanceApp.prototype.updateExpenseStats = function() {
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+
+  // Count today's expenses
+  const todayExpenses = this.expenses.filter(exp => {
+    const expDate = new Date(exp.date);
+    return expDate.toISOString().split('T')[0] === todayStr;
+  });
+
+  // Calculate today's total
+  const todayTotal = todayExpenses.reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0);
+
+  // Calculate month's total
+  const monthExpenses = this.expenses.filter(exp => {
+    const expDate = new Date(exp.date);
+    return expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear;
+  });
+  const monthTotal = monthExpenses.reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0);
+
+  // Update DOM elements
+  const todayCountEl = document.getElementById('todayExpensesCount');
+  const todayTotalEl = document.getElementById('todayExpensesTotal');
+  const monthTotalEl = document.getElementById('monthExpensesTotal');
+
+  if (todayCountEl) todayCountEl.textContent = todayExpenses.length;
+  if (todayTotalEl) todayTotalEl.textContent = `$${todayTotal.toFixed(2)}`;
+  if (monthTotalEl) monthTotalEl.textContent = `$${monthTotal.toFixed(2)}`;
 };
 
 if (typeof window !== 'undefined') {

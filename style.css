@@ -3224,15 +3224,15 @@ select.form-control {
 }
 
 .expenses-card .stat-icon {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+  background: linear-gradient(135deg, var(--color-red-400), var(--color-red-500));
 }
 
 .savings-card .stat-icon {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, var(--color-teal-500), var(--color-teal-700));
 }
 
 .goals-card .stat-icon {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, var(--color-orange-400), var(--color-orange-500));
 }
 
 .stat-content h3 {
@@ -4322,7 +4322,7 @@ select.form-control {
 
 .notification-icon.category-food {
   background-color: rgba(251, 191, 36, 0.1);
-  color: #f59e0b;
+  color: var(--color-orange-400);
 }
 
 .notification-icon.category-transport {
@@ -4341,8 +4341,8 @@ select.form-control {
 }
 
 .notification-icon.category-services {
-  background-color: rgba(99, 102, 241, 0.1);
-  color: #6366f1;
+  background-color: rgba(var(--color-teal-500-rgb), 0.1);
+  color: var(--color-primary);
 }
 
 .notification-icon.category-shopping {
@@ -5373,26 +5373,6 @@ select.form-control {
 
 /* ====== PREMIUM EXPENSE FORM STYLES ====== */
 
-.expense-form-premium {
-  background: var(--color-surface-raised);
-  padding: var(--space-32);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--color-border-light);
-  position: relative;
-  overflow: hidden;
-}
-
-.expense-form-premium::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-}
-
 .form-grid-premium {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -6349,7 +6329,7 @@ select.form-control {
 }
 
 .savings-account-icon.retirement {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(var(--color-teal-500-rgb), 0.1);
   color: rgb(99, 102, 241);
 }
 
@@ -6751,7 +6731,7 @@ select.form-control {
 }
 
 .payment-item-icon.subscription {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(var(--color-teal-500-rgb), 0.1);
   color: rgb(99, 102, 241);
 }
 
@@ -7296,7 +7276,7 @@ select.form-control {
 }
 
 .expense-stat-card.transactions .stat-icon {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(var(--color-teal-500-rgb), 0.1);
   color: rgb(99, 102, 241);
 }
 
@@ -7709,7 +7689,7 @@ select.form-control {
    ======================================== */
 
 .budget-summary-card {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #5b21b6 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal-700) 100%);
   color: white;
   border: none;
 }
@@ -7817,13 +7797,13 @@ select.form-control {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  background: linear-gradient(90deg, var(--color-teal-500) 0%, var(--color-teal-400) 100%);
   border-radius: 999px;
   transition: width 0.5s ease-in-out;
 }
 
 .progress-fill.warning {
-  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+  background: linear-gradient(90deg, var(--color-orange-400) 0%, var(--color-orange-400) 100%);
 }
 
 .progress-fill.danger {
@@ -7847,7 +7827,7 @@ select.form-control {
 
 .budget-category-item:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 4px 12px rgba(var(--color-teal-500-rgb), 0.1);
 }
 
 .budget-category-header {
@@ -7867,7 +7847,7 @@ select.form-control {
   font-size: 1.25rem;
 }
 
-.category-icon--food { background: #fef3c7; color: #f59e0b; }
+.category-icon--food { background: var(--color-cream-50); color: var(--color-orange-400); }
 .category-icon--transport { background: #dbeafe; color: #3b82f6; }
 .category-icon--entertainment { background: #fce7f3; color: #ec4899; }
 .category-icon--health { background: #dcfce7; color: #22c55e; }
@@ -7950,9 +7930,9 @@ select.form-control {
 }
 
 .budget-alert.warning {
-  background: #fef3c7;
+  background: var(--color-cream-50);
   color: #92400e;
-  border: 1px solid #fbbf24;
+  border: 1px solid var(--color-orange-400);
 }
 
 .budget-alert.danger {
@@ -7972,10 +7952,10 @@ select.form-control {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary) 0%, #5b21b6 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal-700) 100%);
   color: white;
   border: none;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4),
+  box-shadow: 0 4px 12px rgba(var(--color-teal-500-rgb), 0.4),
               0 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   display: flex;
@@ -7988,7 +7968,7 @@ select.form-control {
 
 .fab:hover {
   transform: scale(1.1) rotate(90deg);
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.5),
+  box-shadow: 0 8px 24px rgba(var(--color-teal-500-rgb), 0.5),
               0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -8046,7 +8026,7 @@ select.form-control {
   color: white;
   border-color: var(--color-primary);
   transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 2px 8px rgba(var(--color-teal-500-rgb), 0.2);
 }
 
 .quick-template i {
@@ -8100,5 +8080,383 @@ select.form-control {
 
   .quick-actions {
     flex-direction: column;
+  }
+}
+
+/* ================================================
+   PREMIUM EXPENSE FORM - ENTERPRISE LEVEL
+   ================================================ */
+
+.expense-form-premium {
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin-bottom: var(--space-32);
+}
+
+/* Expense Form Tabs */
+.expense-form-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--color-surface);
+  border-bottom: 2px solid var(--color-border);
+  padding: var(--space-4);
+}
+
+.expense-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  padding: var(--space-12) var(--space-16);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.expense-tab-btn:hover {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+}
+
+.expense-tab-btn.active {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal-700) 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(var(--color-teal-500-rgb), 0.3);
+}
+
+.expense-tab-btn i {
+  font-size: 1.125rem;
+}
+
+/* Form Content */
+.expense-form-content {
+  padding: var(--space-32);
+}
+
+/* Amount Section - Featured */
+.expense-amount-section {
+  text-align: center;
+  padding: var(--space-32) 0;
+  margin-bottom: var(--space-32);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.expense-amount-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-12);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.expense-amount-input-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.expense-currency {
+  position: absolute;
+  left: var(--space-20);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.expense-amount-input {
+  width: 100%;
+  font-size: 3rem;
+  font-weight: 700;
+  padding: var(--space-16) var(--space-16) var(--space-16) 60px;
+  border: 3px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+}
+
+.expense-amount-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(var(--color-teal-500-rgb), 0.1);
+  transform: scale(1.02);
+}
+
+.expense-amount-input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+.expense-amount-suggestions {
+  display: flex;
+  gap: var(--space-8);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--space-16);
+}
+
+.amount-suggestion-chip {
+  padding: var(--space-8) var(--space-16);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.amount-suggestion-chip:hover {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--color-teal-500-rgb), 0.3);
+}
+
+/* Form Group Premium */
+.form-group-premium {
+  margin-bottom: var(--space-24);
+}
+
+.form-label-premium {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-8);
+  font-size: 0.9375rem;
+}
+
+.form-label-premium i {
+  color: var(--color-primary);
+  font-size: 1rem;
+}
+
+/* Input with Icon */
+.input-with-icon {
+  position: relative;
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid var(--color-primary);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+.autocomplete-item {
+  padding: var(--space-12) var(--space-16);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover {
+  background: var(--color-surface);
+}
+
+.autocomplete-item i {
+  color: var(--color-text-secondary);
+}
+
+/* Form Grid */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-16);
+}
+
+/* Category Selector Premium */
+.category-selector-premium {
+  position: relative;
+}
+
+.category-select {
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right var(--space-12) center;
+  background-size: 24px;
+  padding-right: 48px;
+}
+
+/* Budget Impact Alert */
+.budget-impact-alert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-16);
+  background: linear-gradient(135deg, var(--color-cream-50) 0%, var(--color-cream-100) 100%);
+  border: 2px solid var(--color-orange-400);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-24);
+  animation: slideDown 0.3s ease;
+}
+
+.budget-impact-alert i {
+  font-size: 1.5rem;
+  color: var(--color-orange-500);
+}
+
+.budget-impact-alert span {
+  color: var(--color-brown-600);
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Expense Form Actions */
+.expense-form-actions {
+  display: flex;
+  gap: var(--space-12);
+  margin-top: var(--space-32);
+  padding-top: var(--space-24);
+  border-top: 2px solid var(--color-border);
+}
+
+.btn-expense-primary,
+.btn-expense-secondary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  padding: var(--space-16) var(--space-24);
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+}
+
+.btn-expense-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal-700) 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(var(--color-teal-500-rgb), 0.3);
+}
+
+.btn-expense-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(var(--color-teal-500-rgb), 0.4);
+}
+
+.btn-expense-secondary {
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border: 2px solid var(--color-border);
+}
+
+.btn-expense-secondary:hover {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  border-color: var(--color-text-secondary);
+}
+
+/* Expense Form Stats */
+.expense-form-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-16);
+  margin-top: var(--space-24);
+  padding: var(--space-20);
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: var(--radius-lg);
+}
+
+.form-stat-item {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.form-stat-item .stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.form-stat-item .stat-label {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+/* Responsive Premium Expense Form */
+@media (max-width: 768px) {
+  .expense-form-content {
+    padding: var(--space-20);
+  }
+
+  .expense-amount-input {
+    font-size: 2rem;
+    padding-left: 50px;
+  }
+
+  .expense-currency {
+    font-size: 1.5rem;
+    left: var(--space-16);
+  }
+
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .expense-form-actions {
+    flex-direction: column;
+  }
+
+  .expense-form-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .expense-tab-btn span {
+    display: none;
+  }
+
+  .expense-tab-btn i {
+    font-size: 1.25rem;
   }
 }

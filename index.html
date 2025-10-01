@@ -985,91 +985,176 @@
         </div>
       </section>
 
-      <!-- Expense Registration Section -->
+      <!-- Expense Registration Section - Premium Enterprise -->
       <section id="expenses" class="section">
         <div class="section-header">
-          <h1>Registrar Nuevo Gasto</h1>
-          <p>Añade tus gastos de manera rápida y organizada</p>
+          <h1>💳 Registro de Gastos</h1>
+          <p>Sistema avanzado de registro con validación inteligente</p>
         </div>
-        <div class="form-container">
-          <form id="expenseForm">
-            <div class="form-group">
-              <label for="description">Descripción del Gasto</label>
-              <input
-                type="text"
-                id="description"
-                class="form-control"
-                placeholder="Ej. Almuerzo, Gasolina, Compras..."
-                required
-              />
+
+        <!-- Premium Expense Form Card -->
+        <div class="expense-form-premium">
+          <div class="expense-form-tabs">
+            <button class="expense-tab-btn active" data-tab="manual">
+              <i class="fas fa-keyboard"></i>
+              <span>Manual</span>
+            </button>
+            <button class="expense-tab-btn" data-tab="quick">
+              <i class="fas fa-bolt"></i>
+              <span>Rápido</span>
+            </button>
+            <button class="expense-tab-btn" data-tab="recurring">
+              <i class="fas fa-repeat"></i>
+              <span>Recurrente</span>
+            </button>
+          </div>
+
+          <form id="expenseForm" class="expense-form-content">
+            <!-- Amount Section - Featured -->
+            <div class="expense-amount-section">
+              <label class="expense-amount-label">Monto del gasto</label>
+              <div class="expense-amount-input-wrapper">
+                <span class="expense-currency">$</span>
+                <input
+                  type="number"
+                  id="amount"
+                  class="expense-amount-input"
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                  required
+                  autofocus
+                />
+              </div>
+              <div class="expense-amount-suggestions" id="amountSuggestions">
+                <!-- Dynamic suggestions will be added here -->
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="amount">Monto</label>
-              <input
-                type="number"
-                id="amount"
-                class="form-control"
-                placeholder="0.00"
-                step="0.01"
-                min="0"
-                required
-              />
+            <!-- Description with Autocomplete -->
+            <div class="form-group-premium">
+              <label class="form-label-premium">
+                <i class="fas fa-align-left"></i>
+                Descripción
+              </label>
+              <div class="input-with-icon">
+                <input
+                  type="text"
+                  id="description"
+                  class="form-input-premium"
+                  placeholder="¿En qué gastaste?"
+                  required
+                  autocomplete="off"
+                />
+                <div class="autocomplete-dropdown hidden" id="descriptionAutocomplete"></div>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="category">Categoría</label>
-              <select id="category" class="form-control" required>
-                <option value="">Selecciona una categoría</option>
-                <option value="Alimentación">🍽️ Alimentación</option>
-                <option value="Transporte">🚗 Transporte</option>
-                <option value="Entretenimiento">🎬 Entretenimiento</option>
-                <option value="Salud">🏥 Salud</option>
-                <option value="Servicios">⚡ Servicios</option>
-                <option value="Compras">🛍️ Compras</option>
-                <option value="Otros">📦 Otros</option>
-              </select>
+            <!-- Grid Layout for Category and Necessity -->
+            <div class="form-grid-2">
+              <div class="form-group-premium">
+                <label class="form-label-premium">
+                  <i class="fas fa-tag"></i>
+                  Categoría
+                </label>
+                <div class="category-selector-premium">
+                  <select id="category" class="form-input-premium category-select" required>
+                    <option value="">Selecciona categoría</option>
+                    <option value="Alimentación" data-icon="🍽️">Alimentación</option>
+                    <option value="Transporte" data-icon="🚗">Transporte</option>
+                    <option value="Entretenimiento" data-icon="🎬">Entretenimiento</option>
+                    <option value="Salud" data-icon="🏥">Salud</option>
+                    <option value="Servicios" data-icon="⚡">Servicios</option>
+                    <option value="Compras" data-icon="🛍️">Compras</option>
+                    <option value="Otros" data-icon="📦">Otros</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group-premium">
+                <label class="form-label-premium">
+                  <i class="fas fa-chart-line"></i>
+                  Prioridad
+                </label>
+                <select id="necessity" class="form-input-premium" required>
+                  <option value="">Nivel de necesidad</option>
+                  <option value="Muy Necesario">⭐⭐⭐⭐⭐ Esencial</option>
+                  <option value="Necesario">⭐⭐⭐⭐ Necesario</option>
+                  <option value="Poco Necesario">⭐⭐⭐ Opcional</option>
+                  <option value="No Necesario">⭐⭐ Prescindible</option>
+                  <option value="Compra por Impulso">⭐ Impulso</option>
+                </select>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="necessity">Grado de Necesidad</label>
-              <select id="necessity" class="form-control" required>
-                <option value="">Selecciona nivel de necesidad</option>
-                <option value="Muy Necesario">Muy Necesario</option>
-                <option value="Necesario">Necesario</option>
-                <option value="Poco Necesario">Poco Necesario</option>
-                <option value="No Necesario">No Necesario</option>
-                <option value="Compra por Impulso">Compra por Impulso</option>
-              </select>
+            <!-- Grid Layout for Date and User -->
+            <div class="form-grid-2">
+              <div class="form-group-premium">
+                <label class="form-label-premium">
+                  <i class="fas fa-calendar-alt"></i>
+                  Fecha
+                </label>
+                <input type="date" id="date" class="form-input-premium" required />
+              </div>
+
+              <div class="form-group-premium">
+                <label class="form-label-premium">
+                  <i class="fas fa-user"></i>
+                  Usuario
+                </label>
+                <select id="user" class="form-input-premium">
+                  <option value="">Sin asignar</option>
+                  <option value="__add_new__">+ Añadir usuario</option>
+                </select>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="date">Fecha</label>
-              <input type="date" id="date" class="form-control" required />
-            </div>
-
-            <div class="form-group">
-              <label for="user">Usuario (opcional)</label>
-              <select id="user" class="form-control">
-                <option value="">Sin usuario asignado</option>
-                <option value="__add_new__">+ Añadir nuevo usuario</option>
-              </select>
-            </div>
-
-            <div class="form-group hidden" id="newUserGroup">
-              <label for="newUserName">Nombre del nuevo usuario</label>
+            <!-- New User Input (Hidden by default) -->
+            <div class="form-group-premium hidden" id="newUserGroup">
+              <label class="form-label-premium">
+                <i class="fas fa-user-plus"></i>
+                Nombre del nuevo usuario
+              </label>
               <input
                 type="text"
                 id="newUserName"
-                class="form-control"
+                class="form-input-premium"
                 placeholder="Presiona Enter para guardar"
               />
             </div>
 
-            <div class="form-actions">
-              <button type="submit" class="btn btn-primary">
+            <!-- Budget Impact Alert -->
+            <div class="budget-impact-alert hidden" id="budgetImpactAlert">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span id="budgetImpactText"></span>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="expense-form-actions">
+              <button type="button" class="btn-expense-secondary" id="clearExpenseForm">
+                <i class="fas fa-eraser"></i>
+                Limpiar
+              </button>
+              <button type="submit" class="btn-expense-primary">
+                <i class="fas fa-check-circle"></i>
                 Registrar Gasto
               </button>
+            </div>
+
+            <!-- Quick Stats Below Form -->
+            <div class="expense-form-stats">
+              <div class="form-stat-item">
+                <span class="stat-value" id="todayExpensesCount">0</span>
+                <span class="stat-label">Hoy</span>
+              </div>
+              <div class="form-stat-item">
+                <span class="stat-value" id="todayExpensesTotal">$0</span>
+                <span class="stat-label">Total hoy</span>
+              </div>
+              <div class="form-stat-item">
+                <span class="stat-value" id="monthExpensesTotal">$0</span>
+                <span class="stat-label">Este mes</span>
+              </div>
             </div>
           </form>
         </div>
@@ -1668,456 +1753,743 @@
       <!-- Configuration Section -->
       <section id="config" class="section">
         <div class="section-header">
-          <h1>Configuración</h1>
-          <p>Administra tu cuenta y personaliza tu experiencia</p>
+          <h1>⚙️ Configuración</h1>
+          <p>Gestiona tu cuenta y personaliza tu experiencia financiera</p>
         </div>
 
-        <div class="config-container">
-          <!-- Profile Card -->
-          <div class="config-card profile-card">
-            <div class="config-card-header">
-              <div class="config-card-icon">
-                <i class="fas fa-user-circle"></i>
-              </div>
-              <div class="config-card-title">
-                <h3>Perfil</h3>
-                <p>Información personal y avatar</p>
-              </div>
-            </div>
-            <div class="config-card-body">
-              <div class="profile-section">
-                <div class="profile-avatar-section">
-                  <div class="current-avatar" id="currentProfileAvatar">
-                    <div class="avatar-preview">
-                      <i class="fas fa-user"></i>
-                    </div>
-                  </div>
-                  <div class="profile-info">
-                    <h4 id="profileUserName">Usuario</h4>
-                    <p class="profile-email">usuario@financiapro.com</p>
-                    <button class="btn-text" id="changeAvatarBtn">
-                      <i class="fas fa-edit"></i> Cambiar avatar
-                    </button>
-                  </div>
+        <!-- Premium Settings Layout -->
+        <div class="settings-layout">
+          <!-- Settings Sidebar Navigation -->
+          <aside class="settings-sidebar">
+            <nav class="settings-nav">
+              <button class="settings-nav-item active" data-settings-tab="profile">
+                <div class="settings-nav-icon">
+                  <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="settings-nav-content">
+                  <span class="settings-nav-title">Perfil</span>
+                  <span class="settings-nav-subtitle">Información personal</span>
+                </div>
+                <i class="fas fa-chevron-right settings-nav-arrow"></i>
+              </button>
+
+              <button class="settings-nav-item" data-settings-tab="account">
+                <div class="settings-nav-icon">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="settings-nav-content">
+                  <span class="settings-nav-title">Cuenta y seguridad</span>
+                  <span class="settings-nav-subtitle">Contraseñas y acceso</span>
+                </div>
+                <i class="fas fa-chevron-right settings-nav-arrow"></i>
+              </button>
+
+              <button class="settings-nav-item" data-settings-tab="financial">
+                <div class="settings-nav-icon">
+                  <i class="fas fa-wallet"></i>
+                </div>
+                <div class="settings-nav-content">
+                  <span class="settings-nav-title">Gestión financiera</span>
+                  <span class="settings-nav-subtitle">Ahorros y pagos</span>
+                </div>
+                <i class="fas fa-chevron-right settings-nav-arrow"></i>
+              </button>
+
+              <button class="settings-nav-item" data-settings-tab="appearance">
+                <div class="settings-nav-icon">
+                  <i class="fas fa-palette"></i>
+                </div>
+                <div class="settings-nav-content">
+                  <span class="settings-nav-title">Apariencia</span>
+                  <span class="settings-nav-subtitle">Tema y preferencias visuales</span>
+                </div>
+                <i class="fas fa-chevron-right settings-nav-arrow"></i>
+              </button>
+
+              <button class="settings-nav-item" data-settings-tab="data">
+                <div class="settings-nav-icon">
+                  <i class="fas fa-database"></i>
+                </div>
+                <div class="settings-nav-content">
+                  <span class="settings-nav-title">Datos y privacidad</span>
+                  <span class="settings-nav-subtitle">Exportar, importar, backup</span>
+                </div>
+                <i class="fas fa-chevron-right settings-nav-arrow"></i>
+              </button>
+
+              <button class="settings-nav-item" data-settings-tab="advanced">
+                <div class="settings-nav-icon">
+                  <i class="fas fa-cogs"></i>
+                </div>
+                <div class="settings-nav-content">
+                  <span class="settings-nav-title">Avanzado</span>
+                  <span class="settings-nav-subtitle">Desarrollador y debug</span>
+                </div>
+                <i class="fas fa-chevron-right settings-nav-arrow"></i>
+              </button>
+            </nav>
+          </aside>
+
+          <!-- Settings Content Area -->
+          <div class="settings-content">
+            <!-- Profile Tab -->
+            <div class="settings-tab active" id="settings-profile">
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h2>Información personal</h2>
+                  <p>Actualiza tu perfil y preferencias de cuenta</p>
                 </div>
 
-                <div class="profile-form">
-                  <div class="form-group">
-                    <label class="form-label">Nombre de usuario</label>
-                    <input
-                      type="text"
-                      class="form-input"
-                      id="profileNameInput"
-                      placeholder="Tu nombre"
-                    />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Ingresos mensuales</label>
-                    <div class="input-con-simbolo">
-                      <span class="simbolo-moneda">$</span>
-                      <input
-                        type="text"
-                        class="form-input input-con-padding"
-                        id="monthlyIncomeInput"
-                        placeholder="0"
-                      />
-                    </div>
-                  </div>
-                  <div class="form-actions">
-                    <button class="btn-primary" id="saveProfileBtn">
-                      <i class="fas fa-save"></i> Guardar cambios
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Account Card -->
-          <div class="config-card account-card">
-            <div class="config-card-header">
-              <div class="config-card-icon">
-                <i class="fas fa-shield-alt"></i>
-              </div>
-              <div class="config-card-title">
-                <h3>Cuenta</h3>
-                <p>Seguridad y configuración de cuenta</p>
-              </div>
-            </div>
-            <div class="config-card-body">
-              <div class="account-section">
-                <div class="account-type-section">
-                  <div class="account-badge" id="configAccountBadge">
-                    <i class="fas fa-user"></i>
-                    <span id="configAccountTypeText">Cuenta Personal</span>
-                  </div>
-                  <p class="account-description" id="configAccountDescription">
-                    Tu cuenta personal para el control de finanzas individuales.
-                  </p>
-                </div>
-
-                <div class="account-members" id="configAccountMembers">
-                  <div class="member-item current-member">
-                    <div class="member-avatar">
-                      <i class="fas fa-user"></i>
-                    </div>
-                    <div class="member-info">
-                      <span class="member-name" id="configMemberName"
-                        >Usuario</span
-                      >
-                      <span class="member-role">Propietario</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  class="account-invite-section hidden"
-                  id="configInviteSection"
-                >
-                  <div class="invite-card">
-                    <div class="invite-icon">
-                      <i class="fas fa-user-plus"></i>
-                    </div>
-                    <div class="invite-content">
-                      <h5>Invitar a un socio</h5>
-                      <p>
-                        Comparte el control financiero con otra persona de
-                        confianza
-                      </p>
-                    </div>
-                    <button class="btn-primary" id="configInvitePartnerBtn">
-                      <i class="fas fa-share"></i> Generar invitación
-                    </button>
-                  </div>
-                </div>
-
-                <div class="account-actions">
-                  <button class="btn-secondary" id="configChangePasswordBtn">
-                    <i class="fas fa-key"></i> Cambiar contraseña
-                  </button>
-                  <button class="btn-outline" id="configSwitchAccountBtn">
-                    <i class="fas fa-exchange-alt"></i> Cambiar tipo de cuenta
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Savings Management Card -->
-          <div class="config-card savings-config-card">
-            <div class="config-card-header">
-              <div class="config-card-icon">
-                <i class="fas fa-wallet"></i>
-              </div>
-              <div class="config-card-title">
-                <h3>Gestión de Ahorros</h3>
-                <p>Organiza tus ahorros por fuente y propósito</p>
-              </div>
-            </div>
-            <div class="config-card-body">
-              <div class="savings-section">
-                <div class="savings-form-section">
-                  <form id="savingsAccountForm" class="savings-form">
-                    <div class="form-row">
-                      <div class="form-group form-group-flex">
-                        <label for="savingsSourceName">Fuente de ahorro</label>
-                        <input
-                          type="text"
-                          id="savingsSourceName"
-                          class="form-control"
-                          placeholder="Ej: AFP, Banco Santander, Efectivo"
-                          required
-                        />
+                <div class="settings-card">
+                  <div class="profile-avatar-section">
+                    <div class="current-avatar" id="currentProfileAvatar">
+                      <div class="avatar-preview">
+                        <i class="fas fa-user"></i>
                       </div>
-                      <div class="form-group form-group-flex">
-                        <label for="savingsAmount">Monto actual</label>
-                        <input
-                          type="number"
-                          id="savingsAmount"
-                          class="form-control"
-                          placeholder="0.00"
-                          step="0.01"
-                          min="0"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="savingsType">Tipo de ahorro</label>
-                      <select id="savingsType" class="form-control" required>
-                        <option value="">Selecciona un tipo</option>
-                        <option value="retirement">Jubilación (AFP/Pensión)</option>
-                        <option value="emergency">Fondo de emergencia</option>
-                        <option value="investment">Inversiones</option>
-                        <option value="savings_account">Cuenta de ahorros</option>
-                        <option value="cash">Efectivo</option>
-                        <option value="goal">Meta específica</option>
-                        <option value="other">Otro</option>
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <label for="savingsDescription">Descripción (opcional)</label>
-                      <input
-                        type="text"
-                        id="savingsDescription"
-                        class="form-control"
-                        placeholder="Para qué es este ahorro..."
-                      />
-                    </div>
-                    <div class="form-actions">
-                      <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Agregar fuente de ahorro
+                      <button class="avatar-edit-badge" id="changeAvatarBtn">
+                        <i class="fas fa-camera"></i>
                       </button>
                     </div>
-                  </form>
-                </div>
-
-                <div class="savings-list-section">
-                  <div class="savings-summary">
-                    <div class="summary-item">
-                      <span class="summary-label">Total ahorrado</span>
-                      <span class="summary-value" id="totalSavingsAmount">$0</span>
-                    </div>
-                    <div class="summary-item">
-                      <span class="summary-label">Fuentes activas</span>
-                      <span class="summary-value" id="totalSavingsSources">0</span>
-                    </div>
-                  </div>
-                  <div id="savingsAccountsList" class="savings-accounts-list">
-                    <div class="empty-state-small">
-                      <i class="fas fa-wallet"></i>
-                      <p>No hay fuentes de ahorro registradas</p>
+                    <div class="profile-info">
+                      <h4 id="profileUserName">Usuario</h4>
+                      <p class="profile-email">usuario@financiapro.com</p>
+                      <span class="profile-badge">
+                        <i class="fas fa-crown"></i> Usuario activo
+                      </span>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- Recurring Payments Management Card -->
-          <div class="config-card payments-config-card">
-            <div class="config-card-header">
-              <div class="config-card-icon">
-                <i class="fas fa-money-bill-wave"></i>
-              </div>
-              <div class="config-card-title">
-                <h3>Próximos Pagos</h3>
-                <p>Gestiona tus pagos recurrentes mensuales</p>
-              </div>
-            </div>
-            <div class="config-card-body">
-              <div class="payments-section">
-                <div class="payments-form-section">
-                  <form id="recurringPaymentForm" class="payments-form">
-                    <div class="form-row">
-                      <div class="form-group form-group-flex">
-                        <label for="paymentServiceName">Nombre del servicio</label>
-                        <input
-                          type="text"
-                          id="paymentServiceName"
-                          class="form-control"
-                          placeholder="Ej: Luz del hogar"
-                          required
-                        />
-                      </div>
-                      <div class="form-group form-group-flex">
-                        <label for="paymentServiceType">Tipo de servicio</label>
-                        <select id="paymentServiceType" class="form-control" required>
-                          <option value="">Selecciona un tipo</option>
-                          <option value="electricity">Luz</option>
-                          <option value="water">Agua</option>
-                          <option value="phone">Teléfono</option>
-                          <option value="internet">Internet/WiFi</option>
-                          <option value="tv">TV/Cable</option>
-                          <option value="rent">Alquiler</option>
-                          <option value="gas">Gas</option>
-                          <option value="insurance">Seguro</option>
-                          <option value="subscription">Suscripción</option>
-                          <option value="other">Otros Servicios</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-row">
-                      <div class="form-group form-group-flex">
-                        <label for="paymentAmount">Monto (opcional si varía)</label>
-                        <input
-                          type="number"
-                          id="paymentAmount"
-                          class="form-control"
-                          placeholder="0.00"
-                          step="0.01"
-                          min="0"
-                        />
-                      </div>
-                      <div class="form-group form-group-flex">
-                        <label for="paymentDueDay">Día de vencimiento</label>
-                        <input
-                          type="number"
-                          id="paymentDueDay"
-                          class="form-control"
-                          placeholder="1-31"
-                          min="1"
-                          max="31"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="paymentNotes">Notas (opcional)</label>
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Detalles de la cuenta</h3>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="form-group-premium">
+                      <label class="form-label-premium">Nombre de usuario</label>
                       <input
                         type="text"
-                        id="paymentNotes"
-                        class="form-control"
-                        placeholder="Detalles adicionales..."
+                        class="form-input-premium"
+                        id="profileNameInput"
+                        placeholder="Ingresa tu nombre"
                       />
+                      <span class="form-hint">Este nombre aparecerá en tus reportes y resúmenes</span>
                     </div>
-                    <div class="form-actions">
-                      <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Agregar pago recurrente
+
+                    <div class="form-group-premium">
+                      <label class="form-label-premium">Ingresos mensuales</label>
+                      <div class="input-with-icon">
+                        <i class="fas fa-dollar-sign input-icon-left"></i>
+                        <input
+                          type="number"
+                          class="form-input-premium input-with-padding-left"
+                          id="monthlyIncomeInput"
+                          placeholder="0.00"
+                          step="0.01"
+                        />
+                      </div>
+                      <span class="form-hint">Ayuda a calcular tu capacidad de ahorro mensual</span>
+                    </div>
+
+                    <div class="form-actions-premium">
+                      <button class="btn-premium btn-premium-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                      </button>
+                      <button class="btn-premium btn-premium-primary" id="saveProfileBtn">
+                        <i class="fas fa-check"></i> Guardar cambios
                       </button>
                     </div>
-                  </form>
+                  </div>
                 </div>
 
-                <div class="payments-list-section">
-                  <div class="payments-summary">
-                    <div class="summary-item">
-                      <span class="summary-label">Total mensual estimado</span>
-                      <span class="summary-value" id="totalMonthlyPayments">$0</span>
-                    </div>
-                    <div class="summary-item">
-                      <span class="summary-label">Servicios registrados</span>
-                      <span class="summary-value" id="totalPaymentServices">0</span>
-                    </div>
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Estadísticas de uso</h3>
                   </div>
-                  <div id="recurringPaymentsList" class="payments-list">
-                    <div class="empty-state-small">
-                      <i class="fas fa-money-bill-wave"></i>
-                      <p>No hay pagos recurrentes registrados</p>
+                  <div class="settings-card-body">
+                    <div class="stats-grid-premium">
+                      <div class="stat-item-premium">
+                        <i class="fas fa-receipt stat-icon"></i>
+                        <div class="stat-content">
+                          <span class="stat-value" id="totalExpensesCount">0</span>
+                          <span class="stat-label">Gastos registrados</span>
+                        </div>
+                      </div>
+                      <div class="stat-item-premium">
+                        <i class="fas fa-bullseye stat-icon"></i>
+                        <div class="stat-content">
+                          <span class="stat-value" id="totalGoalsCount">0</span>
+                          <span class="stat-label">Metas creadas</span>
+                        </div>
+                      </div>
+                      <div class="stat-item-premium">
+                        <i class="fas fa-calendar stat-icon"></i>
+                        <div class="stat-content">
+                          <span class="stat-value" id="accountAge">0</span>
+                          <span class="stat-label">Días activo</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Appearance Card -->
-          <div class="config-card appearance-card">
-            <div class="config-card-header">
-              <div class="config-card-icon">
-                <i class="fas fa-palette"></i>
-              </div>
-              <div class="config-card-title">
-                <h3>Apariencia</h3>
-                <p>Personaliza la interfaz y estilos visuales</p>
+            <!-- Account Tab -->
+            <div class="settings-tab" id="settings-account">
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h2>Cuenta y seguridad</h2>
+                  <p>Gestiona tu acceso y configuración de seguridad</p>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Tipo de cuenta</h3>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="account-badge" id="configAccountBadge">
+                      <i class="fas fa-user"></i>
+                      <span id="configAccountTypeText">Cuenta Personal</span>
+                    </div>
+                    <p class="account-description" id="configAccountDescription">
+                      Tu cuenta personal para el control de finanzas individuales.
+                    </p>
+                    <button class="btn-premium btn-premium-outline" id="configSwitchAccountBtn">
+                      <i class="fas fa-exchange-alt"></i> Cambiar tipo de cuenta
+                    </button>
+                  </div>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Seguridad</h3>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="settings-list">
+                      <div class="settings-list-item">
+                        <div class="settings-list-icon">
+                          <i class="fas fa-key"></i>
+                        </div>
+                        <div class="settings-list-content">
+                          <span class="settings-list-title">Contraseña</span>
+                          <span class="settings-list-subtitle">••••••••</span>
+                        </div>
+                        <button class="btn-premium btn-premium-sm" id="configChangePasswordBtn">
+                          Cambiar
+                        </button>
+                      </div>
+
+                      <div class="settings-list-item">
+                        <div class="settings-list-icon">
+                          <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="settings-list-content">
+                          <span class="settings-list-title">Autenticación de dos factores</span>
+                          <span class="settings-list-subtitle">Seguridad adicional para tu cuenta</span>
+                        </div>
+                        <label class="toggle-switch-premium">
+                          <input type="checkbox" id="twoFactorToggle" />
+                          <span class="toggle-slider-premium"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="settings-card config-invite-card" id="configInviteSection">
+                  <div class="settings-card-header">
+                    <h3>Compartir cuenta</h3>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="invite-card-premium">
+                      <div class="invite-icon-premium">
+                        <i class="fas fa-user-plus"></i>
+                      </div>
+                      <div class="invite-content-premium">
+                        <h5>Invitar a un socio</h5>
+                        <p>Comparte el control financiero con otra persona de confianza</p>
+                      </div>
+                      <button class="btn-premium btn-premium-primary" id="configInvitePartnerBtn">
+                        <i class="fas fa-share"></i> Generar invitación
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="config-card-body">
-              <div class="appearance-section">
-                <div class="theme-section">
-                  <h5>Tema de la aplicación</h5>
-                  <div class="theme-options">
-                    <button class="theme-option active" data-theme="light">
-                      <div class="theme-preview theme-light">
-                        <div class="theme-circle"></div>
-                        <div class="theme-circle"></div>
-                        <div class="theme-circle"></div>
+
+            <!-- Financial Management Tab -->
+            <div class="settings-tab" id="settings-financial">
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h2>Gestión financiera</h2>
+                  <p>Administra tus ahorros y pagos recurrentes</p>
+                </div>
+
+                <!-- Savings Management Card -->
+                <div class="settings-card savings-config-card">
+                  <div class="settings-card-header">
+                    <h3>Gestión de Ahorros</h3>
+                    <p>Organiza tus ahorros por fuente y propósito</p>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="savings-section">
+                      <div class="savings-form-section">
+                        <form id="savingsAccountForm" class="savings-form">
+                          <div class="form-row">
+                            <div class="form-group form-group-flex">
+                              <label for="savingsSourceName" class="form-label-premium">Fuente de ahorro</label>
+                              <input
+                                type="text"
+                                id="savingsSourceName"
+                                class="form-input-premium"
+                                placeholder="Ej: AFP, Banco Santander, Efectivo"
+                                required
+                              />
+                            </div>
+                            <div class="form-group form-group-flex">
+                              <label for="savingsAmount" class="form-label-premium">Monto actual</label>
+                              <input
+                                type="number"
+                                id="savingsAmount"
+                                class="form-input-premium"
+                                placeholder="0.00"
+                                step="0.01"
+                                min="0"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label for="savingsType" class="form-label-premium">Tipo de ahorro</label>
+                            <select id="savingsType" class="form-input-premium" required>
+                              <option value="">Selecciona un tipo</option>
+                              <option value="retirement">Jubilación (AFP/Pensión)</option>
+                              <option value="emergency">Fondo de emergencia</option>
+                              <option value="investment">Inversiones</option>
+                              <option value="savings_account">Cuenta de ahorros</option>
+                              <option value="cash">Efectivo</option>
+                              <option value="goal">Meta específica</option>
+                              <option value="other">Otro</option>
+                            </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="savingsDescription" class="form-label-premium">Descripción (opcional)</label>
+                            <input
+                              type="text"
+                              id="savingsDescription"
+                              class="form-input-premium"
+                              placeholder="Para qué es este ahorro..."
+                            />
+                          </div>
+                          <div class="form-actions-premium">
+                            <button type="submit" class="btn-premium btn-premium-primary">
+                              <i class="fas fa-plus"></i> Agregar fuente de ahorro
+                            </button>
+                          </div>
+                        </form>
                       </div>
-                      <span>Claro</span>
-                    </button>
-                    <button class="theme-option" data-theme="dark">
-                      <div class="theme-preview theme-dark">
-                        <div class="theme-circle"></div>
-                        <div class="theme-circle"></div>
-                        <div class="theme-circle"></div>
+
+                      <div class="savings-list-section">
+                        <div class="savings-summary">
+                          <div class="summary-item">
+                            <span class="summary-label">Total ahorrado</span>
+                            <span class="summary-value" id="totalSavingsAmount">$0</span>
+                          </div>
+                          <div class="summary-item">
+                            <span class="summary-label">Fuentes activas</span>
+                            <span class="summary-value" id="totalSavingsSources">0</span>
+                          </div>
+                        </div>
+                        <div id="savingsAccountsList" class="savings-accounts-list">
+                          <div class="empty-state-small">
+                            <i class="fas fa-wallet"></i>
+                            <p>No hay fuentes de ahorro registradas</p>
+                          </div>
+                        </div>
                       </div>
-                      <span>Oscuro</span>
-                    </button>
-                    <button class="theme-option" data-theme="auto">
-                      <div class="theme-preview theme-auto">
-                        <div class="theme-circle"></div>
-                        <div class="theme-circle"></div>
-                        <div class="theme-circle"></div>
-                      </div>
-                      <span>Automático</span>
-                    </button>
+                    </div>
                   </div>
                 </div>
 
-                <div class="chart-style-section">
-                  <h5>Estilo de gráficos</h5>
-                  <div class="current-chart-style" id="configCurrentChartStyle">
-                    <div class="chart-style-preview">
-                      <div class="mini-chart-dots">
-                        <div
-                          class="chart-dot"
-                          style="background: var(--color-primary)"
-                        ></div>
-                        <div
-                          class="chart-dot"
-                          style="background: var(--color-secondary)"
-                        ></div>
-                        <div
-                          class="chart-dot"
-                          style="background: var(--color-accent)"
-                        ></div>
+                <!-- Recurring Payments Management Card -->
+                <div class="settings-card payments-config-card">
+                  <div class="settings-card-header">
+                    <h3>Próximos Pagos</h3>
+                    <p>Gestiona tus pagos recurrentes mensuales</p>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="payments-section">
+                      <div class="payments-form-section">
+                        <form id="recurringPaymentForm" class="payments-form">
+                          <div class="form-row">
+                            <div class="form-group form-group-flex">
+                              <label for="paymentServiceName" class="form-label-premium">Nombre del servicio</label>
+                              <input
+                                type="text"
+                                id="paymentServiceName"
+                                class="form-input-premium"
+                                placeholder="Ej: Luz del hogar"
+                                required
+                              />
+                            </div>
+                            <div class="form-group form-group-flex">
+                              <label for="paymentServiceType" class="form-label-premium">Tipo de servicio</label>
+                              <select id="paymentServiceType" class="form-input-premium" required>
+                                <option value="">Selecciona un tipo</option>
+                                <option value="electricity">Luz</option>
+                                <option value="water">Agua</option>
+                                <option value="phone">Teléfono</option>
+                                <option value="internet">Internet/WiFi</option>
+                                <option value="tv">TV/Cable</option>
+                                <option value="rent">Alquiler</option>
+                                <option value="gas">Gas</option>
+                                <option value="insurance">Seguro</option>
+                                <option value="subscription">Suscripción</option>
+                                <option value="other">Otros Servicios</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="form-row">
+                            <div class="form-group form-group-flex">
+                              <label for="paymentAmount" class="form-label-premium">Monto (opcional si varía)</label>
+                              <input
+                                type="number"
+                                id="paymentAmount"
+                                class="form-input-premium"
+                                placeholder="0.00"
+                                step="0.01"
+                                min="0"
+                              />
+                            </div>
+                            <div class="form-group form-group-flex">
+                              <label for="paymentDueDay" class="form-label-premium">Día de vencimiento</label>
+                              <input
+                                type="number"
+                                id="paymentDueDay"
+                                class="form-input-premium"
+                                placeholder="1-31"
+                                min="1"
+                                max="31"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label for="paymentNotes" class="form-label-premium">Notas (opcional)</label>
+                            <input
+                              type="text"
+                              id="paymentNotes"
+                              class="form-input-premium"
+                              placeholder="Detalles adicionales..."
+                            />
+                          </div>
+                          <div class="form-actions-premium">
+                            <button type="submit" class="btn-premium btn-premium-primary">
+                              <i class="fas fa-plus"></i> Agregar pago recurrente
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+
+                      <div class="payments-list-section">
+                        <div class="payments-summary">
+                          <div class="summary-item">
+                            <span class="summary-label">Total mensual estimado</span>
+                            <span class="summary-value" id="totalMonthlyPayments">$0</span>
+                          </div>
+                          <div class="summary-item">
+                            <span class="summary-label">Servicios registrados</span>
+                            <span class="summary-value" id="totalPaymentServices">0</span>
+                          </div>
+                        </div>
+                        <div id="recurringPaymentsList" class="payments-list">
+                          <div class="empty-state-small">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <p>No hay pagos recurrentes registrados</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div class="chart-style-info">
-                      <span class="chart-style-name" id="configChartStyleName"
-                        >Clásico</span
-                      >
-                      <p>Colores tradicionales y elegantes</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Appearance Tab -->
+            <div class="settings-tab" id="settings-appearance">
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h2>Apariencia</h2>
+                  <p>Personaliza la interfaz y estilos visuales</p>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Tema de la aplicación</h3>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="theme-options">
+                      <button class="theme-option active" data-theme="light">
+                        <div class="theme-preview theme-light">
+                          <div class="theme-circle"></div>
+                          <div class="theme-circle"></div>
+                          <div class="theme-circle"></div>
+                        </div>
+                        <span>Claro</span>
+                      </button>
+                      <button class="theme-option" data-theme="dark">
+                        <div class="theme-preview theme-dark">
+                          <div class="theme-circle"></div>
+                          <div class="theme-circle"></div>
+                          <div class="theme-circle"></div>
+                        </div>
+                        <span>Oscuro</span>
+                      </button>
+                      <button class="theme-option" data-theme="auto">
+                        <div class="theme-preview theme-auto">
+                          <div class="theme-circle"></div>
+                          <div class="theme-circle"></div>
+                          <div class="theme-circle"></div>
+                        </div>
+                        <span>Automático</span>
+                      </button>
                     </div>
-                    <button class="btn-text" id="configChangeChartStyleBtn">
-                      <i class="fas fa-paint-brush"></i> Cambiar
-                    </button>
                   </div>
                 </div>
 
-                <div class="preferences-section">
-                  <h5>Preferencias</h5>
-                  <div class="preference-item">
-                    <div class="preference-info">
-                      <span class="preference-label">Animaciones</span>
-                      <p class="preference-desc">
-                        Efectos de transición y animaciones
-                      </p>
-                    </div>
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="animationsToggle" checked />
-                      <span class="toggle-slider"></span>
-                    </label>
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Estilo de gráficos</h3>
                   </div>
-                  <div class="preference-item">
-                    <div class="preference-info">
-                      <span class="preference-label"
-                        >Notificaciones de metas</span
-                      >
-                      <p class="preference-desc">
-                        Recordatorios de progreso de objetivos
-                      </p>
+                  <div class="settings-card-body">
+                    <div class="current-chart-style" id="configCurrentChartStyle">
+                      <div class="chart-style-preview">
+                        <div class="mini-chart-dots">
+                          <div class="chart-dot" style="background: var(--color-primary)"></div>
+                          <div class="chart-dot" style="background: var(--color-secondary)"></div>
+                          <div class="chart-dot" style="background: var(--color-accent)"></div>
+                        </div>
+                      </div>
+                      <div class="chart-style-info">
+                        <span class="chart-style-name" id="configChartStyleName">Clásico</span>
+                        <p>Colores tradicionales y elegantes</p>
+                      </div>
+                      <button class="btn-premium btn-premium-outline" id="configChangeChartStyleBtn">
+                        <i class="fas fa-paint-brush"></i> Cambiar
+                      </button>
                     </div>
-                    <label class="toggle-switch">
-                      <input
-                        type="checkbox"
-                        id="goalNotificationsToggle"
-                        checked
-                      />
-                      <span class="toggle-slider"></span>
-                    </label>
                   </div>
-                  <div class="preference-item">
-                    <div class="preference-info">
-                      <span class="preference-label">Modo de demostración</span>
-                      <p class="preference-desc">
-                        Datos de ejemplo para nuevos usuarios
-                      </p>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Preferencias de interfaz</h3>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="settings-list">
+                      <div class="settings-list-item">
+                        <div class="settings-list-icon">
+                          <i class="fas fa-magic"></i>
+                        </div>
+                        <div class="settings-list-content">
+                          <span class="settings-list-title">Animaciones</span>
+                          <span class="settings-list-subtitle">Efectos de transición y animaciones</span>
+                        </div>
+                        <label class="toggle-switch-premium">
+                          <input type="checkbox" id="animationsToggle" checked />
+                          <span class="toggle-slider-premium"></span>
+                        </label>
+                      </div>
+
+                      <div class="settings-list-item">
+                        <div class="settings-list-icon">
+                          <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="settings-list-content">
+                          <span class="settings-list-title">Notificaciones de metas</span>
+                          <span class="settings-list-subtitle">Recordatorios de progreso de objetivos</span>
+                        </div>
+                        <label class="toggle-switch-premium">
+                          <input type="checkbox" id="goalNotificationsToggle" checked />
+                          <span class="toggle-slider-premium"></span>
+                        </label>
+                      </div>
+
+                      <div class="settings-list-item">
+                        <div class="settings-list-icon">
+                          <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="settings-list-content">
+                          <span class="settings-list-title">Modo de demostración</span>
+                          <span class="settings-list-subtitle">Datos de ejemplo para nuevos usuarios</span>
+                        </div>
+                        <label class="toggle-switch-premium">
+                          <input type="checkbox" id="demoModeToggle" />
+                          <span class="toggle-slider-premium"></span>
+                        </label>
+                      </div>
                     </div>
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="demoModeToggle" />
-                      <span class="toggle-slider"></span>
-                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Data & Privacy Tab -->
+            <div class="settings-tab" id="settings-data">
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h2>Datos y privacidad</h2>
+                  <p>Gestiona tus datos, respaldos y privacidad</p>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Exportar datos</h3>
+                    <p>Descarga una copia de tu información</p>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="export-actions">
+                      <button class="btn-premium btn-premium-outline" id="exportJSONBtn">
+                        <i class="fas fa-file-code"></i> Exportar como JSON
+                      </button>
+                      <button class="btn-premium btn-premium-outline" id="exportCSVBtn">
+                        <i class="fas fa-file-csv"></i> Exportar como CSV
+                      </button>
+                    </div>
+                    <p class="form-hint" style="margin-top: var(--space-12);">
+                      Los archivos incluyen gastos, metas, presupuestos y configuraciones
+                    </p>
+                  </div>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Importar datos</h3>
+                    <p>Restaura o migra información desde un archivo</p>
+                  </div>
+                  <div class="settings-card-body">
+                    <input type="file" id="importFileInput" accept=".json" style="display: none;" />
+                    <button class="btn-premium btn-premium-outline" id="importJSONBtn">
+                      <i class="fas fa-file-upload"></i> Importar desde JSON
+                    </button>
+                    <p class="form-hint" style="margin-top: var(--space-12);">
+                      Solo archivos JSON exportados desde esta aplicación
+                    </p>
+                  </div>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Sincronización en la nube</h3>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="settings-list">
+                      <div class="settings-list-item">
+                        <div class="settings-list-icon">
+                          <i class="fas fa-cloud"></i>
+                        </div>
+                        <div class="settings-list-content">
+                          <span class="settings-list-title">Auto-sincronización</span>
+                          <span class="settings-list-subtitle">Respaldar automáticamente en Firebase</span>
+                        </div>
+                        <label class="toggle-switch-premium">
+                          <input type="checkbox" id="autoSyncToggle" checked />
+                          <span class="toggle-slider-premium"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="settings-card settings-card-danger">
+                  <div class="settings-card-header">
+                    <h3>Zona de peligro</h3>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="settings-list">
+                      <div class="settings-list-item">
+                        <div class="settings-list-content">
+                          <span class="settings-list-title">Borrar todos los datos</span>
+                          <span class="settings-list-subtitle">Esta acción no se puede deshacer</span>
+                        </div>
+                        <button class="btn-premium btn-premium-danger" id="deleteAllDataBtn">
+                          <i class="fas fa-trash"></i> Borrar todo
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Advanced Tab -->
+            <div class="settings-tab" id="settings-advanced">
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h2>Configuración avanzada</h2>
+                  <p>Opciones para usuarios avanzados</p>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Modo desarrollador</h3>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="settings-list">
+                      <div class="settings-list-item">
+                        <div class="settings-list-icon">
+                          <i class="fas fa-code"></i>
+                        </div>
+                        <div class="settings-list-content">
+                          <span class="settings-list-title">Modo debug</span>
+                          <span class="settings-list-subtitle">Mostrar logs en consola del navegador</span>
+                        </div>
+                        <label class="toggle-switch-premium">
+                          <input type="checkbox" id="debugModeToggle" />
+                          <span class="toggle-slider-premium"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Información del sistema</h3>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="info-grid">
+                      <div class="info-item">
+                        <span class="info-label">Versión de la app</span>
+                        <span class="info-value">2.1.0</span>
+                      </div>
+                      <div class="info-item">
+                        <span class="info-label">Última actualización</span>
+                        <span class="info-value" id="lastUpdateDate">-</span>
+                      </div>
+                      <div class="info-item">
+                        <span class="info-label">Tamaño de datos</span>
+                        <span class="info-value" id="dataSize">-</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>Acerca de Dan&Giv Control</h3>
+                  </div>
+                  <div class="settings-card-body">
+                    <p style="color: var(--color-text-secondary); line-height: 1.6;">
+                      Dan&Giv Control es una aplicación de gestión financiera personal desarrollada para ayudarte a controlar tus gastos, establecer metas y tomar decisiones financieras inteligentes.
+                    </p>
+                    <div style="margin-top: var(--space-16);">
+                      <button class="btn-premium btn-premium-outline">
+                        <i class="fas fa-book"></i> Ver documentación
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
