@@ -64,6 +64,11 @@ class FinanceApp {
     // Expense Templates for Quick Entry
     this.expenseTemplates = savedData.expenseTemplates || [];
 
+    // Motivational Messages System (Gemini API)
+    this.motivationalMessages = savedData.motivationalMessages || [];
+    this.lastMessageUpdate = savedData.lastMessageUpdate || null;
+    this.dailyMessageScheduled = false;
+
     // Chart Styles System
     this.chartStyles = [
       {
@@ -600,6 +605,8 @@ class FinanceApp {
       currentStyle: this.currentStyle,
       budgets: this.budgets,
       expenseTemplates: this.expenseTemplates,
+      motivationalMessages: this.motivationalMessages,
+      lastMessageUpdate: this.lastMessageUpdate,
       lastUpdate: Date.now(),
     };
 
@@ -664,6 +671,149 @@ class FinanceApp {
         : 'No se pudieron guardar los datos.';
       this.showToast(message, 'error');
     }
+  }
+
+  // === MOTIVATIONAL MESSAGES SYSTEM (GEMINI API) ===
+
+  /**
+   * Obtiene mensajes motivadores desde la API de Gemini
+   * Solo funciona cuando el usuario está logueado
+   */
+  async fetchMotivationalMessages() {
+    // Solo fetch si el usuario está logueado (no anónimo)
+    if (this.currentUser === 'anonymous' || !this.firebaseUser) {
+      console.log('Usuario anónimo - usando mensajes por defecto');
+      return;
+    }
+
+    // Verificar si necesitamos actualizar (una vez al día)
+    const now = Date.now();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+
+    if (this.lastMessageUpdate && (now - this.lastMessageUpdate) < oneDayMs) {
+      console.log('Mensajes aún frescos, no es necesario actualizar');
+      return;
+    }
+
+    try {
+      const geminiApiKey = window.geminiApiKey || 'TU_API_KEY_DE_GEMINI';
+
+      if (!geminiApiKey || geminiApiKey === 'TU_API_KEY_DE_GEMINI') {
+        console.warn('API Key de Gemini no configurada');
+        return;
+      }
+
+      const prompt = `Genera 8 mensajes motivadores cortos sobre finanzas personales y ahorro.
+      Cada mensaje debe:
+      - Ser inspirador y empático
+      - Incluir emojis relevantes (💰, 📈, 💪, ✨, 🎯, etc)
+      - Mencionar historias de éxito o consejos prácticos
+      - Tener máximo 100 caracteres
+      - Ser diferente cada vez
+      - Enfocarse en: ahorro, metas cumplidas, disciplina financiera, libertad económica
+
+      Formato: Devuelve SOLO un array JSON con objetos que tengan las propiedades: title (string), message (string), icon (string con clase de FontAwesome), gradient (string: blue, purple, green, orange, red, teal, pink, o indigo)
+
+      Ejemplo:
+      [
+        {
+          "title": "🌟 Historias de Éxito",
+          "message": "María ahorró $50 al mes y en un año compró su auto 🚗✨",
+          "icon": "fas fa-trophy",
+          "gradient": "blue"
+        }
+      ]`;
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
+          }]
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Gemini API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const text = data.candidates[0].content.parts[0].text;
+
+      // Extraer JSON del texto
+      const jsonMatch = text.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        const messages = JSON.parse(jsonMatch[0]);
+        this.motivationalMessages = messages;
+        this.lastMessageUpdate = now;
+        await this.saveData();
+        this.updateCarouselWithMessages();
+        console.log('Mensajes motivadores actualizados desde Gemini API');
+      }
+
+    } catch (error) {
+      console.error('Error al obtener mensajes de Gemini:', error);
+    }
+  }
+
+  /**
+   * Actualiza el carrusel HTML con los mensajes motivadores
+   */
+  updateCarouselWithMessages() {
+    if (this.currentUser === 'anonymous' || this.motivationalMessages.length === 0) {
+      return; // Mantener mensajes por defecto para usuarios anónimos
+    }
+
+    const track = document.getElementById('brandCarouselTrack');
+    if (!track) return;
+
+    // Generar HTML de las tarjetas
+    const cardsHTML = this.motivationalMessages.map(msg => `
+      <div class="brand-card">
+        <div class="brand-icon gradient-${msg.gradient || 'blue'}">
+          <i class="${msg.icon || 'fas fa-star'}"></i>
+        </div>
+        <div class="brand-content">
+          <h3>${msg.title}</h3>
+          <p>${msg.message}</p>
+        </div>
+      </div>
+    `).join('');
+
+    // Duplicar para scroll infinito
+    track.innerHTML = cardsHTML + cardsHTML;
+  }
+
+  /**
+   * Programa actualización diaria a la 1 AM
+   */
+  scheduleDailyMessageUpdate() {
+    if (this.dailyMessageScheduled) return;
+
+    const scheduleNext = () => {
+      const now = new Date();
+      const tomorrow1AM = new Date(now);
+      tomorrow1AM.setDate(tomorrow1AM.getDate() + 1);
+      tomorrow1AM.setHours(1, 0, 0, 0);
+
+      const timeUntil1AM = tomorrow1AM.getTime() - now.getTime();
+
+      setTimeout(async () => {
+        console.log('Ejecutando actualización programada de mensajes a la 1 AM');
+        await this.fetchMotivationalMessages();
+        scheduleNext(); // Programar la siguiente
+      }, timeUntil1AM);
+
+      console.log(`Próxima actualización de mensajes programada para: ${tomorrow1AM.toLocaleString('es-ES')}`);
+    };
+
+    scheduleNext();
+    this.dailyMessageScheduled = true;
   }
 
   // Dentro de class FinanceApp { ... }
@@ -735,6 +885,11 @@ class FinanceApp {
         this.updateProfileDisplay();
         this.syncFromFirebase();
         this.updateDashboardWelcome();
+
+        // Iniciar sistema de mensajes motivadores
+        this.fetchMotivationalMessages(); // Obtener mensajes si es necesario
+        this.updateCarouselWithMessages(); // Actualizar carrusel con mensajes guardados
+        this.scheduleDailyMessageUpdate(); // Programar actualización diaria a la 1 AM
       } else {
         this.currentUser = 'anonymous';
         this.userPlan = 'free';

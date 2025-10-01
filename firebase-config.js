@@ -48,6 +48,10 @@ const geminiApiKey = 'TU_API_KEY_DE_GEMINI';
 const perplexityApiKey =
   'Tpplx-oKfcPhGOZhJr8QYclMVcQTVNEoRo4vsKcrOaaXNpqUDLgHeJ';
 
+// Exponer API keys globalmente
+window.geminiApiKey = geminiApiKey;
+window.perplexityApiKey = perplexityApiKey;
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = initializeFirestore(app, {

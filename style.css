@@ -4524,27 +4524,40 @@ select.form-control {
 
 .notification-badge {
   position: absolute;
-  top: -2px;
-  right: 2px;
-  width: 10px;
-  height: 10px;
+  top: -4px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
   border-radius: var(--radius-full);
-  background-color: var(--color-error);
-  border: 1px solid var(--color-surface);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #ff4757, #ff6348);
+  border: 2px solid var(--color-surface);
+  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: white;
+  animation: notificationPulse 2s ease-in-out infinite;
 }
 
 .notification-badge i {
-  display: none;
+  font-size: 10px;
+  color: white;
 }
 
-
-.notification-badge i {
-  display: none;
+/* Animación de pulso para llamar la atención */
+@keyframes notificationPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 2px 12px rgba(255, 71, 87, 0.6);
+  }
 }
 
 
@@ -5509,8 +5522,14 @@ select.form-control {
     display: none !important;
   }
 
-  .navbar__actions .icon-btn:not(.hamburger-menu) {
+  /* Ocultar todos los botones de iconos EXCEPTO hamburger y notificaciones */
+  .navbar__actions .icon-btn:not(.hamburger-menu):not(.notifications) {
     display: none !important;
+  }
+
+  /* Mostrar notificaciones en mobile */
+  .navbar__actions .notifications {
+    display: flex !important;
   }
 
   .navbar__actions .profile-menu-container {
