@@ -54,6 +54,7 @@
     />
 
     <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -2851,7 +2852,7 @@
           </div>
           <div class="modal-footer auth-footer">
             <p id="authSwitchLink">
-              ¿No tienes una cuenta? <a href="#" onclick="switchToRegister(); return false;">Regístrate aquí</a>
+              ¿No tienes una cuenta? <a href="#">Regístrate aquí</a>
             </p>
           </div>
         </div>
@@ -3620,6 +3621,44 @@
               </button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Funcionalidad en Desarrollo -->
+    <div class="modal" id="comingSoonModal">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content coming-soon-modal">
+          <button
+            class="modal-close"
+            type="button"
+            aria-label="Cerrar"
+            onclick="closeComingSoonModal()"
+          >
+            &times;
+          </button>
+          <div class="modal-body">
+            <div class="coming-soon-icon">
+              <i class="fas fa-tools"></i>
+            </div>
+            <h3 class="coming-soon-title">¡Estamos Trabajando en Ello!</h3>
+            <p class="coming-soon-message">
+              Esta funcionalidad estará disponible muy pronto. Te notificaremos cuando esté lista.
+            </p>
+            <div class="coming-soon-features">
+              <div class="coming-soon-feature">
+                <i class="fas fa-bolt"></i>
+                <span>Gastos rápidos con un click</span>
+              </div>
+              <div class="coming-soon-feature">
+                <i class="fas fa-repeat"></i>
+                <span>Gastos recurrentes automáticos</span>
+              </div>
+            </div>
+            <button class="btn btn--primary btn--full-width" onclick="closeComingSoonModal()">
+              <i class="fas fa-check"></i> Entendido
+            </button>
+          </div>
         </div>
       </div>
     </div>

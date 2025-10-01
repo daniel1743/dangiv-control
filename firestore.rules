@@ -1,0 +1,41 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Regla para documentos de usuarios (userData)
+    // Cada usuario solo puede leer/escribir sus propios datos
+    match /userData/{userId} {
+      // Permitir lectura y escritura solo si el usuario está autenticado
+      // y el documento pertenece al usuario actual
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Regla para invitaciones (opcional, si implementas sistema de invitaciones)
+    match /invitations/{inviteId} {
+      // Permitir que cualquier usuario autenticado cree invitaciones
+      allow create: if request.auth != null;
+
+      // Permitir leer solo si eres el destinatario o el creador
+      allow read: if request.auth != null &&
+        (resource.data.recipientEmail == request.auth.token.email ||
+         resource.data.createdBy == request.auth.uid);
+
+      // Permitir actualizar/eliminar solo si eres el creador
+      allow update, delete: if request.auth != null &&
+        resource.data.createdBy == request.auth.uid;
+    }
+
+    // Regla para cuentas compartidas (opcional)
+    match /sharedAccounts/{accountId} {
+      // Permitir lectura/escritura si el usuario está en la lista de miembros
+      allow read, write: if request.auth != null &&
+        request.auth.uid in resource.data.members;
+    }
+
+    // Por defecto, denegar todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -5184,9 +5184,9 @@ class FinanceApp {
   // ... (cÃ³digo de la funciÃ³n toggleTheme) ...
   toggleTheme() {
     const currentTheme =
-      document.documentElement.getAttribute('data-color-scheme');
+      document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-color-scheme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
 
     const icon = document.querySelector('#themeToggle i');
     if (icon) {
@@ -5202,15 +5202,15 @@ class FinanceApp {
       // Detectar preferencia del sistema
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const systemTheme = prefersDark ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-color-scheme', systemTheme);
+      document.documentElement.setAttribute('data-theme', systemTheme);
     } else {
-      document.documentElement.setAttribute('data-color-scheme', theme);
+      document.documentElement.setAttribute('data-theme', theme);
     }
 
     // Actualizar icono del toggle en navbar
     const icon = document.querySelector('#themeToggle i');
     if (icon) {
-      const currentTheme = document.documentElement.getAttribute('data-color-scheme');
+      const currentTheme = document.documentElement.getAttribute('data-theme');
       icon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
     }
   }
@@ -5402,7 +5402,49 @@ document.addEventListener('DOMContentLoaded', () => {
     window.app.loadAvatarPreference();
   }
 
-  // 2. Configura las animaciones de scroll.
+  // 2. Configurar event delegation para el enlace de cambio de formulario auth
+  // Usar event delegation porque el contenido del enlace se recrea dinámicamente
+  const authSwitchLinkContainer = document.getElementById('authSwitchLink');
+  if (authSwitchLinkContainer) {
+    authSwitchLinkContainer.addEventListener('click', function(e) {
+      // Verificar si el click fue en el enlace
+      if (e.target.tagName === 'A' || e.target.closest('a')) {
+        e.preventDefault();
+        const link = e.target.closest('a') || e.target;
+        const linkText = link.textContent.trim();
+
+        // Determinar qué función ejecutar basándose en el texto del enlace
+        if (linkText.includes('Regístrate') || linkText.includes('Registrate')) {
+          switchToRegister();
+        } else if (linkText.includes('Inicia sesión') || linkText.includes('sesión')) {
+          switchToLogin();
+        }
+      }
+    });
+  }
+
+  // 2b. Configurar botones de tabs de gastos (Rápido y Recurrente)
+  const expenseTabButtons = document.querySelectorAll('.expense-tab-btn[data-tab="quick"], .expense-tab-btn[data-tab="recurring"]');
+  expenseTabButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openComingSoonModal();
+    });
+  });
+
+  // 2c. Cerrar modal "Coming Soon" al hacer click en el overlay
+  const comingSoonModal = document.getElementById('comingSoonModal');
+  if (comingSoonModal) {
+    comingSoonModal.addEventListener('click', function(e) {
+      // Solo cerrar si el click es en el overlay (no en el contenido del modal)
+      if (e.target === comingSoonModal) {
+        closeComingSoonModal();
+      }
+    });
+  }
+
+  // 3. Configura las animaciones de scroll.
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver(
     (entries) => {
@@ -6692,7 +6734,7 @@ function switchToLogin() {
   document.getElementById('registerForm').classList.add('hidden');
   document.getElementById('authModalTitle').textContent = '¡Bienvenido de vuelta!';
   document.getElementById('authSwitchLink').innerHTML =
-    '¿No tienes una cuenta? <a href="#" onclick="switchToRegister(); return false;">Regístrate aquí</a>';
+    '¿No tienes una cuenta? <a href="#">Regístrate aquí</a>';
 }
 
 function switchToRegister() {
@@ -6700,12 +6742,41 @@ function switchToRegister() {
   document.getElementById('registerForm').classList.remove('hidden');
   document.getElementById('authModalTitle').textContent = 'Crear nueva cuenta';
   document.getElementById('authSwitchLink').innerHTML =
-    '¿Ya tienes una cuenta? <a href="#" onclick="switchToLogin(); return false;">Inicia sesión aquí</a>';
+    '¿Ya tienes una cuenta? <a href="#">Inicia sesión aquí</a>';
+}
+
+// Exportar funciones inmediatamente para que estén disponibles
+if (typeof window !== 'undefined') {
+  window.switchToLogin = switchToLogin;
+  window.switchToRegister = switchToRegister;
 }
 
 function showAccountTypeSelection() {
   document.getElementById('authModal').classList.remove('show');
   document.getElementById('accountTypeModal').classList.add('show');
+}
+
+// Funciones para el modal "Coming Soon"
+function openComingSoonModal() {
+  const modal = document.getElementById('comingSoonModal');
+  if (modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeComingSoonModal() {
+  const modal = document.getElementById('comingSoonModal');
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+
+// Exportar funciones globalmente
+if (typeof window !== 'undefined') {
+  window.openComingSoonModal = openComingSoonModal;
+  window.closeComingSoonModal = closeComingSoonModal;
 }
 
 FinanceApp.prototype.setupUserSystemListeners = function() {
@@ -10764,7 +10835,6 @@ FinanceApp.prototype.setupAllNumberInputs = function() {
 if (typeof window !== 'undefined') {
   window.FinanceApp = FinanceApp;
   // window.selectAccountType = selectAccountType; // DESHABILITADO
-  window.switchToLogin = switchToLogin;
-  window.switchToRegister = switchToRegister;
+  // switchToLogin y switchToRegister ya se exportaron anteriormente
   // window.showAccountTypeSelection = showAccountTypeSelection; // DESHABILITADO
 }

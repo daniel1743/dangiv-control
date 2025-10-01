@@ -8,6 +8,9 @@ import {
   signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
 } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
 
 import {
@@ -15,7 +18,21 @@ import {
   doc,
   getDoc,
   setDoc,
+  updateDoc,
+  deleteDoc,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
 } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+
+import {
+  getStorage,
+  ref,
+  uploadString,
+  getDownloadURL,
+} from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js';
 
 // IMPORTANTE: Reemplaza estos valores con tus claves reales de Firebase
 const firebaseConfig = {
@@ -37,21 +54,39 @@ const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
   useFetchStreams: false,
 });
+const storage = getStorage(app);
 
 // Se crea un objeto global 'FB' para que app.js pueda usar estas funciones
 window.FB = {
   app,
   auth,
   db,
+  storage,
+  // Auth methods
   onAuthStateChanged,
   signInAnonymously,
   signOut,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+  // Firestore methods
   doc,
   getDoc,
   setDoc,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-
+  updateDoc,
+  deleteDoc,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  // Storage methods
+  ref,
+  uploadString,
+  getDownloadURL,
+  // API Keys
   geminiApiKey: geminiApiKey,
   perplexityApiKey: perplexityApiKey,
 };
