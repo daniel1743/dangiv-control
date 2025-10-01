@@ -8862,6 +8862,11 @@ FinanceApp.prototype.addSavingsAccount = function() {
   this.updateDashboardSavings();
   this.showToast('Fuente de ahorro agregada', 'success');
 
+  // Cerrar modal y limpiar formulario
+  const modal = document.getElementById('addSavingsModal');
+  if (modal) {
+    modal.classList.remove('show');
+  }
   document.getElementById('savingsAccountForm').reset();
 };
 
@@ -9138,6 +9143,12 @@ FinanceApp.prototype.addRecurringPayment = function() {
   this.showToast(`Pago recurrente "${serviceName}" agregado exitosamente`, 'success');
   this.renderRecurringPaymentsList();
   this.updateDashboardPayments();
+
+  // Cerrar modal y limpiar formulario
+  const modal = document.getElementById('addPaymentModal');
+  if (modal) {
+    modal.classList.remove('show');
+  }
   document.getElementById('recurringPaymentForm')?.reset();
 };
 

@@ -210,8 +210,7 @@
 .collaborator-role {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .invitation-section {
@@ -977,8 +976,7 @@
 .member-role {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   font-weight: 500;
 }
 
@@ -2467,7 +2465,7 @@ input:checked + .toggle-slider:before {
 /* Select with Chevron */
 .form-select-premium {
   appearance: none;
-  background-image: url('data:image/svg+xml;utf8,<svg fill="rgb(33,128,141)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
   background-repeat: no-repeat;
   background-position: right var(--space-12) center;
   background-size: 24px;
