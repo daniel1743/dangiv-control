@@ -1,8 +1,7 @@
-// Dan&Giv Control - Personal Finance Application
+﻿// Dan&Giv Control - Personal Finance Application
 // Main JavaScript file with all functionality
 
 class FinanceApp {
-
   // QuedarÃ¡ asÃ­ (reemplaza el constructor completo)
   constructor() {
     if (typeof TextDecoder !== 'undefined') {
@@ -35,7 +34,10 @@ class FinanceApp {
     }
 
     // Account system properties
-    this.accountType = savedData.accountType || localStorage.getItem('financia_account_type') || 'personal';
+    this.accountType =
+      savedData.accountType ||
+      localStorage.getItem('financia_account_type') ||
+      'personal';
     this.currentUser = savedData.currentUser || 'anonymous';
     this.sharedAccountId = savedData.sharedAccountId || null; // ID of shared Firestore document
     this.accountOwner = savedData.accountOwner || null;
@@ -79,8 +81,8 @@ class FinanceApp {
         options: {
           backgroundColor: '#ffffff',
           borderColor: '#e5e7eb',
-          textColor: '#374151'
-        }
+          textColor: '#374151',
+        },
       },
       {
         id: 'neon',
@@ -90,8 +92,8 @@ class FinanceApp {
         options: {
           backgroundColor: '#1a1a2e',
           borderColor: '#16213e',
-          textColor: '#ffffff'
-        }
+          textColor: '#ffffff',
+        },
       },
       {
         id: 'pastel',
@@ -101,8 +103,8 @@ class FinanceApp {
         options: {
           backgroundColor: '#faf9f6',
           borderColor: '#f0f0f0',
-          textColor: '#5a5a5a'
-        }
+          textColor: '#5a5a5a',
+        },
       },
       {
         id: 'ocean',
@@ -112,8 +114,8 @@ class FinanceApp {
         options: {
           backgroundColor: '#f0f8ff',
           borderColor: '#b8dce8',
-          textColor: '#13293d'
-        }
+          textColor: '#13293d',
+        },
       },
       {
         id: 'sunset',
@@ -123,8 +125,8 @@ class FinanceApp {
         options: {
           backgroundColor: '#fff3e0',
           borderColor: '#ffccbc',
-          textColor: '#5d4037'
-        }
+          textColor: '#5d4037',
+        },
       },
       {
         id: 'forest',
@@ -134,8 +136,8 @@ class FinanceApp {
         options: {
           backgroundColor: '#f1f8e9',
           borderColor: '#c8e6c9',
-          textColor: '#2e7d32'
-        }
+          textColor: '#2e7d32',
+        },
       },
       {
         id: 'royal',
@@ -145,8 +147,8 @@ class FinanceApp {
         options: {
           backgroundColor: '#f3e5f5',
           borderColor: '#e1bee7',
-          textColor: '#4a148c'
-        }
+          textColor: '#4a148c',
+        },
       },
       {
         id: 'cyberpunk',
@@ -156,8 +158,8 @@ class FinanceApp {
         options: {
           backgroundColor: '#0a0a0a',
           borderColor: '#333333',
-          textColor: '#00ff00'
-        }
+          textColor: '#00ff00',
+        },
       },
       {
         id: 'vintage',
@@ -167,8 +169,8 @@ class FinanceApp {
         options: {
           backgroundColor: '#fdf5e6',
           borderColor: '#f5deb3',
-          textColor: '#8b4513'
-        }
+          textColor: '#8b4513',
+        },
       },
       {
         id: 'monochrome',
@@ -178,9 +180,9 @@ class FinanceApp {
         options: {
           backgroundColor: '#ffffff',
           borderColor: '#e0e0e0',
-          textColor: '#212121'
-        }
-      }
+          textColor: '#212121',
+        },
+      },
     ];
 
     // Propiedades del Modo Demo
@@ -281,16 +283,41 @@ class FinanceApp {
 
     // Tipos de servicios recurrentes para pagos
     this.paymentServiceTypes = [
-      { id: 'electricity', name: 'Luz', icon: 'fas fa-lightbulb', color: '#f59e0b' },
+      {
+        id: 'electricity',
+        name: 'Luz',
+        icon: 'fas fa-lightbulb',
+        color: '#f59e0b',
+      },
       { id: 'water', name: 'Agua', icon: 'fas fa-tint', color: '#3b82f6' },
       { id: 'phone', name: 'Teléfono', icon: 'fas fa-phone', color: '#8b5cf6' },
-      { id: 'internet', name: 'Internet/WiFi', icon: 'fas fa-wifi', color: '#06b6d4' },
+      {
+        id: 'internet',
+        name: 'Internet/WiFi',
+        icon: 'fas fa-wifi',
+        color: '#06b6d4',
+      },
       { id: 'tv', name: 'TV/Cable', icon: 'fas fa-tv', color: '#ec4899' },
       { id: 'rent', name: 'Alquiler', icon: 'fas fa-home', color: '#ef4444' },
       { id: 'gas', name: 'Gas', icon: 'fas fa-fire', color: '#f97316' },
-      { id: 'insurance', name: 'Seguro', icon: 'fas fa-shield-alt', color: '#10b981' },
-      { id: 'subscription', name: 'Suscripción', icon: 'fas fa-star', color: '#6366f1' },
-      { id: 'other', name: 'Otros Servicios', icon: 'fas fa-receipt', color: '#64748b' }
+      {
+        id: 'insurance',
+        name: 'Seguro',
+        icon: 'fas fa-shield-alt',
+        color: '#10b981',
+      },
+      {
+        id: 'subscription',
+        name: 'Suscripción',
+        icon: 'fas fa-star',
+        color: '#6366f1',
+      },
+      {
+        id: 'other',
+        name: 'Otros Servicios',
+        icon: 'fas fa-receipt',
+        color: '#64748b',
+      },
     ];
     this.charts = {};
     this.currentSection = 'dashboard';
@@ -625,7 +652,10 @@ class FinanceApp {
       // Guardado silencioso para usuarios anónimos
       // Solo mostrar error si falla
       if (!localSaveOk) {
-        this.showToast('No se pudieron guardar los datos en este dispositivo.', 'error');
+        this.showToast(
+          'No se pudieron guardar los datos en este dispositivo.',
+          'error'
+        );
       }
       return;
     }
@@ -636,18 +666,23 @@ class FinanceApp {
       const userDocRef = FB.doc(FB.db, 'userData', firestoreDocId);
 
       console.log('DEBUG: Guardando en Firestore con ID:', firestoreDocId);
-      console.log('DEBUG: Es cuenta compartida?', this.sharedAccountId ? 'SÍ' : 'NO');
+      console.log(
+        'DEBUG: Es cuenta compartida?',
+        this.sharedAccountId ? 'SÍ' : 'NO'
+      );
 
       // Limpiar userProfile para Firebase - solo guardar datos serializables
       const cleanedData = {
         ...normalizedData,
-        userProfile: normalizedData.userProfile ? {
-          name: normalizedData.userProfile.name || 'Usuario',
-          email: normalizedData.userProfile.email || '',
-          avatar: normalizedData.userProfile.avatar || '',
-          avatarType: normalizedData.userProfile.avatarType || 'default',
-          selectedAvatar: normalizedData.userProfile.selectedAvatar || 0
-        } : undefined
+        userProfile: normalizedData.userProfile
+          ? {
+              name: normalizedData.userProfile.name || 'Usuario',
+              email: normalizedData.userProfile.email || '',
+              avatar: normalizedData.userProfile.avatar || '',
+              avatarType: normalizedData.userProfile.avatarType || 'default',
+              selectedAvatar: normalizedData.userProfile.selectedAvatar || 0,
+            }
+          : undefined,
       };
 
       await FB.setDoc(userDocRef, cleanedData);
@@ -680,7 +715,7 @@ class FinanceApp {
     const now = Date.now();
     const oneDayMs = 24 * 60 * 60 * 1000;
 
-    if (this.lastMessageUpdate && (now - this.lastMessageUpdate) < oneDayMs) {
+    if (this.lastMessageUpdate && now - this.lastMessageUpdate < oneDayMs) {
       console.log('Mensajes aún frescos, no es necesario actualizar');
       return;
     }
@@ -714,19 +749,26 @@ class FinanceApp {
         }
       ]`;
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }]
-        })
-      });
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: prompt,
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Gemini API error: ${response.status}`);
@@ -748,7 +790,6 @@ class FinanceApp {
         // Actualizar notificaciones para mostrar la actualización de IA
         this.updateNotifications();
       }
-
     } catch (error) {
       console.error('Error al obtener mensajes de Gemini:', error);
     }
@@ -758,7 +799,10 @@ class FinanceApp {
    * Actualiza el carrusel HTML con los mensajes motivadores
    */
   updateCarouselWithMessages() {
-    if (this.currentUser === 'anonymous' || this.motivationalMessages.length === 0) {
+    if (
+      this.currentUser === 'anonymous' ||
+      this.motivationalMessages.length === 0
+    ) {
       return; // Mantener mensajes por defecto para usuarios anónimos
     }
 
@@ -766,7 +810,9 @@ class FinanceApp {
     if (!track) return;
 
     // Generar HTML de las tarjetas
-    const cardsHTML = this.motivationalMessages.map(msg => `
+    const cardsHTML = this.motivationalMessages
+      .map(
+        (msg) => `
       <div class="brand-card">
         <div class="brand-icon gradient-${msg.gradient || 'blue'}">
           <i class="${msg.icon || 'fas fa-star'}"></i>
@@ -776,7 +822,9 @@ class FinanceApp {
           <p>${msg.message}</p>
         </div>
       </div>
-    `).join('');
+    `
+      )
+      .join('');
 
     // Duplicar para scroll infinito
     track.innerHTML = cardsHTML + cardsHTML;
@@ -797,12 +845,18 @@ class FinanceApp {
       const timeUntil1AM = tomorrow1AM.getTime() - now.getTime();
 
       setTimeout(async () => {
-        console.log('Ejecutando actualización programada de mensajes a la 1 AM');
+        console.log(
+          'Ejecutando actualización programada de mensajes a la 1 AM'
+        );
         await this.fetchMotivationalMessages();
         scheduleNext(); // Programar la siguiente
       }, timeUntil1AM);
 
-      console.log(`Próxima actualización de mensajes programada para: ${tomorrow1AM.toLocaleString('es-ES')}`);
+      console.log(
+        `Próxima actualización de mensajes programada para: ${tomorrow1AM.toLocaleString(
+          'es-ES'
+        )}`
+      );
     };
 
     scheduleNext();
@@ -1167,7 +1221,9 @@ class FinanceApp {
 
     // Skip sync if we're in the middle of registration
     if (this.isRegistering) {
-      console.log('DEBUG: Registro en proceso, saltando sincronización para evitar race condition');
+      console.log(
+        'DEBUG: Registro en proceso, saltando sincronización para evitar race condition'
+      );
       return;
     }
 
@@ -1176,8 +1232,14 @@ class FinanceApp {
       const firestoreDocId = this.sharedAccountId || this.currentUser;
       const userDocRef = FB.doc(FB.db, 'userData', firestoreDocId);
 
-      console.log('DEBUG: Sincronizando desde Firestore con ID:', firestoreDocId);
-      console.log('DEBUG: Es cuenta compartida?', this.sharedAccountId ? 'SÍ' : 'NO');
+      console.log(
+        'DEBUG: Sincronizando desde Firestore con ID:',
+        firestoreDocId
+      );
+      console.log(
+        'DEBUG: Es cuenta compartida?',
+        this.sharedAccountId ? 'SÍ' : 'NO'
+      );
 
       const docSnap = await FB.getDoc(userDocRef);
 
@@ -1247,43 +1309,124 @@ class FinanceApp {
       this.showToast('No se pudieron cargar tus datos desde la nube.', 'error');
     }
   }
-  // QuedarÃ¡ asÃ­ (Pega estos dos mÃ©todos nuevos en tu clase)
-  // QuedarÃ¡ asÃ­
-  // QUEDARÃ ASÃ (FunciÃ³n de registro con depuraciÃ³n mejorada)
+  // === VALIDACIÓN DE CONTRASEÑA ===
+  validatePassword(password) {
+    const errors = [];
+    if (password.length < 8) errors.push('Mínimo 8 caracteres');
+    if (!/[A-Z]/.test(password)) errors.push('Al menos una mayúscula');
+    if (!/[a-z]/.test(password)) errors.push('Al menos una minúscula');
+    if (!/[0-9]/.test(password)) errors.push('Al menos un número');
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      errors.push('Al menos un símbolo (!@#$%...)');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors: errors
+    };
+  }
+
+  // === REGISTRO CON VALIDACIÓN ===
   async registerWithEmail(email, password) {
     try {
-      console.log('Intentando registrar:', email); // Debug
+      // Validar email
+      const emailValidation = this.validateEmail(email);
+      if (!emailValidation.isValid) {
+        this.showToast(emailValidation.error, 'error');
+        return false;
+      }
+
+      // Validar contraseña
+      const passwordValidation = this.validatePassword(password);
+      if (!passwordValidation.isValid) {
+        this.showToast(
+          '🔒 Contraseña débil:\n• ' + passwordValidation.errors.join('\n• '),
+          'error'
+        );
+        return false;
+      }
+
+      console.log('Intentando registrar:', email);
       const userCredential = await FB.createUserWithEmailAndPassword(
         FB.auth,
         email,
         password
       );
-      this.showToast(
-        `¡Cuenta creada para ${userCredential.user.email}!`,
-        'success'
-      );
+
+      // Enviar email de verificación
+      try {
+        await userCredential.user.sendEmailVerification();
+        this.showToast('✅ ¡Cuenta creada! Verifica tu correo.', 'success');
+      } catch (emailError) {
+        console.warn('No se pudo enviar email de verificación:', emailError);
+        this.showToast('✅ ¡Cuenta creada correctamente!', 'success');
+      }
+
       this.closeAuthModal();
       return true;
     } catch (error) {
-      console.error('Error completo de registro:', error); // Debug mejorado
+      console.error('Error completo de registro:', error);
 
-      // Mensajes de error mÃ¡s especÃ­ficos
       if (error.code === 'auth/weak-password') {
         this.showToast(
-          'La contraseña debe tener al menos 6 caracteres.',
+          'La contraseña debe tener al menos 8 caracteres con mayúsculas, números y símbolos.',
           'error'
         );
       } else if (error.code === 'auth/email-already-in-use') {
-        this.showToast('El correo electrónico ya está en uso.', 'error');
+        this.showToast('Este correo ya está registrado.', 'error');
       } else if (error.code === 'auth/invalid-email') {
-        this.showToast('El correo electrónico no es válido.', 'error');
-      } else if (error.code === 'auth/operation-not-allowed') {
-        this.showToast(
-          'El registro con email/password no está habilitado.',
-          'error'
-        );
+        this.showToast('Formato de correo inválido.', 'error');
       } else {
         this.showToast(`Error: ${error.message}`, 'error');
+      }
+      return false;
+    }
+  }
+
+  // === VALIDACIÓN DE EMAIL ===
+  validateEmail(email) {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      return { isValid: false, error: 'Formato de correo inválido' };
+    }
+
+    const disposableDomains = [
+      'tempmail.com',
+      'guerrillamail.com',
+      'mailinator.com',
+    ];
+    const domain = email.split('@')[1]?.toLowerCase();
+    if (disposableDomains.includes(domain)) {
+      return { isValid: false, error: 'No se permiten correos temporales' };
+    }
+
+    return { isValid: true };
+  }
+
+  // === RECUPERAR CONTRASEÑA ===
+  async resetPassword(email) {
+    try {
+      const emailValidation = this.validateEmail(email);
+      if (!emailValidation.isValid) {
+        this.showToast(emailValidation.error, 'error');
+        return false;
+      }
+
+      await FB.auth.sendPasswordResetEmail(email);
+      this.showToast(
+        '📧 Correo de recuperación enviado. Revisa tu bandeja.',
+        'success'
+      );
+      return true;
+    } catch (error) {
+      console.error('Error al enviar correo de recuperación:', error);
+
+      if (error.code === 'auth/user-not-found') {
+        this.showToast('No existe una cuenta con este correo.', 'error');
+      } else if (error.code === 'auth/too-many-requests') {
+        this.showToast('Demasiados intentos. Intenta más tarde.', 'error');
+      } else {
+        this.showToast('Error al enviar correo de recuperación.', 'error');
       }
       return false;
     }
@@ -1417,7 +1560,9 @@ class FinanceApp {
         document.getElementById('description').value = '';
         document.getElementById('category').value = '';
         document.getElementById('necessity').value = '';
-        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('date').value = new Date()
+          .toISOString()
+          .split('T')[0];
         document.getElementById('user').value = '';
         document.getElementById('amount').focus();
         this.showToast('Formulario limpiado', 'info');
@@ -1467,13 +1612,11 @@ class FinanceApp {
       });
     }
 
-
     // Setup onboarding tour system
     this.setupOnboardingTour();
 
     // Setup new configuration handlers
     this.setupConfigurationHandlers();
-
 
     const goalForm = document.getElementById('goalForm');
     if (goalForm) {
@@ -1549,7 +1692,16 @@ class FinanceApp {
         // Guardar preferencia
         localStorage.setItem('financia_theme', theme);
 
-        this.showToast(`Tema ${theme === 'light' ? 'claro' : theme === 'dark' ? 'oscuro' : 'automático'} aplicado`, 'success');
+        this.showToast(
+          `Tema ${
+            theme === 'light'
+              ? 'claro'
+              : theme === 'dark'
+              ? 'oscuro'
+              : 'automático'
+          } aplicado`,
+          'success'
+        );
       });
     });
 
@@ -1780,19 +1932,28 @@ class FinanceApp {
 
     storeGrid.innerHTML = '';
 
-    this.chartStyles.forEach(style => {
+    this.chartStyles.forEach((style) => {
       const isOwned = this.ownedStyles.includes(style.id);
       const canAfford = this.userCoins >= style.price;
 
       const productCard = document.createElement('div');
-      productCard.className = `product-card ${isOwned ? 'owned' : ''} ${!canAfford && !isOwned ? 'unaffordable' : ''}`;
+      productCard.className = `product-card ${isOwned ? 'owned' : ''} ${
+        !canAfford && !isOwned ? 'unaffordable' : ''
+      }`;
 
       productCard.innerHTML = `
         <div class="product-preview">
-          <div class="mini-chart-preview" style="background: ${style.options.backgroundColor}">
-            ${style.colors.map((color, index) =>
-              `<div class="color-bar" style="background: ${color}; height: ${20 + index * 10}px;"></div>`
-            ).join('')}
+          <div class="mini-chart-preview" style="background: ${
+            style.options.backgroundColor
+          }">
+            ${style.colors
+              .map(
+                (color, index) =>
+                  `<div class="color-bar" style="background: ${color}; height: ${
+                    20 + index * 10
+                  }px;"></div>`
+              )
+              .join('')}
           </div>
         </div>
         <div class="product-info">
@@ -1800,10 +1961,22 @@ class FinanceApp {
           <div class="product-price">
             ${style.price === 0 ? 'Gratis' : `${style.price} monedas`}
           </div>
-          <button class="product-btn ${isOwned ? 'owned-btn' : (canAfford ? 'buy-btn' : 'disabled-btn')}"
-                  onclick="app.${isOwned ? `applyStyle('${style.id}')` : `purchaseStyle('${style.id}')`}"
+          <button class="product-btn ${
+            isOwned ? 'owned-btn' : canAfford ? 'buy-btn' : 'disabled-btn'
+          }"
+                  onclick="app.${
+                    isOwned
+                      ? `applyStyle('${style.id}')`
+                      : `purchaseStyle('${style.id}')`
+                  }"
                   ${!canAfford && !isOwned ? 'disabled' : ''}>
-            ${isOwned ? 'Aplicar' : (canAfford ? 'Comprar' : 'Insuficientes monedas')}
+            ${
+              isOwned
+                ? 'Aplicar'
+                : canAfford
+                ? 'Comprar'
+                : 'Insuficientes monedas'
+            }
           </button>
         </div>
       `;
@@ -1813,8 +1986,12 @@ class FinanceApp {
   }
 
   purchaseStyle(styleId) {
-    const style = this.chartStyles.find(s => s.id === styleId);
-    if (!style || this.ownedStyles.includes(styleId) || this.userCoins < style.price) {
+    const style = this.chartStyles.find((s) => s.id === styleId);
+    if (
+      !style ||
+      this.ownedStyles.includes(styleId) ||
+      this.userCoins < style.price
+    ) {
       return;
     }
 
@@ -1838,7 +2015,7 @@ class FinanceApp {
     this.refreshAllCharts();
     this.setupStyleManager();
 
-    const style = this.chartStyles.find(s => s.id === styleId);
+    const style = this.chartStyles.find((s) => s.id === styleId);
     this.showToast(`Estilo "${style.name}" aplicado`, 'success');
   }
 
@@ -1849,7 +2026,9 @@ class FinanceApp {
     if (!ownedStylesGrid) return;
 
     // Update current style display
-    const currentStyleObj = this.chartStyles.find(s => s.id === this.currentStyle);
+    const currentStyleObj = this.chartStyles.find(
+      (s) => s.id === this.currentStyle
+    );
     if (currentStyleName && currentStyleObj) {
       currentStyleName.textContent = currentStyleObj.name;
     }
@@ -1857,22 +2036,34 @@ class FinanceApp {
     // Render owned styles
     ownedStylesGrid.innerHTML = '';
 
-    this.ownedStyles.forEach(styleId => {
-      const style = this.chartStyles.find(s => s.id === styleId);
+    this.ownedStyles.forEach((styleId) => {
+      const style = this.chartStyles.find((s) => s.id === styleId);
       if (!style) return;
 
       const styleCard = document.createElement('div');
-      styleCard.className = `owned-style-card ${this.currentStyle === styleId ? 'active' : ''}`;
+      styleCard.className = `owned-style-card ${
+        this.currentStyle === styleId ? 'active' : ''
+      }`;
 
       styleCard.innerHTML = `
-        <div class="owned-style-preview" style="background: ${style.options.backgroundColor}">
-          ${style.colors.slice(0, 3).map((color, index) =>
-            `<div class="mini-color-dot" style="background: ${color};"></div>`
-          ).join('')}
+        <div class="owned-style-preview" style="background: ${
+          style.options.backgroundColor
+        }">
+          ${style.colors
+            .slice(0, 3)
+            .map(
+              (color, index) =>
+                `<div class="mini-color-dot" style="background: ${color};"></div>`
+            )
+            .join('')}
         </div>
         <div class="owned-style-info">
           <span class="owned-style-name">${style.name}</span>
-          ${this.currentStyle === styleId ? '<span class="active-badge">Activo</span>' : ''}
+          ${
+            this.currentStyle === styleId
+              ? '<span class="active-badge">Activo</span>'
+              : ''
+          }
         </div>
       `;
 
@@ -1894,8 +2085,12 @@ class FinanceApp {
   }
 
   getCurrentStyleColors() {
-    const currentStyleObj = this.chartStyles.find(s => s.id === this.currentStyle);
-    return currentStyleObj ? currentStyleObj.colors : this.chartStyles[0].colors;
+    const currentStyleObj = this.chartStyles.find(
+      (s) => s.id === this.currentStyle
+    );
+    return currentStyleObj
+      ? currentStyleObj.colors
+      : this.chartStyles[0].colors;
   }
 
   refreshAllCharts() {
@@ -1978,12 +2173,12 @@ class FinanceApp {
     const necessityButtons = document.querySelectorAll('.necessity-btn');
     const necessityField = document.getElementById('necessity');
 
-    necessityButtons.forEach(btn => {
+    necessityButtons.forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
 
         // Remove active class from all buttons
-        necessityButtons.forEach(b => b.classList.remove('active'));
+        necessityButtons.forEach((b) => b.classList.remove('active'));
 
         // Add active class to clicked button
         btn.classList.add('active');
@@ -2026,7 +2221,7 @@ class FinanceApp {
 
     try {
       // Simulate processing time for UX
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // Call the original addExpense method
       const mockEvent = { preventDefault: () => {} };
@@ -2042,7 +2237,6 @@ class FinanceApp {
         btn.disabled = false;
         this.resetPremiumForm();
       }, 2000);
-
     } catch (error) {
       // Handle error
       btn.classList.remove('loading');
@@ -2057,7 +2251,7 @@ class FinanceApp {
       { id: 'amount', name: 'Monto' },
       { id: 'category', name: 'Categoría' },
       { id: 'necessity', name: 'Nivel de necesidad' },
-      { id: 'date', name: 'Fecha' }
+      { id: 'date', name: 'Fecha' },
     ];
 
     // Add user field validation for shared accounts
@@ -2067,7 +2261,7 @@ class FinanceApp {
 
     let isValid = true;
 
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       const element = document.getElementById(field.id);
       const wrapper = element?.closest('.form-group-premium');
 
@@ -2151,15 +2345,15 @@ class FinanceApp {
       form.reset();
 
       // Remove validation classes
-      form.querySelectorAll('.form-control-premium').forEach(field => {
+      form.querySelectorAll('.form-control-premium').forEach((field) => {
         field.classList.remove('error', 'success', 'auto-filled');
       });
 
       // Remove error messages
-      form.querySelectorAll('.error-message').forEach(msg => msg.remove());
+      form.querySelectorAll('.error-message').forEach((msg) => msg.remove());
 
       // Reset necessity selector
-      document.querySelectorAll('.necessity-btn').forEach(btn => {
+      document.querySelectorAll('.necessity-btn').forEach((btn) => {
         btn.classList.remove('active');
       });
 
@@ -2195,7 +2389,7 @@ class FinanceApp {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
 
     this.currentSection = sectionId;
@@ -2239,7 +2433,6 @@ class FinanceApp {
   // QuedarÃ¡ asÃ­
   // QuedarÃ¡ asÃ­
   renderDashboard() {
-
     // El Modo Demo ahora solo se activa si el usuario es 'anonymous'
     if (
       this.currentUser === 'anonymous' &&
@@ -2275,28 +2468,51 @@ class FinanceApp {
   }
 
   updateNewStats() {
-    const totalExpenses = this.expenses.reduce((sum, exp) => sum + exp.amount, 0);
+    const totalExpenses = this.expenses.reduce(
+      (sum, exp) => sum + exp.amount,
+      0
+    );
     const monthlyIncome = this.monthlyIncome || 0;
     const balance = monthlyIncome - totalExpenses;
     const savings = balance > 0 ? balance : 0;
-    const activeGoals = this.goals.filter(goal => goal.current < goal.target).length;
-    const goalsProgress = this.goals.length > 0
-      ? Math.round((this.goals.reduce((sum, goal) => sum + (goal.current / goal.target * 100), 0) / this.goals.length))
-      : 0;
+    const activeGoals = this.goals.filter(
+      (goal) => goal.current < goal.target
+    ).length;
+    const goalsProgress =
+      this.goals.length > 0
+        ? Math.round(
+            this.goals.reduce(
+              (sum, goal) => sum + (goal.current / goal.target) * 100,
+              0
+            ) / this.goals.length
+          )
+        : 0;
 
     // Update DOM elements
-    document.getElementById('newTotalBalance').textContent = `$${this.formatCurrency(balance)}`;
-    document.getElementById('newTotalExpenses').textContent = `$${this.formatCurrency(totalExpenses)}`;
-    document.getElementById('newSavings').textContent = `$${this.formatCurrency(savings)}`;
+    document.getElementById(
+      'newTotalBalance'
+    ).textContent = `$${this.formatCurrency(balance)}`;
+    document.getElementById(
+      'newTotalExpenses'
+    ).textContent = `$${this.formatCurrency(totalExpenses)}`;
+    document.getElementById('newSavings').textContent = `$${this.formatCurrency(
+      savings
+    )}`;
     document.getElementById('newActiveGoals').textContent = activeGoals;
-    document.getElementById('newGoalsProgress').textContent = `${goalsProgress}% completado`;
+    document.getElementById(
+      'newGoalsProgress'
+    ).textContent = `${goalsProgress}% completado`;
 
     // Update trends
     const expensesChange = this.calculateExpensesChange();
     const expensesChangeEl = document.getElementById('newExpensesChange');
     if (expensesChangeEl) {
-      expensesChangeEl.textContent = `${expensesChange >= 0 ? '+' : ''}${expensesChange}% vs anterior`;
-      expensesChangeEl.className = `stat-trend ${expensesChange >= 0 ? 'negative' : 'positive'}`;
+      expensesChangeEl.textContent = `${
+        expensesChange >= 0 ? '+' : ''
+      }${expensesChange}% vs anterior`;
+      expensesChangeEl.className = `stat-trend ${
+        expensesChange >= 0 ? 'negative' : 'positive'
+      }`;
     }
   }
 
@@ -2314,7 +2530,10 @@ class FinanceApp {
 
     const ctx = canvas.getContext('2d');
     const categoryData = this.getCategoryData();
-    const totalExpenses = categoryData.reduce((sum, item) => sum + item.amount, 0);
+    const totalExpenses = categoryData.reduce(
+      (sum, item) => sum + item.amount,
+      0
+    );
 
     totalAmountEl.textContent = `$${this.formatCurrency(totalExpenses)}`;
 
@@ -2323,20 +2542,22 @@ class FinanceApp {
       const demoData = [
         { category: 'Alimentación', amount: 450, color: '#FF6384' },
         { category: 'Transporte', amount: 200, color: '#36A2EB' },
-        { category: 'Entretenimiento', amount: 150, color: '#FFCE56' }
+        { category: 'Entretenimiento', amount: 150, color: '#FFCE56' },
       ];
 
       this.newPremiumChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-          labels: demoData.map(item => item.category),
-          datasets: [{
-            data: demoData.map(item => item.amount),
-            backgroundColor: demoData.map(item => item.color),
-            borderWidth: 0,
-            hoverBorderWidth: 3,
-            hoverBorderColor: '#fff'
-          }]
+          labels: demoData.map((item) => item.category),
+          datasets: [
+            {
+              data: demoData.map((item) => item.amount),
+              backgroundColor: demoData.map((item) => item.color),
+              borderWidth: 0,
+              hoverBorderWidth: 3,
+              hoverBorderColor: '#fff',
+            },
+          ],
         },
         options: {
           responsive: true,
@@ -2345,22 +2566,31 @@ class FinanceApp {
             legend: { display: false },
             tooltip: {
               callbacks: {
-                label: (context) => `${context.label}: $${this.formatCurrency(context.raw)}`
-              }
-            }
+                label: (context) =>
+                  `${context.label}: $${this.formatCurrency(context.raw)}`,
+              },
+            },
           },
-          cutout: '60%'
-        }
+          cutout: '60%',
+        },
       });
 
       // Update legend
-      legendContainer.innerHTML = demoData.map(item => `
+      legendContainer.innerHTML = demoData
+        .map(
+          (item) => `
         <div class="legend-item demo-item">
-          <span class="legend-color" style="background-color: ${item.color}"></span>
+          <span class="legend-color" style="background-color: ${
+            item.color
+          }"></span>
           <span class="legend-label">${item.category}</span>
-          <span class="legend-amount">$${this.formatCurrency(item.amount)}</span>
+          <span class="legend-amount">$${this.formatCurrency(
+            item.amount
+          )}</span>
         </div>
-      `).join('');
+      `
+        )
+        .join('');
 
       totalAmountEl.textContent = `$${this.formatCurrency(800)}`;
       return;
@@ -2370,14 +2600,16 @@ class FinanceApp {
     this.newPremiumChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: categoryData.map(item => item.category),
-        datasets: [{
-          data: categoryData.map(item => item.amount),
-          backgroundColor: categoryData.map(item => item.color),
-          borderWidth: 0,
-          hoverBorderWidth: 3,
-          hoverBorderColor: '#fff'
-        }]
+        labels: categoryData.map((item) => item.category),
+        datasets: [
+          {
+            data: categoryData.map((item) => item.amount),
+            backgroundColor: categoryData.map((item) => item.color),
+            borderWidth: 0,
+            hoverBorderWidth: 3,
+            hoverBorderColor: '#fff',
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -2386,22 +2618,29 @@ class FinanceApp {
           legend: { display: false },
           tooltip: {
             callbacks: {
-              label: (context) => `${context.label}: $${this.formatCurrency(context.raw)}`
-            }
-          }
+              label: (context) =>
+                `${context.label}: $${this.formatCurrency(context.raw)}`,
+            },
+          },
         },
-        cutout: '60%'
-      }
+        cutout: '60%',
+      },
     });
 
     // Update legend
-    legendContainer.innerHTML = categoryData.map(item => `
+    legendContainer.innerHTML = categoryData
+      .map(
+        (item) => `
       <div class="legend-item">
-        <span class="legend-color" style="background-color: ${item.color}"></span>
+        <span class="legend-color" style="background-color: ${
+          item.color
+        }"></span>
         <span class="legend-label">${item.category}</span>
         <span class="legend-amount">$${this.formatCurrency(item.amount)}</span>
       </div>
-    `).join('');
+    `
+      )
+      .join('');
   }
 
   renderNewTrendChart() {
@@ -2420,38 +2659,40 @@ class FinanceApp {
       type: 'line',
       data: {
         labels: trendData.labels,
-        datasets: [{
-          label: 'Gastos Diarios',
-          data: trendData.data,
-          borderColor: '#007bff',
-          backgroundColor: 'rgba(0, 123, 255, 0.1)',
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: '#007bff',
-          pointBorderColor: '#fff',
-          pointBorderWidth: 2,
-          pointRadius: 4
-        }]
+        datasets: [
+          {
+            label: 'Gastos Diarios',
+            data: trendData.data,
+            borderColor: '#007bff',
+            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#007bff',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+          },
+        ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false }
+          legend: { display: false },
         },
         scales: {
           y: {
             beginAtZero: true,
             grid: { color: 'rgba(0,0,0,0.1)' },
             ticks: {
-              callback: (value) => `$${this.formatCurrency(value)}`
-            }
+              callback: (value) => `$${this.formatCurrency(value)}`,
+            },
           },
           x: {
-            grid: { display: false }
-          }
-        }
-      }
+            grid: { display: false },
+          },
+        },
+      },
     });
   }
 
@@ -2464,19 +2705,24 @@ class FinanceApp {
     let recommendations = [];
 
     if (this.expenses.length > 0) {
-      const totalExpenses = this.expenses.reduce((sum, exp) => sum + exp.amount, 0);
+      const totalExpenses = this.expenses.reduce(
+        (sum, exp) => sum + exp.amount,
+        0
+      );
       const avgDailySpend = totalExpenses / Math.max(1, this.expenses.length);
 
       recommendations = [
-        `💡 Tu gasto promedio diario es $${this.formatNumber(avgDailySpend)}. Considera establecer un presupuesto diario.`,
+        `💡 Tu gasto promedio diario es $${this.formatNumber(
+          avgDailySpend
+        )}. Considera establecer un presupuesto diario.`,
         `📊 Has registrado ${this.expenses.length} transacciones. ¡Mantén el control de tus finanzas!`,
-        `🎯 Revisa tus gastos semanalmente para identificar oportunidades de ahorro.`
+        `🎯 Revisa tus gastos semanalmente para identificar oportunidades de ahorro.`,
       ];
     } else {
       recommendations = [
         `💡 Comienza registrando todos tus gastos, incluso los pequeños. Todo suma.`,
         `🎯 Establece metas financieras específicas y alcanzables para mantenerte motivado.`,
-        `📊 Revisa tus gastos semanalmente para identificar patrones y oportunidades.`
+        `📊 Revisa tus gastos semanalmente para identificar patrones y oportunidades.`,
       ];
     }
 
@@ -2506,9 +2752,24 @@ class FinanceApp {
 
     if (recentExpenses.length === 0) {
       const demoTransactions = [
-        { description: "Almuerzo en restaurante", amount: 25.50, category: "Alimentación", date: new Date() },
-        { description: "Combustible", amount: 45.00, category: "Transporte", date: new Date(Date.now() - 86400000) },
-        { description: "Supermercado", amount: 67.30, category: "Alimentación", date: new Date(Date.now() - 172800000) }
+        {
+          description: 'Almuerzo en restaurante',
+          amount: 25.5,
+          category: 'Alimentación',
+          date: new Date(),
+        },
+        {
+          description: 'Combustible',
+          amount: 45.0,
+          category: 'Transporte',
+          date: new Date(Date.now() - 86400000),
+        },
+        {
+          description: 'Supermercado',
+          amount: 67.3,
+          category: 'Alimentación',
+          date: new Date(Date.now() - 172800000),
+        },
       ];
 
       container.innerHTML = `
@@ -2529,7 +2790,9 @@ class FinanceApp {
               <span class="transaction-date">${expense.date.toLocaleDateString()}</span>
             </div>
           </div>
-          <div class="transaction-amount">-$${this.formatNumber(expense.amount)}</div>
+          <div class="transaction-amount">-$${this.formatNumber(
+            expense.amount
+          )}</div>
         `;
         container.appendChild(transactionEl);
       });
@@ -2544,10 +2807,14 @@ class FinanceApp {
           <h4>${expense.description}</h4>
           <div class="transaction-meta">
             <span class="transaction-category">${expense.category}</span>
-            <span class="transaction-date">${new Date(expense.date).toLocaleDateString()}</span>
+            <span class="transaction-date">${new Date(
+              expense.date
+            ).toLocaleDateString()}</span>
           </div>
         </div>
-        <div class="transaction-amount">-$${this.formatCurrency(expense.amount)}</div>
+        <div class="transaction-amount">-$${this.formatCurrency(
+          expense.amount
+        )}</div>
       `;
       container.appendChild(transactionEl);
     });
@@ -2560,13 +2827,17 @@ class FinanceApp {
     const viewGoalsBtn = document.getElementById('newQuickViewGoals');
 
     if (addExpenseBtn) {
-      addExpenseBtn.addEventListener('click', () => this.showSection('expenses'));
+      addExpenseBtn.addEventListener('click', () =>
+        this.showSection('expenses')
+      );
     }
     if (addGoalBtn) {
       addGoalBtn.addEventListener('click', () => this.showSection('goals'));
     }
     if (viewAnalysisBtn) {
-      viewAnalysisBtn.addEventListener('click', () => this.showSection('analysis'));
+      viewAnalysisBtn.addEventListener('click', () =>
+        this.showSection('analysis')
+      );
     }
     if (viewGoalsBtn) {
       viewGoalsBtn.addEventListener('click', () => this.showSection('goals'));
@@ -2588,7 +2859,9 @@ class FinanceApp {
     const lastExpense = this.expenses[this.expenses.length - 1];
     detailEl.innerHTML = `
       <span class="transaction-desc">${lastExpense.description}</span>
-      <span class="transaction-amount">-$${this.formatCurrency(lastExpense.amount)}</span>
+      <span class="transaction-amount">-$${this.formatCurrency(
+        lastExpense.amount
+      )}</span>
     `;
   }
 
@@ -2632,26 +2905,34 @@ class FinanceApp {
 
     // === NOTIFICACIONES DESDE AUDIT LOG ===
     // Solo cambios SENSIBLES: eliminaciones, modificaciones de montos, cambios de ingresos
-    const sensitiveTypes = ['expense_deleted', 'expense_modified', 'income_config', 'goal_deleted', 'goal_modified', 'budget_modified', 'budget_deleted'];
+    const sensitiveTypes = [
+      'expense_deleted',
+      'expense_modified',
+      'income_config',
+      'goal_deleted',
+      'goal_modified',
+      'budget_modified',
+      'budget_deleted',
+    ];
 
     const sensitiveChanges = (this.auditLog || [])
-      .filter(entry => sensitiveTypes.includes(entry.type))
+      .filter((entry) => sensitiveTypes.includes(entry.type))
       .slice(0, 10); // Últimos 10 cambios sensibles
 
     sensitiveChanges.forEach((change, index) => {
       const changeDate = new Date(change.timestamp);
       const actionIcons = {
-        'added': 'fa-plus-circle',
-        'modified': 'fa-edit',
-        'deleted': 'fa-trash-alt',
-        'updated': 'fa-sync-alt'
+        added: 'fa-plus-circle',
+        modified: 'fa-edit',
+        deleted: 'fa-trash-alt',
+        updated: 'fa-sync-alt',
       };
 
       const actionLabels = {
-        'added': 'Creado',
-        'modified': 'Modificado',
-        'deleted': 'Eliminado',
-        'updated': 'Actualizado'
+        added: 'Creado',
+        modified: 'Modificado',
+        deleted: 'Eliminado',
+        updated: 'Actualizado',
       };
 
       // Determinar categoría y título desde el tipo de auditoría
@@ -2665,7 +2946,10 @@ class FinanceApp {
       if (change.type.includes('deleted')) {
         category = 'danger';
         priority = 'high';
-      } else if (change.type.includes('modified') || change.type.includes('config')) {
+      } else if (
+        change.type.includes('modified') ||
+        change.type.includes('config')
+      ) {
         category = 'warning';
         priority = 'medium';
       }
@@ -2687,14 +2971,15 @@ class FinanceApp {
         priority: priority,
         data: { auditId: change.id },
         isRead: this.notificationStates.get(`audit-${change.id}`) || false,
-        isProtected: true
+        isProtected: true,
       });
     });
 
     // === NOTIFICACIÓN DE MENSAJES MOTIVADORES (1 AM) ===
     if (this.lastMessageUpdate && this.currentUser !== 'anonymous') {
       const lastUpdate = new Date(this.lastMessageUpdate);
-      const hoursSinceUpdate = (Date.now() - this.lastMessageUpdate) / (1000 * 60 * 60);
+      const hoursSinceUpdate =
+        (Date.now() - this.lastMessageUpdate) / (1000 * 60 * 60);
 
       // Mostrar notificación si la actualización fue reciente (menos de 6 horas)
       if (hoursSinceUpdate < 6) {
@@ -2709,7 +2994,7 @@ class FinanceApp {
           time: this.getRelativeTime(lastUpdate),
           priority: 'low',
           data: { section: 'dashboard' },
-          isRead: this.notificationStates.get('ai_messages_update') || false
+          isRead: this.notificationStates.get('ai_messages_update') || false,
         });
       }
     }
@@ -2726,19 +3011,23 @@ class FinanceApp {
         id: 'invite_link_current',
         type: 'invite_link',
         category: 'link',
-        title: isExpired ? '❌ Enlace de Invitación Expirado' : '🔗 Creaste un Enlace de Invitación',
-        subtitle: isExpired ? 'Este enlace ya no es válido' : `Haz clic para copiar • Expira en ${hoursRemaining}h`,
+        title: isExpired
+          ? '❌ Enlace de Invitación Expirado'
+          : '🔗 Creaste un Enlace de Invitación',
+        subtitle: isExpired
+          ? 'Este enlace ya no es válido'
+          : `Haz clic para copiar • Expira en ${hoursRemaining}h`,
         amount: '',
         time: this.getRelativeTime(new Date(this.currentInviteLink.createdAt)),
         priority: isExpired ? 'low' : 'high',
         data: {
           link: this.currentInviteLink.link,
           section: 'invite',
-          expired: isExpired
+          expired: isExpired,
         },
         isRead: this.notificationStates.get('invite_link_current') || false,
         link: this.currentInviteLink.link,
-        expired: isExpired
+        expired: isExpired,
       });
     }
 
@@ -2899,11 +3188,15 @@ class FinanceApp {
         <button class="notification-action-btn" data-action="read" title="Marcar como leída">
           <i class="fas fa-check"></i>
         </button>
-        ${notification.type !== 'ai' ? `
+        ${
+          notification.type !== 'ai'
+            ? `
         <button class="notification-action-btn" data-action="view" title="Ver detalles">
           <i class="fas fa-external-link-alt"></i>
         </button>
-        ` : ''}
+        `
+            : ''
+        }
       </div>
     `;
 
@@ -2998,7 +3291,10 @@ class FinanceApp {
 
     // Handle invite link notification
     if (notificationId === 'invite_link_current' && this.currentInviteLink) {
-      if (!this.currentInviteLink.expired && Date.now() < this.currentInviteLink.expiresAt) {
+      if (
+        !this.currentInviteLink.expired &&
+        Date.now() < this.currentInviteLink.expiresAt
+      ) {
         // Copy link to clipboard
         const tempInput = document.createElement('input');
         tempInput.value = this.currentInviteLink.link;
@@ -3007,7 +3303,10 @@ class FinanceApp {
         document.execCommand('copy');
         document.body.removeChild(tempInput);
 
-        this.showToast('Enlace de invitación copiado al portapapeles', 'success');
+        this.showToast(
+          'Enlace de invitación copiado al portapapeles',
+          'success'
+        );
       } else {
         this.showToast('Este enlace ha expirado', 'error');
       }
@@ -3276,7 +3575,9 @@ class FinanceApp {
                 const value = context.raw || 0;
                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
                 const percentage = ((value / total) * 100).toFixed(1);
-                return ` ${label}: $${self.formatNumber(value)} (${percentage}%)`;
+                return ` ${label}: $${self.formatNumber(
+                  value
+                )} (${percentage}%)`;
               },
             },
           },
@@ -3462,7 +3763,7 @@ class FinanceApp {
 
         // Easing function (easeOutCubic)
         const easeProgress = 1 - Math.pow(1 - progress, 3);
-        const currentValue = start + (difference * easeProgress);
+        const currentValue = start + difference * easeProgress;
 
         element.textContent = `$${Math.round(currentValue).toLocaleString()}`;
 
@@ -3489,7 +3790,12 @@ class FinanceApp {
     // Animar los números
     animateNumber(cashFlowTotal, currentTotal, total, 1200);
     animateNumber(necessaryValue, currentNecessary, necessaryAmount, 1000);
-    animateNumber(unnecessaryValue, currentUnnecessary, unnecessaryAmount, 1000);
+    animateNumber(
+      unnecessaryValue,
+      currentUnnecessary,
+      unnecessaryAmount,
+      1000
+    );
 
     // Animar barras de progreso con patrones variados
     const necessaryProgress = document.getElementById('necessaryProgress');
@@ -3502,20 +3808,51 @@ class FinanceApp {
       // Generar patrón de animación aleatorio
       const patterns = [
         // Patrón 1: Verde primero, luego rojo
-        { necessaryDelay: 100, unnecessaryDelay: 700, necessaryDuration: 1000, unnecessaryDuration: 800 },
+        {
+          necessaryDelay: 100,
+          unnecessaryDelay: 700,
+          necessaryDuration: 1000,
+          unnecessaryDuration: 800,
+        },
         // Patrón 2: Rojo primero, luego verde
-        { necessaryDelay: 800, unnecessaryDelay: 100, necessaryDuration: 900, unnecessaryDuration: 1100 },
+        {
+          necessaryDelay: 800,
+          unnecessaryDelay: 100,
+          necessaryDuration: 900,
+          unnecessaryDuration: 1100,
+        },
         // Patrón 3: Ambos simultáneos pero diferentes velocidades
-        { necessaryDelay: 150, unnecessaryDelay: 200, necessaryDuration: 1400, unnecessaryDuration: 800 },
+        {
+          necessaryDelay: 150,
+          unnecessaryDelay: 200,
+          necessaryDuration: 1400,
+          unnecessaryDuration: 800,
+        },
         // Patrón 4: Verde lento, rojo rápido
-        { necessaryDelay: 100, unnecessaryDelay: 500, necessaryDuration: 1600, unnecessaryDuration: 600 },
+        {
+          necessaryDelay: 100,
+          unnecessaryDelay: 500,
+          necessaryDuration: 1600,
+          unnecessaryDuration: 600,
+        },
         // Patrón 5: Secuencial con pausa
-        { necessaryDelay: 100, unnecessaryDelay: 1000, necessaryDuration: 800, unnecessaryDuration: 900 },
+        {
+          necessaryDelay: 100,
+          unnecessaryDelay: 1000,
+          necessaryDuration: 800,
+          unnecessaryDuration: 900,
+        },
         // Patrón 6: Inicio simultáneo, velocidades variadas
-        { necessaryDelay: 100, unnecessaryDelay: 100, necessaryDuration: 1100, unnecessaryDuration: 1400 }
+        {
+          necessaryDelay: 100,
+          unnecessaryDelay: 100,
+          necessaryDuration: 1100,
+          unnecessaryDuration: 1400,
+        },
       ];
 
-      const randomPattern = patterns[Math.floor(Math.random() * patterns.length)];
+      const randomPattern =
+        patterns[Math.floor(Math.random() * patterns.length)];
 
       // Animar barra verde (necesario)
       necessaryProgress.style.transition = 'none';
@@ -3643,7 +3980,13 @@ class FinanceApp {
     }
 
     // Actualizar textos con animación
-    const animateNumber = (element, start, end, duration, isPercentage = false) => {
+    const animateNumber = (
+      element,
+      start,
+      end,
+      duration,
+      isPercentage = false
+    ) => {
       if (!element) return;
       const startTime = performance.now();
       const difference = end - start;
@@ -3652,7 +3995,7 @@ class FinanceApp {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const easeProgress = 1 - Math.pow(1 - progress, 3);
-        const currentValue = start + (difference * easeProgress);
+        const currentValue = start + difference * easeProgress;
 
         if (isPercentage) {
           element.textContent = `${Math.round(currentValue)}%`;
@@ -3686,7 +4029,13 @@ class FinanceApp {
 
     if (goalsProgressPercentage) {
       const currentPercentage = getCurrentValue(goalsProgressPercentage);
-      animateNumber(goalsProgressPercentage, currentPercentage, percentage, 1200, true);
+      animateNumber(
+        goalsProgressPercentage,
+        currentPercentage,
+        percentage,
+        1200,
+        true
+      );
     }
 
     // Animar anillo de progreso con color dinámico
@@ -3700,7 +4049,8 @@ class FinanceApp {
       goalsProgressRing.style.stroke = strokeColor;
 
       setTimeout(() => {
-        goalsProgressRing.style.transition = 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.6s ease';
+        goalsProgressRing.style.transition =
+          'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.6s ease';
         goalsProgressRing.style.strokeDashoffset = offset;
       }, 200);
     }
@@ -3792,16 +4142,17 @@ class FinanceApp {
             animateScale: true,
             duration: 1800,
             easing: 'easeInOutCubic',
-            onProgress: function(animation) {
+            onProgress: function (animation) {
               const centerValue = document.getElementById('chartCenterValue');
               if (centerValue && animation.currentStep === animation.numSteps) {
                 centerValue.style.opacity = '1';
               }
-            }
+            },
           },
           onHover: (event, activeElements) => {
             const canvas = event.native.target;
-            canvas.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+            canvas.style.cursor =
+              activeElements.length > 0 ? 'pointer' : 'default';
 
             if (activeElements.length > 0) {
               const index = activeElements[0].index;
@@ -3811,25 +4162,40 @@ class FinanceApp {
               const centerLabel = document.getElementById('chartCenterLabel');
 
               if (centerValue && centerLabel) {
-                const total = chartData.datasets[0].data.reduce((a, b) => a + b, 0);
+                const total = chartData.datasets[0].data.reduce(
+                  (a, b) => a + b,
+                  0
+                );
                 const percentage = ((value / total) * 100).toFixed(1);
 
-                centerValue.textContent = `$${value.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+                centerValue.textContent = `$${value.toLocaleString('es-MX', {
+                  minimumFractionDigits: 2,
+                })}`;
 
                 let labelText = '';
                 let colorValue = '#10b981';
 
                 const categoryLower = categoryLabel.toLowerCase();
-                if (categoryLower.includes('ganancia') || categoryLower.includes('ingreso')) {
+                if (
+                  categoryLower.includes('ganancia') ||
+                  categoryLower.includes('ingreso')
+                ) {
                   labelText = 'Ganancias';
                   colorValue = '#10b981';
                 } else if (categoryLower.includes('ahorro')) {
                   labelText = 'Ahorros';
                   colorValue = '#10b981';
-                } else if (categoryLower.includes('meta') || categoryLower.includes('objetivo')) {
+                } else if (
+                  categoryLower.includes('meta') ||
+                  categoryLower.includes('objetivo')
+                ) {
                   labelText = 'Metas';
                   colorValue = '#f97316';
-                } else if (categoryLower.includes('pérdida') || categoryLower.includes('perdida') || categoryLower.includes('deuda')) {
+                } else if (
+                  categoryLower.includes('pérdida') ||
+                  categoryLower.includes('perdida') ||
+                  categoryLower.includes('deuda')
+                ) {
                   labelText = 'Pérdidas';
                   colorValue = '#ef4444';
                 } else {
@@ -3855,8 +4221,13 @@ class FinanceApp {
               const centerValue = document.getElementById('chartCenterValue');
               const centerLabel = document.getElementById('chartCenterLabel');
               if (centerValue && centerLabel) {
-                const total = chartData.datasets[0].data.reduce((a, b) => a + b, 0);
-                centerValue.textContent = `$${total.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+                const total = chartData.datasets[0].data.reduce(
+                  (a, b) => a + b,
+                  0
+                );
+                centerValue.textContent = `$${total.toLocaleString('es-MX', {
+                  minimumFractionDigits: 2,
+                })}`;
                 centerLabel.textContent = 'Total Gastos';
                 centerValue.style.color = '#1e293b';
               }
@@ -3903,11 +4274,12 @@ class FinanceApp {
                   return [];
                 },
               },
-              onHover: function(event, legendItem, legend) {
+              onHover: function (event, legendItem, legend) {
                 legend.chart.canvas.style.cursor = 'pointer';
-                const legendItems = document.querySelectorAll('#expenseChart').length > 0
-                  ? document.querySelectorAll('.chartjs-legend li')
-                  : [];
+                const legendItems =
+                  document.querySelectorAll('#expenseChart').length > 0
+                    ? document.querySelectorAll('.chartjs-legend li')
+                    : [];
                 legendItems.forEach((item, index) => {
                   if (index === legendItem.index) {
                     item.style.transform = 'translateX(5px)';
@@ -3915,23 +4287,24 @@ class FinanceApp {
                   }
                 });
               },
-              onLeave: function(event, legendItem, legend) {
+              onLeave: function (event, legendItem, legend) {
                 legend.chart.canvas.style.cursor = 'default';
-                const legendItems = document.querySelectorAll('#expenseChart').length > 0
-                  ? document.querySelectorAll('.chartjs-legend li')
-                  : [];
+                const legendItems =
+                  document.querySelectorAll('#expenseChart').length > 0
+                    ? document.querySelectorAll('.chartjs-legend li')
+                    : [];
                 legendItems.forEach((item) => {
                   item.style.transform = 'translateX(0)';
                 });
               },
-              onClick: function(e, legendItem, legend) {
+              onClick: function (e, legendItem, legend) {
                 const index = legendItem.index;
                 const chart = legend.chart;
                 const meta = chart.getDatasetMeta(0);
 
                 meta.data[index].hidden = !meta.data[index].hidden;
                 chart.update('active');
-              }
+              },
             },
             datalabels: {
               display: false,
@@ -3962,67 +4335,87 @@ class FinanceApp {
                   const value = context.raw || 0;
                   const total = context.chart.getDatasetMeta(0).total;
                   const percentage = ((value / total) * 100).toFixed(1);
-                  return ` ${label}: $${value.toLocaleString('es-MX', {minimumFractionDigits: 2})} (${percentage}%)`;
+                  return ` ${label}: $${value.toLocaleString('es-MX', {
+                    minimumFractionDigits: 2,
+                  })} (${percentage}%)`;
                 },
               },
             },
           },
         },
-        plugins: [{
-          id: 'centerText',
-          beforeDraw: function(chart) {
-            const ctx = chart.ctx;
-            const width = chart.width;
-            const height = chart.height;
-            const centerX = width / 2;
-            const centerY = height / 2 - 20;
+        plugins: [
+          {
+            id: 'centerText',
+            beforeDraw: function (chart) {
+              const ctx = chart.ctx;
+              const width = chart.width;
+              const height = chart.height;
+              const centerX = width / 2;
+              const centerY = height / 2 - 20;
 
-            ctx.restore();
+              ctx.restore();
 
-            const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+              const total = chart.data.datasets[0].data.reduce(
+                (a, b) => a + b,
+                0
+              );
 
-            ctx.font = 'bold 28px Inter, sans-serif';
-            ctx.fillStyle = '#1e293b';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+              ctx.font = 'bold 28px Inter, sans-serif';
+              ctx.fillStyle = '#1e293b';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
 
-            const centerValue = document.getElementById('chartCenterValue');
-            const valueText = centerValue ? centerValue.textContent : `$${total.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
-            ctx.fillText(valueText, centerX, centerY);
+              const centerValue = document.getElementById('chartCenterValue');
+              const valueText = centerValue
+                ? centerValue.textContent
+                : `$${total.toLocaleString('es-MX', {
+                    minimumFractionDigits: 2,
+                  })}`;
+              ctx.fillText(valueText, centerX, centerY);
 
-            ctx.font = '500 13px Inter, sans-serif';
-            ctx.fillStyle = '#64748b';
-            const centerLabel = document.getElementById('chartCenterLabel');
-            const labelText = centerLabel && centerLabel.textContent !== 'Total Gastos'
-              ? centerLabel.textContent
-              : 'Total Gastos';
-            ctx.fillText(labelText, centerX, centerY + 30);
+              ctx.font = '500 13px Inter, sans-serif';
+              ctx.fillStyle = '#64748b';
+              const centerLabel = document.getElementById('chartCenterLabel');
+              const labelText =
+                centerLabel && centerLabel.textContent !== 'Total Gastos'
+                  ? centerLabel.textContent
+                  : 'Total Gastos';
+              ctx.fillText(labelText, centerX, centerY + 30);
 
-            ctx.save();
-          }
-        }]
+              ctx.save();
+            },
+          },
+        ],
       });
 
       const chartContainer = canvas.parentElement;
       if (!document.getElementById('chartCenterValue')) {
         const centerDiv = document.createElement('div');
-        centerDiv.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; z-index: 10;';
+        centerDiv.style.cssText =
+          'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; z-index: 10;';
 
         const valueSpan = document.createElement('span');
         valueSpan.id = 'chartCenterValue';
-        valueSpan.style.cssText = 'display: block; font-size: 28px; font-weight: bold; color: #1e293b; transition: all 0.3s ease; opacity: 0;';
+        valueSpan.style.cssText =
+          'display: block; font-size: 28px; font-weight: bold; color: #1e293b; transition: all 0.3s ease; opacity: 0;';
         const total = chartData.datasets[0].data.reduce((a, b) => a + b, 0);
-        valueSpan.textContent = `$${total.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+        valueSpan.textContent = `$${total.toLocaleString('es-MX', {
+          minimumFractionDigits: 2,
+        })}`;
 
         const labelSpan = document.createElement('span');
         labelSpan.id = 'chartCenterLabel';
-        labelSpan.style.cssText = 'display: block; font-size: 13px; color: #64748b; margin-top: 8px; font-weight: 500;';
+        labelSpan.style.cssText =
+          'display: block; font-size: 13px; color: #64748b; margin-top: 8px; font-weight: 500;';
         labelSpan.textContent = 'Total Gastos';
 
         centerDiv.appendChild(valueSpan);
         centerDiv.appendChild(labelSpan);
 
-        if (chartContainer.style.position !== 'relative' && chartContainer.style.position !== 'absolute') {
+        if (
+          chartContainer.style.position !== 'relative' &&
+          chartContainer.style.position !== 'absolute'
+        ) {
           chartContainer.style.position = 'relative';
         }
         chartContainer.appendChild(centerDiv);
@@ -4355,22 +4748,27 @@ class FinanceApp {
 
     if (this.expenses.length > 0) {
       // Análisis basado en datos reales
-      const totalExpenses = this.expenses.reduce((sum, exp) => sum + exp.amount, 0);
+      const totalExpenses = this.expenses.reduce(
+        (sum, exp) => sum + exp.amount,
+        0
+      );
       const avgDailySpend = totalExpenses / Math.max(1, this.expenses.length);
 
       recommendations = [
-        `Tu gasto promedio diario es $${avgDailySpend.toFixed(2)}. Considera establecer un presupuesto diario.`,
+        `Tu gasto promedio diario es $${avgDailySpend.toFixed(
+          2
+        )}. Considera establecer un presupuesto diario.`,
         `Has registrado ${this.expenses.length} transacciones. ¡Mantén el control de tus finanzas!`,
-        "Revisa tus gastos semanalmente para identificar oportunidades de ahorro."
+        'Revisa tus gastos semanalmente para identificar oportunidades de ahorro.',
       ];
     } else {
       // Consejos útiles para usuarios nuevos
       recommendations = [
-        "💡 Comienza registrando todos tus gastos, incluso los pequeños. Todo suma.",
-        "🎯 Establece metas financieras específicas y alcanzables para mantenerte motivado.",
-        "📊 Revisa tus gastos semanalmente para identificar patrones y oportunidades.",
-        "💰 Ahorra al menos el 20% de tus ingresos mensuales para emergencias.",
-        "📱 Usa esta app diariamente para desarrollar buenos hábitos financieros."
+        '💡 Comienza registrando todos tus gastos, incluso los pequeños. Todo suma.',
+        '🎯 Establece metas financieras específicas y alcanzables para mantenerte motivado.',
+        '📊 Revisa tus gastos semanalmente para identificar patrones y oportunidades.',
+        '💰 Ahorra al menos el 20% de tus ingresos mensuales para emergencias.',
+        '📱 Usa esta app diariamente para desarrollar buenos hábitos financieros.',
       ];
     }
 
@@ -4416,11 +4814,36 @@ class FinanceApp {
     if (recentExpenses.length === 0) {
       // Mostrar transacciones de ejemplo en lugar de espacio vacío
       const demoTransactions = [
-        { description: "Almuerzo en restaurante", amount: 25.50, category: "Alimentación", date: new Date() },
-        { description: "Combustible", amount: 45.00, category: "Transporte", date: new Date(Date.now() - 86400000) },
-        { description: "Supermercado", amount: 67.30, category: "Alimentación", date: new Date(Date.now() - 172800000) },
-        { description: "Cine", amount: 15.00, category: "Entretenimiento", date: new Date(Date.now() - 259200000) },
-        { description: "Farmacia", amount: 12.80, category: "Salud", date: new Date(Date.now() - 345600000) }
+        {
+          description: 'Almuerzo en restaurante',
+          amount: 25.5,
+          category: 'Alimentación',
+          date: new Date(),
+        },
+        {
+          description: 'Combustible',
+          amount: 45.0,
+          category: 'Transporte',
+          date: new Date(Date.now() - 86400000),
+        },
+        {
+          description: 'Supermercado',
+          amount: 67.3,
+          category: 'Alimentación',
+          date: new Date(Date.now() - 172800000),
+        },
+        {
+          description: 'Cine',
+          amount: 15.0,
+          category: 'Entretenimiento',
+          date: new Date(Date.now() - 259200000),
+        },
+        {
+          description: 'Farmacia',
+          amount: 12.8,
+          category: 'Salud',
+          date: new Date(Date.now() - 345600000),
+        },
       ];
 
       container.innerHTML = `
@@ -4441,7 +4864,9 @@ class FinanceApp {
               <span class="transaction-date">${expense.date.toLocaleDateString()}</span>
             </div>
           </div>
-          <div class="transaction-amount">-$${this.formatNumber(expense.amount)}</div>
+          <div class="transaction-amount">-$${this.formatNumber(
+            expense.amount
+          )}</div>
         `;
         container.appendChild(transactionEl);
       });
@@ -4468,7 +4893,8 @@ class FinanceApp {
 
     // Show or hide the parent card based on content
     if (parentCard) {
-      const hasContent = recentExpenses.length > 0 || container.children.length > 0;
+      const hasContent =
+        recentExpenses.length > 0 || container.children.length > 0;
       if (hasContent) {
         parentCard.classList.remove('hidden');
       } else {
@@ -4535,7 +4961,7 @@ class FinanceApp {
 
       // Check for budget alerts
       const alerts = this.checkBudgetAlerts(currentMonth);
-      alerts.forEach(alert => {
+      alerts.forEach((alert) => {
         this.showToast(alert.message, alert.type);
       });
     }
@@ -4620,7 +5046,11 @@ class FinanceApp {
       'deleted',
       `Gasto eliminado: $${item.amount} - ${item.description}`,
       '',
-      { amount: item.amount, category: item.category, description: item.description }
+      {
+        amount: item.amount,
+        category: item.category,
+        description: item.description,
+      }
     );
 
     // Eliminar directamente sin verificación de protección
@@ -4801,6 +5231,26 @@ class FinanceApp {
       }
     });
 
+    // Listener para "Olvidaste tu contraseña"
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    forgotPasswordLink?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.closeAuthModal();
+      document.getElementById('resetPasswordModal')?.classList.add('show');
+    });
+
+    // Listener para formulario de recuperación de contraseña
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
+    resetPasswordForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('resetEmail').value;
+      const success = await this.resetPassword(email);
+      if (success) {
+        document.getElementById('resetPasswordModal')?.classList.remove('show');
+        document.getElementById('resetEmail').value = '';
+      }
+    });
+
     // Listeners para cerrar el modal
     closeButtons.forEach((btn) =>
       btn.addEventListener('click', () => this.closeAuthModal())
@@ -4833,7 +5283,10 @@ class FinanceApp {
     }
 
     if (newPassword.length < 6) {
-      this.showToast('La nueva contraseña debe tener al menos 6 caracteres', 'error');
+      this.showToast(
+        'La nueva contraseña debe tener al menos 6 caracteres',
+        'error'
+      );
       return;
     }
 
@@ -4859,7 +5312,7 @@ class FinanceApp {
         // Actualizar en Firestore
         const userDocRef = FB.doc(FB.db, 'userData', this.firebaseUser.uid);
         await FB.updateDoc(userDocRef, {
-          passwordUpdatedAt: Date.now()
+          passwordUpdatedAt: Date.now(),
         });
 
         document.getElementById('securityModal').classList.remove('show');
@@ -4870,11 +5323,17 @@ class FinanceApp {
         if (error.code === 'auth/wrong-password') {
           this.showToast('Contraseña actual incorrecta', 'error');
         } else {
-          this.showToast('Error al cambiar contraseña: ' + error.message, 'error');
+          this.showToast(
+            'Error al cambiar contraseña: ' + error.message,
+            'error'
+          );
         }
       }
     } else {
-      this.showToast('Debes iniciar sesión para cambiar tu contraseña', 'error');
+      this.showToast(
+        'Debes iniciar sesión para cambiar tu contraseña',
+        'error'
+      );
     }
   }
 
@@ -5113,7 +5572,10 @@ class FinanceApp {
         datasets: [
           {
             data: [necessaryExpenses, unnecessaryExpenses],
-            backgroundColor: [this.getCurrentStyleColors()[0], this.getCurrentStyleColors()[1]],
+            backgroundColor: [
+              this.getCurrentStyleColors()[0],
+              this.getCurrentStyleColors()[1],
+            ],
             borderWidth: 2,
             borderColor: '#fff',
           },
@@ -5407,8 +5869,7 @@ class FinanceApp {
 
   // ... (cÃ³digo de la funciÃ³n toggleTheme) ...
   toggleTheme() {
-    const currentTheme =
-      document.documentElement.getAttribute('data-theme');
+    const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', newTheme);
 
@@ -5424,7 +5885,9 @@ class FinanceApp {
   applyTheme(theme) {
     if (theme === 'auto') {
       // Detectar preferencia del sistema
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const prefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
       const systemTheme = prefersDark ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', systemTheme);
     } else {
@@ -5463,7 +5926,9 @@ class FinanceApp {
 
   updateAvatarDisplay(avatarId) {
     // Encontrar el avatar seleccionado
-    const selectedOption = document.querySelector(`[data-avatar="${avatarId}"]`);
+    const selectedOption = document.querySelector(
+      `[data-avatar="${avatarId}"]`
+    );
     if (!selectedOption) return;
 
     const avatarIcon = selectedOption.querySelector('.avatar-icon');
@@ -5630,7 +6095,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Usar event delegation porque el contenido del enlace se recrea dinámicamente
   const authSwitchLinkContainer = document.getElementById('authSwitchLink');
   if (authSwitchLinkContainer) {
-    authSwitchLinkContainer.addEventListener('click', function(e) {
+    authSwitchLinkContainer.addEventListener('click', function (e) {
       // Verificar si el click fue en el enlace
       if (e.target.tagName === 'A' || e.target.closest('a')) {
         e.preventDefault();
@@ -5638,9 +6103,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const linkText = link.textContent.trim();
 
         // Determinar qué función ejecutar basándose en el texto del enlace
-        if (linkText.includes('Regístrate') || linkText.includes('Registrate')) {
+        if (
+          linkText.includes('Regístrate') ||
+          linkText.includes('Registrate')
+        ) {
           switchToRegister();
-        } else if (linkText.includes('Inicia sesión') || linkText.includes('sesión')) {
+        } else if (
+          linkText.includes('Inicia sesión') ||
+          linkText.includes('sesión')
+        ) {
           switchToLogin();
         }
       }
@@ -5648,9 +6119,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 2b. Configurar botones de tabs de gastos (Rápido y Recurrente)
-  const expenseTabButtons = document.querySelectorAll('.expense-tab-btn[data-tab="quick"], .expense-tab-btn[data-tab="recurring"]');
-  expenseTabButtons.forEach(button => {
-    button.addEventListener('click', function(e) {
+  const expenseTabButtons = document.querySelectorAll(
+    '.expense-tab-btn[data-tab="quick"], .expense-tab-btn[data-tab="recurring"]'
+  );
+  expenseTabButtons.forEach((button) => {
+    button.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       openComingSoonModal();
@@ -5660,7 +6133,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2c. Cerrar modal "Coming Soon" al hacer click en el overlay
   const comingSoonModal = document.getElementById('comingSoonModal');
   if (comingSoonModal) {
-    comingSoonModal.addEventListener('click', function(e) {
+    comingSoonModal.addEventListener('click', function (e) {
       // Solo cerrar si el click es en el overlay (no en el contenido del modal)
       if (e.target === comingSoonModal) {
         closeComingSoonModal();
@@ -5708,10 +6181,17 @@ window.togglePasswordVisibility = togglePasswordVisibility;
 // Unsplash API for goal inspiration
 // PROTEGIDA: Configura en variables de entorno o backend/.env
 const UNSPLASH_ACCESS_KEY = window.unsplashApiKey || '';
-const goalCategories = ['vacation', 'beach', 'travel', 'shopping', 'luxury fashion', 'technology gadgets'];
+const goalCategories = [
+  'vacation',
+  'beach',
+  'travel',
+  'shopping',
+  'luxury fashion',
+  'technology gadgets',
+];
 let currentCategoryIndex = 0;
 
-FinanceApp.prototype.loadInspirationImage = async function() {
+FinanceApp.prototype.loadInspirationImage = async function () {
   const img = document.getElementById('inspirationImage');
   const overlay = document.querySelector('.inspiration-text');
 
@@ -5744,7 +6224,7 @@ FinanceApp.prototype.loadInspirationImage = async function() {
       'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
       'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80',
       'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80',
-      'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800&q=80'
+      'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800&q=80',
     ];
 
     img.style.opacity = '0';
@@ -5752,7 +6232,7 @@ FinanceApp.prototype.loadInspirationImage = async function() {
       img.src = staticImages[currentCategoryIndex % staticImages.length];
 
       // Aplicar efecto zoom + pan aleatorio
-      const zoomLevel = 1.05 + (Math.random() * 0.1); // 1.05 a 1.15
+      const zoomLevel = 1.05 + Math.random() * 0.1; // 1.05 a 1.15
       const panX = (Math.random() - 0.5) * 8; // -4% a 4%
       const panY = (Math.random() - 0.5) * 8; // -4% a 4%
 
@@ -5762,11 +6242,20 @@ FinanceApp.prototype.loadInspirationImage = async function() {
       }, 50);
 
       // Actualizar texto según categoría
-      const categories = ['Vacaciones', 'Playa', 'Viajes', 'Compras', 'Moda de lujo', 'Tecnología'];
+      const categories = [
+        'Vacaciones',
+        'Playa',
+        'Viajes',
+        'Compras',
+        'Moda de lujo',
+        'Tecnología',
+      ];
       if (overlay) {
         overlay.style.opacity = '0';
         setTimeout(() => {
-          overlay.textContent = `✨ ${categories[Math.floor(currentCategoryIndex / 3) % categories.length]}`;
+          overlay.textContent = `✨ ${
+            categories[Math.floor(currentCategoryIndex / 3) % categories.length]
+          }`;
           overlay.style.transition = 'opacity 1s ease-in-out';
           overlay.style.opacity = '1';
         }, 800);
@@ -5781,7 +6270,9 @@ FinanceApp.prototype.loadInspirationImage = async function() {
   currentCategoryIndex = (currentCategoryIndex + 1) % goalCategories.length;
 
   try {
-    const response = await fetch(`https://api.unsplash.com/photos/random?query=${category}&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`);
+    const response = await fetch(
+      `https://api.unsplash.com/photos/random?query=${category}&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`
+    );
 
     if (!response.ok) {
       throw new Error(`Unsplash API error: ${response.status}`);
@@ -5798,7 +6289,7 @@ FinanceApp.prototype.loadInspirationImage = async function() {
       img.src = data.urls.regular;
 
       // Aplicar efecto zoom + pan aleatorio
-      const zoomLevel = 1.05 + (Math.random() * 0.1); // 1.05 a 1.15
+      const zoomLevel = 1.05 + Math.random() * 0.1; // 1.05 a 1.15
       const panX = (Math.random() - 0.5) * 8; // -4% a 4%
       const panY = (Math.random() - 0.5) * 8; // -4% a 4%
 
@@ -5810,7 +6301,19 @@ FinanceApp.prototype.loadInspirationImage = async function() {
       if (overlay) {
         overlay.style.opacity = '0';
         setTimeout(() => {
-          overlay.textContent = `✨ ${category === 'luxury fashion' ? 'Moda de lujo' : category === 'technology gadgets' ? 'Tecnología' : category === 'vacation' ? 'Vacaciones' : category === 'beach' ? 'Playa' : category === 'travel' ? 'Viajes' : 'Compras'}`;
+          overlay.textContent = `✨ ${
+            category === 'luxury fashion'
+              ? 'Moda de lujo'
+              : category === 'technology gadgets'
+              ? 'Tecnología'
+              : category === 'vacation'
+              ? 'Vacaciones'
+              : category === 'beach'
+              ? 'Playa'
+              : category === 'travel'
+              ? 'Viajes'
+              : 'Compras'
+          }`;
           overlay.style.transition = 'opacity 1s ease-in-out';
           overlay.style.opacity = '1';
         }, 800);
@@ -5818,11 +6321,12 @@ FinanceApp.prototype.loadInspirationImage = async function() {
     }, 1500);
   } catch (error) {
     console.error('Error loading inspiration:', error);
-    img.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800';
+    img.src =
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800';
   }
 };
 
-FinanceApp.prototype.startInspirationRotation = function() {
+FinanceApp.prototype.startInspirationRotation = function () {
   if (this.inspirationInterval) clearInterval(this.inspirationInterval);
 
   this.loadInspirationImage();
@@ -5831,7 +6335,7 @@ FinanceApp.prototype.startInspirationRotation = function() {
   }, 8000); // Cambiado de 5000 a 8000ms (8 segundos)
 };
 
-FinanceApp.prototype.stopInspirationRotation = function() {
+FinanceApp.prototype.stopInspirationRotation = function () {
   if (this.inspirationInterval) {
     clearInterval(this.inspirationInterval);
     this.inspirationInterval = null;
@@ -5839,7 +6343,7 @@ FinanceApp.prototype.stopInspirationRotation = function() {
 };
 
 // Social login methods
-FinanceApp.prototype.loginWithGoogle = async function() {
+FinanceApp.prototype.loginWithGoogle = async function () {
   const FB = window.FB;
   if (!FB?.auth) {
     this.showToast('Firebase no está configurado', 'error');
@@ -5858,7 +6362,7 @@ FinanceApp.prototype.loginWithGoogle = async function() {
   }
 };
 
-FinanceApp.prototype.loginWithFacebook = async function() {
+FinanceApp.prototype.loginWithFacebook = async function () {
   const FB = window.FB;
   if (!FB?.auth) {
     this.showToast('Firebase no está configurado', 'error');
@@ -6417,7 +6921,9 @@ FinanceApp.prototype.renderRadarChart = function () {
             label: function (context) {
               const value = context.parsed.r.toFixed(1);
               const amount = Object.values(categories)[context.dataIndex];
-              return `${context.label}: ${value}% ($${self.formatNumber(amount)})`;
+              return `${context.label}: ${value}% ($${self.formatNumber(
+                amount
+              )})`;
             },
           },
         },
@@ -6471,7 +6977,6 @@ FinanceApp.prototype.renderRadarChart = function () {
   this.radarChart = new Chart(ctx, config);
 };
 
-
 // Update dashboard welcome message based on user authentication
 FinanceApp.prototype.updateDashboardWelcome = function () {
   const titleElement = document.querySelector('#dashboard .section-header h1');
@@ -6504,9 +7009,7 @@ FinanceApp.prototype.updateDashboardWelcome = function () {
     const randomWelcome =
       welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
     const randomSubtitle =
-      friendlySubtitles[
-        Math.floor(Math.random() * friendlySubtitles.length)
-      ];
+      friendlySubtitles[Math.floor(Math.random() * friendlySubtitles.length)];
 
     titleElement.textContent = randomWelcome;
     subtitleElement.textContent = randomSubtitle;
@@ -6957,7 +7460,8 @@ FinanceApp.prototype.revealSequentially = function (elements, delay = 100) {
 function switchToLogin() {
   document.getElementById('loginForm').classList.remove('hidden');
   document.getElementById('registerForm').classList.add('hidden');
-  document.getElementById('authModalTitle').textContent = '¡Bienvenido de vuelta!';
+  document.getElementById('authModalTitle').textContent =
+    '¡Bienvenido de vuelta!';
   document.getElementById('authSwitchLink').innerHTML =
     '¿No tienes una cuenta? <a href="#">Regístrate aquí</a>';
 }
@@ -7004,7 +7508,7 @@ if (typeof window !== 'undefined') {
   window.closeComingSoonModal = closeComingSoonModal;
 }
 
-FinanceApp.prototype.setupUserSystemListeners = function() {
+FinanceApp.prototype.setupUserSystemListeners = function () {
   // Auth form switch - Manejar cambio entre login y registro
   const authSwitchLink = document.getElementById('authSwitchLink');
   if (authSwitchLink) {
@@ -7102,7 +7606,7 @@ FinanceApp.prototype.setupUserSystemListeners = function() {
   this.updateUserSelectionDropdown();
 };
 
-FinanceApp.prototype.handleRegistration = async function() {
+FinanceApp.prototype.handleRegistration = async function () {
   const name = document.getElementById('registerName').value.trim();
   const email = document.getElementById('registerEmail').value.trim();
   const password = document.getElementById('registerPassword').value;
@@ -7136,15 +7640,23 @@ FinanceApp.prototype.handleRegistration = async function() {
       password
     );
 
-    console.log('DEBUG: Usuario creado en Firebase Auth:', userCredential.user.uid);
+    console.log(
+      'DEBUG: Usuario creado en Firebase Auth:',
+      userCredential.user.uid
+    );
 
     // Ahora crear la cuenta con el UID de Firebase
-    await this.createNewAccount(name, email, password, accountType, userCredential.user.uid);
+    await this.createNewAccount(
+      name,
+      email,
+      password,
+      accountType,
+      userCredential.user.uid
+    );
 
     // Desactivar bandera después de completar el registro
     this.isRegistering = false;
     console.log('DEBUG: Bandera isRegistering desactivada');
-
   } catch (error) {
     // Desactivar bandera en caso de error
     this.isRegistering = false;
@@ -7164,7 +7676,13 @@ FinanceApp.prototype.handleRegistration = async function() {
   }
 };
 
-FinanceApp.prototype.createNewAccount = async function(name, email, password, accountType, firebaseUid) {
+FinanceApp.prototype.createNewAccount = async function (
+  name,
+  email,
+  password,
+  accountType,
+  firebaseUid
+) {
   // Usar el UID de Firebase si se proporciona, sino generar uno local
   const userId = firebaseUid || this.generateUserId();
   console.log('DEBUG: Creando cuenta con userId:', userId);
@@ -7176,18 +7694,23 @@ FinanceApp.prototype.createNewAccount = async function(name, email, password, ac
   // For shared accounts, use the owner's ID as the shared document ID
   if (accountType === 'shared') {
     this.sharedAccountId = userId;
-    console.log('DEBUG: Cuenta compartida - sharedAccountId establecido a:', userId);
+    console.log(
+      'DEBUG: Cuenta compartida - sharedAccountId establecido a:',
+      userId
+    );
   } else {
     this.sharedAccountId = null;
   }
 
-  this.accountUsers = [{
-    id: userId,
-    name: name,
-    email: email,
-    role: 'owner',
-    joinedAt: Date.now()
-  }];
+  this.accountUsers = [
+    {
+      id: userId,
+      name: name,
+      email: email,
+      role: 'owner',
+      joinedAt: Date.now(),
+    },
+  ];
 
   this.logActivity('account_created', `Cuenta ${accountType} creada`, userId);
 
@@ -7209,7 +7732,9 @@ FinanceApp.prototype.createNewAccount = async function(name, email, password, ac
 
     // Pequeño delay para asegurar que el modal de auth se cierre primero
     setTimeout(() => {
-      console.log('DEBUG: 300ms transcurridos. Llamando a showSharedAccountInviteModal...');
+      console.log(
+        'DEBUG: 300ms transcurridos. Llamando a showSharedAccountInviteModal...'
+      );
       this.showSharedAccountInviteModal();
     }, 300);
   } else {
@@ -7217,7 +7742,12 @@ FinanceApp.prototype.createNewAccount = async function(name, email, password, ac
   }
 };
 
-FinanceApp.prototype.joinSharedAccount = function(name, email, password, inviteCode) {
+FinanceApp.prototype.joinSharedAccount = function (
+  name,
+  email,
+  password,
+  inviteCode
+) {
   const inviteData = this.inviteCodes[inviteCode];
   const userId = this.generateUserId();
 
@@ -7227,7 +7757,7 @@ FinanceApp.prototype.joinSharedAccount = function(name, email, password, inviteC
     name: name,
     email: email,
     role: 'member',
-    joinedAt: Date.now()
+    joinedAt: Date.now(),
   });
 
   // Remove used invite code
@@ -7243,7 +7773,7 @@ FinanceApp.prototype.joinSharedAccount = function(name, email, password, inviteC
   this.showToast('Te has unido a la cuenta compartida exitosamente', 'success');
 };
 
-FinanceApp.prototype.handleLogin = function() {
+FinanceApp.prototype.handleLogin = function () {
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
 
@@ -7253,7 +7783,9 @@ FinanceApp.prototype.handleLogin = function() {
   }
 
   // MODIFICADO - Solo un usuario (accountUsers es objeto)
-  const userEntry = Object.entries(this.accountUsers || {}).find(([id, userData]) => userData.email === email);
+  const userEntry = Object.entries(this.accountUsers || {}).find(
+    ([id, userData]) => userData.email === email
+  );
   if (userEntry) {
     const [userId, userData] = userEntry;
     this.currentUser = userId;
@@ -7268,10 +7800,16 @@ FinanceApp.prototype.handleLogin = function() {
 };
 
 // DESHABILITADO - Ya no se usa showInvitationModal
-FinanceApp.prototype.showInvitationModal = function() {
+FinanceApp.prototype.showInvitationModal = function () {
   return; // Deshabilitado
-  if (this.accountType !== 'shared' || Object.keys(this.accountUsers).length >= 2) {
-    this.showToast('Solo las cuentas compartidas pueden tener invitaciones', 'info');
+  if (
+    this.accountType !== 'shared' ||
+    Object.keys(this.accountUsers).length >= 2
+  ) {
+    this.showToast(
+      'Solo las cuentas compartidas pueden tener invitaciones',
+      'info'
+    );
     return;
   }
 
@@ -7279,13 +7817,13 @@ FinanceApp.prototype.showInvitationModal = function() {
   document.body.style.overflow = 'hidden';
 
   // Reset modal to step 1
-  document.querySelectorAll('.step-item').forEach(step => {
+  document.querySelectorAll('.step-item').forEach((step) => {
     step.classList.remove('active');
   });
   document.querySelector('.step-item[data-step="1"]').classList.add('active');
 };
 
-FinanceApp.prototype.generateInviteCode = function() {
+FinanceApp.prototype.generateInviteCode = function () {
   const inviteeName = document.getElementById('inviteeName').value.trim();
 
   if (!inviteeName) {
@@ -7298,26 +7836,32 @@ FinanceApp.prototype.generateInviteCode = function() {
     inviteeName: inviteeName,
     createdBy: this.currentUser,
     createdAt: Date.now(),
-    expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days
+    expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
   };
 
   this.saveData();
-  this.logActivity('invite_created', `Invitación creada para ${inviteeName}`, this.currentUser);
+  this.logActivity(
+    'invite_created',
+    `Invitación creada para ${inviteeName}`,
+    this.currentUser
+  );
 
   // Show step 2
-  document.querySelectorAll('.step-item').forEach(step => {
+  document.querySelectorAll('.step-item').forEach((step) => {
     step.classList.remove('active');
   });
   document.querySelector('.step-item[data-step="2"]').classList.add('active');
 
   // Display code
   document.getElementById('generatedInviteCode').textContent = code;
-  document.getElementById('generatedInviteCode').classList.add('invite-code-generated');
+  document
+    .getElementById('generatedInviteCode')
+    .classList.add('invite-code-generated');
 
   this.showToast('Código de invitación generado', 'success');
 };
 
-FinanceApp.prototype.copyInviteCodeToClipboard = function() {
+FinanceApp.prototype.copyInviteCodeToClipboard = function () {
   const code = document.getElementById('generatedInviteCode').textContent;
 
   if (navigator.clipboard) {
@@ -7339,7 +7883,7 @@ FinanceApp.prototype.copyInviteCodeToClipboard = function() {
   }
 };
 
-FinanceApp.prototype.updateAccountDisplay = function() {
+FinanceApp.prototype.updateAccountDisplay = function () {
   const accountTypeBadge = document.getElementById('accountTypeBadge');
   const accountTypeText = document.getElementById('accountTypeText');
   const currentUserName = document.getElementById('currentUserName');
@@ -7350,20 +7894,25 @@ FinanceApp.prototype.updateAccountDisplay = function() {
 
   // Validar que los elementos existen antes de manipularlos
   if (!accountTypeBadge || !accountTypeText) {
-    console.log('DEBUG: Elementos de account display no encontrados en DOM, saltando actualización');
+    console.log(
+      'DEBUG: Elementos de account display no encontrados en DOM, saltando actualización'
+    );
     return;
   }
 
   if (this.accountType === 'shared') {
     accountTypeBadge.classList.add('shared');
-    accountTypeText.innerHTML = '<i class="fas fa-users"></i> Cuenta Mancomunada';
+    accountTypeText.innerHTML =
+      '<i class="fas fa-users"></i> Cuenta Mancomunada';
 
     if (this.accountUsers.length === 1) {
       if (inviteUserBtn) inviteUserBtn.classList.remove('hidden');
     } else {
       if (inviteUserBtn) inviteUserBtn.classList.add('hidden');
       if (invitedUserInfo) invitedUserInfo.classList.remove('hidden');
-      const otherUser = this.accountUsers.find(u => u.id !== this.currentUser);
+      const otherUser = this.accountUsers.find(
+        (u) => u.id !== this.currentUser
+      );
       if (otherUser && invitedUserName) {
         invitedUserName.textContent = otherUser.name;
       }
@@ -7381,13 +7930,13 @@ FinanceApp.prototype.updateAccountDisplay = function() {
     if (activityLogSection) activityLogSection.classList.add('hidden');
   }
 
-  const currentUser = this.accountUsers.find(u => u.id === this.currentUser);
+  const currentUser = this.accountUsers.find((u) => u.id === this.currentUser);
   if (currentUser && currentUserName) {
     currentUserName.textContent = currentUser.name;
   }
 };
 
-FinanceApp.prototype.updateUserSelectionDropdown = function() {
+FinanceApp.prototype.updateUserSelectionDropdown = function () {
   const userSelect = document.getElementById('user');
   if (!userSelect) return;
 
@@ -7403,7 +7952,7 @@ FinanceApp.prototype.updateUserSelectionDropdown = function() {
   }
 
   // Agregar usuarios personalizados
-  this.customUsers.forEach(userName => {
+  this.customUsers.forEach((userName) => {
     const option = document.createElement('option');
     option.value = userName;
     option.textContent = userName;
@@ -7417,7 +7966,7 @@ FinanceApp.prototype.updateUserSelectionDropdown = function() {
   userSelect.appendChild(addNewOption);
 };
 
-FinanceApp.prototype.updateActivityLog = function() {
+FinanceApp.prototype.updateActivityLog = function () {
   const activityList = document.getElementById('activityList');
   const activityCount = document.getElementById('activityCount');
 
@@ -7428,11 +7977,11 @@ FinanceApp.prototype.updateActivityLog = function() {
 
   activityList.innerHTML = '';
 
-  recentActivities.forEach(activity => {
+  recentActivities.forEach((activity) => {
     const activityItem = document.createElement('div');
     activityItem.className = 'activity-item';
 
-    const user = this.accountUsers.find(u => u.id === activity.userId);
+    const user = this.accountUsers.find((u) => u.id === activity.userId);
     const userName = user ? user.name : 'Usuario desconocido';
 
     activityItem.innerHTML = `
@@ -7441,11 +7990,15 @@ FinanceApp.prototype.updateActivityLog = function() {
       </div>
       <div class="activity-content">
         <div class="activity-title">${activity.description}</div>
-        <div class="activity-description">${this.formatActivityTime(activity.timestamp)}</div>
+        <div class="activity-description">${this.formatActivityTime(
+          activity.timestamp
+        )}</div>
       </div>
       <div class="activity-meta">
         <span class="activity-user">${userName}</span>
-        <span class="activity-time">${this.formatRelativeTime(activity.timestamp)}</span>
+        <span class="activity-time">${this.formatRelativeTime(
+          activity.timestamp
+        )}</span>
       </div>
     `;
 
@@ -7453,13 +8006,13 @@ FinanceApp.prototype.updateActivityLog = function() {
   });
 };
 
-FinanceApp.prototype.logActivity = function(type, description, userId = null) {
+FinanceApp.prototype.logActivity = function (type, description, userId = null) {
   this.activityLog.push({
     id: Date.now(),
     type: type,
     description: description,
     userId: userId || this.currentUser,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   });
 
   // Keep only last 100 activities
@@ -7468,31 +8021,31 @@ FinanceApp.prototype.logActivity = function(type, description, userId = null) {
   }
 };
 
-FinanceApp.prototype.getActivityIcon = function(type) {
+FinanceApp.prototype.getActivityIcon = function (type) {
   const icons = {
-    'expense': 'fa-minus-circle',
-    'goal': 'fa-bullseye',
-    'edit': 'fa-edit',
-    'delete': 'fa-trash',
-    'account_created': 'fa-user-plus',
-    'user_joined': 'fa-user-friends',
-    'user_login': 'fa-sign-in-alt',
-    'invite_created': 'fa-envelope'
+    expense: 'fa-minus-circle',
+    goal: 'fa-bullseye',
+    edit: 'fa-edit',
+    delete: 'fa-trash',
+    account_created: 'fa-user-plus',
+    user_joined: 'fa-user-friends',
+    user_login: 'fa-sign-in-alt',
+    invite_created: 'fa-envelope',
   };
   return icons[type] || 'fa-info-circle';
 };
 
-FinanceApp.prototype.formatActivityTime = function(timestamp) {
+FinanceApp.prototype.formatActivityTime = function (timestamp) {
   return new Date(timestamp).toLocaleString('es-ES', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 };
 
-FinanceApp.prototype.formatRelativeTime = function(timestamp) {
+FinanceApp.prototype.formatRelativeTime = function (timestamp) {
   const diff = Date.now() - timestamp;
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(minutes / 60);
@@ -7504,11 +8057,13 @@ FinanceApp.prototype.formatRelativeTime = function(timestamp) {
   return 'Hace un momento';
 };
 
-FinanceApp.prototype.generateUserId = function() {
-  return 'user_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+FinanceApp.prototype.generateUserId = function () {
+  return (
+    'user_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36)
+  );
 };
 
-FinanceApp.prototype.generateRandomCode = function(length) {
+FinanceApp.prototype.generateRandomCode = function (length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
   const codeLength = length || 8; // Default 8 si no se especifica
@@ -7518,18 +8073,18 @@ FinanceApp.prototype.generateRandomCode = function(length) {
   return result;
 };
 
-FinanceApp.prototype.validateInviteCode = function(code) {
+FinanceApp.prototype.validateInviteCode = function (code) {
   const invite = this.inviteCodes[code];
   return invite && invite.expiresAt > Date.now();
 };
 
-FinanceApp.prototype.closeAuthModal = function() {
+FinanceApp.prototype.closeAuthModal = function () {
   document.getElementById('authModal').classList.remove('show');
   document.getElementById('accountTypeModal').classList.remove('show');
   document.body.style.overflow = '';
 };
 
-FinanceApp.prototype.showChangePasswordModal = function() {
+FinanceApp.prototype.showChangePasswordModal = function () {
   const modal = document.getElementById('securityModal');
   if (!modal) return;
 
@@ -7556,7 +8111,7 @@ FinanceApp.prototype.showChangePasswordModal = function() {
   document.body.style.overflow = 'hidden';
 };
 
-FinanceApp.prototype.showAccountTypeSwitch = function() {
+FinanceApp.prototype.showAccountTypeSwitch = function () {
   const modal = document.getElementById('accountTypeModal');
   if (modal) {
     modal.classList.add('show');
@@ -7564,7 +8119,7 @@ FinanceApp.prototype.showAccountTypeSwitch = function() {
   }
 };
 
-FinanceApp.prototype.changeAccountType = function(type) {
+FinanceApp.prototype.changeAccountType = function (type) {
   this.accountType = type;
   localStorage.setItem('financia_account_type', type);
   this.saveData();
@@ -7577,16 +8132,17 @@ FinanceApp.prototype.changeAccountType = function(type) {
     document.body.style.overflow = '';
   }
 
-  const message = type === 'shared'
-    ? 'Cuenta cambiada a Mancomunada. Ahora puedes invitar a tu socio.'
-    : 'Cuenta cambiada a Personal.';
+  const message =
+    type === 'shared'
+      ? 'Cuenta cambiada a Mancomunada. Ahora puedes invitar a tu socio.'
+      : 'Cuenta cambiada a Personal.';
 
   this.showToast(message, 'success');
 };
 
 // Override expense addition to include activity logging
 FinanceApp.prototype.addExpenseOriginal = FinanceApp.prototype.addExpense;
-FinanceApp.prototype.addExpense = function(e) {
+FinanceApp.prototype.addExpense = function (e) {
   // Call original method with event parameter
   this.addExpenseOriginal(e);
 
@@ -7598,11 +8154,17 @@ FinanceApp.prototype.addExpense = function(e) {
 
   // Add activity logging
   if (description && amount && user) {
-    this.logActivity('expense', `Gasto agregado: ${description} - $${amount}`, this.currentUser);
+    this.logActivity(
+      'expense',
+      `Gasto agregado: ${description} - $${amount}`,
+      this.currentUser
+    );
 
     if (this.accountType === 'shared' && this.accountUsers.length > 1) {
       // Notify other user
-      const otherUser = this.accountUsers.find(u => u.id !== this.currentUser);
+      const otherUser = this.accountUsers.find(
+        (u) => u.id !== this.currentUser
+      );
       if (otherUser) {
         this.addNotification({
           id: Date.now(),
@@ -7611,7 +8173,7 @@ FinanceApp.prototype.addExpense = function(e) {
           message: `${user} registró un gasto: ${description} - $${amount}`,
           timestamp: Date.now(),
           read: false,
-          priority: 'normal'
+          priority: 'normal',
         });
       }
     }
@@ -7619,56 +8181,64 @@ FinanceApp.prototype.addExpense = function(e) {
 };
 
 // Setup onboarding tour system
-FinanceApp.prototype.setupOnboardingTour = function() {
+FinanceApp.prototype.setupOnboardingTour = function () {
   this.tourSteps = [
     {
       element: '.navbar__logo',
       title: '¡Bienvenido a FinanciaPro Suite!',
-      description: 'Esta es tu nueva herramienta para el control financiero personal. Te guiaremos por las principales funciones.',
-      position: 'bottom'
+      description:
+        'Esta es tu nueva herramienta para el control financiero personal. Te guiaremos por las principales funciones.',
+      position: 'bottom',
     },
     {
       element: '[data-section="dashboard"]',
       title: 'Panel Principal',
-      description: 'Aquí verás un resumen de tus finanzas: gastos totales, metas y gráficos de análisis.',
-      position: 'bottom'
+      description:
+        'Aquí verás un resumen de tus finanzas: gastos totales, metas y gráficos de análisis.',
+      position: 'bottom',
     },
     {
       element: '[data-section="expenses"]',
       title: 'Registro de Gastos',
-      description: 'Registra todos tus gastos de forma rápida y organizada por categorías y nivel de necesidad.',
-      position: 'bottom'
+      description:
+        'Registra todos tus gastos de forma rápida y organizada por categorías y nivel de necesidad.',
+      position: 'bottom',
     },
     {
       element: '[data-section="goals"]',
       title: 'Metas Financieras',
-      description: 'Define y hace seguimiento a tus objetivos de ahorro. Mantente motivado con el progreso visual.',
-      position: 'bottom'
+      description:
+        'Define y hace seguimiento a tus objetivos de ahorro. Mantente motivado con el progreso visual.',
+      position: 'bottom',
     },
     {
       element: '[data-section="analysis"]',
       title: 'Análisis Detallado',
-      description: 'Visualiza patrones en tus gastos con gráficos interactivos y estadísticas útiles.',
-      position: 'bottom'
+      description:
+        'Visualiza patrones en tus gastos con gráficos interactivos y estadísticas útiles.',
+      position: 'bottom',
     },
     {
       element: '[data-section="store"]',
       title: 'Tienda de Estilos',
-      description: 'Personaliza la apariencia de tus gráficos con diferentes temas y estilos visuales.',
-      position: 'bottom'
+      description:
+        'Personaliza la apariencia de tus gráficos con diferentes temas y estilos visuales.',
+      position: 'bottom',
     },
     {
       element: '[data-section="config"]',
       title: 'Configuración',
-      description: 'Administra tu perfil, configuración de cuenta y preferencias de la aplicación.',
-      position: 'right'
+      description:
+        'Administra tu perfil, configuración de cuenta y preferencias de la aplicación.',
+      position: 'right',
     },
     {
       element: '#expenseForm',
       title: 'Registrar tu Primer Gasto',
-      description: 'Comienza registrando un gasto. Completa la descripción, monto, categoría y nivel de necesidad.',
-      position: 'top'
-    }
+      description:
+        'Comienza registrando un gasto. Completa la descripción, monto, categoría y nivel de necesidad.',
+      position: 'top',
+    },
   ];
 
   this.currentTourStep = 0;
@@ -7691,7 +8261,7 @@ FinanceApp.prototype.setupOnboardingTour = function() {
   }, 3000);
 };
 
-FinanceApp.prototype.setupTourEventListeners = function() {
+FinanceApp.prototype.setupTourEventListeners = function () {
   // Tour start button
   if (this.tourStartBtn) {
     this.tourStartBtn.addEventListener('click', () => {
@@ -7755,7 +8325,7 @@ FinanceApp.prototype.setupTourEventListeners = function() {
   });
 };
 
-FinanceApp.prototype.startTour = function() {
+FinanceApp.prototype.startTour = function () {
   if (!this.tourOverlay || this.tourActive) return;
 
   this.tourActive = true;
@@ -7771,7 +8341,7 @@ FinanceApp.prototype.startTour = function() {
   this.showTourStep(0);
 };
 
-FinanceApp.prototype.showTourStep = function(stepIndex) {
+FinanceApp.prototype.showTourStep = function (stepIndex) {
   if (stepIndex < 0 || stepIndex >= this.tourSteps.length) return;
 
   const step = this.tourSteps[stepIndex];
@@ -7795,7 +8365,8 @@ FinanceApp.prototype.showTourStep = function(stepIndex) {
 
   if (titleEl) titleEl.textContent = step.title;
   if (descEl) descEl.textContent = step.description;
-  if (counterEl) counterEl.textContent = `${stepIndex + 1} de ${this.tourSteps.length}`;
+  if (counterEl)
+    counterEl.textContent = `${stepIndex + 1} de ${this.tourSteps.length}`;
   if (progressFill) {
     const progress = ((stepIndex + 1) / this.tourSteps.length) * 100;
     progressFill.style.width = `${progress}%`;
@@ -7832,7 +8403,7 @@ FinanceApp.prototype.showTourStep = function(stepIndex) {
   }, 100);
 };
 
-FinanceApp.prototype.positionTourElements = function(targetElement, position) {
+FinanceApp.prototype.positionTourElements = function (targetElement, position) {
   if (!this.tourSpotlight || !this.tourTooltip) return;
 
   const rect = targetElement.getBoundingClientRect();
@@ -7885,11 +8456,16 @@ FinanceApp.prototype.positionTourElements = function(targetElement, position) {
 
   this.tourTooltip.style.left = `${left}px`;
   this.tourTooltip.style.top = `${top}px`;
-  this.tourTooltip.classList.remove('position-top', 'position-bottom', 'position-left', 'position-right');
+  this.tourTooltip.classList.remove(
+    'position-top',
+    'position-bottom',
+    'position-left',
+    'position-right'
+  );
   this.tourTooltip.classList.add(`position-${position}`);
 };
 
-FinanceApp.prototype.highlightElement = function(element) {
+FinanceApp.prototype.highlightElement = function (element) {
   // Remove previous highlights
   const prevHighlighted = document.querySelector('.tour-highlighted');
   if (prevHighlighted) {
@@ -7900,7 +8476,7 @@ FinanceApp.prototype.highlightElement = function(element) {
   element.classList.add('tour-highlighted');
 };
 
-FinanceApp.prototype.nextTourStep = function() {
+FinanceApp.prototype.nextTourStep = function () {
   if (this.currentTourStep < this.tourSteps.length - 1) {
     this.tourTooltip?.classList.remove('show');
     setTimeout(() => {
@@ -7910,7 +8486,7 @@ FinanceApp.prototype.nextTourStep = function() {
   }
 };
 
-FinanceApp.prototype.prevTourStep = function() {
+FinanceApp.prototype.prevTourStep = function () {
   if (this.currentTourStep > 0) {
     this.tourTooltip?.classList.remove('show');
     setTimeout(() => {
@@ -7920,7 +8496,7 @@ FinanceApp.prototype.prevTourStep = function() {
   }
 };
 
-FinanceApp.prototype.endTour = function() {
+FinanceApp.prototype.endTour = function () {
   if (!this.tourActive) return;
 
   this.tourActive = false;
@@ -7944,11 +8520,14 @@ FinanceApp.prototype.endTour = function() {
   localStorage.setItem('financia_tour_date', new Date().toISOString());
 
   // Show completion message
-  this.showToast('¡Tour completado! Ya puedes comenzar a usar FinanciaPro Suite.', 'success');
+  this.showToast(
+    '¡Tour completado! Ya puedes comenzar a usar FinanciaPro Suite.',
+    'success'
+  );
 };
 
 // Setup new configuration functionality
-FinanceApp.prototype.setupConfigurationHandlers = function() {
+FinanceApp.prototype.setupConfigurationHandlers = function () {
   // Profile section handlers
   this.setupProfileHandlers();
 
@@ -7962,7 +8541,7 @@ FinanceApp.prototype.setupConfigurationHandlers = function() {
   this.updateConfigurationDisplay();
 };
 
-FinanceApp.prototype.setupProfileHandlers = function() {
+FinanceApp.prototype.setupProfileHandlers = function () {
   const saveProfileBtn = document.getElementById('saveProfileBtn');
   const changeAvatarBtn = document.getElementById('changeAvatarBtn');
   const profileNameInput = document.getElementById('profileNameInput');
@@ -8002,7 +8581,7 @@ FinanceApp.prototype.setupProfileHandlers = function() {
   }
 };
 
-FinanceApp.prototype.setupAccountHandlers = function() {
+FinanceApp.prototype.setupAccountHandlers = function () {
   const invitePartnerBtn = document.getElementById('configInvitePartnerBtn');
   const changePasswordBtn = document.getElementById('configChangePasswordBtn');
   const switchAccountBtn = document.getElementById('configSwitchAccountBtn');
@@ -8029,14 +8608,18 @@ FinanceApp.prototype.setupAccountHandlers = function() {
   this.setupInviteModalHandlers();
 };
 
-FinanceApp.prototype.setupAppearanceHandlers = function() {
+FinanceApp.prototype.setupAppearanceHandlers = function () {
   const themeOptions = document.querySelectorAll('.theme-option');
-  const changeChartStyleBtn = document.getElementById('configChangeChartStyleBtn');
+  const changeChartStyleBtn = document.getElementById(
+    'configChangeChartStyleBtn'
+  );
   const animationsToggle = document.getElementById('animationsToggle');
-  const goalNotificationsToggle = document.getElementById('goalNotificationsToggle');
+  const goalNotificationsToggle = document.getElementById(
+    'goalNotificationsToggle'
+  );
   const demoModeToggle = document.getElementById('demoModeToggle');
 
-  themeOptions.forEach(option => {
+  themeOptions.forEach((option) => {
     option.addEventListener('click', () => {
       this.changeTheme(option.dataset.theme);
     });
@@ -8067,7 +8650,7 @@ FinanceApp.prototype.setupAppearanceHandlers = function() {
   }
 };
 
-FinanceApp.prototype.saveProfileSettings = async function() {
+FinanceApp.prototype.saveProfileSettings = async function () {
   const profileNameInput = document.getElementById('profileNameInput');
   const monthlyIncomeInput = document.getElementById('monthlyIncomeInput');
 
@@ -8086,7 +8669,10 @@ FinanceApp.prototype.saveProfileSettings = async function() {
     const newIncome = parseFloat(cleanValue);
     if (newIncome !== this.monthlyIncome) {
       this.monthlyIncome = newIncome;
-      localStorage.setItem('financia_monthly_income', this.monthlyIncome.toString());
+      localStorage.setItem(
+        'financia_monthly_income',
+        this.monthlyIncome.toString()
+      );
       updated = true;
     }
   }
@@ -8103,7 +8689,7 @@ FinanceApp.prototype.saveProfileSettings = async function() {
         await FB.updateDoc(userDocRef, {
           userName: this.userProfile.name,
           monthlyIncome: this.monthlyIncome,
-          updatedAt: Date.now()
+          updatedAt: Date.now(),
         });
       } catch (error) {
         console.error('Error updating Firebase:', error);
@@ -8121,13 +8707,13 @@ FinanceApp.prototype.saveProfileSettings = async function() {
   }
 };
 
-FinanceApp.prototype.showAvatarSelector = function() {
+FinanceApp.prototype.showAvatarSelector = function () {
   // Navigate to store section for avatar selection
   this.showSection('store');
   this.showToast('Selecciona un nuevo avatar en la tienda', 'info');
 };
 
-FinanceApp.prototype.openAvatarUploader = function() {
+FinanceApp.prototype.openAvatarUploader = function () {
   // Create file input
   const input = document.createElement('input');
   input.type = 'file';
@@ -8163,7 +8749,10 @@ FinanceApp.prototype.openAvatarUploader = function() {
         const FB = window.FB;
         if (FB?.auth && this.firebaseUser) {
           try {
-            const storageRef = FB.ref(FB.storage, `avatars/${this.firebaseUser.uid}`);
+            const storageRef = FB.ref(
+              FB.storage,
+              `avatars/${this.firebaseUser.uid}`
+            );
             await FB.uploadString(storageRef, imageData, 'data_url');
             const downloadURL = await FB.getDownloadURL(storageRef);
 
@@ -8172,7 +8761,7 @@ FinanceApp.prototype.openAvatarUploader = function() {
             await FB.updateDoc(userDocRef, {
               avatar: downloadURL,
               avatarType: 'custom',
-              updatedAt: Date.now()
+              updatedAt: Date.now(),
             });
 
             this.userProfile.avatar = downloadURL;
@@ -8198,12 +8787,12 @@ FinanceApp.prototype.openAvatarUploader = function() {
   input.click();
 };
 
-FinanceApp.prototype.formatNumberWithSeparators = function(value) {
+FinanceApp.prototype.formatNumberWithSeparators = function (value) {
   const number = value.replace(/\D/g, '');
   return number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };
 
-FinanceApp.prototype.showPartnerInviteModal = function() {
+FinanceApp.prototype.showPartnerInviteModal = function () {
   const modal = document.getElementById('partnerInviteModal');
   if (!modal) return;
 
@@ -8222,7 +8811,7 @@ FinanceApp.prototype.showPartnerInviteModal = function() {
   document.body.style.overflow = 'hidden';
 };
 
-FinanceApp.prototype.setupInviteModalHandlers = function() {
+FinanceApp.prototype.setupInviteModalHandlers = function () {
   const modal = document.getElementById('partnerInviteModal');
   const closeBtn = document.getElementById('closeInviteModalBtn');
   const cancelBtn = document.getElementById('cancelInviteBtn');
@@ -8277,7 +8866,7 @@ FinanceApp.prototype.setupInviteModalHandlers = function() {
   }
 };
 
-FinanceApp.prototype.generateInviteLink = async function() {
+FinanceApp.prototype.generateInviteLink = async function () {
   // Generate a unique secure invitation link
   const inviteCode = this.generateSecureInviteCode();
   const inviteLink = `${window.location.origin}${window.location.pathname}?invite=${inviteCode}`;
@@ -8287,12 +8876,15 @@ FinanceApp.prototype.generateInviteLink = async function() {
     code: inviteCode,
     link: inviteLink,
     createdAt: Date.now(),
-    expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
+    expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
     used: false,
-    createdBy: this.firebaseUser?.uid || 'anonymous'
+    createdBy: this.firebaseUser?.uid || 'anonymous',
   };
 
-  localStorage.setItem('financia_pending_invitation', JSON.stringify(invitation));
+  localStorage.setItem(
+    'financia_pending_invitation',
+    JSON.stringify(invitation)
+  );
 
   // Save to Firebase if logged in
   const FB = window.FB;
@@ -8325,8 +8917,9 @@ FinanceApp.prototype.generateInviteLink = async function() {
   this.showToast('Enlace de invitación generado', 'success');
 };
 
-FinanceApp.prototype.generateSecureInviteCode = function() {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+FinanceApp.prototype.generateSecureInviteCode = function () {
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
   for (let i = 0; i < 32; i++) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
@@ -8334,7 +8927,7 @@ FinanceApp.prototype.generateSecureInviteCode = function() {
   return result;
 };
 
-FinanceApp.prototype.copyInviteLink = function() {
+FinanceApp.prototype.copyInviteLink = function () {
   const linkInput = document.getElementById('generatedInviteLink');
   const copyBtn = document.getElementById('copyInviteLinkBtn');
 
@@ -8361,7 +8954,7 @@ FinanceApp.prototype.copyInviteLink = function() {
   }
 };
 
-FinanceApp.prototype.closePartnerInviteModal = function() {
+FinanceApp.prototype.closePartnerInviteModal = function () {
   const modal = document.getElementById('partnerInviteModal');
   if (modal) {
     modal.classList.add('hidden');
@@ -8369,10 +8962,10 @@ FinanceApp.prototype.closePartnerInviteModal = function() {
   }
 };
 
-FinanceApp.prototype.changeTheme = function(theme) {
+FinanceApp.prototype.changeTheme = function (theme) {
   // Update active theme option
   const themeOptions = document.querySelectorAll('.theme-option');
-  themeOptions.forEach(option => {
+  themeOptions.forEach((option) => {
     option.classList.remove('active');
     if (option.dataset.theme === theme) {
       option.classList.add('active');
@@ -8384,35 +8977,48 @@ FinanceApp.prototype.changeTheme = function(theme) {
   this.showToast(`Tema ${theme} aplicado`, 'success');
 };
 
-FinanceApp.prototype.toggleAnimations = function(enabled) {
+FinanceApp.prototype.toggleAnimations = function (enabled) {
   localStorage.setItem('financia_animations', enabled.toString());
   if (enabled) {
     document.body.classList.remove('no-animations');
   } else {
     document.body.classList.add('no-animations');
   }
-  this.showToast(`Animaciones ${enabled ? 'activadas' : 'desactivadas'}`, 'success');
+  this.showToast(
+    `Animaciones ${enabled ? 'activadas' : 'desactivadas'}`,
+    'success'
+  );
 };
 
-FinanceApp.prototype.toggleGoalNotifications = function(enabled) {
+FinanceApp.prototype.toggleGoalNotifications = function (enabled) {
   localStorage.setItem('financia_goal_notifications', enabled.toString());
-  this.showToast(`Notificaciones de metas ${enabled ? 'activadas' : 'desactivadas'}`, 'success');
+  this.showToast(
+    `Notificaciones de metas ${enabled ? 'activadas' : 'desactivadas'}`,
+    'success'
+  );
 };
 
-FinanceApp.prototype.toggleDemoMode = function(enabled) {
+FinanceApp.prototype.toggleDemoMode = function (enabled) {
   localStorage.setItem('financia_demo_mode', enabled.toString());
-  this.showToast(`Modo demostración ${enabled ? 'activado' : 'desactivado'}`, 'success');
+  this.showToast(
+    `Modo demostración ${enabled ? 'activado' : 'desactivado'}`,
+    'success'
+  );
 };
 
-FinanceApp.prototype.updateConfigurationDisplay = function() {
+FinanceApp.prototype.updateConfigurationDisplay = function () {
   // Update profile information
   const profileUserName = document.getElementById('profileUserName');
   const profileNameInput = document.getElementById('profileNameInput');
   const monthlyIncomeInput = document.getElementById('monthlyIncomeInput');
   const configMemberName = document.getElementById('configMemberName');
   const configAccountBadge = document.getElementById('configAccountBadge');
-  const configAccountTypeText = document.getElementById('configAccountTypeText');
-  const configAccountDescription = document.getElementById('configAccountDescription');
+  const configAccountTypeText = document.getElementById(
+    'configAccountTypeText'
+  );
+  const configAccountDescription = document.getElementById(
+    'configAccountDescription'
+  );
   const configInviteSection = document.getElementById('configInviteSection');
   const currentProfileAvatar = document.getElementById('currentProfileAvatar');
 
@@ -8437,7 +9043,9 @@ FinanceApp.prototype.updateConfigurationDisplay = function() {
   }
 
   if (monthlyIncomeInput) {
-    const formattedIncome = this.monthlyIncome ? this.formatNumberWithSeparators(this.monthlyIncome.toString()) : '';
+    const formattedIncome = this.monthlyIncome
+      ? this.formatNumberWithSeparators(this.monthlyIncome.toString())
+      : '';
     monthlyIncomeInput.value = formattedIncome;
   }
 
@@ -8449,19 +9057,23 @@ FinanceApp.prototype.updateConfigurationDisplay = function() {
   const accountType = this.accountType || 'personal';
   if (configAccountBadge && configAccountTypeText) {
     if (accountType === 'shared') {
-      configAccountBadge.innerHTML = '<i class="fas fa-users"></i><span>Cuenta Mancomunada</span>';
+      configAccountBadge.innerHTML =
+        '<i class="fas fa-users"></i><span>Cuenta Mancomunada</span>';
       configAccountTypeText.textContent = 'Cuenta Mancomunada';
       if (configAccountDescription) {
-        configAccountDescription.textContent = 'Cuenta compartida para gestión financiera en pareja o familia.';
+        configAccountDescription.textContent =
+          'Cuenta compartida para gestión financiera en pareja o familia.';
       }
       if (configInviteSection) {
         configInviteSection.classList.remove('hidden');
       }
     } else {
-      configAccountBadge.innerHTML = '<i class="fas fa-user"></i><span>Cuenta Personal</span>';
+      configAccountBadge.innerHTML =
+        '<i class="fas fa-user"></i><span>Cuenta Personal</span>';
       configAccountTypeText.textContent = 'Cuenta Personal';
       if (configAccountDescription) {
-        configAccountDescription.textContent = 'Tu cuenta personal para el control de finanzas individuales.';
+        configAccountDescription.textContent =
+          'Tu cuenta personal para el control de finanzas individuales.';
       }
       if (configInviteSection) {
         configInviteSection.classList.add('hidden');
@@ -8472,30 +9084,36 @@ FinanceApp.prototype.updateConfigurationDisplay = function() {
   // Update chart style display
   const chartStyleName = document.getElementById('configChartStyleName');
   if (chartStyleName && this.currentChartStyle) {
-    chartStyleName.textContent = this.chartStyles[this.currentChartStyle]?.name || 'Clásico';
+    chartStyleName.textContent =
+      this.chartStyles[this.currentChartStyle]?.name || 'Clásico';
   }
 
   // Update preference toggles based on stored values
   const animationsToggle = document.getElementById('animationsToggle');
-  const goalNotificationsToggle = document.getElementById('goalNotificationsToggle');
+  const goalNotificationsToggle = document.getElementById(
+    'goalNotificationsToggle'
+  );
   const demoModeToggle = document.getElementById('demoModeToggle');
 
   if (animationsToggle) {
-    animationsToggle.checked = localStorage.getItem('financia_animations') !== 'false';
+    animationsToggle.checked =
+      localStorage.getItem('financia_animations') !== 'false';
   }
 
   if (goalNotificationsToggle) {
-    goalNotificationsToggle.checked = localStorage.getItem('financia_goal_notifications') !== 'false';
+    goalNotificationsToggle.checked =
+      localStorage.getItem('financia_goal_notifications') !== 'false';
   }
 
   if (demoModeToggle) {
-    demoModeToggle.checked = localStorage.getItem('financia_demo_mode') === 'true';
+    demoModeToggle.checked =
+      localStorage.getItem('financia_demo_mode') === 'true';
   }
 
   // Update theme selection
   const selectedTheme = localStorage.getItem('financia_theme') || 'light';
   const themeOptions = document.querySelectorAll('.theme-option');
-  themeOptions.forEach(option => {
+  themeOptions.forEach((option) => {
     option.classList.remove('active');
     if (option.dataset.theme === selectedTheme) {
       option.classList.add('active');
@@ -8507,17 +9125,25 @@ FinanceApp.prototype.updateConfigurationDisplay = function() {
 // Shared Account Invite Modal Functions
 // ============================================
 
-FinanceApp.prototype.showSharedAccountInviteModal = async function() {
+FinanceApp.prototype.showSharedAccountInviteModal = async function () {
   console.log('DEBUG: showSharedAccountInviteModal llamada');
   console.log('DEBUG: Buscando modal con ID: sharedAccountInviteModal');
 
   const modal = document.getElementById('sharedAccountInviteModal');
   console.log('DEBUG: Modal encontrado:', modal);
-  console.log('DEBUG: Clases del modal:', modal ? modal.className : 'Modal es null');
+  console.log(
+    'DEBUG: Clases del modal:',
+    modal ? modal.className : 'Modal es null'
+  );
 
   if (!modal) {
-    console.error('ERROR: Modal sharedAccountInviteModal no encontrado en el DOM');
-    console.log('DEBUG: Todos los elementos con class modal:', document.querySelectorAll('.modal'));
+    console.error(
+      'ERROR: Modal sharedAccountInviteModal no encontrado en el DOM'
+    );
+    console.log(
+      'DEBUG: Todos los elementos con class modal:',
+      document.querySelectorAll('.modal')
+    );
     return;
   }
 
@@ -8536,8 +9162,8 @@ FinanceApp.prototype.showSharedAccountInviteModal = async function() {
   this.currentInviteLink = {
     link: inviteLink,
     createdAt: Date.now(),
-    expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
-    used: false
+    expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+    used: false,
   };
 
   console.log('DEBUG: currentInviteLink creado:', this.currentInviteLink);
@@ -8556,7 +9182,10 @@ FinanceApp.prototype.showSharedAccountInviteModal = async function() {
   console.log('DEBUG: Agregando clase "show" al modal...');
   modal.classList.add('show');
   console.log('DEBUG: Clases después de agregar show:', modal.className);
-  console.log('DEBUG: Display computed del modal:', window.getComputedStyle(modal).display);
+  console.log(
+    'DEBUG: Display computed del modal:',
+    window.getComputedStyle(modal).display
+  );
 
   document.body.style.overflow = 'hidden';
   console.log('DEBUG: Modal mostrado y body overflow hidden');
@@ -8567,12 +9196,18 @@ FinanceApp.prototype.showSharedAccountInviteModal = async function() {
 
   // Verificación final
   setTimeout(() => {
-    console.log('DEBUG: [500ms después] Display del modal:', window.getComputedStyle(modal).display);
-    console.log('DEBUG: [500ms después] Modal visible?', modal.offsetParent !== null);
+    console.log(
+      'DEBUG: [500ms después] Display del modal:',
+      window.getComputedStyle(modal).display
+    );
+    console.log(
+      'DEBUG: [500ms después] Modal visible?',
+      modal.offsetParent !== null
+    );
   }, 500);
 };
 
-FinanceApp.prototype.generateUniqueInviteLink = function() {
+FinanceApp.prototype.generateUniqueInviteLink = function () {
   const baseUrl = window.location.origin;
   const inviteCode = this.generateRandomCode(16);
   const accountId = this.accountOwner || this.generateUserId().substring(0, 8);
@@ -8580,7 +9215,7 @@ FinanceApp.prototype.generateUniqueInviteLink = function() {
   return `${baseUrl}/?invite=${inviteCode}&account=${accountId}`;
 };
 
-FinanceApp.prototype.startInviteLinkTimer = function() {
+FinanceApp.prototype.startInviteLinkTimer = function () {
   const timerElement = document.getElementById('inviteLinkTimer');
   if (!timerElement || !this.currentInviteLink) return;
 
@@ -8605,11 +9240,13 @@ FinanceApp.prototype.startInviteLinkTimer = function() {
     const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
 
-    timerElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    timerElement.textContent = `${String(hours).padStart(2, '0')}:${String(
+      minutes
+    ).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }, 1000);
 };
 
-FinanceApp.prototype.markInviteLinkAsExpired = function() {
+FinanceApp.prototype.markInviteLinkAsExpired = function () {
   if (this.currentInviteLink) {
     this.currentInviteLink.expired = true;
     this.saveData();
@@ -8619,7 +9256,7 @@ FinanceApp.prototype.markInviteLinkAsExpired = function() {
   }
 };
 
-FinanceApp.prototype.addInviteLinkNotification = function(inviteLink) {
+FinanceApp.prototype.addInviteLinkNotification = function (inviteLink) {
   console.log('DEBUG: Agregando notificación de enlace:', inviteLink);
   // La notificación se agregará automáticamente en updateNotifications()
   // Solo necesitamos actualizar el sistema de notificaciones
@@ -8627,7 +9264,7 @@ FinanceApp.prototype.addInviteLinkNotification = function(inviteLink) {
   console.log('DEBUG: Sistema de notificaciones actualizado');
 };
 
-FinanceApp.prototype.updateInviteLinkNotificationToExpired = function() {
+FinanceApp.prototype.updateInviteLinkNotificationToExpired = function () {
   // La notificación se actualiza automáticamente en updateNotifications()
   // Solo marcamos el enlace como expirado y actualizamos
   if (this.currentInviteLink) {
@@ -8638,7 +9275,7 @@ FinanceApp.prototype.updateInviteLinkNotificationToExpired = function() {
   }
 };
 
-FinanceApp.prototype.setupSharedAccountInviteModalListeners = function() {
+FinanceApp.prototype.setupSharedAccountInviteModalListeners = function () {
   const modal = document.getElementById('sharedAccountInviteModal');
   if (!modal) return;
 
@@ -8687,7 +9324,7 @@ FinanceApp.prototype.setupSharedAccountInviteModalListeners = function() {
   };
 };
 
-FinanceApp.prototype.copyInviteLinkToClipboard = function() {
+FinanceApp.prototype.copyInviteLinkToClipboard = function () {
   const inviteLinkInput = document.getElementById('sharedAccountInviteLink');
   const copyBtn = document.getElementById('copySharedInviteLinkBtn');
 
@@ -8711,7 +9348,7 @@ FinanceApp.prototype.copyInviteLinkToClipboard = function() {
   this.showToast('Enlace copiado al portapapeles', 'success');
 };
 
-FinanceApp.prototype.shareInviteLink = function() {
+FinanceApp.prototype.shareInviteLink = function () {
   const inviteLink = this.currentInviteLink?.link;
 
   if (!inviteLink) {
@@ -8721,19 +9358,20 @@ FinanceApp.prototype.shareInviteLink = function() {
 
   // Check if Web Share API is available
   if (navigator.share) {
-    navigator.share({
-      title: 'Invitación a Cuenta Mancomunada - FinanciaPro Suite',
-      text: 'Te invito a unirte a mi cuenta mancomunada en FinanciaPro Suite',
-      url: inviteLink
-    })
-    .then(() => {
-      this.showToast('Enlace compartido exitosamente', 'success');
-    })
-    .catch((error) => {
-      console.log('Error sharing:', error);
-      // Fallback: copy to clipboard
-      this.copyInviteLinkToClipboard();
-    });
+    navigator
+      .share({
+        title: 'Invitación a Cuenta Mancomunada - FinanciaPro Suite',
+        text: 'Te invito a unirte a mi cuenta mancomunada en FinanciaPro Suite',
+        url: inviteLink,
+      })
+      .then(() => {
+        this.showToast('Enlace compartido exitosamente', 'success');
+      })
+      .catch((error) => {
+        console.log('Error sharing:', error);
+        // Fallback: copy to clipboard
+        this.copyInviteLinkToClipboard();
+      });
   } else {
     // Fallback for browsers without Web Share API
     this.copyInviteLinkToClipboard();
@@ -8741,7 +9379,7 @@ FinanceApp.prototype.shareInviteLink = function() {
   }
 };
 
-FinanceApp.prototype.closeSharedAccountInviteModal = function() {
+FinanceApp.prototype.closeSharedAccountInviteModal = function () {
   const modal = document.getElementById('sharedAccountInviteModal');
   if (modal) {
     modal.classList.remove('show');
@@ -8760,7 +9398,7 @@ FinanceApp.prototype.closeSharedAccountInviteModal = function() {
 // ============================================
 
 // DESHABILITADO - Funcionalidad de invitación
-FinanceApp.prototype.checkInvitationLink = function() {
+FinanceApp.prototype.checkInvitationLink = function () {
   return; // Deshabilitado temporalmente
   const urlParams = new URLSearchParams(window.location.search);
   const inviteCode = urlParams.get('invite');
@@ -8775,7 +9413,7 @@ FinanceApp.prototype.checkInvitationLink = function() {
     this.pendingInvitation = {
       code: inviteCode,
       accountId: accountId,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     // Validar si el enlace está vigente
@@ -8783,7 +9421,10 @@ FinanceApp.prototype.checkInvitationLink = function() {
   }
 };
 
-FinanceApp.prototype.validateAndShowInvitation = function(inviteCode, accountId) {
+FinanceApp.prototype.validateAndShowInvitation = function (
+  inviteCode,
+  accountId
+) {
   console.log('DEBUG: Validando enlace de invitación...');
 
   // TODO: Aquí deberías validar contra Firestore si el enlace es válido
@@ -8791,7 +9432,10 @@ FinanceApp.prototype.validateAndShowInvitation = function(inviteCode, accountId)
 
   // Verificar si ya está autenticado
   if (this.currentUser && this.currentUser !== 'anonymous') {
-    this.showToast('Ya tienes una sesión activa. Cierra sesión primero para unirte a otra cuenta.', 'warning');
+    this.showToast(
+      'Ya tienes una sesión activa. Cierra sesión primero para unirte a otra cuenta.',
+      'warning'
+    );
     return;
   }
 
@@ -8801,7 +9445,10 @@ FinanceApp.prototype.validateAndShowInvitation = function(inviteCode, accountId)
   }, 500);
 };
 
-FinanceApp.prototype.showInvitationWelcomeModal = function(inviteCode, accountId) {
+FinanceApp.prototype.showInvitationWelcomeModal = function (
+  inviteCode,
+  accountId
+) {
   console.log('DEBUG: Mostrando modal de bienvenida de invitación');
 
   // Cerrar modal de tipo de cuenta si está abierto
@@ -8818,7 +9465,8 @@ FinanceApp.prototype.showInvitationWelcomeModal = function(inviteCode, accountId
   }
 
   // Configurar para registro
-  document.getElementById('authModalTitle').textContent = '¡Te han invitado a una cuenta mancomunada!';
+  document.getElementById('authModalTitle').textContent =
+    '¡Te han invitado a una cuenta mancomunada!';
   document.getElementById('loginForm').classList.add('hidden');
   document.getElementById('registerForm').classList.remove('hidden');
 
@@ -8848,11 +9496,20 @@ FinanceApp.prototype.showInvitationWelcomeModal = function(inviteCode, accountId
   authModal.classList.add('show');
   document.body.style.overflow = 'hidden';
 
-  this.showToast('Completa tu registro para unirte a la cuenta compartida', 'info');
+  this.showToast(
+    'Completa tu registro para unirte a la cuenta compartida',
+    'info'
+  );
 };
 
 // DESHABILITADO - Funcionalidad de invitación
-FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, password, inviteCode, accountId) {
+FinanceApp.prototype.joinSharedAccountWithInvite = async function (
+  name,
+  email,
+  password,
+  inviteCode,
+  accountId
+) {
   return; // Deshabilitado temporalmente
   console.log('DEBUG: Uniendo a cuenta compartida con invitación');
 
@@ -8884,7 +9541,7 @@ FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, p
       name: name,
       email: email,
       role: 'member',
-      joinedAt: Date.now()
+      joinedAt: Date.now(),
     };
 
     accountData.accountUsers.push(newUser);
@@ -8905,7 +9562,7 @@ FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, p
       type: 'user_joined',
       description: `${name} se unió a la cuenta`,
       userId: userId,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     // 6. Guardar datos actualizados en la cuenta original (el ÚNICO documento compartido)
@@ -8931,21 +9588,24 @@ FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, p
     this.activityLog = accountData.activityLog || [];
 
     // 9. Guardar en localStorage
-    localStorage.setItem('financiaProData', JSON.stringify({
-      accountType: this.accountType,
-      currentUser: this.currentUser,
-      sharedAccountId: this.sharedAccountId,
-      accountOwner: this.accountOwner,
-      accountUsers: this.accountUsers,
-      expenses: this.expenses,
-      goals: this.goals,
-      shoppingItems: this.shoppingItems,
-      monthlyIncome: this.monthlyIncome,
-      inviteCodes: this.inviteCodes,
-      currentInviteLink: this.currentInviteLink,
-      activityLog: this.activityLog,
-      lastUpdate: Date.now()
-    }));
+    localStorage.setItem(
+      'financiaProData',
+      JSON.stringify({
+        accountType: this.accountType,
+        currentUser: this.currentUser,
+        sharedAccountId: this.sharedAccountId,
+        accountOwner: this.accountOwner,
+        accountUsers: this.accountUsers,
+        expenses: this.expenses,
+        goals: this.goals,
+        shoppingItems: this.shoppingItems,
+        monthlyIncome: this.monthlyIncome,
+        inviteCodes: this.inviteCodes,
+        currentInviteLink: this.currentInviteLink,
+        activityLog: this.activityLog,
+        lastUpdate: Date.now(),
+      })
+    );
 
     // 10. Limpiar URL y datos de invitación
     window.history.replaceState({}, document.title, window.location.pathname);
@@ -8955,7 +9615,10 @@ FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, p
 
     // 11. Cerrar modal y mostrar éxito
     this.closeAuthModal();
-    this.showToast('¡Te has unido exitosamente a la cuenta compartida!', 'success');
+    this.showToast(
+      '¡Te has unido exitosamente a la cuenta compartida!',
+      'success'
+    );
 
     // 12. Actualizar UI
     this.updateAccountDisplay();
@@ -8965,7 +9628,6 @@ FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, p
     this.renderGoals();
 
     console.log('DEBUG: ¡Usuario unido exitosamente!');
-
   } catch (error) {
     console.error('Error al unirse a cuenta compartida:', error);
 
@@ -8983,7 +9645,13 @@ FinanceApp.prototype.joinSharedAccountWithInvite = async function(name, email, p
 // AUDIT SYSTEM
 // ========================================
 
-FinanceApp.prototype.logAudit = function(type, action, description, reason = '', details = {}) {
+FinanceApp.prototype.logAudit = function (
+  type,
+  action,
+  description,
+  reason = '',
+  details = {}
+) {
   const entry = {
     id: Date.now().toString(),
     type: type,
@@ -8993,7 +9661,7 @@ FinanceApp.prototype.logAudit = function(type, action, description, reason = '',
     details: details,
     timestamp: Date.now(),
     date: new Date().toISOString(),
-    user: this.currentUser || 'anonymous'
+    user: this.currentUser || 'anonymous',
   };
 
   this.auditLog.unshift(entry);
@@ -9003,7 +9671,7 @@ FinanceApp.prototype.logAudit = function(type, action, description, reason = '',
   this.updateNotifications();
 };
 
-FinanceApp.prototype.renderAuditLog = function() {
+FinanceApp.prototype.renderAuditLog = function () {
   const auditList = document.getElementById('auditList');
   if (!auditList) return;
 
@@ -9013,12 +9681,12 @@ FinanceApp.prototype.renderAuditLog = function() {
   let filteredLog = this.auditLog;
 
   if (typeFilter !== 'all') {
-    filteredLog = filteredLog.filter(entry => entry.type === typeFilter);
+    filteredLog = filteredLog.filter((entry) => entry.type === typeFilter);
   }
 
   if (dateFilter) {
     const filterDate = new Date(dateFilter).toDateString();
-    filteredLog = filteredLog.filter(entry => {
+    filteredLog = filteredLog.filter((entry) => {
       const entryDate = new Date(entry.timestamp).toDateString();
       return entryDate === filterDate;
     });
@@ -9034,35 +9702,36 @@ FinanceApp.prototype.renderAuditLog = function() {
     return;
   }
 
-  auditList.innerHTML = filteredLog.map(entry => {
-    const date = new Date(entry.timestamp);
-    const dateStr = date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  auditList.innerHTML = filteredLog
+    .map((entry) => {
+      const date = new Date(entry.timestamp);
+      const dateStr = date.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
 
-    let icon = 'fas fa-edit';
-    let actionClass = 'edited';
+      let icon = 'fas fa-edit';
+      let actionClass = 'edited';
 
-    if (entry.action === 'added') {
-      icon = 'fas fa-plus';
-      actionClass = 'added';
-    } else if (entry.action === 'deleted') {
-      icon = 'fas fa-trash';
-      actionClass = 'deleted';
-    } else if (entry.action === 'edited') {
-      icon = 'fas fa-edit';
-      actionClass = 'edited';
-    }
+      if (entry.action === 'added') {
+        icon = 'fas fa-plus';
+        actionClass = 'added';
+      } else if (entry.action === 'deleted') {
+        icon = 'fas fa-trash';
+        actionClass = 'deleted';
+      } else if (entry.action === 'edited') {
+        icon = 'fas fa-edit';
+        actionClass = 'edited';
+      }
 
-    const reasonHtml = entry.reason
-      ? `<div class="audit-reason"><strong>Motivo:</strong> ${entry.reason}</div>`
-      : '';
+      const reasonHtml = entry.reason
+        ? `<div class="audit-reason"><strong>Motivo:</strong> ${entry.reason}</div>`
+        : '';
 
-    return `
+      return `
       <div class="audit-item">
         <div class="audit-icon ${actionClass}">
           <i class="${icon}"></i>
@@ -9076,10 +9745,11 @@ FinanceApp.prototype.renderAuditLog = function() {
         </div>
       </div>
     `;
-  }).join('');
+    })
+    .join('');
 };
 
-FinanceApp.prototype.setupAuditListeners = function() {
+FinanceApp.prototype.setupAuditListeners = function () {
   const typeFilter = document.getElementById('auditTypeFilter');
   const dateFilter = document.getElementById('auditDateFilter');
   const clearFilters = document.getElementById('clearAuditFilters');
@@ -9105,7 +9775,7 @@ FinanceApp.prototype.setupAuditListeners = function() {
 // SAVINGS MANAGEMENT SYSTEM
 // ========================================
 
-FinanceApp.prototype.setupSavingsListeners = function() {
+FinanceApp.prototype.setupSavingsListeners = function () {
   const savingsForm = document.getElementById('savingsAccountForm');
   const savingsCard = document.getElementById('savingsCard');
   const closeSavingsDetail = document.getElementById('closeSavingsDetail');
@@ -9131,12 +9801,14 @@ FinanceApp.prototype.setupSavingsListeners = function() {
   }
 };
 
-FinanceApp.prototype.addSavingsAccount = function() {
+FinanceApp.prototype.addSavingsAccount = function () {
   const sourceName = document.getElementById('savingsSourceName').value.trim();
   const amountInput = document.getElementById('savingsAmount');
   const amount = this.unformatNumber(amountInput.value);
   const type = document.getElementById('savingsType').value;
-  const description = document.getElementById('savingsDescription').value.trim();
+  const description = document
+    .getElementById('savingsDescription')
+    .value.trim();
 
   if (!sourceName || !amount || amount < 0 || !type) {
     this.showToast('Complete todos los campos requeridos', 'error');
@@ -9150,7 +9822,7 @@ FinanceApp.prototype.addSavingsAccount = function() {
     type: type,
     description: description,
     createdAt: Date.now(),
-    updatedAt: Date.now()
+    updatedAt: Date.now(),
   };
 
   this.savingsAccounts.push(savingsAccount);
@@ -9176,8 +9848,8 @@ FinanceApp.prototype.addSavingsAccount = function() {
   document.getElementById('savingsAccountForm').reset();
 };
 
-FinanceApp.prototype.deleteSavingsAccount = function(id) {
-  const index = this.savingsAccounts.findIndex(acc => acc.id === id);
+FinanceApp.prototype.deleteSavingsAccount = function (id) {
+  const index = this.savingsAccounts.findIndex((acc) => acc.id === id);
   if (index === -1) return;
 
   const account = this.savingsAccounts[index];
@@ -9187,7 +9859,11 @@ FinanceApp.prototype.deleteSavingsAccount = function(id) {
     'deleted',
     `Fuente de ahorro eliminada: ${account.sourceName} - $${account.amount}`,
     '',
-    { sourceName: account.sourceName, amount: account.amount, type: account.type }
+    {
+      sourceName: account.sourceName,
+      amount: account.amount,
+      type: account.type,
+    }
   );
 
   this.savingsAccounts.splice(index, 1);
@@ -9197,8 +9873,8 @@ FinanceApp.prototype.deleteSavingsAccount = function(id) {
   this.showToast('Fuente de ahorro eliminada', 'success');
 };
 
-FinanceApp.prototype.updateSavingsAmount = function(id, newAmount) {
-  const account = this.savingsAccounts.find(acc => acc.id === id);
+FinanceApp.prototype.updateSavingsAmount = function (id, newAmount) {
+  const account = this.savingsAccounts.find((acc) => acc.id === id);
   if (!account) return;
 
   const oldAmount = account.amount;
@@ -9218,7 +9894,7 @@ FinanceApp.prototype.updateSavingsAmount = function(id, newAmount) {
   this.updateDashboardSavings();
 };
 
-FinanceApp.prototype.renderSavingsAccountsList = function() {
+FinanceApp.prototype.renderSavingsAccountsList = function () {
   const container = document.getElementById('savingsAccountsList');
   if (!container) return;
 
@@ -9242,11 +9918,12 @@ FinanceApp.prototype.renderSavingsAccountsList = function() {
   if (totalAmount) totalAmount.textContent = `$${total.toLocaleString()}`;
   if (totalSources) totalSources.textContent = this.savingsAccounts.length;
 
-  container.innerHTML = this.savingsAccounts.map(account => {
-    const icon = this.getSavingsTypeIcon(account.type);
-    const typeName = this.getSavingsTypeName(account.type);
+  container.innerHTML = this.savingsAccounts
+    .map((account) => {
+      const icon = this.getSavingsTypeIcon(account.type);
+      const typeName = this.getSavingsTypeName(account.type);
 
-    return `
+      return `
       <div class="savings-account-item">
         <div class="savings-account-icon ${account.type}">
           <i class="${icon}"></i>
@@ -9255,34 +9932,46 @@ FinanceApp.prototype.renderSavingsAccountsList = function() {
           <div class="savings-account-name">${account.sourceName}</div>
           <div class="savings-account-meta">
             <span><i class="fas fa-tag"></i> ${typeName}</span>
-            ${account.description ? `<span><i class="fas fa-info-circle"></i> ${account.description}</span>` : ''}
+            ${
+              account.description
+                ? `<span><i class="fas fa-info-circle"></i> ${account.description}</span>`
+                : ''
+            }
           </div>
         </div>
         <div class="savings-account-amount">$${account.amount.toLocaleString()}</div>
         <div class="savings-account-actions">
-          <button class="btn-icon" onclick="app.editSavingsAmount('${account.id}')">
+          <button class="btn-icon" onclick="app.editSavingsAmount('${
+            account.id
+          }')">
             <i class="fas fa-edit"></i>
           </button>
-          <button class="btn-icon delete" onclick="app.deleteSavingsAccount('${account.id}')">
+          <button class="btn-icon delete" onclick="app.deleteSavingsAccount('${
+            account.id
+          }')">
             <i class="fas fa-trash"></i>
           </button>
         </div>
       </div>
     `;
-  }).join('');
+    })
+    .join('');
 };
 
-FinanceApp.prototype.editSavingsAmount = function(id) {
-  const account = this.savingsAccounts.find(acc => acc.id === id);
+FinanceApp.prototype.editSavingsAmount = function (id) {
+  const account = this.savingsAccounts.find((acc) => acc.id === id);
   if (!account) return;
 
-  const newAmount = prompt(`Nuevo monto para ${account.sourceName}:`, account.amount);
+  const newAmount = prompt(
+    `Nuevo monto para ${account.sourceName}:`,
+    account.amount
+  );
   if (newAmount !== null && !isNaN(newAmount) && parseFloat(newAmount) >= 0) {
     this.updateSavingsAmount(id, newAmount);
   }
 };
 
-FinanceApp.prototype.showSavingsDetailModal = function() {
+FinanceApp.prototype.showSavingsDetailModal = function () {
   const modal = document.getElementById('savingsDetailModal');
   if (!modal) return;
 
@@ -9303,12 +9992,14 @@ FinanceApp.prototype.showSavingsDetailModal = function() {
       </div>
     `;
   } else {
-    breakdownList.innerHTML = this.savingsAccounts.map(account => {
-      const icon = this.getSavingsTypeIcon(account.type);
-      const typeName = this.getSavingsTypeName(account.type);
-      const percentage = total > 0 ? ((account.amount / total) * 100).toFixed(1) : 0;
+    breakdownList.innerHTML = this.savingsAccounts
+      .map((account) => {
+        const icon = this.getSavingsTypeIcon(account.type);
+        const typeName = this.getSavingsTypeName(account.type);
+        const percentage =
+          total > 0 ? ((account.amount / total) * 100).toFixed(1) : 0;
 
-      return `
+        return `
         <div class="breakdown-item">
           <div class="breakdown-icon ${account.type}">
             <i class="${icon}"></i>
@@ -9317,20 +10008,25 @@ FinanceApp.prototype.showSavingsDetailModal = function() {
             <div class="breakdown-name">${account.sourceName}</div>
             <div class="breakdown-meta">
               <span class="breakdown-meta-item"><i class="fas fa-tag"></i> ${typeName}</span>
-              ${account.description ? `<span class="breakdown-meta-item"><i class="fas fa-info-circle"></i> ${account.description}</span>` : ''}
+              ${
+                account.description
+                  ? `<span class="breakdown-meta-item"><i class="fas fa-info-circle"></i> ${account.description}</span>`
+                  : ''
+              }
             </div>
             <div class="breakdown-percentage">${percentage}% del total</div>
           </div>
           <div class="breakdown-amount">$${account.amount.toLocaleString()}</div>
         </div>
       `;
-    }).join('');
+      })
+      .join('');
   }
 
   modal.classList.add('show');
 };
 
-FinanceApp.prototype.updateDashboardSavings = function() {
+FinanceApp.prototype.updateDashboardSavings = function () {
   const totalSavingsEl = document.getElementById('totalSavings');
   if (!totalSavingsEl) return;
 
@@ -9338,7 +10034,7 @@ FinanceApp.prototype.updateDashboardSavings = function() {
   totalSavingsEl.textContent = `$${total.toLocaleString()}`;
 };
 
-FinanceApp.prototype.getSavingsTypeIcon = function(type) {
+FinanceApp.prototype.getSavingsTypeIcon = function (type) {
   const icons = {
     retirement: 'fas fa-umbrella',
     emergency: 'fas fa-shield-alt',
@@ -9346,12 +10042,12 @@ FinanceApp.prototype.getSavingsTypeIcon = function(type) {
     savings_account: 'fas fa-university',
     cash: 'fas fa-money-bill-wave',
     goal: 'fas fa-bullseye',
-    other: 'fas fa-wallet'
+    other: 'fas fa-wallet',
   };
   return icons[type] || 'fas fa-wallet';
 };
 
-FinanceApp.prototype.getSavingsTypeName = function(type) {
+FinanceApp.prototype.getSavingsTypeName = function (type) {
   const names = {
     retirement: 'Jubilación',
     emergency: 'Emergencia',
@@ -9359,7 +10055,7 @@ FinanceApp.prototype.getSavingsTypeName = function(type) {
     savings_account: 'Cuenta de ahorros',
     cash: 'Efectivo',
     goal: 'Meta específica',
-    other: 'Otro'
+    other: 'Otro',
   };
   return names[type] || 'Otro';
 };
@@ -9368,13 +10064,18 @@ FinanceApp.prototype.getSavingsTypeName = function(type) {
    RECURRING PAYMENTS SYSTEM
    ============================================ */
 
-FinanceApp.prototype.setupPaymentsListeners = function() {
+FinanceApp.prototype.setupPaymentsListeners = function () {
   const paymentForm = document.getElementById('recurringPaymentForm');
   const upcomingPaymentsCard = document.getElementById('upcomingPaymentsCard');
   const paymentsModal = document.getElementById('paymentsDetailModal');
   const closePaymentsDetail = document.getElementById('closePaymentsDetail');
 
-  console.log('Setup payments listeners - Card:', upcomingPaymentsCard, 'Modal:', paymentsModal);
+  console.log(
+    'Setup payments listeners - Card:',
+    upcomingPaymentsCard,
+    'Modal:',
+    paymentsModal
+  );
 
   if (paymentForm) {
     paymentForm.addEventListener('submit', (e) => {
@@ -9405,8 +10106,10 @@ FinanceApp.prototype.setupPaymentsListeners = function() {
   }
 };
 
-FinanceApp.prototype.addRecurringPayment = function() {
-  const serviceName = document.getElementById('paymentServiceName')?.value.trim();
+FinanceApp.prototype.addRecurringPayment = function () {
+  const serviceName = document
+    .getElementById('paymentServiceName')
+    ?.value.trim();
   const serviceType = document.getElementById('paymentServiceType')?.value;
   const amountInput = document.getElementById('paymentAmount');
   const amount = amountInput ? this.unformatNumber(amountInput.value) : null;
@@ -9431,7 +10134,7 @@ FinanceApp.prototype.addRecurringPayment = function() {
     currentMonth: new Date().getMonth(),
     currentYear: new Date().getFullYear(),
     createdAt: Date.now(),
-    updatedAt: Date.now()
+    updatedAt: Date.now(),
   };
 
   this.recurringPayments.push(payment);
@@ -9446,7 +10149,10 @@ FinanceApp.prototype.addRecurringPayment = function() {
     { serviceName, serviceType, amount, dueDay }
   );
 
-  this.showToast(`Pago recurrente "${serviceName}" agregado exitosamente`, 'success');
+  this.showToast(
+    `Pago recurrente "${serviceName}" agregado exitosamente`,
+    'success'
+  );
   this.renderRecurringPaymentsList();
   this.updateDashboardPayments();
 
@@ -9458,7 +10164,7 @@ FinanceApp.prototype.addRecurringPayment = function() {
   document.getElementById('recurringPaymentForm')?.reset();
 };
 
-FinanceApp.prototype.renderRecurringPaymentsList = function() {
+FinanceApp.prototype.renderRecurringPaymentsList = function () {
   const container = document.getElementById('recurringPaymentsList');
   if (!container) return;
 
@@ -9474,9 +10180,11 @@ FinanceApp.prototype.renderRecurringPaymentsList = function() {
   }
 
   container.innerHTML = this.recurringPayments
-    .map(payment => {
+    .map((payment) => {
       const typeInfo = this.getPaymentTypeInfo(payment.serviceType);
-      const amountDisplay = payment.amount ? `$${payment.amount.toLocaleString()}` : 'Variable';
+      const amountDisplay = payment.amount
+        ? `$${payment.amount.toLocaleString()}`
+        : 'Variable';
       const statusClass = payment.isPaid ? 'paid' : 'pending';
       const statusText = payment.isPaid ? 'Pagado' : 'Pendiente';
 
@@ -9489,19 +10197,27 @@ FinanceApp.prototype.renderRecurringPaymentsList = function() {
             <div class="payment-item-name">${payment.serviceName}</div>
             <div class="payment-item-meta">
               <span><i class="fas fa-tag"></i> ${typeInfo.name}</span>
-              <span><i class="fas fa-calendar-day"></i> Día ${payment.dueDay}</span>
+              <span><i class="fas fa-calendar-day"></i> Día ${
+                payment.dueDay
+              }</span>
               <span class="payment-item-status ${statusClass}">
-                <i class="fas fa-${payment.isPaid ? 'check-circle' : 'clock'}"></i>
+                <i class="fas fa-${
+                  payment.isPaid ? 'check-circle' : 'clock'
+                }"></i>
                 ${statusText}
               </span>
             </div>
           </div>
           <div class="payment-item-amount">${amountDisplay}</div>
           <div class="payment-item-actions">
-            <button class="btn-icon" onclick="app.editRecurringPayment('${payment.id}')" title="Editar">
+            <button class="btn-icon" onclick="app.editRecurringPayment('${
+              payment.id
+            }')" title="Editar">
               <i class="fas fa-edit"></i>
             </button>
-            <button class="btn-icon delete" onclick="app.deleteRecurringPayment('${payment.id}')" title="Eliminar">
+            <button class="btn-icon delete" onclick="app.deleteRecurringPayment('${
+              payment.id
+            }')" title="Eliminar">
               <i class="fas fa-trash"></i>
             </button>
           </div>
@@ -9513,12 +10229,12 @@ FinanceApp.prototype.renderRecurringPaymentsList = function() {
   this.updatePaymentsSummary();
 };
 
-FinanceApp.prototype.updatePaymentsSummary = function() {
+FinanceApp.prototype.updatePaymentsSummary = function () {
   const totalEl = document.getElementById('totalMonthlyPayments');
   const countEl = document.getElementById('totalPaymentServices');
 
   const total = this.recurringPayments
-    .filter(p => p.amount)
+    .filter((p) => p.amount)
     .reduce((sum, p) => sum + p.amount, 0);
 
   if (totalEl) {
@@ -9530,12 +10246,12 @@ FinanceApp.prototype.updatePaymentsSummary = function() {
   }
 };
 
-FinanceApp.prototype.deleteRecurringPayment = function(id) {
+FinanceApp.prototype.deleteRecurringPayment = function (id) {
   if (!confirm('¿Estás seguro de que deseas eliminar este pago recurrente?')) {
     return;
   }
 
-  const index = this.recurringPayments.findIndex(p => p.id === id);
+  const index = this.recurringPayments.findIndex((p) => p.id === id);
   if (index === -1) return;
 
   const payment = this.recurringPayments[index];
@@ -9555,8 +10271,8 @@ FinanceApp.prototype.deleteRecurringPayment = function(id) {
   this.updateDashboardPayments();
 };
 
-FinanceApp.prototype.editRecurringPayment = function(id) {
-  const payment = this.recurringPayments.find(p => p.id === id);
+FinanceApp.prototype.editRecurringPayment = function (id) {
+  const payment = this.recurringPayments.find((p) => p.id === id);
   if (!payment) return;
 
   document.getElementById('paymentServiceName').value = payment.serviceName;
@@ -9570,7 +10286,7 @@ FinanceApp.prototype.editRecurringPayment = function(id) {
   this.showToast('Editando pago. Modifica los campos y guarda', 'info');
 };
 
-FinanceApp.prototype.updateDashboardPayments = function() {
+FinanceApp.prototype.updateDashboardPayments = function () {
   this.checkMonthlyReset();
 
   const paymentsList = document.getElementById('paymentsList');
@@ -9581,8 +10297,11 @@ FinanceApp.prototype.updateDashboardPayments = function() {
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
 
-  const currentMonthPayments = this.recurringPayments.map(payment => {
-    if (payment.currentMonth !== currentMonth || payment.currentYear !== currentYear) {
+  const currentMonthPayments = this.recurringPayments.map((payment) => {
+    if (
+      payment.currentMonth !== currentMonth ||
+      payment.currentYear !== currentYear
+    ) {
       payment.isPaid = false;
       payment.paidDate = null;
       payment.paidAmount = null;
@@ -9594,8 +10313,8 @@ FinanceApp.prototype.updateDashboardPayments = function() {
 
   this.saveData();
 
-  const pendingPayments = currentMonthPayments.filter(p => !p.isPaid);
-  const paidPayments = currentMonthPayments.filter(p => p.isPaid);
+  const pendingPayments = currentMonthPayments.filter((p) => !p.isPaid);
+  const paidPayments = currentMonthPayments.filter((p) => p.isPaid);
 
   const allPayments = [...pendingPayments, ...paidPayments];
 
@@ -9614,17 +10333,20 @@ FinanceApp.prototype.updateDashboardPayments = function() {
   }
 
   paymentsList.innerHTML = allPayments
-    .map(payment => {
+    .map((payment) => {
       const typeInfo = this.getPaymentTypeInfo(payment.serviceType);
-      const amountDisplay = payment.isPaid && payment.paidAmount
-        ? `$${payment.paidAmount.toLocaleString()}`
-        : payment.amount
-        ? `$${payment.amount.toLocaleString()}`
-        : 'Variable';
+      const amountDisplay =
+        payment.isPaid && payment.paidAmount
+          ? `$${payment.paidAmount.toLocaleString()}`
+          : payment.amount
+          ? `$${payment.amount.toLocaleString()}`
+          : 'Variable';
 
       const statusClass = payment.isPaid ? 'paid' : 'pending';
       const statusIcon = payment.isPaid ? 'check-circle' : 'exclamation-circle';
-      const statusText = payment.isPaid ? 'Pagado' : `Vence el ${payment.dueDay}`;
+      const statusText = payment.isPaid
+        ? 'Pagado'
+        : `Vence el ${payment.dueDay}`;
 
       return `
         <div class="payment-item-compact ${statusClass}">
@@ -9649,11 +10371,13 @@ FinanceApp.prototype.updateDashboardPayments = function() {
     .join('');
 
   if (paymentCount) {
-    paymentCount.textContent = `${pendingPayments.length} pendiente${pendingPayments.length !== 1 ? 's' : ''}`;
+    paymentCount.textContent = `${pendingPayments.length} pendiente${
+      pendingPayments.length !== 1 ? 's' : ''
+    }`;
   }
 };
 
-FinanceApp.prototype.showPaymentsDetailModal = function() {
+FinanceApp.prototype.showPaymentsDetailModal = function () {
   console.log('showPaymentsDetailModal called');
   const modal = document.getElementById('paymentsDetailModal');
   console.log('Modal element:', modal);
@@ -9664,16 +10388,20 @@ FinanceApp.prototype.showPaymentsDetailModal = function() {
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
 
-  const pendingPayments = this.recurringPayments.filter(p => !p.isPaid);
-  const paidPayments = this.recurringPayments.filter(p => p.isPaid);
+  const pendingPayments = this.recurringPayments.filter((p) => !p.isPaid);
+  const paidPayments = this.recurringPayments.filter((p) => p.isPaid);
 
   const totalMonthly = this.recurringPayments
-    .filter(p => p.amount)
+    .filter((p) => p.amount)
     .reduce((sum, p) => sum + p.amount, 0);
 
-  document.getElementById('modalPendingPayments').textContent = pendingPayments.length;
-  document.getElementById('modalPaidPayments').textContent = paidPayments.length;
-  document.getElementById('modalTotalMonthlyAmount').textContent = `$${totalMonthly.toLocaleString()}`;
+  document.getElementById('modalPendingPayments').textContent =
+    pendingPayments.length;
+  document.getElementById('modalPaidPayments').textContent =
+    paidPayments.length;
+  document.getElementById(
+    'modalTotalMonthlyAmount'
+  ).textContent = `$${totalMonthly.toLocaleString()}`;
 
   const pendingList = document.getElementById('pendingPaymentsList');
   const paidList = document.getElementById('paidPaymentsList');
@@ -9686,9 +10414,9 @@ FinanceApp.prototype.showPaymentsDetailModal = function() {
       </div>
     `;
   } else {
-    pendingList.innerHTML = pendingPayments.map(payment =>
-      this.renderPaymentDetailItem(payment, 'pending')
-    ).join('');
+    pendingList.innerHTML = pendingPayments
+      .map((payment) => this.renderPaymentDetailItem(payment, 'pending'))
+      .join('');
   }
 
   if (paidPayments.length === 0) {
@@ -9699,36 +10427,39 @@ FinanceApp.prototype.showPaymentsDetailModal = function() {
       </div>
     `;
   } else {
-    paidList.innerHTML = paidPayments.map(payment =>
-      this.renderPaymentDetailItem(payment, 'paid')
-    ).join('');
+    paidList.innerHTML = paidPayments
+      .map((payment) => this.renderPaymentDetailItem(payment, 'paid'))
+      .join('');
   }
 
   modal.classList.add('show');
 };
 
-FinanceApp.prototype.renderPaymentDetailItem = function(payment, status) {
+FinanceApp.prototype.renderPaymentDetailItem = function (payment, status) {
   const typeInfo = this.getPaymentTypeInfo(payment.serviceType);
-  const amountDisplay = status === 'paid' && payment.paidAmount
-    ? `$${payment.paidAmount.toLocaleString()}`
-    : payment.amount
-    ? `$${payment.amount.toLocaleString()}`
-    : 'Sin monto fijo';
+  const amountDisplay =
+    status === 'paid' && payment.paidAmount
+      ? `$${payment.paidAmount.toLocaleString()}`
+      : payment.amount
+      ? `$${payment.amount.toLocaleString()}`
+      : 'Sin monto fijo';
 
-  const statusBadge = status === 'pending'
-    ? `<span class="payment-status-badge pending"><i class="fas fa-clock"></i> Pendiente</span>`
-    : `<span class="payment-status-badge paid"><i class="fas fa-check-circle"></i> Pagado</span>`;
+  const statusBadge =
+    status === 'pending'
+      ? `<span class="payment-status-badge pending"><i class="fas fa-clock"></i> Pendiente</span>`
+      : `<span class="payment-status-badge paid"><i class="fas fa-check-circle"></i> Pagado</span>`;
 
-  const actionButton = status === 'pending'
-    ? `<button class="payment-action-button mark-paid" onclick="app.markPaymentAsPaid('${payment.id}')">
+  const actionButton =
+    status === 'pending'
+      ? `<button class="payment-action-button mark-paid" onclick="app.markPaymentAsPaid('${payment.id}')">
          <i class="fas fa-check"></i> Marcar como pagado
        </button>`
-    : payment.paidDate
-    ? `<div class="payment-paid-date">
+      : payment.paidDate
+      ? `<div class="payment-paid-date">
          <i class="fas fa-calendar-check"></i>
          ${new Date(payment.paidDate).toLocaleDateString('es-ES')}
        </div>`
-    : '';
+      : '';
 
   return `
     <div class="payment-detail-item ${status}">
@@ -9744,7 +10475,11 @@ FinanceApp.prototype.renderPaymentDetailItem = function(payment, status) {
           <span class="payment-detail-meta-item">
             <i class="fas fa-calendar-day"></i> Vence el día ${payment.dueDay}
           </span>
-          ${payment.notes ? `<span class="payment-detail-meta-item"><i class="fas fa-sticky-note"></i> ${payment.notes}</span>` : ''}
+          ${
+            payment.notes
+              ? `<span class="payment-detail-meta-item"><i class="fas fa-sticky-note"></i> ${payment.notes}</span>`
+              : ''
+          }
         </div>
       </div>
       <div class="payment-detail-amount">${amountDisplay}</div>
@@ -9756,8 +10491,8 @@ FinanceApp.prototype.renderPaymentDetailItem = function(payment, status) {
   `;
 };
 
-FinanceApp.prototype.markPaymentAsPaid = function(id) {
-  const payment = this.recurringPayments.find(p => p.id === id);
+FinanceApp.prototype.markPaymentAsPaid = function (id) {
+  const payment = this.recurringPayments.find((p) => p.id === id);
   if (!payment) return;
 
   let paidAmount = payment.amount;
@@ -9783,25 +10518,37 @@ FinanceApp.prototype.markPaymentAsPaid = function(id) {
   this.logAudit(
     'payment_paid',
     'edited',
-    `Pago marcado como pagado: ${payment.serviceName} - $${paidAmount.toLocaleString()}`,
+    `Pago marcado como pagado: ${
+      payment.serviceName
+    } - $${paidAmount.toLocaleString()}`,
     '',
-    { serviceName: payment.serviceName, amount: paidAmount, paidDate: new Date(payment.paidDate).toLocaleDateString('es-ES') }
+    {
+      serviceName: payment.serviceName,
+      amount: paidAmount,
+      paidDate: new Date(payment.paidDate).toLocaleDateString('es-ES'),
+    }
   );
 
-  this.showToast(`Pago de "${payment.serviceName}" marcado como pagado`, 'success');
+  this.showToast(
+    `Pago de "${payment.serviceName}" marcado como pagado`,
+    'success'
+  );
   this.updateDashboardPayments();
   this.showPaymentsDetailModal();
 };
 
-FinanceApp.prototype.checkMonthlyReset = function() {
+FinanceApp.prototype.checkMonthlyReset = function () {
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
   let needsUpdate = false;
 
-  this.recurringPayments.forEach(payment => {
-    if (payment.currentMonth !== currentMonth || payment.currentYear !== currentYear) {
+  this.recurringPayments.forEach((payment) => {
+    if (
+      payment.currentMonth !== currentMonth ||
+      payment.currentYear !== currentYear
+    ) {
       payment.isPaid = false;
       payment.paidDate = null;
       payment.paidAmount = null;
@@ -9816,20 +10563,28 @@ FinanceApp.prototype.checkMonthlyReset = function() {
   }
 };
 
-FinanceApp.prototype.getPaymentTypeInfo = function(typeId) {
-  return this.paymentServiceTypes.find(t => t.id === typeId) || this.paymentServiceTypes[this.paymentServiceTypes.length - 1];
+FinanceApp.prototype.getPaymentTypeInfo = function (typeId) {
+  return (
+    this.paymentServiceTypes.find((t) => t.id === typeId) ||
+    this.paymentServiceTypes[this.paymentServiceTypes.length - 1]
+  );
 };
 
 /* ============================================
    EXPENSES DETAIL MODAL SYSTEM
    ============================================ */
 
-FinanceApp.prototype.setupExpensesModalListener = function() {
+FinanceApp.prototype.setupExpensesModalListener = function () {
   const expensesCard = document.getElementById('totalExpensesCard');
   const expensesModal = document.getElementById('expensesDetailModal');
   const closeExpensesDetail = document.getElementById('closeExpensesDetail');
 
-  console.log('Setup expenses modal - Card:', expensesCard, 'Modal:', expensesModal);
+  console.log(
+    'Setup expenses modal - Card:',
+    expensesCard,
+    'Modal:',
+    expensesModal
+  );
 
   if (expensesCard) {
     expensesCard.addEventListener('click', () => {
@@ -9855,7 +10610,7 @@ FinanceApp.prototype.setupExpensesModalListener = function() {
   }
 };
 
-FinanceApp.prototype.showExpensesDetailModal = function() {
+FinanceApp.prototype.showExpensesDetailModal = function () {
   console.log('showExpensesDetailModal called');
   const modal = document.getElementById('expensesDetailModal');
   if (!modal) {
@@ -9869,7 +10624,7 @@ FinanceApp.prototype.showExpensesDetailModal = function() {
   const currentYear = now.getFullYear();
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
 
-  const monthlyExpenses = this.expenses.filter(expense => {
+  const monthlyExpenses = this.expenses.filter((expense) => {
     const expenseDate = new Date(expense.date);
     return expenseDate >= firstDayOfMonth;
   });
@@ -9880,28 +10635,54 @@ FinanceApp.prototype.showExpensesDetailModal = function() {
   const totalAmount = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
   // Actualizar período
-  const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-  document.getElementById('expensesPeriod').textContent =
-    `1 de ${monthNames[currentMonth]} - ${now.getDate()} de ${monthNames[currentMonth]}`;
+  const monthNames = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+  ];
+  document.getElementById('expensesPeriod').textContent = `1 de ${
+    monthNames[currentMonth]
+  } - ${now.getDate()} de ${monthNames[currentMonth]}`;
 
   // Actualizar total
-  document.getElementById('modalTotalExpenses').textContent = `$${totalAmount.toLocaleString()}`;
+  document.getElementById(
+    'modalTotalExpenses'
+  ).textContent = `$${totalAmount.toLocaleString()}`;
 
   // Estadísticas generales
-  document.getElementById('modalTotalTransactions').textContent = monthlyExpenses.length;
+  document.getElementById('modalTotalTransactions').textContent =
+    monthlyExpenses.length;
 
   // Análisis por necesidad
   const necessityAnalysis = this.analyzeNecessity(monthlyExpenses, totalAmount);
-  document.getElementById('modalNecessaryPercentage').textContent = `${necessityAnalysis.necessaryPercent}%`;
-  document.getElementById('modalNecessaryAmount').textContent = `$${necessityAnalysis.necessaryAmount.toLocaleString()} en gastos esenciales`;
-  document.getElementById('modalUnnecessaryPercentage').textContent = `${necessityAnalysis.unnecessaryPercent}%`;
-  document.getElementById('modalUnnecessaryAmount').textContent = `$${necessityAnalysis.unnecessaryAmount.toLocaleString()} en gastos prescindibles`;
+  document.getElementById(
+    'modalNecessaryPercentage'
+  ).textContent = `${necessityAnalysis.necessaryPercent}%`;
+  document.getElementById(
+    'modalNecessaryAmount'
+  ).textContent = `$${necessityAnalysis.necessaryAmount.toLocaleString()} en gastos esenciales`;
+  document.getElementById(
+    'modalUnnecessaryPercentage'
+  ).textContent = `${necessityAnalysis.unnecessaryPercent}%`;
+  document.getElementById(
+    'modalUnnecessaryAmount'
+  ).textContent = `$${necessityAnalysis.unnecessaryAmount.toLocaleString()} en gastos prescindibles`;
 
   // Servicios pagados
   const servicesPaid = this.getServicesPaid(monthlyExpenses);
   document.getElementById('modalServicesPaid').textContent = servicesPaid.count;
-  document.getElementById('modalServicesAmount').textContent = `$${servicesPaid.amount.toLocaleString()} en servicios`;
+  document.getElementById(
+    'modalServicesAmount'
+  ).textContent = `$${servicesPaid.amount.toLocaleString()} en servicios`;
 
   // Renderizar secciones
   this.renderNecessityBars(monthlyExpenses, totalAmount);
@@ -9919,7 +10700,7 @@ FinanceApp.prototype.showExpensesDetailModal = function() {
 };
 
 // Inicializar scroll horizontal para las tarjetas de estadísticas
-FinanceApp.prototype.initializeStatsScroll = function() {
+FinanceApp.prototype.initializeStatsScroll = function () {
   const scrollContainer = document.getElementById('expensesStatsGrid');
   const scrollLeftBtn = document.getElementById('scrollStatsLeft');
   const scrollRightBtn = document.getElementById('scrollStatsRight');
@@ -9952,11 +10733,13 @@ FinanceApp.prototype.initializeStatsScroll = function() {
   // Función para hacer scroll
   const scrollCards = (direction) => {
     const scrollAmount = 300; // Píxeles a desplazar
-    const targetScroll = scrollContainer.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
+    const targetScroll =
+      scrollContainer.scrollLeft +
+      (direction === 'left' ? -scrollAmount : scrollAmount);
 
     scrollContainer.scrollTo({
       left: targetScroll,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   };
 
@@ -9971,37 +10754,51 @@ FinanceApp.prototype.initializeStatsScroll = function() {
   updateButtonsVisibility();
 };
 
-FinanceApp.prototype.analyzeNecessity = function(expenses, total) {
+FinanceApp.prototype.analyzeNecessity = function (expenses, total) {
   const necessary = ['Muy Necesario', 'Necesario'];
   const unnecessary = ['Poco Necesario', 'No Necesario', 'Compra por Impulso'];
 
-  const necessaryExpenses = expenses.filter(e => necessary.includes(e.necessity));
-  const unnecessaryExpenses = expenses.filter(e => unnecessary.includes(e.necessity));
+  const necessaryExpenses = expenses.filter((e) =>
+    necessary.includes(e.necessity)
+  );
+  const unnecessaryExpenses = expenses.filter((e) =>
+    unnecessary.includes(e.necessity)
+  );
 
-  const necessaryAmount = necessaryExpenses.reduce((sum, e) => sum + e.amount, 0);
-  const unnecessaryAmount = unnecessaryExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const necessaryAmount = necessaryExpenses.reduce(
+    (sum, e) => sum + e.amount,
+    0
+  );
+  const unnecessaryAmount = unnecessaryExpenses.reduce(
+    (sum, e) => sum + e.amount,
+    0
+  );
 
   return {
     necessaryAmount,
     unnecessaryAmount,
-    necessaryPercent: total > 0 ? Math.round((necessaryAmount / total) * 100) : 0,
-    unnecessaryPercent: total > 0 ? Math.round((unnecessaryAmount / total) * 100) : 0
+    necessaryPercent:
+      total > 0 ? Math.round((necessaryAmount / total) * 100) : 0,
+    unnecessaryPercent:
+      total > 0 ? Math.round((unnecessaryAmount / total) * 100) : 0,
   };
 };
 
-FinanceApp.prototype.getServicesPaid = function(expenses) {
+FinanceApp.prototype.getServicesPaid = function (expenses) {
   const serviceCategories = ['Servicios'];
-  const services = expenses.filter(e => serviceCategories.includes(e.category));
+  const services = expenses.filter((e) =>
+    serviceCategories.includes(e.category)
+  );
   const amount = services.reduce((sum, e) => sum + e.amount, 0);
 
   return {
     count: services.length,
     amount,
-    services
+    services,
   };
 };
 
-FinanceApp.prototype.renderNecessityBars = function(expenses, total) {
+FinanceApp.prototype.renderNecessityBars = function (expenses, total) {
   const container = document.getElementById('necessityBarsContainer');
   if (!container) return;
 
@@ -10010,29 +10807,34 @@ FinanceApp.prototype.renderNecessityBars = function(expenses, total) {
     { name: 'Necesario', class: 'necessary' },
     { name: 'Poco Necesario', class: 'little-necessary' },
     { name: 'No Necesario', class: 'not-necessary' },
-    { name: 'Compra por Impulso', class: 'impulse' }
+    { name: 'Compra por Impulso', class: 'impulse' },
   ];
 
-  container.innerHTML = necessityLevels.map(level => {
-    const levelExpenses = expenses.filter(e => e.necessity === level.name);
-    const levelAmount = levelExpenses.reduce((sum, e) => sum + e.amount, 0);
-    const percentage = total > 0 ? Math.round((levelAmount / total) * 100) : 0;
+  container.innerHTML = necessityLevels
+    .map((level) => {
+      const levelExpenses = expenses.filter((e) => e.necessity === level.name);
+      const levelAmount = levelExpenses.reduce((sum, e) => sum + e.amount, 0);
+      const percentage =
+        total > 0 ? Math.round((levelAmount / total) * 100) : 0;
 
-    return `
+      return `
       <div class="necessity-bar-item">
         <div class="necessity-bar-label">${level.name}</div>
         <div class="necessity-bar-wrapper">
-          <div class="necessity-bar-fill ${level.class}" style="width: ${percentage}%">
+          <div class="necessity-bar-fill ${
+            level.class
+          }" style="width: ${percentage}%">
             ${percentage}%
           </div>
         </div>
         <div class="necessity-bar-value">$${levelAmount.toLocaleString()}</div>
       </div>
     `;
-  }).join('');
+    })
+    .join('');
 };
 
-FinanceApp.prototype.renderServicesPaidList = function(services) {
+FinanceApp.prototype.renderServicesPaidList = function (services) {
   const container = document.getElementById('servicesPaidList');
   if (!container) return;
 
@@ -10046,12 +10848,14 @@ FinanceApp.prototype.renderServicesPaidList = function(services) {
     return;
   }
 
-  container.innerHTML = services.map(service => {
-    const typeInfo = this.paymentServiceTypes.find(t =>
-      service.description.toLowerCase().includes(t.name.toLowerCase())
-    ) || this.paymentServiceTypes[this.paymentServiceTypes.length - 1];
+  container.innerHTML = services
+    .map((service) => {
+      const typeInfo =
+        this.paymentServiceTypes.find((t) =>
+          service.description.toLowerCase().includes(t.name.toLowerCase())
+        ) || this.paymentServiceTypes[this.paymentServiceTypes.length - 1];
 
-    return `
+      return `
       <div class="service-paid-item">
         <div class="service-paid-icon ${typeInfo.id}">
           <i class="${typeInfo.icon}"></i>
@@ -10062,15 +10866,16 @@ FinanceApp.prototype.renderServicesPaidList = function(services) {
         </div>
       </div>
     `;
-  }).join('');
+    })
+    .join('');
 };
 
-FinanceApp.prototype.renderCategoriesBreakdown = function(expenses) {
+FinanceApp.prototype.renderCategoriesBreakdown = function (expenses) {
   const container = document.getElementById('categoriesBreakdown');
   if (!container) return;
 
   const categoryTotals = {};
-  expenses.forEach(expense => {
+  expenses.forEach((expense) => {
     if (!categoryTotals[expense.category]) {
       categoryTotals[expense.category] = { amount: 0, count: 0 };
     }
@@ -10079,18 +10884,19 @@ FinanceApp.prototype.renderCategoriesBreakdown = function(expenses) {
   });
 
   const categoryIcons = {
-    'Alimentación': 'fas fa-utensils',
-    'Transporte': 'fas fa-car',
-    'Entretenimiento': 'fas fa-gamepad',
-    'Salud': 'fas fa-heartbeat',
-    'Servicios': 'fas fa-receipt',
-    'Compras': 'fas fa-shopping-bag',
-    'Otros': 'fas fa-ellipsis-h'
+    Alimentación: 'fas fa-utensils',
+    Transporte: 'fas fa-car',
+    Entretenimiento: 'fas fa-gamepad',
+    Salud: 'fas fa-heartbeat',
+    Servicios: 'fas fa-receipt',
+    Compras: 'fas fa-shopping-bag',
+    Otros: 'fas fa-ellipsis-h',
   };
 
   container.innerHTML = Object.entries(categoryTotals)
     .sort(([, a], [, b]) => b.amount - a.amount)
-    .map(([category, data]) => `
+    .map(
+      ([category, data]) => `
       <div class="category-item">
         <div class="category-header">
           <div class="category-icon">
@@ -10099,12 +10905,16 @@ FinanceApp.prototype.renderCategoriesBreakdown = function(expenses) {
           <div class="category-name">${category}</div>
         </div>
         <div class="category-amount">$${data.amount.toLocaleString()}</div>
-        <div class="category-count">${data.count} transaccion${data.count !== 1 ? 'es' : ''}</div>
+        <div class="category-count">${data.count} transaccion${
+        data.count !== 1 ? 'es' : ''
+      }</div>
       </div>
-    `).join('');
+    `
+    )
+    .join('');
 };
 
-FinanceApp.prototype.renderMonthlyTransactions = function(expenses) {
+FinanceApp.prototype.renderMonthlyTransactions = function (expenses) {
   const container = document.getElementById('recentTransactionsList');
   if (!container) return;
 
@@ -10123,20 +10933,23 @@ FinanceApp.prototype.renderMonthlyTransactions = function(expenses) {
   }
 
   const categoryIcons = {
-    'Alimentación': 'fas fa-utensils',
-    'Transporte': 'fas fa-car',
-    'Entretenimiento': 'fas fa-gamepad',
-    'Salud': 'fas fa-heartbeat',
-    'Servicios': 'fas fa-receipt',
-    'Compras': 'fas fa-shopping-bag',
-    'Otros': 'fas fa-ellipsis-h'
+    Alimentación: 'fas fa-utensils',
+    Transporte: 'fas fa-car',
+    Entretenimiento: 'fas fa-gamepad',
+    Salud: 'fas fa-heartbeat',
+    Servicios: 'fas fa-receipt',
+    Compras: 'fas fa-shopping-bag',
+    Otros: 'fas fa-ellipsis-h',
   };
 
-  container.innerHTML = recentExpenses.map(expense => {
-    const date = new Date(expense.date);
-    const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+  container.innerHTML = recentExpenses
+    .map((expense) => {
+      const date = new Date(expense.date);
+      const formattedDate = `${date.getDate()}/${
+        date.getMonth() + 1
+      }/${date.getFullYear()}`;
 
-    return `
+      return `
       <div class="transaction-item">
         <div class="transaction-icon">
           <i class="${categoryIcons[expense.category] || 'fas fa-receipt'}"></i>
@@ -10146,20 +10959,31 @@ FinanceApp.prototype.renderMonthlyTransactions = function(expenses) {
           <div class="transaction-meta">
             <span><i class="fas fa-tag"></i> ${expense.category}</span>
             <span><i class="fas fa-calendar"></i> ${formattedDate}</span>
-            ${expense.user ? `<span><i class="fas fa-user"></i> ${expense.user}</span>` : ''}
+            ${
+              expense.user
+                ? `<span><i class="fas fa-user"></i> ${expense.user}</span>`
+                : ''
+            }
           </div>
         </div>
         <div class="transaction-amount">$${expense.amount.toLocaleString()}</div>
       </div>
     `;
-  }).join('');
+    })
+    .join('');
 };
 
-FinanceApp.prototype.renderFinancialInsight = function(expenses, total, analysis) {
+FinanceApp.prototype.renderFinancialInsight = function (
+  expenses,
+  total,
+  analysis
+) {
   const insightEl = document.getElementById('financialInsight');
   if (!insightEl) return;
 
-  let insight = `Este mes has realizado <strong>${expenses.length} transacciones</strong> por un total de <strong>$${total.toLocaleString()}</strong>. `;
+  let insight = `Este mes has realizado <strong>${
+    expenses.length
+  } transacciones</strong> por un total de <strong>$${total.toLocaleString()}</strong>. `;
 
   if (analysis.necessaryPercent >= 70) {
     insight += `¡Excelente! El <strong>${analysis.necessaryPercent}%</strong> de tus gastos son necesarios, lo que demuestra una gestión financiera muy responsable. `;
@@ -10185,41 +11009,59 @@ FinanceApp.prototype.renderFinancialInsight = function(expenses, total, analysis
 // BUDGET SYSTEM (Envelope Budgeting)
 // ========================================
 
-FinanceApp.prototype.getCurrentMonthKey = function() {
+FinanceApp.prototype.getCurrentMonthKey = function () {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   return `${year}-${month}`;
 };
 
-FinanceApp.prototype.getMonthName = function(monthKey) {
+FinanceApp.prototype.getMonthName = function (monthKey) {
   const [year, month] = monthKey.split('-');
   const monthNames = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
   ];
   return `${monthNames[parseInt(month) - 1]} ${year}`;
 };
 
-FinanceApp.prototype.setupBudget = function(monthKey, budgetConfig) {
+FinanceApp.prototype.setupBudget = function (monthKey, budgetConfig) {
   if (!this.budgets[monthKey]) {
     this.budgets[monthKey] = {
       categories: {},
       totalLimit: 0,
       totalSpent: 0,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
   }
 
   let totalLimit = 0;
-  const categories = ['Alimentación', 'Transporte', 'Entretenimiento', 'Salud', 'Servicios', 'Compras', 'Otros'];
+  const categories = [
+    'Alimentación',
+    'Transporte',
+    'Entretenimiento',
+    'Salud',
+    'Servicios',
+    'Compras',
+    'Otros',
+  ];
 
-  categories.forEach(category => {
+  categories.forEach((category) => {
     const limit = parseFloat(budgetConfig[category]) || 0;
     this.budgets[monthKey].categories[category] = {
       limit: limit,
       spent: 0,
-      alerts: true
+      alerts: true,
     };
     totalLimit += limit;
   });
@@ -10229,20 +11071,20 @@ FinanceApp.prototype.setupBudget = function(monthKey, budgetConfig) {
   this.saveData();
 };
 
-FinanceApp.prototype.updateBudgetSpending = function(monthKey) {
+FinanceApp.prototype.updateBudgetSpending = function (monthKey) {
   if (!this.budgets[monthKey]) return;
 
   const budget = this.budgets[monthKey];
   const [year, month] = monthKey.split('-');
 
   // Reset spent amounts
-  Object.keys(budget.categories).forEach(category => {
+  Object.keys(budget.categories).forEach((category) => {
     budget.categories[category].spent = 0;
   });
   budget.totalSpent = 0;
 
   // Calculate spent amounts from expenses
-  this.expenses.forEach(expense => {
+  this.expenses.forEach((expense) => {
     const expenseDate = new Date(expense.date);
     const expenseYear = expenseDate.getFullYear();
     const expenseMonth = String(expenseDate.getMonth() + 1).padStart(2, '0');
@@ -10257,7 +11099,7 @@ FinanceApp.prototype.updateBudgetSpending = function(monthKey) {
   this.saveData();
 };
 
-FinanceApp.prototype.checkBudgetAlerts = function(monthKey) {
+FinanceApp.prototype.checkBudgetAlerts = function (monthKey) {
   if (!this.budgets[monthKey]) return [];
 
   const alerts = [];
@@ -10272,13 +11114,17 @@ FinanceApp.prototype.checkBudgetAlerts = function(monthKey) {
       alerts.push({
         category,
         type: 'danger',
-        message: `¡Has superado el presupuesto de ${category}! (${percentage.toFixed(0)}%)`
+        message: `¡Has superado el presupuesto de ${category}! (${percentage.toFixed(
+          0
+        )}%)`,
       });
     } else if (percentage >= 80) {
       alerts.push({
         category,
         type: 'warning',
-        message: `Te acercas al límite en ${category} (${percentage.toFixed(0)}%)`
+        message: `Te acercas al límite en ${category} (${percentage.toFixed(
+          0
+        )}%)`,
       });
     }
   });
@@ -10286,7 +11132,7 @@ FinanceApp.prototype.checkBudgetAlerts = function(monthKey) {
   return alerts;
 };
 
-FinanceApp.prototype.renderBudgetSection = function() {
+FinanceApp.prototype.renderBudgetSection = function () {
   const monthKey = this.currentBudgetMonth;
   const monthLabel = document.getElementById('currentBudgetMonth');
   if (monthLabel) {
@@ -10298,26 +11144,36 @@ FinanceApp.prototype.renderBudgetSection = function() {
   this.renderBudgetProgress(monthKey);
 };
 
-FinanceApp.prototype.renderBudgetSummary = function(monthKey) {
+FinanceApp.prototype.renderBudgetSummary = function (monthKey) {
   const budget = this.budgets[monthKey] || {
     totalLimit: 0,
     totalSpent: 0,
-    categories: {}
+    categories: {},
   };
 
   const available = budget.totalLimit - budget.totalSpent;
-  const percentage = budget.totalLimit > 0
-    ? Math.min((budget.totalSpent / budget.totalLimit) * 100, 100)
-    : 0;
+  const percentage =
+    budget.totalLimit > 0
+      ? Math.min((budget.totalSpent / budget.totalLimit) * 100, 100)
+      : 0;
 
-  document.getElementById('totalBudgetLimit').textContent =
-    `$${budget.totalLimit.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
-  document.getElementById('totalBudgetSpent').textContent =
-    `$${budget.totalSpent.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
-  document.getElementById('totalBudgetAvailable').textContent =
-    `$${Math.max(available, 0).toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
-  document.getElementById('overallBudgetPercentage').textContent =
-    `${percentage.toFixed(0)}%`;
+  document.getElementById(
+    'totalBudgetLimit'
+  ).textContent = `$${budget.totalLimit.toLocaleString('es-ES', {
+    minimumFractionDigits: 2,
+  })}`;
+  document.getElementById(
+    'totalBudgetSpent'
+  ).textContent = `$${budget.totalSpent.toLocaleString('es-ES', {
+    minimumFractionDigits: 2,
+  })}`;
+  document.getElementById('totalBudgetAvailable').textContent = `$${Math.max(
+    available,
+    0
+  ).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`;
+  document.getElementById(
+    'overallBudgetPercentage'
+  ).textContent = `${percentage.toFixed(0)}%`;
 
   const progressBar = document.getElementById('overallBudgetProgress');
   if (progressBar) {
@@ -10331,11 +11187,19 @@ FinanceApp.prototype.renderBudgetSummary = function(monthKey) {
   }
 };
 
-FinanceApp.prototype.renderBudgetSetupForm = function(monthKey) {
+FinanceApp.prototype.renderBudgetSetupForm = function (monthKey) {
   const budget = this.budgets[monthKey];
-  const categories = ['Alimentación', 'Transporte', 'Entretenimiento', 'Salud', 'Servicios', 'Compras', 'Otros'];
+  const categories = [
+    'Alimentación',
+    'Transporte',
+    'Entretenimiento',
+    'Salud',
+    'Servicios',
+    'Compras',
+    'Otros',
+  ];
 
-  categories.forEach(category => {
+  categories.forEach((category) => {
     const input = document.getElementById(`budget-${category}`);
     if (input && budget && budget.categories[category]) {
       input.value = budget.categories[category].limit || '';
@@ -10343,7 +11207,7 @@ FinanceApp.prototype.renderBudgetSetupForm = function(monthKey) {
   });
 };
 
-FinanceApp.prototype.renderBudgetProgress = function(monthKey) {
+FinanceApp.prototype.renderBudgetProgress = function (monthKey) {
   const container = document.getElementById('budgetCategoriesProgress');
   if (!container) return;
 
@@ -10360,29 +11224,30 @@ FinanceApp.prototype.renderBudgetProgress = function(monthKey) {
   }
 
   const categoryIcons = {
-    'Alimentación': 'fas fa-utensils',
-    'Transporte': 'fas fa-bus',
-    'Entretenimiento': 'fas fa-film',
-    'Salud': 'fas fa-heartbeat',
-    'Servicios': 'fas fa-wrench',
-    'Compras': 'fas fa-shopping-bag',
-    'Otros': 'fas fa-ellipsis-h'
+    Alimentación: 'fas fa-utensils',
+    Transporte: 'fas fa-bus',
+    Entretenimiento: 'fas fa-film',
+    Salud: 'fas fa-heartbeat',
+    Servicios: 'fas fa-wrench',
+    Compras: 'fas fa-shopping-bag',
+    Otros: 'fas fa-ellipsis-h',
   };
 
   const categoryColors = {
-    'Alimentación': 'food',
-    'Transporte': 'transport',
-    'Entretenimiento': 'entertainment',
-    'Salud': 'health',
-    'Servicios': 'services',
-    'Compras': 'shopping',
-    'Otros': 'other'
+    Alimentación: 'food',
+    Transporte: 'transport',
+    Entretenimiento: 'entertainment',
+    Salud: 'health',
+    Servicios: 'services',
+    Compras: 'shopping',
+    Otros: 'other',
   };
 
   container.innerHTML = Object.entries(budget.categories)
     .filter(([, data]) => data.limit > 0)
     .map(([category, data]) => {
-      const percentage = data.limit > 0 ? Math.min((data.spent / data.limit) * 100, 100) : 0;
+      const percentage =
+        data.limit > 0 ? Math.min((data.spent / data.limit) * 100, 100) : 0;
       const available = data.limit - data.spent;
 
       let progressClass = 'progress-fill';
@@ -10393,7 +11258,10 @@ FinanceApp.prototype.renderBudgetProgress = function(monthKey) {
         alertHtml = `
           <div class="budget-alert danger">
             <i class="fas fa-exclamation-circle"></i>
-            ¡Presupuesto superado en $${Math.abs(available).toLocaleString('es-ES', {minimumFractionDigits: 2})}!
+            ¡Presupuesto superado en $${Math.abs(available).toLocaleString(
+              'es-ES',
+              { minimumFractionDigits: 2 }
+            )}!
           </div>
         `;
       } else if (percentage >= 80) {
@@ -10401,7 +11269,9 @@ FinanceApp.prototype.renderBudgetProgress = function(monthKey) {
         alertHtml = `
           <div class="budget-alert warning">
             <i class="fas fa-exclamation-triangle"></i>
-            Te quedan $${available.toLocaleString('es-ES', {minimumFractionDigits: 2})} (${(100 - percentage).toFixed(0)}%)
+            Te quedan $${available.toLocaleString('es-ES', {
+              minimumFractionDigits: 2,
+            })} (${(100 - percentage).toFixed(0)}%)
           </div>
         `;
       }
@@ -10410,24 +11280,36 @@ FinanceApp.prototype.renderBudgetProgress = function(monthKey) {
         <div class="budget-category-progress">
           <div class="budget-category-progress-header">
             <div class="budget-category-info">
-              <i class="${categoryIcons[category]} category-icon category-icon--${categoryColors[category]}"></i>
+              <i class="${
+                categoryIcons[category]
+              } category-icon category-icon--${categoryColors[category]}"></i>
               <span class="category-name">${category}</span>
             </div>
             <div class="budget-category-amounts">
               <div class="budget-category-amounts-row">
                 <span class="budget-amount-label">Gastado:</span>
-                <span class="budget-amount-value spent">$${data.spent.toLocaleString('es-ES', {minimumFractionDigits: 2})}</span>
+                <span class="budget-amount-value spent">$${data.spent.toLocaleString(
+                  'es-ES',
+                  { minimumFractionDigits: 2 }
+                )}</span>
               </div>
               <div class="budget-category-amounts-row">
                 <span class="budget-amount-label">Límite:</span>
-                <span class="budget-amount-value">$${data.limit.toLocaleString('es-ES', {minimumFractionDigits: 2})}</span>
+                <span class="budget-amount-value">$${data.limit.toLocaleString(
+                  'es-ES',
+                  { minimumFractionDigits: 2 }
+                )}</span>
               </div>
             </div>
           </div>
           <div class="progress-header">
             <span>${percentage.toFixed(0)}% utilizado</span>
-            <span class="budget-amount-value ${available < 0 ? 'exceeded' : 'available'}">
-              ${available >= 0 ? 'Disponible: ' : 'Excedido: '}$${Math.abs(available).toLocaleString('es-ES', {minimumFractionDigits: 2})}
+            <span class="budget-amount-value ${
+              available < 0 ? 'exceeded' : 'available'
+            }">
+              ${available >= 0 ? 'Disponible: ' : 'Excedido: '}$${Math.abs(
+        available
+      ).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
             </span>
           </div>
           <div class="progress-bar">
@@ -10436,10 +11318,11 @@ FinanceApp.prototype.renderBudgetProgress = function(monthKey) {
           ${alertHtml}
         </div>
       `;
-    }).join('');
+    })
+    .join('');
 };
 
-FinanceApp.prototype.setupBudgetListeners = function() {
+FinanceApp.prototype.setupBudgetListeners = function () {
   // Budget setup form
   const budgetForm = document.getElementById('budgetSetupForm');
   if (budgetForm) {
@@ -10447,9 +11330,17 @@ FinanceApp.prototype.setupBudgetListeners = function() {
       e.preventDefault();
 
       const budgetConfig = {};
-      const categories = ['Alimentación', 'Transporte', 'Entretenimiento', 'Salud', 'Servicios', 'Compras', 'Otros'];
+      const categories = [
+        'Alimentación',
+        'Transporte',
+        'Entretenimiento',
+        'Salud',
+        'Servicios',
+        'Compras',
+        'Otros',
+      ];
 
-      categories.forEach(category => {
+      categories.forEach((category) => {
         const input = document.getElementById(`budget-${category}`);
         budgetConfig[category] = input ? parseFloat(input.value) || 0 : 0;
       });
@@ -10464,7 +11355,11 @@ FinanceApp.prototype.setupBudgetListeners = function() {
   const resetBtn = document.getElementById('resetBudgetBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      if (confirm('¿Estás seguro de que deseas restablecer el presupuesto de este mes?')) {
+      if (
+        confirm(
+          '¿Estás seguro de que deseas restablecer el presupuesto de este mes?'
+        )
+      ) {
         delete this.budgets[this.currentBudgetMonth];
         this.saveData();
         this.renderBudgetSection();
@@ -10483,7 +11378,7 @@ FinanceApp.prototype.setupBudgetListeners = function() {
       const date = new Date(parseInt(year), parseInt(month) - 2);
       this.currentBudgetMonth = this.getCurrentMonthKey.call({
         getFullYear: () => date.getFullYear(),
-        getMonth: () => date.getMonth()
+        getMonth: () => date.getMonth(),
       });
       this.renderBudgetSection();
     });
@@ -10505,7 +11400,7 @@ FinanceApp.prototype.setupBudgetListeners = function() {
 // QUICK EXPENSE ENTRY & TEMPLATES
 // ========================================
 
-FinanceApp.prototype.setupQuickExpenseListeners = function() {
+FinanceApp.prototype.setupQuickExpenseListeners = function () {
   // FAB button
   const fab = document.getElementById('fabQuickExpense');
   const modal = document.getElementById('quickExpenseModal');
@@ -10552,7 +11447,7 @@ FinanceApp.prototype.setupQuickExpenseListeners = function() {
   }
 };
 
-FinanceApp.prototype.openQuickExpenseModal = function() {
+FinanceApp.prototype.openQuickExpenseModal = function () {
   const modal = document.getElementById('quickExpenseModal');
   if (modal) {
     modal.classList.add('show');
@@ -10566,11 +11461,12 @@ FinanceApp.prototype.openQuickExpenseModal = function() {
   }
 };
 
-FinanceApp.prototype.handleQuickExpenseSubmit = function() {
+FinanceApp.prototype.handleQuickExpenseSubmit = function () {
   const amountInput = document.getElementById('quickAmount');
   const amount = this.unformatNumber(amountInput.value);
   const category = document.getElementById('quickCategory').value;
-  const description = document.getElementById('quickDescription').value || 'Gasto rápido';
+  const description =
+    document.getElementById('quickDescription').value || 'Gasto rápido';
 
   if (!amount || !category) {
     this.showToast('Por favor completa los campos requeridos', 'error');
@@ -10586,7 +11482,7 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function() {
     date: new Date().toISOString().split('T')[0],
     user: this.currentUser || 'anonymous',
     necessity: 'Necesario',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
 
   this.expenses.push(expense);
@@ -10599,7 +11495,7 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function() {
 
     // Check for alerts
     const alerts = this.checkBudgetAlerts(currentMonth);
-    alerts.forEach(alert => {
+    alerts.forEach((alert) => {
       this.showToast(alert.message, alert.type);
     });
   }
@@ -10618,20 +11514,23 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function() {
   this.showToast('Gasto registrado exitosamente', 'success');
 };
 
-FinanceApp.prototype.saveExpenseTemplate = function() {
+FinanceApp.prototype.saveExpenseTemplate = function () {
   const amountInput = document.getElementById('quickAmount');
   const amount = this.unformatNumber(amountInput.value);
   const category = document.getElementById('quickCategory').value;
   const description = document.getElementById('quickDescription').value;
 
   if (!amount || !category || !description) {
-    this.showToast('Completa todos los campos para guardar una plantilla', 'warning');
+    this.showToast(
+      'Completa todos los campos para guardar una plantilla',
+      'warning'
+    );
     return;
   }
 
   // Check if template already exists
-  const exists = this.expenseTemplates.some(t =>
-    t.description === description && t.category === category
+  const exists = this.expenseTemplates.some(
+    (t) => t.description === description && t.category === category
   );
 
   if (exists) {
@@ -10644,7 +11543,7 @@ FinanceApp.prototype.saveExpenseTemplate = function() {
     amount: amount,
     category: category,
     description: description,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
 
   this.expenseTemplates.push(template);
@@ -10653,7 +11552,7 @@ FinanceApp.prototype.saveExpenseTemplate = function() {
   this.showToast('Plantilla guardada exitosamente', 'success');
 };
 
-FinanceApp.prototype.renderExpenseTemplates = function() {
+FinanceApp.prototype.renderExpenseTemplates = function () {
   const container = document.getElementById('quickTemplates');
   if (!container) return;
 
@@ -10667,16 +11566,20 @@ FinanceApp.prototype.renderExpenseTemplates = function() {
     return;
   }
 
-  container.innerHTML = this.expenseTemplates.map(template => `
+  container.innerHTML = this.expenseTemplates
+    .map(
+      (template) => `
     <div class="quick-template" data-template-id="${template.id}">
       <span>${template.description}</span>
       <span>$${this.formatNumber(template.amount)}</span>
       <i class="fas fa-times" data-action="delete"></i>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 
   // Add click listeners
-  container.querySelectorAll('.quick-template').forEach(el => {
+  container.querySelectorAll('.quick-template').forEach((el) => {
     el.addEventListener('click', (e) => {
       if (e.target.dataset.action === 'delete') {
         this.deleteExpenseTemplate(parseInt(el.dataset.templateId));
@@ -10687,8 +11590,8 @@ FinanceApp.prototype.renderExpenseTemplates = function() {
   });
 };
 
-FinanceApp.prototype.applyExpenseTemplate = function(templateId) {
-  const template = this.expenseTemplates.find(t => t.id === templateId);
+FinanceApp.prototype.applyExpenseTemplate = function (templateId) {
+  const template = this.expenseTemplates.find((t) => t.id === templateId);
   if (!template) return;
 
   document.getElementById('quickAmount').value = template.amount;
@@ -10696,8 +11599,10 @@ FinanceApp.prototype.applyExpenseTemplate = function(templateId) {
   document.getElementById('quickDescription').value = template.description;
 };
 
-FinanceApp.prototype.deleteExpenseTemplate = function(templateId) {
-  this.expenseTemplates = this.expenseTemplates.filter(t => t.id !== templateId);
+FinanceApp.prototype.deleteExpenseTemplate = function (templateId) {
+  this.expenseTemplates = this.expenseTemplates.filter(
+    (t) => t.id !== templateId
+  );
   this.saveData();
   this.renderExpenseTemplates();
   this.showToast('Plantilla eliminada', 'info');
@@ -10707,21 +11612,21 @@ FinanceApp.prototype.deleteExpenseTemplate = function(templateId) {
 // PREMIUM SETTINGS SYSTEM
 // ========================================
 
-FinanceApp.prototype.setupPremiumSettings = function() {
+FinanceApp.prototype.setupPremiumSettings = function () {
   // Settings tab navigation
   const settingsNavItems = document.querySelectorAll('.settings-nav-item');
   const settingsTabs = document.querySelectorAll('.settings-tab');
 
-  settingsNavItems.forEach(navItem => {
+  settingsNavItems.forEach((navItem) => {
     navItem.addEventListener('click', () => {
       const targetTab = navItem.dataset.settingsTab;
 
       // Update active nav item
-      settingsNavItems.forEach(item => item.classList.remove('active'));
+      settingsNavItems.forEach((item) => item.classList.remove('active'));
       navItem.classList.add('active');
 
       // Update active tab
-      settingsTabs.forEach(tab => tab.classList.remove('active'));
+      settingsTabs.forEach((tab) => tab.classList.remove('active'));
       const targetTabElement = document.getElementById(`settings-${targetTab}`);
       if (targetTabElement) {
         targetTabElement.classList.add('active');
@@ -10767,9 +11672,13 @@ FinanceApp.prototype.setupPremiumSettings = function() {
   const deleteAllDataBtn = document.getElementById('deleteAllDataBtn');
   if (deleteAllDataBtn) {
     deleteAllDataBtn.addEventListener('click', () => {
-      const confirmed = confirm('⚠️ ADVERTENCIA: Esta acción borrará TODOS tus datos permanentemente.\n\n¿Estás completamente seguro de que deseas continuar?');
+      const confirmed = confirm(
+        '⚠️ ADVERTENCIA: Esta acción borrará TODOS tus datos permanentemente.\n\n¿Estás completamente seguro de que deseas continuar?'
+      );
       if (confirmed) {
-        const doubleConfirm = confirm('Esta es tu última oportunidad. ¿Realmente deseas borrar todos los datos?\n\nEsta acción NO se puede deshacer.');
+        const doubleConfirm = confirm(
+          'Esta es tu última oportunidad. ¿Realmente deseas borrar todos los datos?\n\nEsta acción NO se puede deshacer.'
+        );
         if (doubleConfirm) {
           localStorage.clear();
           this.showToast('Todos los datos han sido eliminados', 'info');
@@ -10785,7 +11694,7 @@ FinanceApp.prototype.setupPremiumSettings = function() {
   this.updateSystemInfo();
 };
 
-FinanceApp.prototype.updateUsageStatistics = function() {
+FinanceApp.prototype.updateUsageStatistics = function () {
   // Total expenses count
   const totalExpensesEl = document.getElementById('totalExpensesCount');
   if (totalExpensesEl) {
@@ -10802,13 +11711,15 @@ FinanceApp.prototype.updateUsageStatistics = function() {
   const accountAgeEl = document.getElementById('accountAge');
   if (accountAgeEl) {
     const allDates = [
-      ...this.expenses.map(e => new Date(e.date)),
-      ...this.goals.map(g => new Date(g.createdAt || Date.now()))
+      ...this.expenses.map((e) => new Date(e.date)),
+      ...this.goals.map((g) => new Date(g.createdAt || Date.now())),
     ];
 
     if (allDates.length > 0) {
       const oldestDate = new Date(Math.min(...allDates));
-      const daysDiff = Math.floor((new Date() - oldestDate) / (1000 * 60 * 60 * 24));
+      const daysDiff = Math.floor(
+        (new Date() - oldestDate) / (1000 * 60 * 60 * 24)
+      );
       accountAgeEl.textContent = daysDiff;
     } else {
       accountAgeEl.textContent = '0';
@@ -10817,7 +11728,7 @@ FinanceApp.prototype.updateUsageStatistics = function() {
 };
 
 // Export data as JSON
-FinanceApp.prototype.exportDataAsJSON = function() {
+FinanceApp.prototype.exportDataAsJSON = function () {
   const dataToExport = {
     expenses: this.expenses,
     goals: this.goals,
@@ -10828,7 +11739,7 @@ FinanceApp.prototype.exportDataAsJSON = function() {
     savingsAccounts: this.savingsAccounts,
     recurringPayments: this.recurringPayments,
     exportDate: new Date().toISOString(),
-    version: '1.0'
+    version: '1.0',
   };
 
   const dataStr = JSON.stringify(dataToExport, null, 2);
@@ -10837,7 +11748,9 @@ FinanceApp.prototype.exportDataAsJSON = function() {
 
   const link = document.createElement('a');
   link.href = url;
-  link.download = `financiapro-backup-${new Date().toISOString().split('T')[0]}.json`;
+  link.download = `financiapro-backup-${
+    new Date().toISOString().split('T')[0]
+  }.json`;
   link.click();
 
   URL.revokeObjectURL(url);
@@ -10845,18 +11758,18 @@ FinanceApp.prototype.exportDataAsJSON = function() {
 };
 
 // Export data as CSV
-FinanceApp.prototype.exportDataAsCSV = function() {
+FinanceApp.prototype.exportDataAsCSV = function () {
   // Export expenses as CSV
   let csvContent = 'Fecha,Descripción,Monto,Categoría,Necesidad,Usuario\n';
 
-  this.expenses.forEach(expense => {
+  this.expenses.forEach((expense) => {
     const row = [
       expense.date,
       `"${expense.description}"`,
       expense.amount,
       expense.category,
       expense.necessity,
-      expense.user
+      expense.user,
     ].join(',');
     csvContent += row + '\n';
   });
@@ -10866,7 +11779,9 @@ FinanceApp.prototype.exportDataAsCSV = function() {
 
   const link = document.createElement('a');
   link.href = url;
-  link.download = `financiapro-expenses-${new Date().toISOString().split('T')[0]}.csv`;
+  link.download = `financiapro-expenses-${
+    new Date().toISOString().split('T')[0]
+  }.csv`;
   link.click();
 
   URL.revokeObjectURL(url);
@@ -10874,7 +11789,7 @@ FinanceApp.prototype.exportDataAsCSV = function() {
 };
 
 // Import data from JSON
-FinanceApp.prototype.importDataFromJSON = function(file) {
+FinanceApp.prototype.importDataFromJSON = function (file) {
   const reader = new FileReader();
 
   reader.onload = (e) => {
@@ -10888,19 +11803,28 @@ FinanceApp.prototype.importDataFromJSON = function(file) {
       }
 
       // Confirm import
-      if (!confirm('¿Estás seguro de que deseas importar estos datos? Esto sobrescribirá tus datos actuales.')) {
+      if (
+        !confirm(
+          '¿Estás seguro de que deseas importar estos datos? Esto sobrescribirá tus datos actuales.'
+        )
+      ) {
         return;
       }
 
       // Import data
       if (importedData.expenses) this.expenses = importedData.expenses;
       if (importedData.goals) this.goals = importedData.goals;
-      if (importedData.shoppingItems) this.shoppingItems = importedData.shoppingItems;
-      if (importedData.monthlyIncome) this.monthlyIncome = importedData.monthlyIncome;
+      if (importedData.shoppingItems)
+        this.shoppingItems = importedData.shoppingItems;
+      if (importedData.monthlyIncome)
+        this.monthlyIncome = importedData.monthlyIncome;
       if (importedData.budgets) this.budgets = importedData.budgets;
-      if (importedData.expenseTemplates) this.expenseTemplates = importedData.expenseTemplates;
-      if (importedData.savingsAccounts) this.savingsAccounts = importedData.savingsAccounts;
-      if (importedData.recurringPayments) this.recurringPayments = importedData.recurringPayments;
+      if (importedData.expenseTemplates)
+        this.expenseTemplates = importedData.expenseTemplates;
+      if (importedData.savingsAccounts)
+        this.savingsAccounts = importedData.savingsAccounts;
+      if (importedData.recurringPayments)
+        this.recurringPayments = importedData.recurringPayments;
 
       this.saveData();
       this.renderDashboard();
@@ -10910,7 +11834,6 @@ FinanceApp.prototype.importDataFromJSON = function(file) {
       setTimeout(() => {
         location.reload();
       }, 1500);
-
     } catch (error) {
       console.error('Error importing data:', error);
       this.showToast('Error al importar datos', 'error');
@@ -10921,7 +11844,7 @@ FinanceApp.prototype.importDataFromJSON = function(file) {
 };
 
 // Update system information in Advanced tab
-FinanceApp.prototype.updateSystemInfo = function() {
+FinanceApp.prototype.updateSystemInfo = function () {
   // Last update date
   const lastUpdateEl = document.getElementById('lastUpdateDate');
   if (lastUpdateEl) {
@@ -10934,7 +11857,7 @@ FinanceApp.prototype.updateSystemInfo = function() {
           lastUpdateEl.textContent = date.toLocaleDateString('es-ES', {
             year: 'numeric',
             month: 'short',
-            day: 'numeric'
+            day: 'numeric',
           });
         }
       } catch (e) {
@@ -10960,27 +11883,36 @@ FinanceApp.prototype.updateSystemInfo = function() {
 };
 
 // Update expense form statistics
-FinanceApp.prototype.updateExpenseStats = function() {
+FinanceApp.prototype.updateExpenseStats = function () {
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
   const currentMonth = today.getMonth();
   const currentYear = today.getFullYear();
 
   // Count today's expenses
-  const todayExpenses = this.expenses.filter(exp => {
+  const todayExpenses = this.expenses.filter((exp) => {
     const expDate = new Date(exp.date);
     return expDate.toISOString().split('T')[0] === todayStr;
   });
 
   // Calculate today's total
-  const todayTotal = todayExpenses.reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0);
+  const todayTotal = todayExpenses.reduce(
+    (sum, exp) => sum + parseFloat(exp.amount || 0),
+    0
+  );
 
   // Calculate month's total
-  const monthExpenses = this.expenses.filter(exp => {
+  const monthExpenses = this.expenses.filter((exp) => {
     const expDate = new Date(exp.date);
-    return expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear;
+    return (
+      expDate.getMonth() === currentMonth &&
+      expDate.getFullYear() === currentYear
+    );
   });
-  const monthTotal = monthExpenses.reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0);
+  const monthTotal = monthExpenses.reduce(
+    (sum, exp) => sum + parseFloat(exp.amount || 0),
+    0
+  );
 
   // Update DOM elements
   const todayCountEl = document.getElementById('todayExpensesCount');
@@ -10988,8 +11920,10 @@ FinanceApp.prototype.updateExpenseStats = function() {
   const monthTotalEl = document.getElementById('monthExpensesTotal');
 
   if (todayCountEl) todayCountEl.textContent = todayExpenses.length;
-  if (todayTotalEl) todayTotalEl.textContent = `$${this.formatNumber(todayTotal)}`;
-  if (monthTotalEl) monthTotalEl.textContent = `$${this.formatNumber(monthTotal)}`;
+  if (todayTotalEl)
+    todayTotalEl.textContent = `$${this.formatNumber(todayTotal)}`;
+  if (monthTotalEl)
+    monthTotalEl.textContent = `$${this.formatNumber(monthTotal)}`;
 };
 
 // ============================================================================
@@ -10997,7 +11931,7 @@ FinanceApp.prototype.updateExpenseStats = function() {
 // ============================================================================
 
 // Formatea número con separadores de miles (formato chileno: 1.000.000)
-FinanceApp.prototype.formatNumber = function(number) {
+FinanceApp.prototype.formatNumber = function (number) {
   if (number === null || number === undefined || isNaN(number)) return '0';
 
   // Convertir a número si es string
@@ -11012,11 +11946,13 @@ FinanceApp.prototype.formatNumber = function(number) {
   const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
   // Retornar sin decimales si son .00, sino con decimales
-  return decimalPart === '00' ? formattedInteger : `${formattedInteger},${decimalPart}`;
+  return decimalPart === '00'
+    ? formattedInteger
+    : `${formattedInteger},${decimalPart}`;
 };
 
 // Limpia el formato de número para obtener valor numérico puro
-FinanceApp.prototype.unformatNumber = function(formattedNumber) {
+FinanceApp.prototype.unformatNumber = function (formattedNumber) {
   if (typeof formattedNumber !== 'string') return formattedNumber;
 
   // Remover puntos (separadores de miles) y reemplazar coma por punto (decimal)
@@ -11025,7 +11961,7 @@ FinanceApp.prototype.unformatNumber = function(formattedNumber) {
 };
 
 // Configura formateo automático en un input numérico
-FinanceApp.prototype.setupNumberFormatting = function(inputElement) {
+FinanceApp.prototype.setupNumberFormatting = function (inputElement) {
   if (!inputElement) return;
 
   // Cambiar tipo de input de 'number' a 'text' para permitir formato personalizado
@@ -11057,7 +11993,10 @@ FinanceApp.prototype.setupNumberFormatting = function(inputElement) {
       // Ajustar posición del cursor
       const newLength = e.target.value.length;
       const lengthDiff = newLength - oldLength;
-      e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
+      e.target.setSelectionRange(
+        cursorPosition + lengthDiff,
+        cursorPosition + lengthDiff
+      );
     } else if (value === '') {
       e.target.value = '';
       rawValue = '';
@@ -11083,26 +12022,26 @@ FinanceApp.prototype.setupNumberFormatting = function(inputElement) {
 };
 
 // Configura formateo en todos los inputs numéricos de la aplicación
-FinanceApp.prototype.setupAllNumberInputs = function() {
+FinanceApp.prototype.setupAllNumberInputs = function () {
   // Lista de IDs de inputs numéricos en la aplicación
   const numericInputIds = [
-    'amount',                    // Formulario de gastos
-    'monthlyIncome',             // Configuración de ingreso mensual
-    'goalAmount',                // Meta de ahorro
-    'budget-food',               // Presupuestos por categoría
+    'amount', // Formulario de gastos
+    'monthlyIncome', // Configuración de ingreso mensual
+    'goalAmount', // Meta de ahorro
+    'budget-food', // Presupuestos por categoría
     'budget-transport',
     'budget-entertainment',
     'budget-health',
     'budget-services',
     'budget-shopping',
     'budget-other',
-    'savingsAmount',             // Ahorro (modal)
-    'recurringPaymentAmount',    // Pago recurrente (modal)
-    'recurringPaymentDay'        // Día del mes
+    'savingsAmount', // Ahorro (modal)
+    'recurringPaymentAmount', // Pago recurrente (modal)
+    'recurringPaymentDay', // Día del mes
   ];
 
   // Aplicar formateo a cada input
-  numericInputIds.forEach(id => {
+  numericInputIds.forEach((id) => {
     const input = document.getElementById(id);
     if (input) {
       this.setupNumberFormatting(input);
@@ -11111,7 +12050,7 @@ FinanceApp.prototype.setupAllNumberInputs = function() {
 
   // También buscar todos los inputs con type="number" en la página
   const numberInputs = document.querySelectorAll('input[type="number"]');
-  numberInputs.forEach(input => {
+  numberInputs.forEach((input) => {
     this.setupNumberFormatting(input);
   });
 };
