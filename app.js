@@ -1178,12 +1178,16 @@ class FinanceApp {
   }
 
   simulateUpgrade() {
-    // Simulate upgrading to Pro (for demo purposes)
-    this.userPlan = 'pro';
-    this.updateProfileDisplay();
-    this.showToast('¡Bienvenido a Pro! 🌟', 'success');
+    // Bloquear upgrade - mostrar modal de "Estamos trabajando en ello"
+    document.getElementById('upgradeModal')?.remove();
+    this.showPremiumComingSoonModal();
+  }
 
-    document.getElementById('upgradeModal').remove();
+  showPremiumComingSoonModal() {
+    const modal = document.getElementById('premiumComingSoonModal');
+    if (modal) {
+      modal.classList.add('show');
+    }
   }
 
   changeAvatar(avatarIndex) {
@@ -1197,21 +1201,9 @@ class FinanceApp {
   }
 
   uploadCustomAvatar(file) {
-    if (this.userPlan !== 'pro') {
-      this.showToast('Función disponible solo para usuarios Pro', 'info');
-      return;
-    }
-
-    // Simulate uploading custom avatar
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.userProfile.avatar = e.target.result;
-      this.userProfile.avatarType = 'custom';
-      this.updateProfileDisplay();
-      this.saveData();
-      this.showToast('Foto de perfil actualizada', 'success');
-    };
-    reader.readAsDataURL(file);
+    // Bloquear subida de avatar personalizado
+    this.showPremiumComingSoonModal();
+    return;
   }
 
   async syncFromFirebase() {
@@ -2008,24 +2000,9 @@ class FinanceApp {
   }
 
   purchaseStyle(styleId) {
-    const style = this.chartStyles.find((s) => s.id === styleId);
-    if (
-      !style ||
-      this.ownedStyles.includes(styleId) ||
-      this.userCoins < style.price
-    ) {
-      return;
-    }
-
-    this.userCoins -= style.price;
-    this.ownedStyles.push(styleId);
-    this.saveData();
-
-    this.renderStore();
-    this.updateCoinsDisplay();
-    this.setupStyleManager();
-
-    this.showToast(`¡Has adquirido el estilo "${style.name}"!`, 'success');
+    // Bloquear compras - mostrar modal premium coming soon
+    this.showPremiumComingSoonModal();
+    return;
   }
 
   applyStyle(styleId) {
@@ -7576,10 +7553,19 @@ function closeComingSoonModal() {
   }
 }
 
+function closePremiumComingSoonModal() {
+  const modal = document.getElementById('premiumComingSoonModal');
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+
 // Exportar funciones globalmente
 if (typeof window !== 'undefined') {
   window.openComingSoonModal = openComingSoonModal;
   window.closeComingSoonModal = closeComingSoonModal;
+  window.closePremiumComingSoonModal = closePremiumComingSoonModal;
 }
 
 FinanceApp.prototype.setupUserSystemListeners = function () {
@@ -12139,10 +12125,13 @@ FinanceApp.prototype.formatNumber = function (number) {
 
 // Limpia el formato de número para obtener valor numérico puro
 FinanceApp.prototype.unformatNumber = function (formattedNumber) {
-  if (typeof formattedNumber !== 'string') return formattedNumber;
+  if (typeof formattedNumber !== 'string' || !formattedNumber) {
+    return 0;
+  }
 
-  // Remover puntos (separadores de miles) y reemplazar coma por punto (decimal)
-  const cleaned = formattedNumber.replace(/\./g, '').replace(/,/g, '.');
+  // CORRECCIÓN: Elimina TODOS los caracteres que no sean dígitos o una coma decimal.
+  // Luego, reemplaza la coma por un punto para el parseFloat.
+  const cleaned = formattedNumber.replace(/[^0-9,]/g, '').replace(/,/g, '.');
   return parseFloat(cleaned) || 0;
 };
 
