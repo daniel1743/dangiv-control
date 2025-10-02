@@ -1906,9 +1906,62 @@ body {
 /* Add gradient inline styles via JavaScript */
 
 /* === UPGRADE MODAL STYLES === */
+.upgrade-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 9000;
+  padding: var(--space-20);
+}
+
+.upgrade-modal.show {
+  display: flex;
+}
+
 .upgrade-modal .modal-content {
   max-width: 400px;
   text-align: center;
+}
+
+.upgrade-modal-content {
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-xl);
+  padding: 0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.upgrade-modal-content .modal-header {
+  background: var(--color-surface-raised);
+  padding: var(--space-24);
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+}
+
+.upgrade-modal-content .modal-header h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+}
+
+.upgrade-modal-content .modal-body {
+  background: var(--color-surface-raised);
+  padding: var(--space-32);
+}
+
+.upgrade-modal-content .modal-footer {
+  background: var(--color-surface-raised);
+  padding: var(--space-24);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  gap: var(--space-12);
+  justify-content: center;
 }
 
 .upgrade-features {

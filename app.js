@@ -1241,31 +1241,80 @@ class FinanceApp {
         const { cleaned: cloudData, changed: cloudNormalized } =
           this.normalizePersistedData(cloudRaw);
 
+        // Sincronizar todos los datos desde la nube
         this.expenses = cloudData.expenses || [];
         this.goals = cloudData.goals || [];
         this.shoppingItems = cloudData.shoppingItems || [];
         this.monthlyIncome = cloudData.monthlyIncome || 2500;
         this.securityPasswords = cloudData.securityPasswords || {};
 
-        // Sincronizar datos adicionales
+        // Account data
+        if (cloudData.accountType) this.accountType = cloudData.accountType;
+        if (cloudData.sharedAccountId) this.sharedAccountId = cloudData.sharedAccountId;
+        if (cloudData.accountOwner) this.accountOwner = cloudData.accountOwner;
+        if (cloudData.accountUsers) this.accountUsers = cloudData.accountUsers;
+
+        // User profile and settings
         if (cloudData.userProfile) {
           this.userProfile = cloudData.userProfile;
+        }
+
+        // Activity and audit logs
+        if (cloudData.activityLog) {
+          this.activityLog = cloudData.activityLog;
         }
         if (cloudData.auditLog) {
           this.auditLog = cloudData.auditLog;
         }
+
+        // Custom users
         if (cloudData.customUsers) {
           this.customUsers = cloudData.customUsers;
         }
+
+        // Financial data
         if (cloudData.savingsAccounts) {
           this.savingsAccounts = cloudData.savingsAccounts;
         }
         if (cloudData.recurringPayments) {
           this.recurringPayments = cloudData.recurringPayments;
         }
+        if (cloudData.budgets) {
+          this.budgets = cloudData.budgets;
+        }
+        if (cloudData.expenseTemplates) {
+          this.expenseTemplates = cloudData.expenseTemplates;
+        }
+
+        // Store data
+        if (cloudData.userCoins !== undefined) {
+          this.userCoins = cloudData.userCoins;
+        }
+        if (cloudData.ownedStyles) {
+          this.ownedStyles = cloudData.ownedStyles;
+        }
+        if (cloudData.currentStyle) {
+          this.currentStyle = cloudData.currentStyle;
+        }
+
+        // Invite system
+        if (cloudData.inviteCodes) {
+          this.inviteCodes = cloudData.inviteCodes;
+        }
+        if (cloudData.currentInviteLink) {
+          this.currentInviteLink = cloudData.currentInviteLink;
+        }
+
+        // Motivational messages
+        if (cloudData.motivationalMessages) {
+          this.motivationalMessages = cloudData.motivationalMessages;
+        }
+        if (cloudData.lastMessageUpdate) {
+          this.lastMessageUpdate = cloudData.lastMessageUpdate;
+        }
 
         try {
-          localStorage.setItem('danGivControlData', JSON.stringify(cloudData));
+          localStorage.setItem('financiaProData', JSON.stringify(cloudData));
         } catch (error) {
           console.warn(
             'No se pudo actualizar el almacenamiento local con los datos de la nube.',
