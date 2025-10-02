@@ -1792,23 +1792,38 @@
           <div class="audit-filters">
             <div class="filter-group">
               <label for="auditTypeFilter">Tipo de cambio</label>
-              <select id="auditTypeFilter">
-                <option value="all">Todos</option>
-                <option value="expense_added">Gasto añadido</option>
-                <option value="expense_edited">Gasto editado</option>
-                <option value="expense_deleted">Gasto eliminado</option>
-                <option value="goal_added">Meta añadida</option>
-                <option value="goal_edited">Meta editada</option>
-                <option value="goal_deleted">Meta eliminada</option>
-                <option value="payment_added">Pago añadido</option>
-                <option value="payment_deleted">Pago eliminado</option>
-                <option value="shopping_added">Compra añadida</option>
-                <option value="shopping_deleted">Compra eliminada</option>
-              </select>
+              <div class="input-group">
+                <i class="fas fa-filter"></i>
+                <select id="auditTypeFilter" class="form-select">
+                  <option value="all">📋 Todos los cambios</option>
+                  <option value="expense_added">➕ Gasto añadido</option>
+                  <option value="expense_edited">✏️ Gasto editado</option>
+                  <option value="expense_deleted">🗑️ Gasto eliminado</option>
+                  <option value="goal_added">🎯 Meta añadida</option>
+                  <option value="goal_edited">✏️ Meta editada</option>
+                  <option value="goal_deleted">🗑️ Meta eliminada</option>
+                  <option value="payment_added">💳 Pago añadido</option>
+                  <option value="payment_deleted">🗑️ Pago eliminado</option>
+                  <option value="shopping_added">🛒 Compra añadida</option>
+                  <option value="shopping_deleted">🗑️ Compra eliminada</option>
+                </select>
+              </div>
             </div>
             <div class="filter-group">
-              <label for="auditDateFilter">Fecha</label>
-              <input type="date" id="auditDateFilter" />
+              <label for="auditDaysFilter">Últimos días</label>
+              <div class="input-group">
+                <i class="fas fa-calendar-alt"></i>
+                <select id="auditDaysFilter" class="form-select">
+                  <option value="all">🗓️ Todos los registros</option>
+                  <option value="1">Hoy</option>
+                  <option value="3">Últimos 3 días</option>
+                  <option value="7" selected>Últimos 7 días</option>
+                  <option value="14">Últimos 14 días</option>
+                  <option value="30">Últimos 30 días</option>
+                  <option value="60">Últimos 2 meses</option>
+                  <option value="90">Últimos 3 meses</option>
+                </select>
+              </div>
             </div>
             <button class="btn btn--secondary" id="clearAuditFilters">
               <i class="fas fa-times"></i> Limpiar filtros
@@ -3427,18 +3442,10 @@
             </p>
           </div>
           <div class="footer-social">
-            <a href="#" class="social-link" aria-label="Facebook">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="#" class="social-link" aria-label="Twitter">
-              <i class="fab fa-twitter"></i>
-            </a>
-            <a href="#" class="social-link" aria-label="LinkedIn">
-              <i class="fab fa-linkedin-in"></i>
-            </a>
-            <a href="#" class="social-link" aria-label="Instagram">
-              <i class="fab fa-instagram"></i>
-            </a>
+            <!-- Aquí irá Instagram -->
+            <!-- Aquí irá Twitter -->
+            <!-- Aquí irá Facebook -->
+            <!-- Aquí irá LinkedIn -->
           </div>
         </div>
       </div>

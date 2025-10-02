@@ -665,11 +665,7 @@ class FinanceApp {
       const firestoreDocId = this.sharedAccountId || this.currentUser;
       const userDocRef = FB.doc(FB.db, 'userData', firestoreDocId);
 
-      console.log('DEBUG: Guardando en Firestore con ID:', firestoreDocId);
-      console.log(
-        'DEBUG: Es cuenta compartida?',
-        this.sharedAccountId ? 'SÍ' : 'NO'
-      );
+      // DEBUG: Guardando en Firestore
 
       // Limpiar userProfile para Firebase - solo guardar datos serializables
       const cleanedData = {
@@ -1286,9 +1282,11 @@ class FinanceApp {
           );
         }
 
-        this.showToast('Datos sincronizados desde la nube.', 'success');
+        // Sincronización silenciosa - No molestar al usuario
+        console.log('Datos sincronizados desde la nube');
       } else {
-        this.showToast('¡Bienvenido! Creando tu espacio en la nube.', 'info');
+        // Primera vez - Crear espacio silenciosamente
+        console.log('Creando espacio en la nube para usuario nuevo');
         await this.saveData();
       }
 
@@ -9676,20 +9674,20 @@ FinanceApp.prototype.renderAuditLog = function () {
   if (!auditList) return;
 
   const typeFilter = document.getElementById('auditTypeFilter')?.value || 'all';
-  const dateFilter = document.getElementById('auditDateFilter')?.value || '';
+  const daysFilter = document.getElementById('auditDaysFilter')?.value || 'all';
 
   let filteredLog = this.auditLog;
 
+  // Filtrar por tipo
   if (typeFilter !== 'all') {
     filteredLog = filteredLog.filter((entry) => entry.type === typeFilter);
   }
 
-  if (dateFilter) {
-    const filterDate = new Date(dateFilter).toDateString();
-    filteredLog = filteredLog.filter((entry) => {
-      const entryDate = new Date(entry.timestamp).toDateString();
-      return entryDate === filterDate;
-    });
+  // Filtrar por últimos días
+  if (daysFilter !== 'all') {
+    const daysAgo = parseInt(daysFilter);
+    const cutoffDate = Date.now() - (daysAgo * 24 * 60 * 60 * 1000);
+    filteredLog = filteredLog.filter((entry) => entry.timestamp >= cutoffDate);
   }
 
   if (filteredLog.length === 0) {
@@ -9751,21 +9749,21 @@ FinanceApp.prototype.renderAuditLog = function () {
 
 FinanceApp.prototype.setupAuditListeners = function () {
   const typeFilter = document.getElementById('auditTypeFilter');
-  const dateFilter = document.getElementById('auditDateFilter');
+  const daysFilter = document.getElementById('auditDaysFilter');
   const clearFilters = document.getElementById('clearAuditFilters');
 
   if (typeFilter) {
     typeFilter.addEventListener('change', () => this.renderAuditLog());
   }
 
-  if (dateFilter) {
-    dateFilter.addEventListener('change', () => this.renderAuditLog());
+  if (daysFilter) {
+    daysFilter.addEventListener('change', () => this.renderAuditLog());
   }
 
   if (clearFilters) {
     clearFilters.addEventListener('click', () => {
       if (typeFilter) typeFilter.value = 'all';
-      if (dateFilter) dateFilter.value = '';
+      if (daysFilter) daysFilter.value = '7';
       this.renderAuditLog();
     });
   }
