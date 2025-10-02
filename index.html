@@ -176,6 +176,22 @@
             </span>
           </div>
 
+          <button
+            id="mobileProfileBtn"
+            class="icon-btn mobile-profile-btn"
+            title="Mi cuenta"
+          >
+            <i class="fas fa-user"></i>
+          </button>
+
+          <button
+            id="mobileLogoutBtn"
+            class="icon-btn mobile-logout-btn"
+            title="Cerrar sesión"
+          >
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+
           <div id="notificationDropdown" class="notification-dropdown hidden">
             <div class="notification-header">
               <h4>Notificaciones</h4>
@@ -213,16 +229,13 @@
               </button>
             </div>
           </div>
-          <button class="icon-btn" id="settingsBtn" aria-label="Configuración">
-            <i class="fas fa-cog"></i>
-          </button>
           <button class="icon-btn" id="themeToggle" aria-label="Cambiar a modo oscuro">
             <i class="fas fa-moon"></i>
           </button>
-          <!-- Login Button (shown when not logged in) -->
-          <button class="btn btn--primary" id="navbarLoginBtn">
-            <i class="fas fa-sign-in-alt"></i>
-            <span>Iniciar sesión</span>
+
+          <!-- Login Icon (shown when not logged in) -->
+          <button class="login-icon-btn" id="navbarLoginBtn" aria-label="Iniciar sesión" title="Iniciar sesión">
+            <i class="fas fa-user-circle"></i>
           </button>
 
           <!-- Profile Menu (shown when logged in) -->
@@ -371,18 +384,6 @@
         <button class="nav-item" data-section="config">
           <i class="fas fa-cog"></i>
           <span>Configuración</span>
-        </button>
-        <button class="nav-item nav-auth" id="sidebarLoginBtn">
-          <i class="fas fa-sign-in-alt"></i>
-          <span>Iniciar sesión</span>
-        </button>
-        <button
-          class="nav-item nav-auth"
-          id="sidebarLogoutBtn"
-          style="display: none"
-        >
-          <i class="fas fa-sign-out-alt"></i>
-          <span>Cerrar sesión</span>
         </button>
       </nav>
     </aside>

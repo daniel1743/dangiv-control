@@ -1623,7 +1623,7 @@ input:checked + .toggle-slider:before {
 
 .settings-nav-item.active .settings-nav-icon {
   background: var(--color-primary);
-  color: rgb(12, 11, 11);
+  color: white;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 }
 

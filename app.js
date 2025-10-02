@@ -907,23 +907,28 @@ class FinanceApp {
     const FB = window.FB;
     if (!FB?.auth) return;
 
-    const loginBtns = document.querySelectorAll(
-      '#navbarLoginBtn, #sidebarLoginBtn'
-    );
     const profileMenuContainer = document.getElementById(
       'profileMenuContainer'
     );
 
     FB.onAuthStateChanged(FB.auth, (user) => {
+      const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+      const mobileProfileBtn = document.getElementById('mobileProfileBtn');
+      const navbarLoginBtn = document.getElementById('navbarLoginBtn');
+
       if (user) {
         this.currentUser = user.uid;
         this.userProfile.email = user.email || '';
         this.userProfile.name =
           user.displayName || user.email?.split('@')[0] || 'Usuario';
 
-        // Show profile menu, hide login buttons
-        loginBtns.forEach((btn) => (btn.style.display = 'none'));
+        // Show profile menu, hide login button
+        if (navbarLoginBtn) navbarLoginBtn.style.display = 'none';
         if (profileMenuContainer) profileMenuContainer.style.display = 'block';
+
+        // Show mobile buttons (CSS handles responsive visibility)
+        if (mobileLogoutBtn) mobileLogoutBtn.classList.add('show');
+        if (mobileProfileBtn) mobileProfileBtn.classList.add('show');
 
         this.updateProfileDisplay();
         this.syncFromFirebase();
@@ -942,24 +947,21 @@ class FinanceApp {
         this.userProfile.name = 'Usuario';
         this.userProfile.email = '';
 
-        // Show login buttons, hide profile menu
-        loginBtns.forEach((btn) => (btn.style.display = 'inline-flex'));
+        // Show login button, hide profile menu
+        if (navbarLoginBtn) navbarLoginBtn.style.display = 'inline-flex';
         if (profileMenuContainer) profileMenuContainer.style.display = 'none';
-        this.updateDashboardWelcome();
 
+        // Hide mobile buttons
+        if (mobileLogoutBtn) mobileLogoutBtn.classList.remove('show');
+        if (mobileProfileBtn) mobileProfileBtn.classList.remove('show');
+
+        this.updateDashboardWelcome();
         this.renderDashboard();
       }
     });
 
     // Setup profile menu functionality
     this.setupProfileMenu();
-
-    // El botÃ³n de login ahora abre el modal.
-    loginBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        this.openAuthModal();
-      });
-    });
   }
 
   setupProfileMenu() {
@@ -1020,6 +1022,7 @@ class FinanceApp {
         try {
           const FB = window.FB;
           await FB.signOut(FB.auth);
+          this.clearUserData();
           this.showToast('Sesión cerrada correctamente 👋', 'success');
           profileDropdown.classList.add('hidden');
           this.showSection('dashboard');
@@ -1038,6 +1041,90 @@ class FinanceApp {
 
     // Initialize SVG gradient for profile ring
     this.initializeProfileRingGradient();
+
+    // Mobile profile button
+    const mobileProfileBtn = document.getElementById('mobileProfileBtn');
+    if (mobileProfileBtn) {
+      mobileProfileBtn.addEventListener('click', () => {
+        this.showSection('config');
+        // Activar la pestaña de perfil en configuración
+        const profileTab = document.querySelector('[data-settings-tab="profile"]');
+        if (profileTab) {
+          profileTab.click();
+        }
+      });
+    }
+
+    // Mobile logout button
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    if (mobileLogoutBtn) {
+      mobileLogoutBtn.addEventListener('click', async () => {
+        try {
+          const FB = window.FB;
+          await FB.signOut(FB.auth);
+          this.clearUserData();
+          this.showToast('Sesión cerrada correctamente 👋', 'success');
+          this.showSection('dashboard');
+        } catch (e) {
+          this.showToast('Error al cerrar sesión', 'error');
+        }
+      });
+    }
+  }
+
+  clearUserData() {
+    // Clear all user-specific data from memory
+    this.expenses = [];
+    this.goals = [];
+    this.shoppingItems = [];
+    this.monthlyIncome = 2500;
+    this.budgets = {};
+    this.expenseTemplates = [];
+    this.currentUser = 'anonymous';
+    this.userPlan = 'free';
+    this.userProfile = {
+      name: 'Usuario',
+      email: '',
+      avatar: '',
+    };
+    this.userCoins = 0;
+    this.ownedStyles = ['default'];
+    this.currentStyle = 'default';
+    this.accountType = 'personal';
+    this.sharedAccountId = null;
+    this.accountOwner = null;
+    this.accountUsers = [];
+    this.inviteCodes = {};
+    this.currentInviteLink = null;
+    this.activityLog = [];
+    this.motivationalMessages = [];
+    this.lastMessageUpdate = null;
+
+    // Clear localStorage except tour completion flag
+    const tourCompleted = localStorage.getItem('financia_tour_completed');
+    const themePreference = localStorage.getItem('financia_theme');
+    localStorage.clear();
+    if (tourCompleted) {
+      localStorage.setItem('financia_tour_completed', tourCompleted);
+    }
+    if (themePreference) {
+      localStorage.setItem('financia_theme', themePreference);
+    }
+
+    // Re-render UI
+    this.renderDashboard();
+    this.renderExpenses();
+    this.renderGoals();
+  }
+
+  setupLogoRedirect() {
+    const logo = document.querySelector('.navbar__logo');
+    if (logo) {
+      logo.style.cursor = 'pointer';
+      logo.addEventListener('click', () => {
+        this.showSection('dashboard');
+      });
+    }
   }
 
   updateProfileDisplay() {
@@ -1416,15 +1503,14 @@ class FinanceApp {
         this.showToast('¡Bienvenido a Dan&Giv Control! 🎉', 'success', 4000);
       }
 
-      // Cerrar modal suavemente
-      setTimeout(() => {
-        this.closeAuthModal();
-      }, 1500);
+      // Cerrar modal y redirigir al dashboard
+      this.closeAuthModal();
+      this.showSection('dashboard');
 
-      // Iniciar tour con más tiempo para que el usuario se acomode
+      // Iniciar tour después de redirigir
       setTimeout(() => {
         this.startTour();
-      }, 2500);
+      }, 1500);
 
       return true;
     } catch (error) {
@@ -1505,8 +1591,10 @@ class FinanceApp {
         `¡Bienvenido de nuevo, ${userCredential.user.email}!`,
         'success'
       );
-      // Opcional: Cerrar el modal de autenticaciÃ³n aquÃ­.
-      // document.getElementById('authModal').classList.remove('show');
+      // Cerrar modal y redirigir al dashboard
+      const authModal = document.getElementById('authModal');
+      if (authModal) authModal.classList.remove('show');
+      this.showSection('dashboard');
       return true;
     } catch (error) {
       console.error('Error de inicio de sesiÃ³n:', error.code);
@@ -1528,6 +1616,7 @@ class FinanceApp {
     // Esta función ahora solo llama directamente a los métodos de configuración.
     this.setupAuth();
     this.setupEventListeners(); // ¡CORRECCIÓN! Llamamos a la función correcta.
+    this.setupLogoRedirect(); // Logo redirect to dashboard
     this.setupAuditListeners(); // Sistema de auditoría
     this.setupSavingsListeners(); // Sistema de ahorros
     this.setupPaymentsListeners(); // Sistema de pagos recurrentes
@@ -7704,13 +7793,6 @@ FinanceApp.prototype.setupUserSystemListeners = function () {
     });
   }
 
-  const sidebarLoginBtn = document.getElementById('sidebarLoginBtn');
-  if (sidebarLoginBtn) {
-    sidebarLoginBtn.addEventListener('click', () => {
-      this.openAuthModal();
-    });
-  }
-
   // Update user selection dropdown
   this.updateUserSelectionDropdown();
 };
@@ -8408,7 +8490,7 @@ FinanceApp.prototype.setupTourEventListeners = function () {
   // Tour navigation buttons
   const nextBtn = this.tourOverlay.querySelector('.tour-next');
   const prevBtn = this.tourOverlay.querySelector('.tour-prev');
-  const skipBtn = this.tourOverlay.querySelector('.tour-skip, .tour-skip-prominent');
+  const skipBtns = this.tourOverlay.querySelectorAll('.tour-skip, .tour-skip-prominent');
   const finishBtn = this.tourOverlay.querySelector('.tour-finish');
   const closeBtn = this.tourOverlay.querySelector('.tour-close');
 
@@ -8424,11 +8506,14 @@ FinanceApp.prototype.setupTourEventListeners = function () {
     });
   }
 
-  if (skipBtn) {
-    skipBtn.addEventListener('click', () => {
+  // Vincular todos los botones de saltar
+  skipBtns.forEach((skipBtn) => {
+    skipBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       this.endTour();
     });
-  }
+  });
 
   if (finishBtn) {
     finishBtn.addEventListener('click', () => {
@@ -8551,6 +8636,28 @@ FinanceApp.prototype.showTourStep = function (stepIndex) {
 FinanceApp.prototype.positionTourElements = function (targetElement, position) {
   if (!this.tourSpotlight || !this.tourTooltip) return;
 
+  const isMobile = window.innerWidth <= 768;
+
+  if (isMobile) {
+    // En móvil: Tour estático centrado, sin spotlight
+    this.tourSpotlight.style.display = 'none';
+
+    // Centrar tooltip en la pantalla
+    this.tourTooltip.style.position = 'fixed';
+    this.tourTooltip.style.left = '50%';
+    this.tourTooltip.style.top = '50%';
+    this.tourTooltip.style.transform = 'translate(-50%, -50%)';
+    this.tourTooltip.style.width = '90%';
+    this.tourTooltip.style.maxWidth = '400px';
+
+    return;
+  }
+
+  // En desktop: comportamiento normal con spotlight
+  this.tourSpotlight.style.display = 'block';
+  this.tourTooltip.style.transform = 'none';
+  this.tourTooltip.style.width = 'auto';
+
   const rect = targetElement.getBoundingClientRect();
   const padding = 8;
 
@@ -8599,6 +8706,7 @@ FinanceApp.prototype.positionTourElements = function (targetElement, position) {
     top = viewportHeight - tooltipRect.height - 10;
   }
 
+  this.tourTooltip.style.position = 'fixed';
   this.tourTooltip.style.left = `${left}px`;
   this.tourTooltip.style.top = `${top}px`;
   this.tourTooltip.classList.remove(
