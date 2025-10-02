@@ -1474,6 +1474,14 @@ body {
   min-height: 100vh;
 }
 
+/* === FONT AWESOME OVERRIDE === */
+/* Sobrescribir display de Font Awesome para permitir centrado perfecto */
+.fa, .fas, .far, .fal, .fab {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
 /* === Z-INDEX HIERARCHY === */
 .overlay {
   z-index: 800;
@@ -3275,6 +3283,15 @@ select.form-control {
   font-size: 24px;
   color: var(--color-primary);
   flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.new-stat-card .stat-icon i {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
 }
 
 /* Unified monochrome icon style */
@@ -3750,6 +3767,15 @@ select.form-control {
   background-color: rgba(var(--color-primary-rgb, 0), 0.1);
   color: var(--color-primary);
   flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.insight-card__icon i {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
 }
 
 .insight-card__content {
@@ -5289,9 +5315,15 @@ select.form-control {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
 }
 
 .achievement-stat-card .stat-icon i {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
   font-size: var(--font-size-lg);
   color: var(--color-surface);
 }
