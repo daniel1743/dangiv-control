@@ -1361,6 +1361,12 @@ class FinanceApp {
       }
 
       this.closeAuthModal();
+
+      // Iniciar tour automáticamente después de registrarse
+      setTimeout(() => {
+        this.startTour();
+      }, 1000);
+
       return true;
     } catch (error) {
       console.error('Error completo de registro:', error);
@@ -8183,59 +8189,87 @@ FinanceApp.prototype.setupOnboardingTour = function () {
   this.tourSteps = [
     {
       element: '.navbar__logo',
-      title: '¡Bienvenido a FinanciaPro Suite!',
+      title: '¡Bienvenido a Dan&Giv Control!',
       description:
-        'Esta es tu nueva herramienta para el control financiero personal. Te guiaremos por las principales funciones.',
+        'Esta es tu nueva herramienta para el control financiero personal. Te guiaremos paso a paso por todas las funciones.',
       position: 'bottom',
     },
     {
       element: '[data-section="dashboard"]',
-      title: 'Panel Principal',
+      title: '📊 Panel Principal',
       description:
-        'Aquí verás un resumen de tus finanzas: gastos totales, metas y gráficos de análisis.',
+        'Tu centro de control financiero. Aquí verás resúmenes, gráficos de gastos, metas activas y recomendaciones de IA.',
       position: 'bottom',
     },
     {
       element: '[data-section="expenses"]',
-      title: 'Registro de Gastos',
+      title: '💰 Registro de Gastos',
       description:
-        'Registra todos tus gastos de forma rápida y organizada por categorías y nivel de necesidad.',
+        'Registra todos tus gastos de forma rápida. Categoriza por tipo (Alimentación, Transporte, etc.) y nivel de necesidad.',
       position: 'bottom',
     },
     {
       element: '[data-section="goals"]',
-      title: 'Metas Financieras',
+      title: '🎯 Metas Financieras',
       description:
-        'Define y hace seguimiento a tus objetivos de ahorro. Mantente motivado con el progreso visual.',
+        'Define objetivos de ahorro con fechas límite. Visualiza tu progreso y recibe notificaciones cuando estés cerca de cumplirlas.',
       position: 'bottom',
     },
     {
       element: '[data-section="analysis"]',
-      title: 'Análisis Detallado',
+      title: '📈 Análisis Detallado',
       description:
-        'Visualiza patrones en tus gastos con gráficos interactivos y estadísticas útiles.',
+        'Explora gráficos interactivos que muestran tus patrones de gasto por categoría, usuario y nivel de necesidad.',
+      position: 'bottom',
+    },
+    {
+      element: '[data-section="shopping"]',
+      title: '🛒 Lista de Compras',
+      description:
+        'Crea listas de compras inteligentes. Marca productos como necesarios o por impulso para tomar mejores decisiones.',
+      position: 'bottom',
+    },
+    {
+      element: '[data-section="audit"]',
+      title: '📋 Historial de Cambios',
+      description:
+        'Revisa todos los cambios realizados en tus finanzas: gastos añadidos, editados o eliminados con filtros por fecha y tipo.',
+      position: 'bottom',
+    },
+    {
+      element: '[data-section="savings"]',
+      title: '🏦 Cuentas de Ahorro',
+      description:
+        'Gestiona múltiples cuentas de ahorro. Registra depósitos, retiros y visualiza el historial de cada cuenta.',
+      position: 'bottom',
+    },
+    {
+      element: '[data-section="payments"]',
+      title: '🔄 Pagos Recurrentes',
+      description:
+        'Administra suscripciones y pagos mensuales. No olvides ningún pago importante con recordatorios automáticos.',
       position: 'bottom',
     },
     {
       element: '[data-section="store"]',
-      title: 'Tienda de Estilos',
+      title: '🎨 Tienda de Estilos',
       description:
-        'Personaliza la apariencia de tus gráficos con diferentes temas y estilos visuales.',
+        'Personaliza la apariencia de tus gráficos con temas exclusivos. Algunos estilos están disponibles para usuarios premium.',
       position: 'bottom',
     },
     {
       element: '[data-section="config"]',
-      title: 'Configuración',
+      title: '⚙️ Configuración',
       description:
-        'Administra tu perfil, configuración de cuenta y preferencias de la aplicación.',
+        'Administra tu perfil, seguridad, preferencias y configuración de cuenta. Cambia contraseñas y gestiona autenticación.',
       position: 'right',
     },
     {
-      element: '#expenseForm',
-      title: 'Registrar tu Primer Gasto',
+      element: '.notification-bell',
+      title: '🔔 Notificaciones',
       description:
-        'Comienza registrando un gasto. Completa la descripción, monto, categoría y nivel de necesidad.',
-      position: 'top',
+        'Recibe alertas sobre metas próximas a cumplirse, gastos importantes y actualizaciones del sistema.',
+      position: 'bottom',
     },
   ];
 
@@ -8251,12 +8285,9 @@ FinanceApp.prototype.setupOnboardingTour = function () {
   // Setup event listeners
   this.setupTourEventListeners();
 
-  // Show tour start button after a delay if user hasn't seen tour
-  setTimeout(() => {
-    if (!localStorage.getItem('financia_tour_completed') && this.tourStartBtn) {
-      this.tourStartBtn.classList.add('show');
-    }
-  }, 3000);
+  // El botón del tour NO se muestra automáticamente
+  // Solo se accede desde el enlace de ayuda en el footer
+  this.setupHelpCenterLink();
 };
 
 FinanceApp.prototype.setupTourEventListeners = function () {
@@ -8296,8 +8327,7 @@ FinanceApp.prototype.setupTourEventListeners = function () {
 
   if (finishBtn) {
     finishBtn.addEventListener('click', () => {
-      this.endTour();
-      this.showSection('expenses'); // Navigate to expenses section to start
+      this.endTour(true); // Show final options modal
     });
   }
 
@@ -8321,6 +8351,18 @@ FinanceApp.prototype.setupTourEventListeners = function () {
       this.endTour();
     }
   });
+};
+
+FinanceApp.prototype.setupHelpCenterLink = function () {
+  const helpLink = document.getElementById('helpCenterLink');
+  if (helpLink) {
+    helpLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      // Permitir repetir el tour removiendo el flag
+      localStorage.removeItem('financia_tour_completed');
+      this.startTour();
+    });
+  }
 };
 
 FinanceApp.prototype.startTour = function () {
@@ -8494,7 +8536,7 @@ FinanceApp.prototype.prevTourStep = function () {
   }
 };
 
-FinanceApp.prototype.endTour = function () {
+FinanceApp.prototype.endTour = function (showFinalOptions = false) {
   if (!this.tourActive) return;
 
   this.tourActive = false;
@@ -8517,11 +8559,87 @@ FinanceApp.prototype.endTour = function () {
   localStorage.setItem('financia_tour_completed', 'true');
   localStorage.setItem('financia_tour_date', new Date().toISOString());
 
-  // Show completion message
-  this.showToast(
-    '¡Tour completado! Ya puedes comenzar a usar FinanciaPro Suite.',
-    'success'
-  );
+  // Show final options modal if requested
+  if (showFinalOptions) {
+    setTimeout(() => {
+      this.showTourCompletionModal();
+    }, 300);
+  } else {
+    this.showToast(
+      '¡Tour completado! Ya puedes comenzar a usar Dan&Giv Control.',
+      'success'
+    );
+  }
+};
+
+FinanceApp.prototype.showTourCompletionModal = function () {
+  const modalHTML = `
+    <div class="modal tour-completion-modal" id="tourCompletionModal" style="display: flex;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">🎉 ¡Tour Completado!</h2>
+          </div>
+          <div class="modal-body">
+            <p style="margin-bottom: var(--space-20); text-align: center; color: var(--color-text-secondary);">
+              Ya conoces todas las funciones de Dan&Giv Control. ¿Qué te gustaría hacer ahora?
+            </p>
+            <div class="tour-final-options">
+              <button class="btn btn--primary btn--full-width" id="tourOptionExpense">
+                <i class="fas fa-plus-circle"></i> Agregar mi primer gasto
+              </button>
+              <button class="btn btn--secondary btn--full-width" id="tourOptionConfig">
+                <i class="fas fa-cog"></i> Ir a configuración
+              </button>
+              <button class="btn btn--outline btn--full-width" id="tourOptionRepeat">
+                <i class="fas fa-redo"></i> Repetir tour
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Insert modal into DOM
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  const modal = document.getElementById('tourCompletionModal');
+  const optionExpense = document.getElementById('tourOptionExpense');
+  const optionConfig = document.getElementById('tourOptionConfig');
+  const optionRepeat = document.getElementById('tourOptionRepeat');
+
+  const closeModal = () => {
+    modal.style.display = 'none';
+    modal.remove();
+  };
+
+  optionExpense?.addEventListener('click', () => {
+    closeModal();
+    this.showSection('expenses');
+    this.showToast('✨ ¡Registra tu primer gasto!', 'success');
+  });
+
+  optionConfig?.addEventListener('click', () => {
+    closeModal();
+    this.showSection('config');
+    this.showToast('⚙️ Configura tu cuenta', 'success');
+  });
+
+  optionRepeat?.addEventListener('click', () => {
+    closeModal();
+    localStorage.removeItem('financia_tour_completed');
+    setTimeout(() => {
+      this.startTour();
+    }, 300);
+  });
+
+  // Close on backdrop click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
 };
 
 // Setup new configuration functionality
