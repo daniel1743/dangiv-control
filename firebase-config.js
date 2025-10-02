@@ -12,6 +12,11 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
 } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
 
 import {
@@ -48,9 +53,9 @@ const firebaseConfig = {
 // API Keys - PROTEGIDAS (no incluir keys reales aquí)
 // Para desarrollo local: usa backend/.env
 // Para producción: configura variables de entorno en tu hosting (Vercel/Netlify)
-const geminiApiKey = '';
+const geminiApiKey = 'AIzaSyCpVpRdHHauFb-Qyx8UqoiABVxoE8f9EBc';
 const perplexityApiKey = '';
-const unsplashApiKey = '';
+const unsplashApiKey = 'azcQPEGuSb5EXoR7CXTqr7GY3Ih2-FF9iXjtWgHvoWI';
 
 // Exponer API keys globalmente
 window.geminiApiKey = geminiApiKey;
@@ -81,6 +86,12 @@ window.FB = {
   reauthenticateWithCredential,
   updatePassword,
   sendPasswordResetEmail,
+  // Social Auth Providers
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   // Firestore methods
   doc,
   getDoc,

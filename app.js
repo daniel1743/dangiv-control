@@ -998,7 +998,12 @@ class FinanceApp {
     // Profile menu actions
     if (viewProfileBtn) {
       viewProfileBtn.addEventListener('click', () => {
-        this.showToast('Página de perfil próximamente', 'info');
+        this.showSection('config');
+        // Activar la pestaña de perfil en configuración
+        const profileTab = document.querySelector('[data-settings-tab="profile"]');
+        if (profileTab) {
+          profileTab.click();
+        }
         profileDropdown.classList.add('hidden');
       });
     }
@@ -1310,16 +1315,25 @@ class FinanceApp {
   // === VALIDACIÓN DE CONTRASEÑA ===
   validatePassword(password) {
     const errors = [];
-    if (password.length < 8) errors.push('Mínimo 8 caracteres');
-    if (!/[A-Z]/.test(password)) errors.push('Al menos una mayúscula');
-    if (!/[a-z]/.test(password)) errors.push('Al menos una minúscula');
-    if (!/[0-9]/.test(password)) errors.push('Al menos un número');
+    if (password.length < 8) errors.push('mínimo 8 caracteres');
+    if (!/[A-Z]/.test(password)) errors.push('una mayúscula');
+    if (!/[a-z]/.test(password)) errors.push('una minúscula');
+    if (!/[0-9]/.test(password)) errors.push('un número');
     if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-      errors.push('Al menos un símbolo (!@#$%...)');
+      errors.push('un símbolo (!@#$...)');
     }
 
+    if (errors.length === 0) {
+      return { isValid: true };
+    }
+
+    const errorMsg = errors.length === 1
+      ? `Tu contraseña necesita ${errors[0]}`
+      : `Tu contraseña necesita: ${errors.join(', ')}`;
+
     return {
-      isValid: errors.length === 0,
+      isValid: false,
+      message: errorMsg,
       errors: errors
     };
   }
@@ -1337,10 +1351,7 @@ class FinanceApp {
       // Validar contraseña
       const passwordValidation = this.validatePassword(password);
       if (!passwordValidation.isValid) {
-        this.showToast(
-          '🔒 Contraseña débil:\n• ' + passwordValidation.errors.join('\n• '),
-          'error'
-        );
+        this.showToast(passwordValidation.message, 'error');
         return false;
       }
 
@@ -1354,35 +1365,42 @@ class FinanceApp {
       // Enviar email de verificación
       try {
         await userCredential.user.sendEmailVerification();
-        this.showToast('✅ ¡Cuenta creada! Verifica tu correo.', 'success');
+        this.showToast(
+          '¡Bienvenido! 🎉 Enviamos un correo de verificación a tu bandeja',
+          'success',
+          5000
+        );
       } catch (emailError) {
         console.warn('No se pudo enviar email de verificación:', emailError);
-        this.showToast('✅ ¡Cuenta creada correctamente!', 'success');
+        this.showToast('¡Bienvenido a Dan&Giv Control! 🎉', 'success', 4000);
       }
 
-      this.closeAuthModal();
+      // Cerrar modal suavemente
+      setTimeout(() => {
+        this.closeAuthModal();
+      }, 1500);
 
-      // Iniciar tour automáticamente después de registrarse
+      // Iniciar tour con más tiempo para que el usuario se acomode
       setTimeout(() => {
         this.startTour();
-      }, 1000);
+      }, 2500);
 
       return true;
     } catch (error) {
-      console.error('Error completo de registro:', error);
+      console.error('[Auth] Error de registro:', error.code, error.message);
 
-      if (error.code === 'auth/weak-password') {
-        this.showToast(
-          'La contraseña debe tener al menos 8 caracteres con mayúsculas, números y símbolos.',
-          'error'
-        );
-      } else if (error.code === 'auth/email-already-in-use') {
-        this.showToast('Este correo ya está registrado.', 'error');
-      } else if (error.code === 'auth/invalid-email') {
-        this.showToast('Formato de correo inválido.', 'error');
-      } else {
-        this.showToast(`Error: ${error.message}`, 'error');
-      }
+      // Mensajes amigables según el error
+      const errorMessages = {
+        'auth/weak-password': 'La contraseña debe tener al menos 8 caracteres con mayúsculas, números y símbolos.',
+        'auth/email-already-in-use': 'Este correo ya está registrado. ¿Quieres iniciar sesión?',
+        'auth/invalid-email': 'El formato del correo no es válido.',
+        'auth/network-request-failed': 'Error de conexión. Verifica tu internet e intenta de nuevo.',
+        'auth/too-many-requests': 'Demasiados intentos. Por favor espera un momento.',
+        'auth/operation-not-allowed': 'El registro está temporalmente deshabilitado.'
+      };
+
+      const message = errorMessages[error.code] || 'No pudimos crear tu cuenta. Por favor, intenta de nuevo en unos momentos.';
+      this.showToast(message, 'error');
       return false;
     }
   }
@@ -6350,38 +6368,90 @@ FinanceApp.prototype.stopInspirationRotation = function () {
 FinanceApp.prototype.loginWithGoogle = async function () {
   const FB = window.FB;
   if (!FB?.auth) {
-    this.showToast('Firebase no está configurado', 'error');
+    this.showToast('Firebase no está configurado correctamente', 'error');
     return;
   }
 
   try {
     const provider = new FB.GoogleAuthProvider();
-    await FB.signInWithPopup(FB.auth, provider);
-    this.showToast('Sesión iniciada con Google', 'success');
-    document.getElementById('authModal').classList.remove('show');
-    document.body.style.overflow = '';
+    provider.setCustomParameters({
+      prompt: 'select_account'
+    });
+
+    const result = await FB.signInWithPopup(FB.auth, provider);
+
+    this.showToast(`¡Bienvenido, ${result.user.displayName || 'Usuario'}! 🎉`, 'success');
+    this.closeAuthModal();
+
+    // Iniciar tour para nuevos usuarios
+    if (result.additionalUserInfo?.isNewUser) {
+      setTimeout(() => {
+        this.startTour();
+      }, 2000);
+    }
   } catch (error) {
-    console.error('Error Google login:', error);
-    this.showToast('Error al iniciar con Google', 'error');
+    console.error('[Auth] Error Google login:', error.code, error.message);
+
+    const errorMessages = {
+      'auth/popup-closed-by-user': 'Cancelaste el inicio de sesión',
+      'auth/popup-blocked': 'El navegador bloqueó la ventana emergente. Permite ventanas emergentes para este sitio.',
+      'auth/account-exists-with-different-credential': 'Ya existe una cuenta con este correo usando otro método de inicio de sesión.',
+      'auth/cancelled-popup-request': 'Se canceló la solicitud anterior',
+      'auth/network-request-failed': 'Error de conexión. Verifica tu internet.',
+    };
+
+    const message = errorMessages[error.code] || 'No pudimos iniciar sesión con Google. Intenta de nuevo.';
+    this.showToast(message, 'error');
   }
 };
 
 FinanceApp.prototype.loginWithFacebook = async function () {
   const FB = window.FB;
   if (!FB?.auth) {
-    this.showToast('Firebase no está configurado', 'error');
+    this.showToast('Firebase no está configurado correctamente', 'error');
     return;
   }
 
   try {
     const provider = new FB.FacebookAuthProvider();
-    await FB.signInWithPopup(FB.auth, provider);
-    this.showToast('Sesión iniciada con Facebook', 'success');
-    document.getElementById('authModal').classList.remove('show');
-    document.body.style.overflow = '';
+    provider.setCustomParameters({
+      display: 'popup'
+    });
+
+    const result = await FB.signInWithPopup(FB.auth, provider);
+
+    this.showToast(
+      `¡Bienvenido, ${result.user.displayName || 'Usuario'}! 🎉`,
+      'success'
+    );
+    this.closeAuthModal();
+
+    // Iniciar tour para nuevos usuarios
+    if (result.additionalUserInfo?.isNewUser) {
+      setTimeout(() => {
+        this.startTour();
+      }, 2000);
+    }
   } catch (error) {
-    console.error('Error Facebook login:', error);
-    this.showToast('Error al iniciar con Facebook', 'error');
+    console.error('[Auth] Error Facebook login:', error.code, error.message);
+
+    const errorMessages = {
+      'auth/popup-closed-by-user': 'Cancelaste el inicio de sesión',
+      'auth/popup-blocked':
+        'El navegador bloqueó la ventana emergente. Permite ventanas emergentes para este sitio.',
+      'auth/account-exists-with-different-credential':
+        'Ya existe una cuenta con este correo usando otro método de inicio de sesión.',
+      'auth/cancelled-popup-request': 'Se canceló la solicitud anterior',
+      'auth/network-request-failed':
+        'Error de conexión. Verifica tu internet.',
+      'auth/auth-domain-config-required':
+        'La configuración de Facebook no está completa en Firebase Console.',
+    };
+
+    const message =
+      errorMessages[error.code] ||
+      'No pudimos iniciar sesión con Facebook. Intenta de nuevo.';
+    this.showToast(message, 'error');
   }
 };
 // 2. Publicar una funciÃ³n global para verificar contraseÃ±as desde la consola.
@@ -8303,7 +8373,7 @@ FinanceApp.prototype.setupTourEventListeners = function () {
   // Tour navigation buttons
   const nextBtn = this.tourOverlay.querySelector('.tour-next');
   const prevBtn = this.tourOverlay.querySelector('.tour-prev');
-  const skipBtn = this.tourOverlay.querySelector('.tour-skip');
+  const skipBtn = this.tourOverlay.querySelector('.tour-skip, .tour-skip-prominent');
   const finishBtn = this.tourOverlay.querySelector('.tour-finish');
   const closeBtn = this.tourOverlay.querySelector('.tour-close');
 
