@@ -2108,6 +2108,33 @@ body {
   text-align: center;
 }
 
+/* Nav items that require authentication */
+.nav-item.requires-auth.hidden {
+  display: none;
+}
+
+.nav-item.requires-auth.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.nav-item.requires-auth.locked::after {
+  content: '\f023';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute;
+  right: var(--space-16);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.nav-item.requires-auth.locked:hover {
+  background-color: rgba(var(--color-error-rgb), 0.1);
+  color: var(--color-error);
+  transform: translateX(0);
+}
+
 /* Main Content */
 .main-content {
   margin-left: var(--sidebar-width);
@@ -4618,6 +4645,319 @@ select.form-control {
   }
 }
 
+/* Register Prompt Modal */
+.register-prompt-modal {
+  background: linear-gradient(135deg, var(--color-surface-raised) 0%, var(--color-surface) 100%);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-40) var(--space-32);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: modalBounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  text-align: center;
+  overflow: hidden;
+}
+
+.register-prompt-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-teal-600), var(--color-primary));
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes modalBounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-50px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.modal-close-elegant {
+  position: absolute;
+  top: var(--space-12);
+  right: var(--space-12);
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.modal-close-elegant:hover {
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--color-text);
+  transform: rotate(90deg);
+}
+
+.register-prompt-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--space-20);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-teal-600));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: white;
+  box-shadow: 0 10px 30px rgba(var(--color-primary-rgb), 0.4);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 10px 30px rgba(var(--color-primary-rgb), 0.4);
+  }
+  50% {
+    box-shadow: 0 10px 40px rgba(var(--color-primary-rgb), 0.6);
+  }
+}
+
+.register-prompt-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0 0 var(--space-12) 0;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-teal-600));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.register-prompt-message {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0 0 var(--space-24) 0;
+}
+
+.register-prompt-features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  margin-bottom: var(--space-32);
+  text-align: left;
+}
+
+.prompt-feature {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-12);
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-lg);
+  transition: all 0.3s ease;
+}
+
+.prompt-feature:hover {
+  transform: translateX(8px);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.15);
+}
+
+.prompt-feature i {
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+  flex-shrink: 0;
+}
+
+.prompt-feature span {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+
+.register-prompt-btn {
+  margin-bottom: var(--space-16);
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.3);
+  transition: all 0.3s ease;
+}
+
+.register-prompt-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(var(--color-primary-rgb), 0.4);
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  padding: var(--space-8);
+  transition: color 0.2s ease;
+}
+
+.btn-text:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+@media (max-width: 576px) {
+  .register-prompt-modal {
+    padding: var(--space-32) var(--space-24);
+  }
+
+  .register-prompt-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 28px;
+  }
+
+  .register-prompt-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .register-prompt-message {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* Logout Confirmation Modal */
+.logout-confirm-modal {
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-xl);
+  padding: 0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logout-confirm-modal .modal-header {
+  padding: var(--space-32) var(--space-32) var(--space-20);
+  text-align: center;
+  border-bottom: none;
+  position: relative;
+}
+
+.logout-confirm-modal .modal-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--space-16);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: var(--color-error);
+}
+
+.logout-confirm-modal .modal-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.logout-confirm-modal .modal-close {
+  position: absolute;
+  top: var(--space-16);
+  right: var(--space-16);
+  background: transparent;
+  border: none;
+  font-size: var(--font-size-xl);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.logout-confirm-modal .modal-close:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+  transform: rotate(90deg);
+}
+
+.logout-confirm-modal .modal-body {
+  padding: 0 var(--space-32) var(--space-32);
+  text-align: center;
+}
+
+.logout-confirm-message {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.logout-confirm-modal .modal-footer {
+  padding: var(--space-24) var(--space-32) var(--space-32);
+  display: flex;
+  gap: var(--space-12);
+  justify-content: center;
+  border-top: none;
+}
+
+.logout-confirm-modal .modal-footer .btn {
+  flex: 1;
+  max-width: 200px;
+}
+
+@media (max-width: 576px) {
+  .logout-confirm-modal .modal-header {
+    padding: var(--space-24) var(--space-20) var(--space-16);
+  }
+
+  .logout-confirm-modal .modal-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 28px;
+  }
+
+  .logout-confirm-modal .modal-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .logout-confirm-modal .modal-body {
+    padding: 0 var(--space-20) var(--space-24);
+  }
+
+  .logout-confirm-modal .modal-footer {
+    padding: var(--space-20);
+    flex-direction: column;
+  }
+
+  .logout-confirm-modal .modal-footer .btn {
+    max-width: none;
+  }
+}
+
 .auth-footer {
   justify-content: center;
   text-align: center;
@@ -5935,13 +6275,19 @@ select.form-control {
     display: none !important;
   }
 
-  /* Ocultar todos los botones de iconos EXCEPTO hamburger y notificaciones */
-  .navbar__actions .icon-btn:not(.hamburger-menu):not(.notifications) {
+  /* Ocultar todos los botones de iconos EXCEPTO hamburger, notificaciones, y botones mobile */
+  .navbar__actions .icon-btn:not(.hamburger-menu):not(.notifications):not(.mobile-profile-btn):not(.mobile-logout-btn) {
     display: none !important;
   }
 
   /* Mostrar notificaciones en mobile */
   .navbar__actions .notifications {
+    display: flex !important;
+  }
+
+  /* Mostrar botones mobile cuando tienen clase show */
+  .navbar__actions .mobile-profile-btn.show,
+  .navbar__actions .mobile-logout-btn.show {
     display: flex !important;
   }
 

@@ -349,23 +349,23 @@
           <i class="fas fa-plus-circle"></i>
           <span>Registrar Gasto</span>
         </button>
-        <button class="nav-item" data-section="goals">
+        <button class="nav-item requires-auth" data-section="goals">
           <i class="fas fa-bullseye"></i>
           <span>Metas Financieras</span>
         </button>
-        <button class="nav-item" data-section="budget">
+        <button class="nav-item requires-auth" data-section="budget">
           <i class="fas fa-wallet"></i>
           <span>Presupuesto</span>
         </button>
-        <button class="nav-item" data-section="analysis">
+        <button class="nav-item requires-auth" data-section="analysis">
           <i class="fas fa-chart-pie"></i>
           <span>Análisis</span>
         </button>
-        <button class="nav-item" data-section="achievements">
+        <button class="nav-item requires-auth" data-section="achievements">
           <i class="fas fa-trophy"></i>
           <span>Logros</span>
         </button>
-        <button class="nav-item" data-section="shopping">
+        <button class="nav-item requires-auth" data-section="shopping">
           <i class="fas fa-shopping-cart"></i>
           <span>Lista de Compras</span>
         </button>
@@ -377,11 +377,11 @@
           <i class="fas fa-store"></i>
           <span>Tienda</span>
         </button>
-        <button class="nav-item" data-section="audit">
+        <button class="nav-item requires-auth" data-section="audit">
           <i class="fas fa-history"></i>
           <span>Historial de Cambios</span>
         </button>
-        <button class="nav-item" data-section="config">
+        <button class="nav-item requires-auth" data-section="config">
           <i class="fas fa-cog"></i>
           <span>Configuración</span>
         </button>
@@ -4136,6 +4136,79 @@
               onclick="closePremiumComingSoonModal()"
             >
               <i class="fas fa-bell"></i> Notificarme cuando esté listo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Registro Requerido -->
+    <div class="modal" id="registerPromptModal">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content register-prompt-modal">
+          <button class="modal-close-elegant" id="closeRegisterPromptModal" aria-label="Cerrar">
+            <i class="fas fa-times"></i>
+          </button>
+          <div class="modal-body">
+            <div class="register-prompt-icon">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <h3 class="register-prompt-title">¡Continúa tu experiencia!</h3>
+            <p class="register-prompt-message">
+              Regístrate o inicia sesión para desbloquear todas las funciones y guardar tus datos de forma segura.
+            </p>
+            <div class="register-prompt-features">
+              <div class="prompt-feature">
+                <i class="fas fa-check-circle"></i>
+                <span>Sincronización en la nube</span>
+              </div>
+              <div class="prompt-feature">
+                <i class="fas fa-check-circle"></i>
+                <span>Acceso desde cualquier dispositivo</span>
+              </div>
+              <div class="prompt-feature">
+                <i class="fas fa-check-circle"></i>
+                <span>Análisis y gráficos avanzados</span>
+              </div>
+            </div>
+            <button class="btn btn--primary btn--full-width register-prompt-btn" id="registerPromptBtn">
+              <i class="fas fa-user-plus"></i>
+              Registrarme ahora
+            </button>
+            <button class="btn-text" id="loginPromptBtn">
+              ¿Ya tienes cuenta? Inicia sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Confirmación Cerrar Sesión -->
+    <div class="modal" id="logoutConfirmModal">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content logout-confirm-modal">
+          <div class="modal-header">
+            <div class="modal-icon warning">
+              <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h3 class="modal-title">¿Cerrar sesión?</h3>
+            <button class="modal-close" id="closeLogoutConfirmModal" aria-label="Cerrar">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p class="logout-confirm-message">
+              Estás a punto de cerrar tu sesión. ¿Deseas continuar?
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn--secondary" id="cancelLogoutBtn">
+              <i class="fas fa-times"></i>
+              Cancelar
+            </button>
+            <button class="btn btn--danger" id="confirmLogoutBtn">
+              <i class="fas fa-sign-out-alt"></i>
+              Cerrar sesión
             </button>
           </div>
         </div>

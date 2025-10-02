@@ -933,6 +933,7 @@ class FinanceApp {
         this.updateProfileDisplay();
         this.syncFromFirebase();
         this.updateDashboardWelcome();
+        this.updateMenuRestrictions(); // Update menu access
 
         // Iniciar sistema de mensajes motivadores
         this.fetchMotivationalMessages(); // Obtener mensajes si es necesario
@@ -956,6 +957,7 @@ class FinanceApp {
         if (mobileProfileBtn) mobileProfileBtn.classList.remove('show');
 
         this.updateDashboardWelcome();
+        this.updateMenuRestrictions(); // Update menu access
         this.renderDashboard();
       }
     });
@@ -1018,17 +1020,9 @@ class FinanceApp {
     }
 
     if (profileLogoutBtn) {
-      profileLogoutBtn.addEventListener('click', async () => {
-        try {
-          const FB = window.FB;
-          await FB.signOut(FB.auth);
-          this.clearUserData();
-          this.showToast('Sesión cerrada correctamente 👋', 'success');
-          profileDropdown.classList.add('hidden');
-          this.showSection('dashboard');
-        } catch (e) {
-          this.showToast('Error al cerrar sesión', 'error');
-        }
+      profileLogoutBtn.addEventListener('click', () => {
+        profileDropdown.classList.add('hidden');
+        this.showLogoutConfirmModal();
       });
     }
 
@@ -1058,18 +1052,118 @@ class FinanceApp {
     // Mobile logout button
     const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
     if (mobileLogoutBtn) {
-      mobileLogoutBtn.addEventListener('click', async () => {
-        try {
-          const FB = window.FB;
-          await FB.signOut(FB.auth);
-          this.clearUserData();
-          this.showToast('Sesión cerrada correctamente 👋', 'success');
-          this.showSection('dashboard');
-        } catch (e) {
-          this.showToast('Error al cerrar sesión', 'error');
-        }
+      mobileLogoutBtn.addEventListener('click', () => {
+        this.showLogoutConfirmModal();
       });
     }
+  }
+
+  showLogoutConfirmModal() {
+    const modal = document.getElementById('logoutConfirmModal');
+    const closeBtn = document.getElementById('closeLogoutConfirmModal');
+    const cancelBtn = document.getElementById('cancelLogoutBtn');
+    const confirmBtn = document.getElementById('confirmLogoutBtn');
+
+    if (!modal) return;
+
+    // Show modal
+    modal.classList.add('show');
+
+    // Close handlers
+    const closeModal = () => {
+      modal.classList.remove('show');
+    };
+
+    closeBtn.onclick = closeModal;
+    cancelBtn.onclick = closeModal;
+
+    // Confirm logout
+    confirmBtn.onclick = async () => {
+      closeModal();
+      try {
+        const FB = window.FB;
+        await FB.signOut(FB.auth);
+        this.clearUserData();
+        this.showToast('Sesión cerrada correctamente 👋', 'success');
+        this.showSection('dashboard');
+      } catch (e) {
+        this.showToast('Error al cerrar sesión', 'error');
+      }
+    };
+
+    // Close on backdrop click
+    modal.onclick = (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    };
+  }
+
+  showRegisterPrompt() {
+    const modal = document.getElementById('registerPromptModal');
+    const closeBtn = document.getElementById('closeRegisterPromptModal');
+    const registerBtn = document.getElementById('registerPromptBtn');
+    const loginBtn = document.getElementById('loginPromptBtn');
+
+    if (!modal) return;
+
+    // Show modal
+    modal.classList.add('show');
+
+    // Close handler
+    const closeModal = () => {
+      modal.classList.remove('show');
+    };
+
+    closeBtn.onclick = closeModal;
+
+    // Register button
+    registerBtn.onclick = () => {
+      closeModal();
+      this.openAuthModal();
+      // Switch to register tab
+      setTimeout(() => {
+        const registerTab = document.querySelector('[data-auth-tab="register"]');
+        if (registerTab) registerTab.click();
+      }, 100);
+    };
+
+    // Login button
+    loginBtn.onclick = () => {
+      closeModal();
+      this.openAuthModal();
+      // Switch to login tab
+      setTimeout(() => {
+        const loginTab = document.querySelector('[data-auth-tab="login"]');
+        if (loginTab) loginTab.click();
+      }, 100);
+    };
+
+    // Close on backdrop click
+    modal.onclick = (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    };
+  }
+
+  updateMenuRestrictions() {
+    const requiresAuthItems = document.querySelectorAll('.nav-item.requires-auth');
+    const isAnonymous = this.currentUser === 'anonymous';
+
+    requiresAuthItems.forEach((item) => {
+      if (isAnonymous) {
+        item.classList.add('locked');
+        item.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.showRegisterPrompt();
+        };
+      } else {
+        item.classList.remove('locked');
+        item.onclick = null;
+      }
+    });
   }
 
   clearUserData() {
@@ -8367,6 +8461,13 @@ FinanceApp.prototype.addExpense = function (e) {
           priority: 'normal',
         });
       }
+    }
+
+    // Show register prompt for anonymous users after first expense
+    if (this.currentUser === 'anonymous' && this.expenses.length === 1) {
+      setTimeout(() => {
+        this.showRegisterPrompt();
+      }, 2000);
     }
   }
 };
