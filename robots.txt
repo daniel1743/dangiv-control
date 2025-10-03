@@ -1,33 +1,95 @@
+# Dan&Giv Control - Robots.txt
+# Control de Finanzas Personales con IA
+
+# Allow all bots to access the site
 User-agent: *
 Allow: /
-
-# Sitemap
-Sitemap: https://financiaprosuite.com/sitemap.xml
-
-# Crawl-delay for better server performance
 Crawl-delay: 1
 
-# Disallow private/sensitive areas (if any exist in future)
+# Sitemap
+Sitemap: https://dangivcontrol.com/sitemap.xml
+
+# Disallow private/sensitive areas
 Disallow: /admin/
 Disallow: /private/
 Disallow: /_temp/
+Disallow: /api/
+Disallow: /backend/
 
-# Allow CSS and JS files for proper rendering
+# Allow CSS, JS and images for proper rendering (Important for SPA)
 Allow: /style.css
 Allow: /app.js
 Allow: /firebase-config.js
+Allow: /user-system.css
+Allow: /store.css
+Allow: /config.css
 Allow: /*.css
 Allow: /*.js
+Allow: /img/
+Allow: /assets/
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.webp
+Allow: /*.svg
 
-# Popular bots optimization
+# Google Bot Optimization
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 1
+Crawl-delay: 0.5
 
+User-agent: Googlebot-Image
+Allow: /img/
+Allow: /assets/
+
+# Bing Bot
 User-agent: Bingbot
 Allow: /
 Crawl-delay: 1
 
+# Yahoo Bot
 User-agent: Slurp
 Allow: /
 Crawl-delay: 2
+
+# DuckDuckGo Bot
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+# Yandex Bot
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 2
+
+# Block bad bots and scrapers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+# Social Media Bots (allow for preview cards)
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: TelegramBot
+Allow: /

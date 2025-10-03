@@ -40,27 +40,39 @@ import {
   getDownloadURL,
 } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js';
 
-// IMPORTANTE: Reemplaza estos valores con tus claves reales de Firebase
-const firebaseConfig = {
-  apiKey: 'AIzaSyCNGTwiuxWNgBL_og_iCvus24pBO7tVmRk',
-  authDomain: 'control-gastos-44975.firebaseapp.com',
-  projectId: 'control-gastos-44975',
-  storageBucket: 'control-gastos-44975.firebasestorage.app',
-  messagingSenderId: '1021023056126',
-  appId: '1:1021023056126:web:0e6460f495c156b079f5af',
-  measurementId: 'G-8YL7L3D5TC',
-};
-// API Keys - PROTEGIDAS (no incluir keys reales aquí)
-// Para desarrollo local: usa backend/.env
-// Para producción: configura variables de entorno en tu hosting (Vercel/Netlify)
-const geminiApiKey = 'AIzaSyCpVpRdHHauFb-Qyx8UqoiABVxoE8f9EBc';
-const perplexityApiKey = '';
-const unsplashApiKey = 'azcQPEGuSb5EXoR7CXTqr7GY3Ih2-FF9iXjtWgHvoWI';
+// ========================================
+// CONFIGURACIÓN SEGURA CON VARIABLES DE ENTORNO
+// ========================================
+// IMPORTANTE: Las API keys ahora vienen de variables de entorno (.env)
+// NO hardcodear credenciales aquí
 
-// Exponer API keys globalmente
-window.geminiApiKey = geminiApiKey;
-window.perplexityApiKey = perplexityApiKey;
-window.unsplashApiKey = unsplashApiKey;
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+};
+
+// Validar que las variables de entorno estén configuradas
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+  console.error('❌ ERROR: Variables de entorno de Firebase no configuradas');
+  console.error('Por favor, crea un archivo .env.local con tus credenciales');
+  console.error('Usa .env.example como plantilla');
+}
+
+// ========================================
+// NOTA IMPORTANTE SOBRE API KEYS SENSIBLES
+// ========================================
+// ❌ NO incluir aquí:
+//    - Gemini API Key
+//    - Unsplash Access Key
+//    - Perplexity API Key
+//
+// ✅ Estas keys deben estar SOLO en el backend
+//    Ver: backend/api-proxy.js
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -107,9 +119,9 @@ window.FB = {
   ref,
   uploadString,
   getDownloadURL,
-  // API Keys
-  geminiApiKey: geminiApiKey,
-  perplexityApiKey: perplexityApiKey,
+
+  // ❌ YA NO EXPONEMOS API KEYS AQUÍ
+  // Las llamadas a APIs externas deben ir por el backend
 };
 
 // === FIN DE SECCIÓN: CONFIGURACIÓN DE FIREBASE ===

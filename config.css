@@ -1801,7 +1801,7 @@ input:checked + .toggle-slider:before {
 }
 
 .input-icon-left {
-  position: absolute;
+  position:fixed;
   left: var(--space-16);
   top: 50%;
   transform: translateY(-50%);

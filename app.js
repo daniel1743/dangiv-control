@@ -67,6 +67,12 @@ class FinanceApp {
     // Expense Templates for Quick Entry
     this.expenseTemplates = savedData.expenseTemplates || [];
 
+    // Expense Patterns Database for Smart Autocomplete
+    this.expensePatterns = savedData.expensePatterns || {};
+
+    // Default User Configuration
+    this.defaultUser = savedData.defaultUser || '';
+
     // Motivational Messages System (Gemini API)
     this.motivationalMessages = savedData.motivationalMessages || [];
     this.lastMessageUpdate = savedData.lastMessageUpdate || null;
@@ -635,6 +641,8 @@ class FinanceApp {
       currentStyle: this.currentStyle,
       budgets: this.budgets,
       expenseTemplates: this.expenseTemplates,
+      expensePatterns: this.expensePatterns,
+      defaultUser: this.defaultUser,
       motivationalMessages: this.motivationalMessages,
       lastMessageUpdate: this.lastMessageUpdate,
       lastUpdate: Date.now(),
@@ -1858,6 +1866,7 @@ class FinanceApp {
         this.customUsers.push(newUserName);
         this.saveData();
         this.updateUserSelectionDropdown();
+        this.updateDefaultUserDropdown(); // Update settings dropdown too
 
         // Seleccionar el usuario recién creado
         userSelect.value = newUserName;
@@ -11995,6 +12004,49 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
     });
   }
 
+  // Mode Toggle Buttons
+  const quickModeBtn = document.getElementById('quickModeBtn');
+  const normalModeBtn = document.getElementById('normalModeBtn');
+  const normalModeFields = document.querySelector('.normal-mode-fields');
+
+  if (quickModeBtn) {
+    quickModeBtn.addEventListener('click', () => {
+      quickModeBtn.classList.add('active');
+      normalModeBtn?.classList.remove('active');
+      normalModeFields?.classList.add('hidden');
+      // Make necessity not required in quick mode
+      document.getElementById('quickNecessity')?.removeAttribute('required');
+      document.getElementById('quickDate')?.removeAttribute('required');
+      document.getElementById('quickUser')?.removeAttribute('required');
+    });
+  }
+
+  if (normalModeBtn) {
+    normalModeBtn.addEventListener('click', () => {
+      normalModeBtn.classList.add('active');
+      quickModeBtn?.classList.remove('active');
+      normalModeFields?.classList.remove('hidden');
+      // Make fields required in normal mode
+      document.getElementById('quickNecessity')?.setAttribute('required', 'required');
+      document.getElementById('quickDate')?.setAttribute('required', 'required');
+    });
+  }
+
+  // Autocomplete setup for quick description
+  const quickDescInput = document.getElementById('quickDescription');
+  if (quickDescInput) {
+    quickDescInput.addEventListener('input', (e) => {
+      this.handleQuickAutocomplete(e.target.value);
+    });
+
+    // Hide autocomplete when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.input-with-autocomplete')) {
+        document.getElementById('quickAutocomplete')?.classList.add('hidden');
+      }
+    });
+  }
+
   // Quick expense form
   const form = document.getElementById('quickExpenseForm');
   if (form) {
@@ -12020,6 +12072,15 @@ FinanceApp.prototype.openQuickExpenseModal = function () {
     document.body.style.overflow = 'hidden';
     this.renderExpenseTemplates();
 
+    // Initialize date field with today's date
+    const dateInput = document.getElementById('quickDate');
+    if (dateInput) {
+      dateInput.value = new Date().toISOString().split('T')[0];
+    }
+
+    // Populate user dropdown with custom users
+    this.updateQuickUserDropdown();
+
     // Focus on amount input
     setTimeout(() => {
       document.getElementById('quickAmount')?.focus();
@@ -12034,6 +12095,16 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function () {
   const description =
     document.getElementById('quickDescription').value || 'Gasto rápido';
 
+  // Get values from normal mode fields if they exist
+  const necessity = document.getElementById('quickNecessity')?.value || 'Necesario';
+  const date = document.getElementById('quickDate')?.value || new Date().toISOString().split('T')[0];
+  const userValue = document.getElementById('quickUser')?.value;
+
+  // Use defined user or current user
+  const user = userValue && userValue !== '__add_new__'
+    ? userValue
+    : (this.currentUser || this.defaultUser || 'Sin usuario');
+
   if (!amount || !category) {
     this.showToast('Por favor completa los campos requeridos', 'error');
     return;
@@ -12045,13 +12116,17 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function () {
     amount: amount,
     category: category,
     description: description,
-    date: new Date().toISOString().split('T')[0],
-    user: this.currentUser || 'anonymous',
-    necessity: 'Necesario',
+    date: date,
+    user: user,
+    necessity: necessity,
     createdAt: new Date().toISOString(),
   };
 
   this.expenses.push(expense);
+
+  // Save expense pattern for autocomplete
+  this.saveExpensePattern(description, category, necessity, user);
+
   this.saveData();
 
   // Update budget
@@ -12076,6 +12151,7 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function () {
     this.renderDashboard();
   }
 
+  this.renderExpenses();
   this.updateExpenseStats(); // Update expense form stats
   this.showToast('Gasto registrado exitosamente', 'success');
 };
@@ -12175,6 +12251,157 @@ FinanceApp.prototype.deleteExpenseTemplate = function (templateId) {
 };
 
 // ========================================
+// SMART AUTOCOMPLETE & EXPENSE PATTERNS
+// ========================================
+
+FinanceApp.prototype.initializeExpensePatterns = function () {
+  // Initialize expense patterns database if not exists
+  if (!this.expensePatterns) {
+    this.expensePatterns = {};
+  }
+};
+
+FinanceApp.prototype.saveExpensePattern = function (description, category, necessity, user) {
+  if (!description) return;
+
+  const key = description.toLowerCase().trim();
+
+  if (!this.expensePatterns) {
+    this.expensePatterns = {};
+  }
+
+  // If pattern exists, update count and last used
+  if (this.expensePatterns[key]) {
+    this.expensePatterns[key].count++;
+    this.expensePatterns[key].lastUsed = new Date().toISOString();
+  } else {
+    // Create new pattern
+    this.expensePatterns[key] = {
+      description: description,
+      category: category,
+      necessity: necessity,
+      user: user,
+      count: 1,
+      createdAt: new Date().toISOString(),
+      lastUsed: new Date().toISOString(),
+    };
+  }
+
+  this.saveData();
+};
+
+FinanceApp.prototype.handleQuickAutocomplete = function (searchText) {
+  const autocompleteDiv = document.getElementById('quickAutocomplete');
+  if (!autocompleteDiv) return;
+
+  if (!searchText || searchText.length < 2) {
+    autocompleteDiv.classList.add('hidden');
+    return;
+  }
+
+  const matches = this.searchExpensePatterns(searchText);
+
+  if (matches.length === 0) {
+    autocompleteDiv.classList.add('hidden');
+    return;
+  }
+
+  // Render suggestions
+  autocompleteDiv.innerHTML = matches
+    .slice(0, 5) // Show max 5 suggestions
+    .map(
+      (pattern) => `
+    <div class="autocomplete-suggestion" data-pattern='${JSON.stringify(pattern)}'>
+      <span class="autocomplete-suggestion-text">${pattern.description}</span>
+      <div class="autocomplete-suggestion-meta">
+        <span class="autocomplete-suggestion-badge">${pattern.category}</span>
+        <span class="autocomplete-suggestion-badge">${pattern.necessity}</span>
+        ${pattern.user ? `<span class="autocomplete-suggestion-badge">${pattern.user}</span>` : ''}
+        <span class="autocomplete-suggestion-badge">Usado ${pattern.count}x</span>
+      </div>
+    </div>
+  `
+    )
+    .join('');
+
+  autocompleteDiv.classList.remove('hidden');
+
+  // Add click listeners to suggestions
+  autocompleteDiv.querySelectorAll('.autocomplete-suggestion').forEach((el) => {
+    el.addEventListener('click', () => {
+      const pattern = JSON.parse(el.dataset.pattern);
+      this.applyExpensePattern(pattern);
+      autocompleteDiv.classList.add('hidden');
+    });
+  });
+};
+
+FinanceApp.prototype.searchExpensePatterns = function (searchText) {
+  if (!this.expensePatterns) return [];
+
+  const search = searchText.toLowerCase().trim();
+  const results = [];
+
+  for (const key in this.expensePatterns) {
+    if (key.includes(search)) {
+      results.push(this.expensePatterns[key]);
+    }
+  }
+
+  // Sort by usage count (most used first)
+  results.sort((a, b) => b.count - a.count);
+
+  return results;
+};
+
+FinanceApp.prototype.applyExpensePattern = function (pattern) {
+  // Fill form fields with pattern data
+  document.getElementById('quickDescription').value = pattern.description;
+  document.getElementById('quickCategory').value = pattern.category;
+
+  // Only fill normal mode fields if they're visible
+  const normalModeFields = document.querySelector('.normal-mode-fields');
+  if (normalModeFields && !normalModeFields.classList.contains('hidden')) {
+    document.getElementById('quickNecessity').value = pattern.necessity || '';
+    if (pattern.user) {
+      const userSelect = document.getElementById('quickUser');
+      // Check if user exists in dropdown
+      const userOption = Array.from(userSelect.options).find(
+        (opt) => opt.value === pattern.user
+      );
+      if (userOption) {
+        userSelect.value = pattern.user;
+      }
+    }
+  }
+
+  this.showToast('Patrón aplicado', 'info');
+};
+
+FinanceApp.prototype.updateQuickUserDropdown = function () {
+  const userSelect = document.getElementById('quickUser');
+  if (!userSelect) return;
+
+  // Clear existing options except the first two (Sin asignar and + Añadir usuario)
+  while (userSelect.options.length > 2) {
+    userSelect.remove(2);
+  }
+
+  // Add custom users
+  this.customUsers.forEach((userName) => {
+    const option = document.createElement('option');
+    option.value = userName;
+    option.textContent = userName;
+    userSelect.appendChild(option);
+  });
+
+  // Set default user if exists
+  if (this.defaultUser && this.customUsers.includes(this.defaultUser)) {
+    userSelect.value = this.defaultUser;
+  }
+};
+
+// ========================================
 // PREMIUM SETTINGS SYSTEM
 // ========================================
 
@@ -12207,6 +12434,9 @@ FinanceApp.prototype.setupPremiumSettings = function () {
 
   // Update stats on initial load
   this.updateUsageStatistics();
+
+  // Default User Configuration
+  this.setupDefaultUserConfig();
 
   // Export/Import buttons
   const exportJSONBtn = document.getElementById('exportJSONBtn');
@@ -12258,6 +12488,49 @@ FinanceApp.prototype.setupPremiumSettings = function () {
 
   // System info
   this.updateSystemInfo();
+};
+
+FinanceApp.prototype.setupDefaultUserConfig = function () {
+  const defaultUserSelect = document.getElementById('defaultUserSelect');
+  if (!defaultUserSelect) return;
+
+  // Populate dropdown with custom users
+  this.updateDefaultUserDropdown();
+
+  // Set current default user
+  if (this.defaultUser) {
+    defaultUserSelect.value = this.defaultUser;
+  }
+
+  // Listen for changes
+  defaultUserSelect.addEventListener('change', (e) => {
+    this.defaultUser = e.target.value;
+    this.saveData();
+    this.showToast(
+      this.defaultUser
+        ? `Usuario predefinido: ${this.defaultUser}`
+        : 'Usuario predefinido eliminado',
+      'success'
+    );
+  });
+};
+
+FinanceApp.prototype.updateDefaultUserDropdown = function () {
+  const defaultUserSelect = document.getElementById('defaultUserSelect');
+  if (!defaultUserSelect) return;
+
+  // Clear existing options except the first one
+  while (defaultUserSelect.options.length > 1) {
+    defaultUserSelect.remove(1);
+  }
+
+  // Add custom users
+  this.customUsers.forEach((userName) => {
+    const option = document.createElement('option');
+    option.value = userName;
+    option.textContent = userName;
+    defaultUserSelect.appendChild(option);
+  });
 };
 
 FinanceApp.prototype.updateUsageStatistics = function () {
