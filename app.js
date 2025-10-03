@@ -1154,14 +1154,26 @@ class FinanceApp {
     requiresAuthItems.forEach((item) => {
       if (isAnonymous) {
         item.classList.add('locked');
-        item.onclick = (e) => {
+        // Remover listener anterior si existe
+        if (item._restrictionHandler) {
+          item.removeEventListener('click', item._restrictionHandler);
+        }
+        // Crear nuevo handler que bloquea completamente el click
+        item._restrictionHandler = (e) => {
           e.preventDefault();
           e.stopPropagation();
+          e.stopImmediatePropagation();
           this.showRegisterPrompt();
+          return false;
         };
+        // Añadir con capture:true para interceptar antes que otros listeners
+        item.addEventListener('click', item._restrictionHandler, true);
       } else {
         item.classList.remove('locked');
-        item.onclick = null;
+        if (item._restrictionHandler) {
+          item.removeEventListener('click', item._restrictionHandler, true);
+          item._restrictionHandler = null;
+        }
       }
     });
   }
@@ -2048,7 +2060,7 @@ class FinanceApp {
       });
     }
 
-    // === LÃƒâ€œGICA PARA EL MENÃƒÅ¡ HAMBURGUESA (MÃƒâ€œVIL) ===
+    // === LÓGICA PARA EL MENÚ HAMBURGUESA (MÓVIL) ===
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const sidebar = document.querySelector('.sidebar');
     if (hamburgerBtn && sidebar) {
@@ -2059,23 +2071,32 @@ class FinanceApp {
         document.body.appendChild(overlay);
       }
 
+      // Función para cerrar el sidebar
+      const closeSidebar = () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+      };
+
       hamburgerBtn.addEventListener('click', () => {
         sidebar.classList.toggle('open');
         overlay.classList.toggle('active');
       });
 
-      overlay.addEventListener('click', () => {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('active');
-      });
+      overlay.addEventListener('click', closeSidebar);
 
       document.querySelectorAll('.sidebar .nav-item').forEach((item) => {
         item.addEventListener('click', () => {
           if (window.innerWidth <= 768) {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
+            closeSidebar();
           }
         });
+      });
+
+      // SOLUCIÓN: Cerrar sidebar automáticamente al cambiar a desktop
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+          closeSidebar();
+        }
       });
     }
 
@@ -5400,97 +5421,93 @@ class FinanceApp {
     document.body.style.overflow = '';
   }
 
-  // === SECCIÃƒâ€œN: MANEJO DEL MODAL DE AUTENTICACIÃƒâ€œN (LOGIN/REGISTRO) ===
+  // === SECCIÓN: MANEJO DEL MODAL DE AUTENTICACIÓN (LOGIN/REGISTRO) ===
 
   openAuthModal() {
     const modal = document.getElementById('authModal');
     if (modal) {
-      // Asegurarse de que se muestra el formulario de login por defecto
+      // Limpiar estado anterior
+      modal.classList.remove('show');
+      modal.style.removeProperty('display');
+      document.body.style.overflow = '';
+
+      // Forzar reflow del DOM
+      void modal.offsetHeight;
+
+      // Mostrar modal con formulario de login
       switchToLogin();
       modal.classList.add('show');
       document.body.style.overflow = 'hidden';
     }
   }
 
-  closeAuthModal() {
-    const modal = document.getElementById('authModal');
-    if (modal) {
-      modal.classList.remove('show');
-      document.body.style.overflow = '';
-    }
-  }
-
   setupAuthModalListeners() {
+    // Solo configurar una vez
+    if (this.authModalListenersSetup) return;
+    this.authModalListenersSetup = true;
+
     const modal = document.getElementById('authModal');
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const authSwitchLink = document.getElementById('authSwitchLink');
+    if (!modal) return;
+
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
     const closeButtons = modal.querySelectorAll('[data-close-modal]');
 
-    // Listener para cambiar entre login y registro
-    authSwitchLink?.addEventListener('click', (e) => {
-      e.preventDefault();
-      loginForm.classList.toggle('hidden');
-      registerForm.classList.toggle('hidden');
-      const isLoginVisible = !loginForm.classList.contains('hidden');
-      authSwitchLink.innerHTML = isLoginVisible
-        ? '¿No tienes una cuenta? <a href="#">Regístrate aquí</a>'
-        : '¿Ya tienes una cuenta? <a href="#">Inicia sesión</a>';
-    });
-
-    // Listener para el formulario de login
-    loginForm?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      const success = await this.loginWithEmail(email, password);
-      if (success) {
-        this.closeAuthModal();
-        this.showPremiumFeatures();
-      }
-    });
-
-    // Listener para el formulario de registro
-    registerForm?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('registerEmail').value;
-      const password = document.getElementById('registerPassword').value;
-      const success = await this.registerWithEmail(email, password);
-      if (success) {
-        this.closeAuthModal();
-        this.showPremiumFeatures();
-      }
-    });
-
-    // Listener para "Olvidaste tu contraseña"
-    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-    forgotPasswordLink?.addEventListener('click', (e) => {
+    // Crear handlers nombrados para poder removerlos si es necesario
+    const forgotPasswordHandler = (e) => {
       e.preventDefault();
       this.closeAuthModal();
-      document.getElementById('resetPasswordModal')?.classList.add('show');
-    });
+      const resetModal = document.getElementById('resetPasswordModal');
+      if (resetModal) resetModal.classList.add('show');
+    };
 
-    // Listener para formulario de recuperación de contraseña
-    const resetPasswordForm = document.getElementById('resetPasswordForm');
-    resetPasswordForm?.addEventListener('submit', async (e) => {
+    const resetPasswordHandler = async (e) => {
       e.preventDefault();
       const email = document.getElementById('resetEmail').value;
       const success = await this.resetPassword(email);
       if (success) {
-        document.getElementById('resetPasswordModal')?.classList.remove('show');
+        const resetModal = document.getElementById('resetPasswordModal');
+        if (resetModal) resetModal.classList.remove('show');
         document.getElementById('resetEmail').value = '';
       }
-    });
+    };
 
-    // Listeners para cerrar el modal
-    closeButtons.forEach((btn) =>
-      btn.addEventListener('click', () => this.closeAuthModal())
-    );
-    modal.addEventListener('click', (e) => {
+    const closeModalHandler = () => this.closeAuthModal();
+
+    const backdropClickHandler = (e) => {
       if (e.target.id === 'authModal') {
         this.closeAuthModal();
       }
+    };
+
+    // Remover listeners anteriores si existen
+    if (this._forgotPasswordHandler && forgotPasswordLink) {
+      forgotPasswordLink.removeEventListener('click', this._forgotPasswordHandler);
+    }
+    if (this._resetPasswordHandler && resetPasswordForm) {
+      resetPasswordForm.removeEventListener('submit', this._resetPasswordHandler);
+    }
+    if (this._backdropClickHandler) {
+      modal.removeEventListener('click', this._backdropClickHandler);
+    }
+
+    // Añadir nuevos listeners
+    if (forgotPasswordLink) {
+      this._forgotPasswordHandler = forgotPasswordHandler;
+      forgotPasswordLink.addEventListener('click', forgotPasswordHandler);
+    }
+
+    if (resetPasswordForm) {
+      this._resetPasswordHandler = resetPasswordHandler;
+      resetPasswordForm.addEventListener('submit', resetPasswordHandler);
+    }
+
+    closeButtons.forEach((btn) => {
+      btn.addEventListener('click', closeModalHandler);
     });
+
+    this._backdropClickHandler = backdropClickHandler;
+    modal.addEventListener('click', backdropClickHandler);
   }
 
   async savePasswordsFromModal() {
@@ -7879,13 +7896,20 @@ FinanceApp.prototype.setupUserSystemListeners = function () {
     });
   }
 
-  // Ir directo al modal de auth (login/registro)
-  const navbarLoginBtn = document.getElementById('navbarLoginBtn');
-  if (navbarLoginBtn) {
-    navbarLoginBtn.addEventListener('click', () => {
-      this.openAuthModal();
-    });
+  // Botón de login usando delegación de eventos
+  if (this._documentClickHandler) {
+    document.removeEventListener('click', this._documentClickHandler);
   }
+
+  this._documentClickHandler = (e) => {
+    if (e.target.closest('#navbarLoginBtn')) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.openAuthModal();
+    }
+  };
+
+  document.addEventListener('click', this._documentClickHandler);
 
   // Update user selection dropdown
   this.updateUserSelectionDropdown();
@@ -8462,13 +8486,13 @@ FinanceApp.prototype.addExpense = function (e) {
         });
       }
     }
+  }
 
-    // Show register prompt for anonymous users after first expense
-    if (this.currentUser === 'anonymous' && this.expenses.length === 1) {
-      setTimeout(() => {
-        this.showRegisterPrompt();
-      }, 2000);
-    }
+  // Mostrar modal de registro para usuarios anónimos después del primer gasto
+  if (this.currentUser === 'anonymous' && this.expenses.length === 1) {
+    setTimeout(() => {
+      this.showRegisterPrompt();
+    }, 2000);
   }
 };
 
