@@ -56,6 +56,7 @@ class FinanceApp {
     this.shoppingItems = savedData.shoppingItems || [];
     this.monthlyIncome = savedData.monthlyIncome || 2500;
     this.additionalIncomes = savedData.additionalIncomes || []; // Nuevos ingresos adicionales
+    this.extraIncome = savedData.extraIncome || 0; // Ingresos extras acumulados (sin descripción)
     this.userCoins = savedData.userCoins || 100;
     this.ownedStyles = savedData.ownedStyles || ['classic'];
     this.currentStyle = savedData.currentStyle || 'classic';
@@ -650,6 +651,7 @@ class FinanceApp {
       shoppingItems: this.shoppingItems,
       monthlyIncome: this.monthlyIncome,
       additionalIncomes: this.additionalIncomes,
+      extraIncome: this.extraIncome,
       userCoins: this.userCoins,
       ownedStyles: this.ownedStyles,
       currentStyle: this.currentStyle,
@@ -3666,17 +3668,26 @@ class FinanceApp {
         (sum, goal) => sum + goal.current,
         0
       );
+      const totalIncome = this.getTotalIncome(); // Incluye base + extras
       stats = {
-        availableBalance: this.monthlyIncome - totalExpenses,
+        availableBalance: totalIncome - totalExpenses,
         totalExpenses: totalExpenses,
         totalSavings: totalSavings,
         transactionCount: this.expenses.length,
       };
     }
 
-    document.getElementById(
-      'totalBalance'
-    ).textContent = `$${stats.availableBalance.toLocaleString()}`;
+    const totalBalanceEl = document.getElementById('totalBalance');
+    totalBalanceEl.textContent = `$${stats.availableBalance.toLocaleString()}`;
+
+    // Agregar tooltip con breakdown de ingresos si hay extras
+    if (this.extraIncome > 0) {
+      const totalIncome = this.getTotalIncome();
+      totalBalanceEl.title = `Ingresos: $${totalIncome.toLocaleString()} (Base: $${this.monthlyIncome.toLocaleString()} + Extras: $${this.extraIncome.toLocaleString()}) - Gastos: $${stats.totalExpenses.toLocaleString()}`;
+    } else {
+      totalBalanceEl.title = `Ingresos: $${this.monthlyIncome.toLocaleString()} - Gastos: $${stats.totalExpenses.toLocaleString()}`;
+    }
+
     document.getElementById(
       'totalExpenses'
     ).textContent = `$${stats.totalExpenses.toLocaleString()}`;
@@ -9218,6 +9229,25 @@ FinanceApp.prototype.setupProfileHandlers = function () {
       this.saveProfileSettings();
     });
   }
+
+  // === SISTEMA DE INGRESOS EXTRAS ===
+  const btnAddExtraIncome = document.getElementById('btnAddExtraIncome');
+  const btnResetExtras = document.getElementById('btnResetExtras');
+
+  if (btnAddExtraIncome) {
+    btnAddExtraIncome.addEventListener('click', () => {
+      this.promptAddExtraIncome();
+    });
+  }
+
+  if (btnResetExtras) {
+    btnResetExtras.addEventListener('click', () => {
+      this.resetExtraIncome();
+    });
+  }
+
+  // Actualizar display de extras al cargar
+  this.updateExtraIncomeDisplay();
 };
 
 FinanceApp.prototype.setupAccountHandlers = function () {
@@ -9314,7 +9344,31 @@ FinanceApp.prototype.saveProfileSettings = async function () {
   if (monthlyIncomeInput && monthlyIncomeInput.value) {
     const cleanValue = monthlyIncomeInput.value.replace(/[^\d]/g, '');
     const newIncome = parseFloat(cleanValue);
+
+    // VALIDACIÓN 1: No permitir valores vacíos o cero (protección contra eliminación)
+    if (!newIncome || newIncome <= 0) {
+      this.showToast('⚠️ El ingreso mensual no puede estar vacío o ser cero. Solo puedes modificarlo.', 'error');
+      monthlyIncomeInput.value = this.monthlyIncome;
+      return;
+    }
+
+    // VALIDACIÓN 2: Confirmar cambios importantes (si cambia más del 50%)
+    const changePercent = Math.abs((newIncome - this.monthlyIncome) / this.monthlyIncome * 100);
     if (newIncome !== this.monthlyIncome) {
+      if (changePercent > 50) {
+        const confirmed = confirm(
+          `⚠️ CONFIRMAR CAMBIO IMPORTANTE\n\n` +
+          `Ingreso actual: $${this.monthlyIncome.toLocaleString()}\n` +
+          `Nuevo ingreso: $${newIncome.toLocaleString()}\n` +
+          `Cambio: ${changePercent.toFixed(0)}%\n\n` +
+          `¿Estás seguro de realizar este cambio?`
+        );
+        if (!confirmed) {
+          monthlyIncomeInput.value = this.monthlyIncome;
+          this.showToast('Cambio cancelado', 'info');
+          return;
+        }
+      }
       this.monthlyIncome = newIncome;
       localStorage.setItem(
         'financia_monthly_income',
@@ -9695,6 +9749,9 @@ FinanceApp.prototype.updateConfigurationDisplay = function () {
       : '';
     monthlyIncomeInput.value = formattedIncome;
   }
+
+  // Actualizar display de ingresos extras
+  this.updateExtraIncomeDisplay();
 
   if (configMemberName) {
     configMemberName.textContent = this.userProfile.name || 'Usuario';
@@ -13110,6 +13167,76 @@ FinanceApp.prototype.setupAllNumberInputs = function () {
   numberInputs.forEach((input) => {
     this.setupNumberFormatting(input);
   });
+};
+
+// === FUNCIONES PARA INGRESOS EXTRAS ===
+FinanceApp.prototype.promptAddExtraIncome = function() {
+  const amount = prompt('💰 Ingresa el monto del ingreso extra:\n\n(Este monto se sumará a tu ingreso base)');
+
+  if (amount === null) return; // Canceló
+
+  const cleanValue = amount.replace(/[^\d.]/g, '');
+  const extraAmount = parseFloat(cleanValue);
+
+  if (!extraAmount || extraAmount <= 0) {
+    this.showToast('⚠️ Ingresa un monto válido mayor a cero', 'error');
+    return;
+  }
+
+  // Sumar al total de extras
+  this.extraIncome += extraAmount;
+
+  // Guardar
+  this.saveData();
+
+  // Actualizar displays
+  this.updateExtraIncomeDisplay();
+  this.updateConfigurationDisplay();
+  this.renderDashboard();
+
+  this.showToast(`✅ Ingreso extra de $${extraAmount.toLocaleString()} agregado`, 'success');
+};
+
+FinanceApp.prototype.resetExtraIncome = function() {
+  const confirmed = confirm(
+    '⚠️ ¿Resetear ingresos extras?\n\n' +
+    `Extras actuales: $${this.extraIncome.toLocaleString()}\n\n` +
+    'Esto NO afectará tu ingreso base, solo eliminará los extras acumulados.'
+  );
+
+  if (!confirmed) return;
+
+  this.extraIncome = 0;
+  this.saveData();
+  this.updateExtraIncomeDisplay();
+  this.updateConfigurationDisplay();
+  this.renderDashboard();
+
+  this.showToast('Ingresos extras reseteados', 'success');
+};
+
+FinanceApp.prototype.updateExtraIncomeDisplay = function() {
+  const extraDisplay = document.getElementById('extraIncomeDisplay');
+  const extraAmount = document.getElementById('extraIncomeAmount');
+  const totalDisplay = document.getElementById('totalIncomeDisplay');
+
+  if (extraDisplay && extraAmount) {
+    if (this.extraIncome > 0) {
+      extraDisplay.style.display = 'flex';
+      extraAmount.textContent = `$${this.extraIncome.toLocaleString()}`;
+    } else {
+      extraDisplay.style.display = 'none';
+    }
+  }
+
+  if (totalDisplay) {
+    const totalIncome = this.monthlyIncome + this.extraIncome;
+    totalDisplay.textContent = `$${totalIncome.toLocaleString()}`;
+  }
+};
+
+FinanceApp.prototype.getTotalIncome = function() {
+  return this.monthlyIncome + this.extraIncome;
 };
 
 if (typeof window !== 'undefined') {

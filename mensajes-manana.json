@@ -1,0 +1,4325 @@
+{
+  "libro": {
+    "titulo": "Piense y Hágase Rico - Mensajes de Mañana",
+    "autor": "Napoleon Hill",
+    "horario": "08:00 AM"
+  },
+  "saludos_intro": [
+    "{nombre}, este mensaje es especialmente para ti",
+    "{nombre}, creo que te gustaría leer este pensamiento",
+    "Buenos días {nombre}, aquí está tu mensaje inspirador del día",
+    "{nombre}, comienza tu día con este pensamiento poderoso",
+    "Hola {nombre}, que este mensaje ilumine tu día",
+    "{nombre}, lee esto antes de empezar tu jornada",
+    "¡Buenos días {nombre}! Tu éxito comienza ahora",
+    "{nombre}, despierta con determinación y propósito",
+    "Querido {nombre}, hoy es tu día para brillar",
+    "{nombre}, que la prosperidad llegue a ti",
+    "¡Hola {nombre}! Prepárate para un día extraordinario",
+    "{nombre}, tienes el poder de crear riqueza",
+    "Buenos días {nombre}, eres capaz de lograr cualquier cosa",
+    "{nombre}, hoy atraerás abundancia a tu vida",
+    "¡Despierta {nombre}! El éxito te está esperando",
+    "{nombre}, este mensaje cambiará tu perspectiva financiera",
+    "Buenos días {nombre}, tu mente es tu mayor activo",
+    "{nombre}, levántate y conquista tus metas financieras",
+    "¡Hola {nombre}! La riqueza comienza en tu mente",
+    "{nombre}, hoy es el día perfecto para prosperar",
+    "Buenos días {nombre}, eres un imán para la abundancia",
+    "{nombre}, que este pensamiento transforme tu día",
+    "¡Despierta {nombre}! Tu futuro financiero te espera",
+    "{nombre}, hoy plantarás semillas de prosperidad",
+    "Buenos días {nombre}, el dinero fluye hacia ti",
+    "{nombre}, eres digno de toda la riqueza que deseas",
+    "¡Hola {nombre}! Tu mentalidad determina tu riqueza",
+    "{nombre}, hoy crearás oportunidades de oro",
+    "Buenos días {nombre}, la abundancia es tu derecho natural",
+    "{nombre}, despierta al millonario que llevas dentro",
+    "¡Buenos días {nombre}! Hoy harás que el dinero trabaje para ti",
+    "{nombre}, que la prosperidad sea tu compañera constante",
+    "Querido {nombre}, tu éxito financiero está asegurado",
+    "{nombre}, hoy atraerás todo lo que necesitas",
+    "Buenos días {nombre}, eres el arquitecto de tu riqueza",
+    "{nombre}, que este mensaje active tu magnetismo financiero",
+    "¡Hola {nombre}! Tu cuenta bancaria crecerá hoy",
+    "{nombre}, despierta con gratitud y abundancia",
+    "Buenos días {nombre}, el universo conspira para tu éxito",
+    "{nombre}, hoy tomarás decisiones millonarias",
+    "¡Despierta {nombre}! La libertad financiera te llama",
+    "{nombre}, eres un creador natural de riqueza",
+    "Buenos días {nombre}, hoy multiplicarás tu valor",
+    "{nombre}, que la prosperidad fluya sin esfuerzo hacia ti",
+    "¡Hola {nombre}! Tu mente millonaria se activa ahora",
+    "{nombre}, despierta al inversionista exitoso que eres",
+    "Buenos días {nombre}, hoy atraerás ingresos pasivos",
+    "{nombre}, que este día esté lleno de oportunidades doradas",
+    "¡Buenos días {nombre}! Tu riqueza interior se manifiesta",
+    "{nombre}, hoy crearás múltiples fuentes de ingresos"
+  ],
+  "despedidas": [
+    "Que tu día sea maravilloso y próspero",
+    "Que hoy sea un día lleno de éxitos financieros",
+    "Que este día te traiga grandes logros económicos",
+    "Deseo que tengas un día extraordinario y abundante",
+    "Que hoy sea el inicio de algo grandioso para ti",
+    "Que este día esté lleno de oportunidades doradas",
+    "Que la abundancia te acompañe en cada momento",
+    "Deseo que multipliques tu riqueza hoy",
+    "Que el dinero fluya fácilmente hacia ti",
+    "Que tengas un día lleno de decisiones inteligentes",
+    "Que la prosperidad sea tu compañera constante",
+    "Deseo que atraigas todo lo que mereces",
+    "Que este día transforme tu vida financiera",
+    "Que tengas éxito en cada proyecto que emprendas",
+    "Que la libertad financiera esté cada vez más cerca",
+    "Deseo que tu mente millonaria se fortalezca",
+    "Que hoy plantes semillas de futura riqueza",
+    "Que tengas un día lleno de oportunidades rentables",
+    "Que la abundancia se manifieste en tu vida",
+    "Deseo que superes todos tus límites financieros",
+    "Que tu cuenta bancaria crezca constantemente",
+    "Que tengas un día de inversiones exitosas",
+    "Que la riqueza llegue a ti de formas inesperadas",
+    "Deseo que tu valor en el mercado se incremente",
+    "Que hoy des pasos firmes hacia tu libertad económica",
+    "Que tengas un día lleno de ideas millonarias",
+    "Que la prosperidad toque cada área de tu vida",
+    "Deseo que atraigas socios e inversionistas ideales",
+    "Que tu día esté lleno de flujo de dinero positivo",
+    "Que tengas éxito en todas tus transacciones",
+    "Que la abundancia se multiplique en tus manos",
+    "Deseo que tu patrimonio crezca exponencialmente",
+    "Que hoy recibas ingresos de múltiples fuentes",
+    "Que tengas un día de decisiones financieras acertadas",
+    "Que la riqueza que buscas te encuentre a ti",
+    "Deseo que tu día esté lleno de bendiciones económicas",
+    "Que hoy actives todos tus canales de abundancia",
+    "Que tengas un día de oportunidades ilimitadas",
+    "Que la prosperidad se acelere en tu vida",
+    "Deseo que tu éxito financiero inspire a otros",
+    "Que hoy construyas cimientos sólidos para tu riqueza",
+    "Que tengas un día lleno de negocios prósperos",
+    "Que la abundancia fluya como un río hacia ti",
+    "Deseo que tu día esté marcado por la prosperidad",
+    "Que hoy atraigas todo el dinero que necesitas",
+    "Que tengas un día de inversiones inteligentes",
+    "Que la riqueza que mereces se manifieste hoy",
+    "Deseo que tu día esté lleno de éxitos financieros",
+    "Que hoy sea el comienzo de tu mejor época económica",
+    "Que la abundancia y la prosperidad te sonrían siempre"
+  ],
+  "mensajes": [
+    {
+      "id": 1,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "El estado mental de desear algo es el punto de partida para atraer éxito. Todo logro comienza con un deseo ardiente.",
+      "reflexion": "Hoy, define claramente qué es lo que deseas alcanzar."
+    },
+    {
+      "id": 2,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Todo lo que la mente pueda concebir y creer, la mente puede alcanzar. No hay limitaciones excepto las que tú mismo reconoces.",
+      "reflexion": "Hoy, elimina los límites mentales que te detienen."
+    },
+    {
+      "id": 3,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Nadie es derrotado hasta que la derrota sea aceptada como una realidad. El fracaso es temporal si decides levantarte.",
+      "reflexion": "Hoy, convierte cada obstáculo en una oportunidad de crecer."
+    },
+    {
+      "id": 4,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "La FE es el principal químico de la mente. Cuando la fe se combina con el pensamiento, tu mente subconsciente lo capta instantáneamente.",
+      "reflexion": "Hoy, actúa con fe absoluta en tus capacidades."
+    },
+    {
+      "id": 5,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Toda persona que triunfa debe estar dispuesta a quemar sus naves y cortar todas las fuentes de retirada.",
+      "reflexion": "Hoy, comprométete completamente con tu objetivo."
+    },
+    {
+      "id": 6,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Las ideas son los puntos de inicio de todas las fortunas. Una buena idea es todo lo que necesitas para alcanzar el éxito.",
+      "reflexion": "Hoy, abre tu mente a nuevas ideas y posibilidades."
+    },
+    {
+      "id": 7,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Una de las causas más comunes del fracaso es el hábito de rendirse ante la primera derrota temporal.",
+      "reflexion": "Hoy, persiste incluso cuando parezca difícil."
+    },
+    {
+      "id": 8,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Eres el maestro de tu destino, el capitán de tu alma, porque tienes el poder de controlar tus pensamientos.",
+      "reflexion": "Hoy, toma control absoluto de tus pensamientos."
+    },
+    {
+      "id": 9,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "El éxito llega a quienes se vuelven conscientes del éxito. Prepara tu mente para recibir lo que deseas.",
+      "reflexion": "Hoy, visualiza tu éxito como si ya fuera real."
+    },
+    {
+      "id": 10,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Tanto la pobreza como la riqueza se derivan del pensamiento. Elige conscientemente tus pensamientos.",
+      "reflexion": "Hoy, piensa en abundancia y prosperidad."
+    },
+    {
+      "id": 11,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Los pensamientos son cosas, y cosas poderosas, cuando se mezclan con un propósito definido y persistencia.",
+      "reflexion": "Hoy, combina tus pensamientos con acciones decididas."
+    },
+    {
+      "id": 12,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Una mente abierta es esencial para creer. Las mentes cerradas no inspiran fe, valor ni convicción.",
+      "reflexion": "Hoy, mantén tu mente abierta a las oportunidades."
+    },
+    {
+      "id": 13,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "No hay limitaciones para la mente excepto las que reconocemos nosotros mismos.",
+      "reflexion": "Hoy, reconoce tu potencial ilimitado."
+    },
+    {
+      "id": 14,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Cualquier hombre es educado si sabe cómo adquirir el conocimiento cuando lo necesita.",
+      "reflexion": "Hoy, busca conocimiento que te acerque a tus metas."
+    },
+    {
+      "id": 15,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Las personas tienen una debilidad universal: la falta de ambición. Despierta tu ambición hoy.",
+      "reflexion": "Hoy, despierta y alimenta tu ambición interior."
+    },
+    {
+      "id": 16,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "El camino del éxito es el camino de la búsqueda continua del conocimiento.",
+      "reflexion": "Hoy, aprende algo nuevo que te haga más valioso."
+    },
+    {
+      "id": 17,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Tanto el éxito como el fracaso son en gran medida resultados de costumbre.",
+      "reflexion": "Hoy, crea hábitos que te conduzcan al éxito."
+    },
+    {
+      "id": 18,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Una idea es un impulso de pensamiento que estimula la acción por medio de la imaginación.",
+      "reflexion": "Hoy, transforma tus ideas en planes de acción."
+    },
+    {
+      "id": 19,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Las ideas son fuerzas intangibles, pero tienen más poder que los cerebros físicos que las crean.",
+      "reflexion": "Hoy, valora y cultiva tus ideas innovadoras."
+    },
+    {
+      "id": 20,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Ningún individuo puede asegurar una gran fortuna sin la cooperación de otras personas.",
+      "reflexion": "Hoy, busca colaboradores que compartan tu visión."
+    },
+    {
+      "id": 21,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "La derrota temporal sólo debe significar que tu plan tiene algún defecto. Reajusta y continúa.",
+      "reflexion": "Hoy, aprende de cada contratiempo y mejora tu estrategia."
+    },
+    {
+      "id": 22,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Tus logros no pueden ser más sólidos que tus planes. Planifica con cuidado y precisión.",
+      "reflexion": "Hoy, construye planes sólidos para tu futuro financiero."
+    },
+    {
+      "id": 23,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Ningún hombre es derrotado a menos que se rinda en su propia mente.",
+      "reflexion": "Hoy, mantén una mentalidad invencible."
+    },
+    {
+      "id": 24,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "La importancia de una personalidad agradable es clave para prestar servicios con el espíritu apropiado.",
+      "reflexion": "Hoy, cultiva relaciones que te abran puertas."
+    },
+    {
+      "id": 25,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "La sabiduría genuina suele guiarse por la modestia y el silencio.",
+      "reflexion": "Hoy, actúa con sabiduría y humildad."
+    },
+    {
+      "id": 26,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Dile al mundo lo que piensas hacer, pero demuéstralo primero con acciones.",
+      "reflexion": "Hoy, demuestra tu valor a través de acciones concretas."
+    },
+    {
+      "id": 27,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "El valor de las decisiones depende de la valentía necesaria para tomarlas.",
+      "reflexion": "Hoy, toma decisiones valientes y decididas."
+    },
+    {
+      "id": 28,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "La base de la perseverancia es la fuerza de voluntad desarrollada.",
+      "reflexion": "Hoy, desarrolla tu fuerza de voluntad con pequeños actos."
+    },
+    {
+      "id": 29,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "La falta de perseverancia es una debilidad que se puede superar con el esfuerzo adecuado.",
+      "reflexion": "Hoy, persevera aunque el camino sea desafiante."
+    },
+    {
+      "id": 30,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Si no ves una gran riqueza en tu imaginación, nunca la verás en tu cuenta bancaria.",
+      "reflexion": "Hoy, visualiza tu riqueza futura con claridad total."
+    },
+    {
+      "id": 31,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Hay una diferencia entre desear algo y estar listo para recibirlo.",
+      "reflexion": "Hoy, prepárate mental y emocionalmente para recibir abundancia."
+    },
+    {
+      "id": 32,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Una mente dominada por emociones positivas se convierte en un refugio favorable para la fe.",
+      "reflexion": "Hoy, cultiva emociones positivas que fortalezcan tu fe."
+    },
+    {
+      "id": 33,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Uno debe darse cuenta de que todos los que han acumulado fortunas primero han soñado y planeado.",
+      "reflexion": "Hoy, convierte tus sueños en planes específicos y medibles."
+    },
+    {
+      "id": 34,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Las riquezas comienzan en forma de pensamiento. La cantidad está limitada por la persona.",
+      "reflexion": "Hoy, usa el poder de tu pensamiento para crear riqueza."
+    },
+    {
+      "id": 35,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Todo hombre que ha acumulado una gran fortuna ha reconocido el poder del proceso de pensamiento.",
+      "reflexion": "Hoy, reconoce el poder transformador de tus pensamientos."
+    },
+    {
+      "id": 36,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Cualquiera puede desear riquezas, pero solo unos pocos saben que un plan definido es esencial.",
+      "reflexion": "Hoy, desarrolla un plan definido para aumentar tus ingresos."
+    },
+    {
+      "id": 37,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Si piensas que estás derrotado, lo estás. El éxito comienza con la voluntad y el estado mental.",
+      "reflexion": "Hoy, fortalece tu mentalidad de éxito y abundancia."
+    },
+    {
+      "id": 38,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Los pensamientos que se mezclan con emociones constituyen una fuerza magnética que atrae pensamientos similares.",
+      "reflexion": "Hoy, atrae pensamientos y oportunidades positivas a tu vida."
+    },
+    {
+      "id": 39,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "El dinero es sólo el símbolo de la riqueza real: la capacidad de pensar, planificar y actuar.",
+      "reflexion": "Hoy, ve más allá del dinero y enfócate en crear valor real."
+    },
+    {
+      "id": 40,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "La riqueza no es solo dinero, es la capacidad de crear valor para otros y para ti mismo.",
+      "reflexion": "Hoy, define qué significa la verdadera riqueza para ti."
+    },
+    {
+      "id": 41,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "Tu mente subconsciente trabaja continuamente, asegúrate de alimentarla con pensamientos de éxito.",
+      "reflexion": "Hoy, programa tu mente subconsciente para el éxito financiero."
+    },
+    {
+      "id": 42,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "La naturaleza no tolera el vacío mental. Llena tu mente con pensamientos de abundancia.",
+      "reflexion": "Hoy, llena tu mente con pensamientos de abundancia y gratitud."
+    },
+    {
+      "id": 43,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "El fracaso es una bendición disfrazada cuando te enseña lecciones valiosas para el futuro.",
+      "reflexion": "Hoy, transforma cada fracaso en una lección valiosa."
+    },
+    {
+      "id": 44,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "La decisión es el punto de partida de todo logro. Decide ser próspero y actúa en consecuencia.",
+      "reflexion": "Hoy, toma la decisión firme de crear riqueza en tu vida."
+    },
+    {
+      "id": 45,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "El conocimiento especializado es poder cuando se organiza y se pone en acción.",
+      "reflexion": "Hoy, busca conocimiento especializado que te dé ventaja competitiva."
+    },
+    {
+      "id": 46,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "La imaginación es el taller de la mente donde se forjan todos los planes de logro humano.",
+      "reflexion": "Hoy, usa tu imaginación para visualizar tu éxito futuro."
+    },
+    {
+      "id": 47,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "El entusiasmo es fe en acción. Sin entusiasmo, ningún gran logro es posible.",
+      "reflexion": "Hoy, actúa con entusiasmo en cada proyecto que emprendas."
+    },
+    {
+      "id": 48,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "La autodisciplina es la clave maestra que abre todas las puertas hacia el logro personal.",
+      "reflexion": "Hoy, practica la autodisciplina en tus finanzas personales."
+    },
+    {
+      "id": 49,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "La concentración de esfuerzo multiplica el poder. Enfócate en lo que realmente importa.",
+      "reflexion": "Hoy, concentra tu energía en las actividades más rentables."
+    },
+    {
+      "id": 50,
+      "categoria": "Napoleon Hill - Mentalidad y Propósito",
+      "mensaje": "El tiempo perdido en la indecisión supera al tiempo perdido en decisiones equivocadas.",
+      "reflexion": "Hoy, toma decisiones rápidas y aprende de los resultados."
+    },
+    {
+      "id": 51,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "La falta de dinero nunca es un problema. La falta de dinero es simplemente un síntoma de lo que está sucediendo en tu interior.",
+      "reflexion": "Hoy, identifica qué patrones mentales limitan tus finanzas."
+    },
+    {
+      "id": 52,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Un activo pone dinero en mi bolsillo. Un pasivo saca dinero de mi bolsillo. Es así de simple.",
+      "reflexion": "Hoy, evalúa si tus gastos son activos o pasivos."
+    },
+    {
+      "id": 53,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Los ricos adquieren activos. Los pobres y la clase media adquieren pasivos que creen que son activos.",
+      "reflexion": "Hoy, enfócate en adquirir algo que genere ingresos."
+    },
+    {
+      "id": 54,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "No se trata de cuánto dinero ganas, sino cuánto conservas y cómo de duro trabaja para ti.",
+      "reflexion": "Hoy, mide tu riqueza por los activos que posees, no por tu salario."
+    },
+    {
+      "id": 55,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "A menudo, cuanto más dinero ganas, más dinero gastas. Por eso más dinero no te hace rico.",
+      "reflexion": "Hoy, invierte tu dinero en lugar de solo gastarlo."
+    },
+    {
+      "id": 56,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Las personas más exitosas en la vida son las que hacen preguntas. Siempre están aprendiendo y creciendo.",
+      "reflexion": "Hoy, haz una pregunta que pueda cambiar tu situación financiera."
+    },
+    {
+      "id": 57,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Tu mente es tu mayor activo, así que ten cuidado con lo que pones en ella.",
+      "reflexion": "Hoy, alimenta tu mente con conocimiento financiero valioso."
+    },
+    {
+      "id": 58,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Si quieres ser rico, tienes que desarrollar tu visión. Debes estar parado al borde del tiempo mirando hacia el futuro.",
+      "reflexion": "Hoy, visualiza tu futuro financiero con claridad y detalle."
+    },
+    {
+      "id": 59,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Los ganadores no tienen miedo de perder. Los perdedores sí. El fracaso es parte del proceso de éxito.",
+      "reflexion": "Hoy, ve los fracasos como escalones hacia el éxito."
+    },
+    {
+      "id": 60,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "La palabra más destructiva del mundo es 'mañana'. Actúa hoy, no mañana.",
+      "reflexion": "Hoy, actúa en lugar de postergar tus metas financieras."
+    },
+    {
+      "id": 61,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Esperar consume tu energía. Actuar crea energía. La acción es la clave del éxito.",
+      "reflexion": "Hoy, toma una acción concreta hacia tu libertad financiera."
+    },
+    {
+      "id": 62,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "El miedo a ser diferente impide a la gente buscar nuevas formas de resolver sus problemas.",
+      "reflexion": "Hoy, busca maneras innovadoras de resolver tus desafíos económicos."
+    },
+    {
+      "id": 63,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Las personas más ricas del mundo construyen redes. Todos los demás buscan trabajo.",
+      "reflexion": "Hoy, construye una conexión que pueda beneficiar tu futuro."
+    },
+    {
+      "id": 64,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Si quieres ser rico, sirve a más gente. La riqueza viene del servicio.",
+      "reflexion": "Hoy, encuentra una forma de ayudar a más personas."
+    },
+    {
+      "id": 65,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Una persona puede estar muy educada, tener éxito profesional y ser analfabeta financieramente.",
+      "reflexion": "Hoy, dedica tiempo a educarte financieramente."
+    },
+    {
+      "id": 66,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "El problema con la escuela es que te dan la respuesta y luego te dan el examen. La vida no es así.",
+      "reflexion": "Hoy, aprende de la experiencia práctica, no solo de la teoría."
+    },
+    {
+      "id": 67,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Es más importante hacer crecer tu ingreso que reducir tus gastos. Es más importante hacer crecer tu espíritu que reducir tus sueños.",
+      "reflexion": "Hoy, busca maneras de aumentar tus ingresos en lugar de solo reducir gastos."
+    },
+    {
+      "id": 68,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "No seas adicto al dinero. Trabaja para aprender, no para ganar dinero. Trabaja por el conocimiento.",
+      "reflexion": "Hoy, aprende algo que aumente tu valor en el mercado."
+    },
+    {
+      "id": 69,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Si todavía estás haciendo lo que mamá y papá dijeron que hicieras, estás perdiendo.",
+      "reflexion": "Hoy, cuestiona los consejos tradicionales sobre el dinero."
+    },
+    {
+      "id": 70,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Una equivocación es una señal de que es tiempo de aprender algo nuevo, algo que no sabías antes.",
+      "reflexion": "Hoy, convierte cada error en una oportunidad de aprendizaje."
+    },
+    {
+      "id": 71,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "El tamaño de tu éxito se mide por la fuerza de tu deseo y cómo manejas la desilusión en el camino.",
+      "reflexion": "Hoy, fortalece tu deseo de éxito y tu resistencia a la desilusión."
+    },
+    {
+      "id": 72,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Vista es lo que ves con tus ojos. Visión es lo que ves con tu mente.",
+      "reflexion": "Hoy, desarrolla tu visión financiera más allá de lo obvio."
+    },
+    {
+      "id": 73,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Más dinero rara vez resuelve los problemas de dinero de alguien. La educación financiera sí.",
+      "reflexion": "Hoy, invierte en tu educación financiera antes que en productos."
+    },
+    {
+      "id": 74,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "En el mundo real, las personas más inteligentes son las que cometen errores y aprenden.",
+      "reflexion": "Hoy, aprende de tus errores y experimenta con nuevas ideas."
+    },
+    {
+      "id": 75,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Lo que dices en tu mente tiene más poder que lo que dices con tu boca.",
+      "reflexion": "Hoy, controla tu diálogo interno sobre el dinero."
+    },
+    {
+      "id": 76,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Es más fácil pararse en la línea lateral y criticar. Métete en el juego.",
+      "reflexion": "Hoy, deja de criticar y comienza a crear."
+    },
+    {
+      "id": 77,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Roto es temporal, pobre es eterno. La diferencia está en la mentalidad.",
+      "reflexion": "Hoy, cambia tu mentalidad de escasez a abundancia."
+    },
+    {
+      "id": 78,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Una de las razones por las que los ricos se hacen más ricos es que el tema del dinero se enseña en casa, no en la escuela.",
+      "reflexion": "Hoy, busca educación financiera fuera del sistema tradicional."
+    },
+    {
+      "id": 79,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Desarrollo mi IQ financiero porque quiero participar en el juego más rápido y grande del mundo.",
+      "reflexion": "Hoy, desarrolla habilidades que te den ventaja competitiva."
+    },
+    {
+      "id": 80,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Si eres el tipo de persona que no tiene agallas, te rendirás cada vez que la vida te presione.",
+      "reflexion": "Hoy, fortalece tu carácter para superar la presión financiera."
+    },
+    {
+      "id": 81,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Todo el mundo puede decirte el riesgo. Un emprendedor puede ver la recompensa.",
+      "reflexion": "Hoy, identifica oportunidades donde otros ven riesgos."
+    },
+    {
+      "id": 82,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Si quieres ser rico, piensa en grande, piensa de manera diferente.",
+      "reflexion": "Hoy, piensa como empresario, no como empleado."
+    },
+    {
+      "id": 83,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "La diferencia principal entre ricos y pobres es cómo manejan el miedo.",
+      "reflexion": "Hoy, usa el miedo como combustible para tomar acción."
+    },
+    {
+      "id": 84,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "A menudo las personas trabajan más duro de lo necesario porque aprendieron a trabajar duro, pero no cómo hacer que su dinero trabaje duro para ellos.",
+      "reflexion": "Hoy, haz que tu dinero trabaje tan duro como tú."
+    },
+    {
+      "id": 85,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "El flujo de efectivo cuenta la historia de cómo una persona maneja el dinero.",
+      "reflexion": "Hoy, revisa hacia dónde va tu dinero cada mes."
+    },
+    {
+      "id": 86,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "El dinero es realmente solo una idea. Una idea muy poderosa.",
+      "reflexion": "Hoy, crea una idea que pueda generar ingresos."
+    },
+    {
+      "id": 87,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "El dinero nunca te hará feliz si eres una persona infeliz. Solo amplifica quien realmente eres.",
+      "reflexion": "Hoy, trabaja en tu felicidad interior mientras construyes riqueza."
+    },
+    {
+      "id": 88,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Cada persona exitosa en la vida comenzó persiguiendo una pasión, usualmente contra todas las probabilidades.",
+      "reflexion": "Hoy, identifica tu pasión y encuentra formas de monetizarla."
+    },
+    {
+      "id": 89,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Solo tienes un cierto número de horas en un día y hay un límite para las que puedes trabajar.",
+      "reflexion": "Hoy, invierte tu tiempo en actividades de alto valor."
+    },
+    {
+      "id": 90,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "El momento en que decides crear un portafolio de ingresos pasivos, tu vida cambia.",
+      "reflexion": "Hoy, da el primer paso hacia crear ingresos pasivos."
+    },
+    {
+      "id": 91,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Si no tienes un plan para tu dinero antes de partir de esta tierra, el gobierno sí lo tiene.",
+      "reflexion": "Hoy, haz un plan financiero antes de gastar tu dinero."
+    },
+    {
+      "id": 92,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Hablar es barato. Aprende a escuchar con tus ojos. Las acciones hablan más fuerte que las palabras.",
+      "reflexion": "Hoy, observa las acciones de personas exitosas, no solo sus palabras."
+    },
+    {
+      "id": 93,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Muchas veces la gente no obtiene lo que quieren en la vida porque no saben lo que quieren.",
+      "reflexion": "Hoy, define claramente qué quieres lograr financieramente."
+    },
+    {
+      "id": 94,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Los impuestos castigan a los que producen y recompensan a los que no producen.",
+      "reflexion": "Hoy, aprende cómo los impuestos afectan tu riqueza."
+    },
+    {
+      "id": 95,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "El sistema educativo fue diseñado para crear empleados, no empleadores.",
+      "reflexion": "Hoy, piensa como emprendedor, no solo como empleado."
+    },
+    {
+      "id": 96,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Los empleados trabajan lo suficientemente duro para no ser despedidos, y los jefes pagan lo suficiente para que no se vayan.",
+      "reflexion": "Hoy, busca oportunidades de inversión en lugar de solo ahorrar."
+    },
+    {
+      "id": 97,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Invertir no es arriesgado. No saber nada sobre inversión es arriesgado.",
+      "reflexion": "Hoy, edúcate sobre inversiones para reducir el riesgo."
+    },
+    {
+      "id": 98,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Cuanto más seguridad busca una persona, más control renuncia sobre su vida.",
+      "reflexion": "Hoy, toma más control sobre tu futuro financiero."
+    },
+    {
+      "id": 99,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "Si mi esposa y yo compráramos una casa más grande y elegante, no sería un activo. Sería un pasivo.",
+      "reflexion": "Hoy, evalúa si tu casa es realmente un activo o un pasivo."
+    },
+    {
+      "id": 100,
+      "categoria": "Robert Kiyosaki - Educación Financiera",
+      "mensaje": "La razón principal por la que las personas luchan financieramente es que aceptan consejos de personas pobres.",
+      "reflexion": "Hoy, busca consejos financieros de personas prósperas."
+    },
+    {
+      "id": 101,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "El secreto de la riqueza es simple: encuentra una manera de hacer más por otros que nadie más. Sé más valioso.",
+      "reflexion": "Hoy, encuentra una manera de crear más valor para alguien más."
+    },
+    {
+      "id": 102,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "No pienses en términos de tomar grandes riesgos para obtener grandes resultados. Piensa en el menor riesgo para ese resultado grandioso.",
+      "reflexion": "Hoy, busca el camino de menor riesgo hacia tu objetivo financiero."
+    },
+    {
+      "id": 103,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Los problemas económicos no se resuelven con dinero, se resuelven con imaginación.",
+      "reflexion": "Hoy, usa tu creatividad para resolver un problema económico."
+    },
+    {
+      "id": 104,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "El secreto de mi éxito fue rodearme de personas más inteligentes que yo.",
+      "reflexion": "Hoy, conecta con alguien que sea más exitoso que tú."
+    },
+    {
+      "id": 105,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Ya eres un operador financiero. Intercambias tiempo por dinero, y ese es el peor negocio que puedes hacer.",
+      "reflexion": "Hoy, deja de intercambiar solo tiempo por dinero."
+    },
+    {
+      "id": 106,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Alguien que es rico ha hecho del dinero su esclavo, ya no es esclavo del dinero.",
+      "reflexion": "Hoy, haz que tu dinero comience a trabajar para ti."
+    },
+    {
+      "id": 107,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La primera diferencia entre alguien financieramente rico y alguien pobre: uno es propietario, no solo consumidor.",
+      "reflexion": "Hoy, enfócate en crear activos, no solo en consumir."
+    },
+    {
+      "id": 108,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Tienes que decidir que hay un porcentaje de dinero que vas a mantener para siempre.",
+      "reflexion": "Hoy, separa un porcentaje de tus ingresos para inversión."
+    },
+    {
+      "id": 109,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "El objetivo no es ganar suficiente dinero para no tener que trabajar nunca, sino hacer lo que amas.",
+      "reflexion": "Hoy, encuentra significado y propósito en tu trabajo financiero."
+    },
+    {
+      "id": 110,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "No puedes trabajar tres horas a la semana y ganar $100,000. Hacerse rico rápido no funciona.",
+      "reflexion": "Hoy, sé paciente con tu estrategia de construcción de riqueza."
+    },
+    {
+      "id": 111,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Diversifica siempre. La única regla universal que conocen los genios de las finanzas es la diversificación.",
+      "reflexion": "Hoy, no pongas todos tus huevos financieros en una sola canasta."
+    },
+    {
+      "id": 112,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Todo el mundo necesita crear una máquina de dinero que funcione mientras duermes.",
+      "reflexion": "Hoy, crea un sistema que genere ingresos sin tu presencia constante."
+    },
+    {
+      "id": 113,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La educación formal te conseguirá un trabajo, pero la autoeducación te hará una fortuna.",
+      "reflexion": "Hoy, invierte tiempo en aprender algo que aumente tu valor."
+    },
+    {
+      "id": 114,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Es la emoción la que crea el movimiento. Es la emoción la que crea el cambio.",
+      "reflexion": "Hoy, usa la emoción positiva para impulsar tus metas financieras."
+    },
+    {
+      "id": 115,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "El éxito sin realización es el fracaso final. Debes encontrar significado en lo que haces.",
+      "reflexion": "Hoy, asegúrate de que tu éxito tenga propósito y significado."
+    },
+    {
+      "id": 116,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La calidad de tu vida está determinada por la calidad de las preguntas que te haces habitualmente.",
+      "reflexion": "Hoy, hazte mejores preguntas sobre tu situación financiera."
+    },
+    {
+      "id": 117,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La diferencia entre exitosos y todos los demás no es la falta de fuerza, no es la falta de conocimiento, sino la falta de voluntad.",
+      "reflexion": "Hoy, actúa con la voluntad inquebrantable de cambiar tu situación."
+    },
+    {
+      "id": 118,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Si haces lo que siempre has hecho, obtendrás lo que siempre has obtenido.",
+      "reflexion": "Hoy, cambia algo en tu rutina financiera para obtener mejores resultados."
+    },
+    {
+      "id": 119,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "El progreso es igual a la felicidad. Cuando no estás creciendo, estás muriendo.",
+      "reflexion": "Hoy, enfócate en el crecimiento personal y financiero."
+    },
+    {
+      "id": 120,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Donde la atención va, la energía fluye y los resultados aparecen.",
+      "reflexion": "Hoy, dirige tu atención hacia oportunidades que generen resultados."
+    },
+    {
+      "id": 121,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La mayoría de las personas sobreestiman lo que pueden hacer en un año y subestiman lo que pueden hacer en una década.",
+      "reflexion": "Hoy, piensa en el impacto a largo plazo de tus decisiones financieras."
+    },
+    {
+      "id": 122,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Tus decisiones moldean tu destino. Toma mejores decisiones hoy.",
+      "reflexion": "Hoy, toma una decisión que moldee positivamente tu destino financiero."
+    },
+    {
+      "id": 123,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "El poder de usar el dolor y el placer conscientemente y deliberadamente es la clave del cambio.",
+      "reflexion": "Hoy, usa el dolor de tu situación actual como motivación para cambiar."
+    },
+    {
+      "id": 124,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "No es lo que nos sucede, sino cómo reaccionamos a lo que nos sucede lo que determina la calidad de nuestras vidas.",
+      "reflexion": "Hoy, cambia tu reacción ante los desafíos financieros."
+    },
+    {
+      "id": 125,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Si no estás creciendo, estás muriendo. No hay estado intermedio.",
+      "reflexion": "Hoy, haz algo que contribuya a tu crecimiento financiero."
+    },
+    {
+      "id": 126,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La única cosa que puedes controlar es tu enfoque. Enfócate en lo que puedes controlar.",
+      "reflexion": "Hoy, enfócate solo en lo que puedes controlar de tus finanzas."
+    },
+    {
+      "id": 127,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Identifica tus miedos y ve hacia ellos. Ahí es donde encontrarás tu poder.",
+      "reflexion": "Hoy, enfrenta un miedo financiero para encontrar tu poder."
+    },
+    {
+      "id": 128,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La vida es un regalo, y nos ofrece el privilegio, la oportunidad y la responsabilidad de dar algo de vuelta.",
+      "reflexion": "Hoy, da algo de valor sin esperar nada a cambio."
+    },
+    {
+      "id": 129,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Tus creencias se convierten en tus pensamientos, tus pensamientos se convierten en tus palabras, tus palabras se convierten en tus acciones.",
+      "reflexion": "Hoy, alinea tus creencias con tus metas financieras."
+    },
+    {
+      "id": 130,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "El elemento más importante en cualquier relación es la confianza. Sin ella, no tienes nada.",
+      "reflexion": "Hoy, construye confianza en tus relaciones de negocios."
+    },
+    {
+      "id": 131,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Influenciar es la habilidad más importante que puedes desarrollar en tu vida.",
+      "reflexion": "Hoy, influye positivamente en alguien con tu ejemplo financiero."
+    },
+    {
+      "id": 132,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La pasión es la génesis del genio. Encuentra tu pasión y persíguela con todo tu ser.",
+      "reflexion": "Hoy, permite que tu pasión impulse tus decisiones económicas."
+    },
+    {
+      "id": 133,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "No son los eventos de nuestras vidas los que moldean nuestras vidas, sino nuestras creencias sobre lo que significan esos eventos.",
+      "reflexion": "Hoy, cambia el significado que le das a tus desafíos financieros."
+    },
+    {
+      "id": 134,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "El secreto del éxito es aprender a usar el dolor y el placer en lugar de que el dolor y el placer te usen a ti.",
+      "reflexion": "Hoy, usa tus experiencias pasadas como combustible para el éxito."
+    },
+    {
+      "id": 135,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Si quieres expandir tu vida, debes expandir tu zona de confort regularmente.",
+      "reflexion": "Hoy, sal de tu zona de confort financiera para crecer."
+    },
+    {
+      "id": 136,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Las personas exitosas hacen preguntas mejores, y como resultado, obtienen mejores respuestas.",
+      "reflexion": "Hoy, hazte preguntas que te lleven a mejores oportunidades."
+    },
+    {
+      "id": 137,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La diferencia entre debe y debo es la vida que quieres vivir.",
+      "reflexion": "Hoy, actúa desde el 'debo' en lugar del simple 'debería'."
+    },
+    {
+      "id": 138,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Tu pasado no es igual a tu futuro a menos que vivas allí.",
+      "reflexion": "Hoy, enfócate en crear el futuro financiero que deseas."
+    },
+    {
+      "id": 139,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Es en tus momentos de decisión que se moldea tu destino.",
+      "reflexion": "Hoy, toma una decisión financiera importante que has estado posponiendo."
+    },
+    {
+      "id": 140,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La gratitud es el antídoto absoluto para el miedo, la preocupación y la ira.",
+      "reflexion": "Hoy, practica gratitud por los recursos que ya tienes."
+    },
+    {
+      "id": 141,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "No te enfoques en lo que está mal. No importa dónde estés en la vida, enfócate en dónde quieres ir.",
+      "reflexion": "Hoy, enfócate en las soluciones, no en los problemas financieros."
+    },
+    {
+      "id": 142,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Tu ingreso rara vez excederá tu desarrollo personal. Trabaja en ti mismo más duro de lo que trabajas en tu trabajo.",
+      "reflexion": "Hoy, invierte en tu desarrollo personal tanto como en activos externos."
+    },
+    {
+      "id": 143,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Todo lo que necesitas es ya está dentro de ti, solo tienes que acceder a ello.",
+      "reflexion": "Hoy, accede a la sabiduría y recursos que ya tienes dentro."
+    },
+    {
+      "id": 144,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La fuerza de carácter se gana a través de victorias privadas. Vence en privado primero.",
+      "reflexion": "Hoy, gana una pequeña victoria privada en el manejo de tu dinero."
+    },
+    {
+      "id": 145,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Si no tienes una vida por la que valga la pena luchar, entonces no tienes vida en absoluto.",
+      "reflexion": "Hoy, encuentra algo en tu vida financiera por lo que valga la pena luchar."
+    },
+    {
+      "id": 146,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La manera más rápida de cambiar tu vida es cambiar tu fisiología.",
+      "reflexion": "Hoy, cambia tu postura física para cambiar tu confianza financiera."
+    },
+    {
+      "id": 147,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Las decisiones son el ingrediente más importante del éxito. Decide comprometerte completamente.",
+      "reflexion": "Hoy, toma la decisión de comprometerte completamente con tu éxito."
+    },
+    {
+      "id": 148,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Todo éxito en la vida proviene de tomar acción consistente hacia tus metas más importantes.",
+      "reflexion": "Hoy, toma acción consistente hacia tu meta financiera más importante."
+    },
+    {
+      "id": 149,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "La diferencia entre ordinary y extraordinary es ese pequeño 'extra'.",
+      "reflexion": "Hoy, haz ese esfuerzo 'extra' que te distingue de los demás."
+    },
+    {
+      "id": 150,
+      "categoria": "Tony Robbins - Psicología del Éxito",
+      "mensaje": "Si modelas las acciones de otros que han tenido éxito en un área, puedes acelerar enormemente tu propio éxito en esa misma área.",
+      "reflexion": "Hoy, modela las estrategias de alguien que ha logrado lo que tú quieres."
+    },
+    {
+      "id": 151,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Compramos cosas que no necesitas con dinero que no tienes para impresionar a gente que no te gusta.",
+      "reflexion": "Hoy, evalúa si realmente necesitas lo que planeas comprar."
+    },
+    {
+      "id": 152,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Si vives como nadie más, después podrás vivir como nadie más puede.",
+      "reflexion": "Hoy, vive por debajo de tus posibilidades para construir tu futuro."
+    },
+    {
+      "id": 153,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "La tranquilidad financiera no se trata de comprar muchas cosas. Se trata de aprender a vivir con menos de lo que ganas.",
+      "reflexion": "Hoy, busca felicidad en experiencias, no en compras."
+    },
+    {
+      "id": 154,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Debes tomar el control de tu dinero o la falta de él te controlará para siempre.",
+      "reflexion": "Hoy, toma una decisión financiera que demuestre autocontrol."
+    },
+    {
+      "id": 155,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "No puedes trabajar tres horas a la semana y ganar $100,000. La mentalidad de microondas nunca vence a la mentalidad de olla de cocción lenta.",
+      "reflexion": "Hoy, sé paciente con tu plan de construcción de riqueza."
+    },
+    {
+      "id": 156,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Ganar mucho dinero no es la clave de la prosperidad. La forma en que lo administras sí lo es.",
+      "reflexion": "Hoy, administra tu dinero actual mejor que ayer."
+    },
+    {
+      "id": 157,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Un presupuesto le dice a tu dinero a dónde ir, en lugar de preguntarte a dónde fue.",
+      "reflexion": "Hoy, decide a dónde irá tu dinero antes de gastarlo."
+    },
+    {
+      "id": 158,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "El miedo es el enemigo de la esperanza, y la esperanza es el combustible de los sueños.",
+      "reflexion": "Hoy, reemplaza el miedo financiero con esperanza y acción."
+    },
+    {
+      "id": 159,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Nunca gastes dinero antes de ganarlo. Este es el consejo más simple pero más poderoso.",
+      "reflexion": "Hoy, evita gastar dinero que aún no has ganado."
+    },
+    {
+      "id": 160,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Liquidar deudas te da una victoria rápida y te impulsa. Una vez que ves progreso, te motiva a seguir adelante.",
+      "reflexion": "Hoy, celebra cada pequeño paso hacia tu libertad financiera."
+    },
+    {
+      "id": 161,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Si no sabes a dónde va tu dinero, nunca sabrás por qué no te alcanza.",
+      "reflexion": "Hoy, rastrea exactamente a dónde va cada peso que gastas."
+    },
+    {
+      "id": 162,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "La libertad financiera no es tener un ingreso alto, es necesitar poco.",
+      "reflexion": "Hoy, enfócate en reducir tus necesidades en lugar de aumentar tus ingresos."
+    },
+    {
+      "id": 163,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Quien controla sus finanzas, controla su destino.",
+      "reflexion": "Hoy, toma control de una decisión financiera importante."
+    },
+    {
+      "id": 164,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Tu futuro financiero depende más de tus hábitos diarios que de un golpe de suerte.",
+      "reflexion": "Hoy, practica un hábito financiero saludable."
+    },
+    {
+      "id": 165,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "La paz financiera no es la adquisición de cosas. Se trata de aprender a vivir con menos de lo que ganas.",
+      "reflexion": "Hoy, elige la simplicidad sobre el consumismo."
+    },
+    {
+      "id": 166,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Nunca es demasiado tarde para empezar de nuevo con tus finanzas.",
+      "reflexion": "Hoy, decide que nunca es demasiado tarde para mejorar tus finanzas."
+    },
+    {
+      "id": 167,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "El dinero es un excelente sirviente, pero un pésimo amo.",
+      "reflexion": "Hoy, haz que tu dinero trabaje para ti, no al revés."
+    },
+    {
+      "id": 168,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Prefiero ser realista con mi dinero que optimista con mis deudas.",
+      "reflexion": "Hoy, sé realista con tus capacidades financieras actuales."
+    },
+    {
+      "id": 169,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Las emergencias suceden. Por eso necesitas un fondo de emergencia.",
+      "reflexion": "Hoy, añade algo a tu fondo de emergencia, sin importar qué tan pequeño sea."
+    },
+    {
+      "id": 170,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "No hay atajos para cualquier lugar al que valga la pena ir, especialmente con el dinero.",
+      "reflexion": "Hoy, elige el camino difícil pero correcto con tu dinero."
+    },
+    {
+      "id": 171,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Si no planificas tu dinero, alguien más lo hará por ti.",
+      "reflexion": "Hoy, haz un plan financiero en lugar de dejarlo al azar."
+    },
+    {
+      "id": 172,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "La disciplina es elegir entre lo que quieres ahora y lo que quieres más.",
+      "reflexion": "Hoy, elige tu meta a largo plazo sobre el placer inmediato."
+    },
+    {
+      "id": 173,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "El cambio es doloroso. Pero nada es tan doloroso como quedarse atascado en algún lugar donde no perteneces.",
+      "reflexion": "Hoy, abraza el cambio necesario para mejorar tus finanzas."
+    },
+    {
+      "id": 174,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Actúa según tu edad, no según tu balance bancario.",
+      "reflexion": "Hoy, toma decisiones financieras apropiadas para tu edad y situación."
+    },
+    {
+      "id": 175,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "El éxito es un proceso, no un evento.",
+      "reflexion": "Hoy, enfócate en el proceso de construcción de riqueza, no solo en el resultado."
+    },
+    {
+      "id": 176,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Tienes que vivir como un estudiante universitario para poder vivir como nadie más.",
+      "reflexion": "Hoy, haz un sacrificio temporal para beneficio futuro."
+    },
+    {
+      "id": 177,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "No gastes el dinero del mañana hoy.",
+      "reflexion": "Hoy, piensa en el costo futuro de los gastos de hoy."
+    },
+    {
+      "id": 178,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "El primer paso hacia el control financiero es hacer un presupuesto.",
+      "reflexion": "Hoy, crea o revisa tu presupuesto mensual."
+    },
+    {
+      "id": 179,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Las personas prósperas tienen pequeñas televisiones y grandes bibliotecas. Los pobres tienen grandes televisiones y pequeñas bibliotecas.",
+      "reflexion": "Hoy, invierte en conocimiento que te haga más valioso."
+    },
+    {
+      "id": 180,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Si quieres ser normal, has lo que hace la gente normal. Si quieres ser rico, haz algo diferente.",
+      "reflexion": "Hoy, elige hacer algo diferente para obtener resultados diferentes."
+    },
+    {
+      "id": 181,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Las deudas de tarjetas de crédito son esclavitud moderna.",
+      "reflexion": "Hoy, evita endeudarte para compras innecesarias."
+    },
+    {
+      "id": 182,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Invierte solo en lo que entiendes.",
+      "reflexion": "Hoy, aprende sobre una opción de inversión antes de comprometerte."
+    },
+    {
+      "id": 183,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "El dinero no es todo, pero sin él, muchas cosas se vuelven imposibles.",
+      "reflexion": "Hoy, valora tu tiempo y dinero por igual."
+    },
+    {
+      "id": 184,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "La generosidad comienza cuando termina la escasez.",
+      "reflexion": "Hoy, practica la generosidad desde tus recursos actuales."
+    },
+    {
+      "id": 185,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "No compres felicidad, construye riqueza.",
+      "reflexion": "Hoy, construye riqueza en lugar de buscar felicidad en compras."
+    },
+    {
+      "id": 186,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "La riqueza se construye ladrillo a ladrillo, decisión a decisión.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 187,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "El interés compuesto es la octava maravilla del mundo si trabajas para ti, pero es devastador si trabajas en tu contra.",
+      "reflexion": "Hoy, usa el interés compuesto a tu favor, no en tu contra."
+    },
+    {
+      "id": 188,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Vive intencionalmente con tu dinero.",
+      "reflexion": "Hoy, sé intencional con cada decisión de gasto."
+    },
+    {
+      "id": 189,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "La paciencia es la virtud más difícil de aprender en las finanzas.",
+      "reflexion": "Hoy, practica paciencia con tus metas financieras a largo plazo."
+    },
+    {
+      "id": 190,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "No confundas estar ocupado con ser productivo financieramente.",
+      "reflexion": "Hoy, asegúrate de ser productivo, no solo ocupado con tu dinero."
+    },
+    {
+      "id": 191,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "El mejor momento para planificar tu jubilación fue ayer. El segundo mejor momento es ahora.",
+      "reflexion": "Hoy, da un paso concreto hacia tu plan de jubilación."
+    },
+    {
+      "id": 192,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Si es importante para ti, encontrarás una manera. Si no, encontrarás una excusa.",
+      "reflexion": "Hoy, si algo es importante para ti, encuentra la manera de financiarlo."
+    },
+    {
+      "id": 193,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "El dinero no puede comprar felicidad, pero la falta de dinero puede comprarte mucha miseria.",
+      "reflexion": "Hoy, reconoce que la estabilidad financiera afecta tu bienestar general."
+    },
+    {
+      "id": 194,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Cada peso que gastas hoy es un peso menos que tendrás mañana.",
+      "reflexion": "Hoy, piensa dos veces antes de hacer un gasto no planificado."
+    },
+    {
+      "id": 195,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "La riqueza es lo que no gastas, no lo que ganas.",
+      "reflexion": "Hoy, valora más lo que no gastas que lo que ganas."
+    },
+    {
+      "id": 196,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Si no tienes un plan para tu dinero, tu dinero no tendrá un plan para quedarse contigo.",
+      "reflexion": "Hoy, sigue tu plan financiero aunque sea tentador desviarse."
+    },
+    {
+      "id": 197,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Las personas exitosas desarrollan hábitos diarios que apoyan sus metas.",
+      "reflexion": "Hoy, desarrolla un hábito diario que apoye tus metas financieras."
+    },
+    {
+      "id": 198,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "No esperes hasta tener más dinero para empezar a ser inteligente con el que tienes.",
+      "reflexion": "Hoy, sé inteligente con el dinero que ya tienes."
+    },
+    {
+      "id": 199,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "La responsabilidad personal es el precio del éxito.",
+      "reflexion": "Hoy, asume responsabilidad completa por tu situación financiera."
+    },
+    {
+      "id": 200,
+      "categoria": "Dave Ramsey - Disciplina Financiera",
+      "mensaje": "Tu ingreso es tu herramienta más poderosa para crear riqueza.",
+      "reflexion": "Hoy, maximiza el potencial de tu ingreso actual."
+    },
+    {
+      "id": 201,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Regla número 1: Nunca pierdas dinero. Regla número 2: Nunca olvides la regla número 1.",
+      "reflexion": "Hoy, protege tu capital de pérdidas innecesarias."
+    },
+    {
+      "id": 202,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "No ahorres lo que queda después de gastar, sino gasta lo que queda después de ahorrar.",
+      "reflexion": "Hoy, ahorra primero y gasta lo que queda."
+    },
+    {
+      "id": 203,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "El riesgo viene de no saber lo que estás haciendo.",
+      "reflexion": "Hoy, aprende algo sobre tus inversiones antes de moverte."
+    },
+    {
+      "id": 204,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Sea temeroso cuando otros son codiciosos, y sea codicioso cuando otros son temerosos.",
+      "reflexion": "Hoy, busca oportunidades cuando otros tienen miedo."
+    },
+    {
+      "id": 205,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "El tiempo es el amigo de los negocios maravillosos y el enemigo de los mediocres.",
+      "reflexion": "Hoy, sé paciente con tus inversiones de calidad."
+    },
+    {
+      "id": 206,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Nunca inviertas en un negocio que no puedas entender.",
+      "reflexion": "Hoy, invierte solo en lo que entiendes completamente."
+    },
+    {
+      "id": 207,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Es mejor comprar una empresa maravillosa a un precio justo que una empresa justa a un precio maravilloso.",
+      "reflexion": "Hoy, busca valor real, no solo precios bajos."
+    },
+    {
+      "id": 208,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Nuestro trabajo favorito de tenencia es para siempre.",
+      "reflexion": "Hoy, piensa en inversiones a largo plazo."
+    },
+    {
+      "id": 209,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "El precio es lo que pagas. El valor es lo que obtienes.",
+      "reflexion": "Hoy, busca valor subyacente en lugar de especular con precios."
+    },
+    {
+      "id": 210,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Invierte en ti mismo. Tu carrera es el motor de tu riqueza.",
+      "reflexion": "Hoy, invierte en tu educación y habilidades."
+    },
+    {
+      "id": 211,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "La diversificación es protección contra la ignorancia. Tiene poco sentido para aquellos que saben lo que están haciendo.",
+      "reflexion": "Hoy, protege tu capital de pérdidas innecesarias."
+    },
+    {
+      "id": 212,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Alguien está sentado en la sombra hoy porque alguien plantó un árbol hace mucho tiempo.",
+      "reflexion": "Hoy, ahorra primero y gasta lo que queda."
+    },
+    {
+      "id": 213,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Si no encuentras una manera de ganar dinero mientras duermes, trabajarás hasta que mueras.",
+      "reflexion": "Hoy, aprende algo sobre tus inversiones antes de moverte."
+    },
+    {
+      "id": 214,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Los mercados de valores son un dispositivo para transferir dinero de los impacientes a los pacientes.",
+      "reflexion": "Hoy, busca oportunidades cuando otros tienen miedo."
+    },
+    {
+      "id": 215,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "No es necesario hacer cosas extraordinarias para obtener resultados extraordinarios.",
+      "reflexion": "Hoy, sé paciente con tus inversiones de calidad."
+    },
+    {
+      "id": 216,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Toma 20 años construir una reputación y cinco minutos destruirla.",
+      "reflexion": "Hoy, invierte solo en lo que entiendes completamente."
+    },
+    {
+      "id": 217,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Las cadenas del hábito son demasiado ligeras para sentirse hasta que son demasiado pesadas para romperse.",
+      "reflexion": "Hoy, busca valor real, no solo precios bajos."
+    },
+    {
+      "id": 218,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "En el negocio, miro hacia el parabrisas, no hacia el espejo retrovisor.",
+      "reflexion": "Hoy, piensa en inversiones a largo plazo."
+    },
+    {
+      "id": 219,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "El inversor inteligente es un realista que vende a optimistas y compra de pesimistas.",
+      "reflexion": "Hoy, busca valor subyacente en lugar de especular con precios."
+    },
+    {
+      "id": 220,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Cuando llueve oro, pon el balde, no el dedal.",
+      "reflexion": "Hoy, invierte en tu educación y habilidades."
+    },
+    {
+      "id": 221,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "No puedes producir un bebé en un mes embarazando a nueve mujeres.",
+      "reflexion": "Hoy, protege tu capital de pérdidas innecesarias."
+    },
+    {
+      "id": 222,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "La integridad es hacer lo correcto cuando nadie está mirando.",
+      "reflexion": "Hoy, ahorra primero y gasta lo que queda."
+    },
+    {
+      "id": 223,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Es mucho mejor comprar una empresa maravillosa a un precio justo.",
+      "reflexion": "Hoy, aprende algo sobre tus inversiones antes de moverte."
+    },
+    {
+      "id": 224,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Wall Street es el único lugar donde las personas que van en Rolls Royce toman consejos de quienes toman el metro.",
+      "reflexion": "Hoy, busca oportunidades cuando otros tienen miedo."
+    },
+    {
+      "id": 225,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "El mejor momento para plantar un árbol fue hace 20 años. El segundo mejor momento es ahora.",
+      "reflexion": "Hoy, sé paciente con tus inversiones de calidad."
+    },
+    {
+      "id": 226,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Si compras cosas que no necesitas, pronto tendrás que vender cosas que sí necesitas.",
+      "reflexion": "Hoy, invierte solo en lo que entiendes completamente."
+    },
+    {
+      "id": 227,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Nunca cuentes el dinero de otro hombre.",
+      "reflexion": "Hoy, busca valor real, no solo precios bajos."
+    },
+    {
+      "id": 228,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Los derivados son armas de destrucción masiva financiera.",
+      "reflexion": "Hoy, piensa en inversiones a largo plazo."
+    },
+    {
+      "id": 229,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Un negocio público es dirigido por sus propietarios, un negocio privado es dirigido por sus gerentes.",
+      "reflexion": "Hoy, busca valor subyacente en lugar de especular con precios."
+    },
+    {
+      "id": 230,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Es mejor renunciar a la perfección que vivir con la imperfección.",
+      "reflexion": "Hoy, invierte en tu educación y habilidades."
+    },
+    {
+      "id": 231,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Los buenos hábitos formados en la juventud hacen toda la diferencia.",
+      "reflexion": "Hoy, protege tu capital de pérdidas innecesarias."
+    },
+    {
+      "id": 232,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "El compromiso es lo que transforma una promesa en realidad.",
+      "reflexion": "Hoy, ahorra primero y gasta lo que queda."
+    },
+    {
+      "id": 233,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Una empresa pública es como un matrimonio: no puedes salir fácilmente.",
+      "reflexion": "Hoy, aprende algo sobre tus inversiones antes de moverte."
+    },
+    {
+      "id": 234,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "En una tormenta de mercado, puede estar seguro de que los náufragos serán encontrados desnudos.",
+      "reflexion": "Hoy, busca oportunidades cuando otros tienen miedo."
+    },
+    {
+      "id": 235,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "No es cuánto sabes, sino qué tan bien usas lo que sabes.",
+      "reflexion": "Hoy, sé paciente con tus inversiones de calidad."
+    },
+    {
+      "id": 236,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "El éxito en la inversión no se correlaciona con el IQ una vez que estás por encima de 100.",
+      "reflexion": "Hoy, invierte solo en lo que entiendes completamente."
+    },
+    {
+      "id": 237,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Predecir lluvia no cuenta; construir arcas lo hace.",
+      "reflexion": "Hoy, busca valor real, no solo precios bajos."
+    },
+    {
+      "id": 238,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Si te encuentras en un hoyo, deja de cavar.",
+      "reflexion": "Hoy, piensa en inversiones a largo plazo."
+    },
+    {
+      "id": 239,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Los maestros buenos y entusiastas hacen toda la diferencia del mundo.",
+      "reflexion": "Hoy, busca valor subyacente en lugar de especular con precios."
+    },
+    {
+      "id": 240,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "La fórmula del éxito: levántate temprano, trabaja duro, encuentra petróleo.",
+      "reflexion": "Hoy, invierte en tu educación y habilidades."
+    },
+    {
+      "id": 241,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Lo más importante en comunicación es escuchar lo que no se dice.",
+      "reflexion": "Hoy, protege tu capital de pérdidas innecesarias."
+    },
+    {
+      "id": 242,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Una inversión en conocimiento paga el mejor interés.",
+      "reflexion": "Hoy, ahorra primero y gasta lo que queda."
+    },
+    {
+      "id": 243,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "El dinero no hará cambiar tu felicidad si no eres feliz con $10.",
+      "reflexion": "Hoy, aprende algo sobre tus inversiones antes de moverte."
+    },
+    {
+      "id": 244,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Debes ser capaz de explicar tu inversión en términos simples.",
+      "reflexion": "Hoy, busca oportunidades cuando otros tienen miedo."
+    },
+    {
+      "id": 245,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Los ricos invierten su dinero y gastan lo que queda. Los pobres gastan su dinero e invierten lo que queda.",
+      "reflexion": "Hoy, sé paciente con tus inversiones de calidad."
+    },
+    {
+      "id": 246,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "El mercado de valores está diseñado para transferir dinero de los activos a los pacientes.",
+      "reflexion": "Hoy, invierte solo en lo que entiendes completamente."
+    },
+    {
+      "id": 247,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Si no estás dispuesto a poseer una acción por 10 años, no pienses en poseerla por 10 minutos.",
+      "reflexion": "Hoy, busca valor real, no solo precios bajos."
+    },
+    {
+      "id": 248,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "Compra acciones como si fueras a comprar la empresa completa.",
+      "reflexion": "Hoy, piensa en inversiones a largo plazo."
+    },
+    {
+      "id": 249,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "La volatilidad y la inversión van de la mano. No puedes tener rendimientos altos sin volatilidad.",
+      "reflexion": "Hoy, busca valor subyacente en lugar de especular con precios."
+    },
+    {
+      "id": 250,
+      "categoria": "Warren Buffett - Inversión Inteligente",
+      "mensaje": "El tiempo y el interés compuesto son los mejores amigos del inversor paciente.",
+      "reflexion": "Hoy, invierte en tu educación y habilidades."
+    },
+    {
+      "id": 251,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El emprendimiento es vivir unos pocos años de tu vida como la mayoría no lo hará, para vivir el resto de tu vida como la mayoría no puede.",
+      "reflexion": "Hoy, sacrifica algo a corto plazo por beneficios a largo plazo."
+    },
+    {
+      "id": 252,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Tu red de contactos es tu patrimonio neto. Cultiva relaciones, no solo transacciones.",
+      "reflexion": "Hoy, construye una relación genuina, no solo busques una venta."
+    },
+    {
+      "id": 253,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El fracaso es simplemente la oportunidad de comenzar de nuevo, esta vez de manera más inteligente.",
+      "reflexion": "Hoy, aprende algo valioso de un error o contratiempo."
+    },
+    {
+      "id": 254,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "No tengas miedo de renunciar a lo bueno para perseguir lo grandioso.",
+      "reflexion": "Hoy, evalúa si debes dejar algo bueno por algo grandioso."
+    },
+    {
+      "id": 255,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El éxito no se trata de la idea, se trata de hacer que la idea funcione.",
+      "reflexion": "Hoy, enfócate en ejecutar una idea, no solo en pensarla."
+    },
+    {
+      "id": 256,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Un emprendedor es alguien que salta desde un acantilado y construye un paracaídas en el camino hacia abajo.",
+      "reflexion": "Hoy, toma acción ante la incertidumbre."
+    },
+    {
+      "id": 257,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El mejor momento para empezar un negocio fue hace 10 años. El segundo mejor momento es ahora.",
+      "reflexion": "Hoy, da el primer paso hacia tu idea de negocio."
+    },
+    {
+      "id": 258,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Si construyes un gran producto o servicio, las ventas llegarán naturalmente.",
+      "reflexion": "Hoy, mejora la experiencia de alguien con tu producto o servicio."
+    },
+    {
+      "id": 259,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Los emprendedores no son personas que toman riesgos, son personas que eliminan riesgos.",
+      "reflexion": "Hoy, identifica y elimina un riesgo de tu emprendimiento."
+    },
+    {
+      "id": 260,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El dinero sigue al valor. Crea valor primero, el dinero vendrá después.",
+      "reflexion": "Hoy, crea valor real para alguien más."
+    },
+    {
+      "id": 261,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Si no puedes medirlo, no puedes mejorarlo. Mide todo en tu negocio.",
+      "reflexion": "Hoy, sacrifica algo a corto plazo por beneficios a largo plazo."
+    },
+    {
+      "id": 262,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Los clientes no compran productos, compran mejores versiones de sí mismos.",
+      "reflexion": "Hoy, construye una relación genuina, no solo busques una venta."
+    },
+    {
+      "id": 263,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Un negocio sin clientes satisfechos no es un negocio en absoluto.",
+      "reflexion": "Hoy, aprende algo valioso de un error o contratiempo."
+    },
+    {
+      "id": 264,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "La innovación distingue entre un líder y un seguidor.",
+      "reflexion": "Hoy, evalúa si debes dejar algo bueno por algo grandioso."
+    },
+    {
+      "id": 265,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "No construyas un negocio, construye a las personas. Las personas construirán el negocio.",
+      "reflexion": "Hoy, enfócate en ejecutar una idea, no solo en pensarla."
+    },
+    {
+      "id": 266,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El emprendimiento es el último refugio del solucionador de problemas.",
+      "reflexion": "Hoy, toma acción ante la incertidumbre."
+    },
+    {
+      "id": 267,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Si quieres ir rápido, ve solo. Si quieres llegar lejos, ve acompañado.",
+      "reflexion": "Hoy, da el primer paso hacia tu idea de negocio."
+    },
+    {
+      "id": 268,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El cash flow positivo es más importante que las ganancias en papel.",
+      "reflexion": "Hoy, mejora la experiencia de alguien con tu producto o servicio."
+    },
+    {
+      "id": 269,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Un negocio que no puede sobrevivir sin ti, no es un negocio, es un trabajo.",
+      "reflexion": "Hoy, identifica y elimina un riesgo de tu emprendimiento."
+    },
+    {
+      "id": 270,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "La mejor publicidad es un cliente satisfecho.",
+      "reflexion": "Hoy, crea valor real para alguien más."
+    },
+    {
+      "id": 271,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "No vendas productos, vende transformaciones.",
+      "reflexion": "Hoy, sacrifica algo a corto plazo por beneficios a largo plazo."
+    },
+    {
+      "id": 272,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El timing en los negocios lo es todo, pero la ejecución lo es todo también.",
+      "reflexion": "Hoy, construye una relación genuina, no solo busques una venta."
+    },
+    {
+      "id": 273,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Si no estás avergonzado de tu primera versión, la lanzaste demasiado tarde.",
+      "reflexion": "Hoy, aprende algo valioso de un error o contratiempo."
+    },
+    {
+      "id": 274,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Los problemas son oportunidades disfrazadas. Busca problemas para resolver.",
+      "reflexion": "Hoy, evalúa si debes dejar algo bueno por algo grandioso."
+    },
+    {
+      "id": 275,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Un emprendedor ve oportunidades en cada dificultad.",
+      "reflexion": "Hoy, enfócate en ejecutar una idea, no solo en pensarla."
+    },
+    {
+      "id": 276,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "La diferencia entre un emprendedor exitoso y uno que no, es la capacidad de ejecutar.",
+      "reflexion": "Hoy, toma acción ante la incertidumbre."
+    },
+    {
+      "id": 277,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Tu competencia no es otra empresa, es la procrastinación.",
+      "reflexion": "Hoy, da el primer paso hacia tu idea de negocio."
+    },
+    {
+      "id": 278,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "No copies a tu competencia. Haz que ellos te copien a ti.",
+      "reflexion": "Hoy, mejora la experiencia de alguien con tu producto o servicio."
+    },
+    {
+      "id": 279,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El servicio al cliente no es un departamento, es la responsabilidad de todos.",
+      "reflexion": "Hoy, identifica y elimina un riesgo de tu emprendimiento."
+    },
+    {
+      "id": 280,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Si no tienes una estrategia de salida, no tienes estrategia.",
+      "reflexion": "Hoy, crea valor real para alguien más."
+    },
+    {
+      "id": 281,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Los negocios exitosos resuelven problemas reales de personas reales.",
+      "reflexion": "Hoy, sacrifica algo a corto plazo por beneficios a largo plazo."
+    },
+    {
+      "id": 282,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "La ventaja competitiva sostenible proviene de hacer las cosas mejor, no diferente.",
+      "reflexion": "Hoy, construye una relación genuina, no solo busques una venta."
+    },
+    {
+      "id": 283,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Un modelo de negocio no es solo cómo ganas dinero, sino cómo creas valor.",
+      "reflexion": "Hoy, aprende algo valioso de un error o contratiempo."
+    },
+    {
+      "id": 284,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El emprendimiento no se trata de trabajar menos, se trata de trabajar en algo que amas.",
+      "reflexion": "Hoy, evalúa si debes dejar algo bueno por algo grandioso."
+    },
+    {
+      "id": 285,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Los emprendedores exitosos son obsesivos con los detalles que importan.",
+      "reflexion": "Hoy, enfócate en ejecutar una idea, no solo en pensarla."
+    },
+    {
+      "id": 286,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Si no estás perdiendo algunos clientes, probablemente tu precio es muy bajo.",
+      "reflexion": "Hoy, toma acción ante la incertidumbre."
+    },
+    {
+      "id": 287,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "La escalabilidad es la diferencia entre un negocio pequeño y una gran empresa.",
+      "reflexion": "Hoy, da el primer paso hacia tu idea de negocio."
+    },
+    {
+      "id": 288,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "No contrates por habilidades que puedes enseñar. Contrata por actitud y valores.",
+      "reflexion": "Hoy, mejora la experiencia de alguien con tu producto o servicio."
+    },
+    {
+      "id": 289,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El emprendimiento es 1% inspiración y 99% transpiración.",
+      "reflexion": "Hoy, identifica y elimina un riesgo de tu emprendimiento."
+    },
+    {
+      "id": 290,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Un producto mínimo viable es mejor que un producto perfecto que nunca se lanza.",
+      "reflexion": "Hoy, crea valor real para alguien más."
+    },
+    {
+      "id": 291,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Los datos sin acción son tan inútiles como la acción sin datos.",
+      "reflexion": "Hoy, sacrifica algo a corto plazo por beneficios a largo plazo."
+    },
+    {
+      "id": 292,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El emprendedor promedio falla 3.8 veces antes del éxito final.",
+      "reflexion": "Hoy, construye una relación genuina, no solo busques una venta."
+    },
+    {
+      "id": 293,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "No busques inversionistas, busca mentores que puedan invertir.",
+      "reflexion": "Hoy, aprende algo valioso de un error o contratiempo."
+    },
+    {
+      "id": 294,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "La diferencia entre un hobby y un negocio es la rentabilidad.",
+      "reflexion": "Hoy, evalúa si debes dejar algo bueno por algo grandioso."
+    },
+    {
+      "id": 295,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Si no puedes explicar tu negocio en 30 segundos, es muy complicado.",
+      "reflexion": "Hoy, enfócate en ejecutar una idea, no solo en pensarla."
+    },
+    {
+      "id": 296,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Los emprendedores exitosos no esperan la oportunidad perfecta, la crean.",
+      "reflexion": "Hoy, toma acción ante la incertidumbre."
+    },
+    {
+      "id": 297,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Un buen emprendedor puede vender hielo a los esquimales, pero un gran emprendedor encuentra una mejor manera de mantenerlos calientes.",
+      "reflexion": "Hoy, da el primer paso hacia tu idea de negocio."
+    },
+    {
+      "id": 298,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "La competencia valida tu mercado. La falta de competencia puede indicar falta de mercado.",
+      "reflexion": "Hoy, mejora la experiencia de alguien con tu producto o servicio."
+    },
+    {
+      "id": 299,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "El emprendimiento no es sobre tener una gran idea, es sobre la ejecución brillante de una idea decente.",
+      "reflexion": "Hoy, identifica y elimina un riesgo de tu emprendimiento."
+    },
+    {
+      "id": 300,
+      "categoria": "Emprendimiento y Negocios",
+      "mensaje": "Si tu negocio depende de ti trabajando 80 horas a la semana, no tienes un negocio, tienes un problema.",
+      "reflexion": "Hoy, crea valor real para alguien más."
+    },
+    {
+      "id": 301,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios piensan diferente. Ven oportunidades donde otros ven problemas.",
+      "reflexion": "Hoy, busca una oportunidad en lugar de enfocarte en problemas."
+    },
+    {
+      "id": 302,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La riqueza comienza en tu mente, no en tu bolsillo. Cambia tu mentalidad primero.",
+      "reflexion": "Hoy, cambia un pensamiento limitante sobre el dinero."
+    },
+    {
+      "id": 303,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos tienen bibliotecas grandes y televisores pequeños. Los pobres tienen bibliotecas pequeñas y televisores grandes.",
+      "reflexion": "Hoy, lee algo que expanda tu conocimiento financiero."
+    },
+    {
+      "id": 304,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad de escasez repele el dinero. La mentalidad de abundancia lo atrae.",
+      "reflexion": "Hoy, practica pensar en abundancia en lugar de escasez."
+    },
+    {
+      "id": 305,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios se enfocan en los activos. La clase media se enfoca en los ingresos.",
+      "reflexion": "Hoy, enfócate en crear un activo en lugar de solo ganar dinero."
+    },
+    {
+      "id": 306,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Piensa como propietario, no como consumidor. Los propietarios construyen riqueza.",
+      "reflexion": "Hoy, piensa como propietario en alguna situación."
+    },
+    {
+      "id": 307,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos invierten en activos que se aprecian. Los pobres compran pasivos que se deprecian.",
+      "reflexion": "Hoy, invierte en algo que se aprecie con el tiempo."
+    },
+    {
+      "id": 308,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La riqueza no es lo que ganas, es lo que conservas y multiplicas.",
+      "reflexion": "Hoy, revisa qué porcentaje de tus ingresos estás conservando."
+    },
+    {
+      "id": 309,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios ven el dinero como una herramienta, no como un fin.",
+      "reflexion": "Hoy, usa el dinero como herramienta para lograr un objetivo mayor."
+    },
+    {
+      "id": 310,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La educación financiera es más valiosa que cualquier título universitario.",
+      "reflexion": "Hoy, aprende algo nuevo sobre finanzas o inversiones."
+    },
+    {
+      "id": 311,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos juegan para ganar. Los pobres juegan para no perder.",
+      "reflexion": "Hoy, busca una oportunidad en lugar de enfocarte en problemas."
+    },
+    {
+      "id": 312,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria ve soluciones. La mentalidad pobre ve obstáculos.",
+      "reflexion": "Hoy, cambia un pensamiento limitante sobre el dinero."
+    },
+    {
+      "id": 313,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios crean múltiples fuentes de ingresos.",
+      "reflexion": "Hoy, lee algo que expanda tu conocimiento financiero."
+    },
+    {
+      "id": 314,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La riqueza verdadera es tener opciones y libertad, no solo dinero.",
+      "reflexion": "Hoy, practica pensar en abundancia en lugar de escasez."
+    },
+    {
+      "id": 315,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos invierten en su educación continuamente.",
+      "reflexion": "Hoy, enfócate en crear un activo en lugar de solo ganar dinero."
+    },
+    {
+      "id": 316,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria abraza el riesgo calculado.",
+      "reflexion": "Hoy, piensa como propietario en alguna situación."
+    },
+    {
+      "id": 317,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios se rodean de personas más exitosas que ellos.",
+      "reflexion": "Hoy, invierte en algo que se aprecie con el tiempo."
+    },
+    {
+      "id": 318,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La abundancia es una mentalidad, la escasez es una limitación mental.",
+      "reflexion": "Hoy, revisa qué porcentaje de tus ingresos estás conservando."
+    },
+    {
+      "id": 319,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos piensan a largo plazo. Los pobres piensan a corto plazo.",
+      "reflexion": "Hoy, usa el dinero como herramienta para lograr un objetivo mayor."
+    },
+    {
+      "id": 320,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria ve el dinero como energía que fluye.",
+      "reflexion": "Hoy, aprende algo nuevo sobre finanzas o inversiones."
+    },
+    {
+      "id": 321,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios crean valor para obtener riqueza.",
+      "reflexion": "Hoy, busca una oportunidad en lugar de enfocarte en problemas."
+    },
+    {
+      "id": 322,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La riqueza atrae más riqueza. La pobreza atrae más pobreza.",
+      "reflexion": "Hoy, cambia un pensamiento limitante sobre el dinero."
+    },
+    {
+      "id": 323,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos hacen que su dinero trabaje para ellos.",
+      "reflexion": "Hoy, lee algo que expanda tu conocimiento financiero."
+    },
+    {
+      "id": 324,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria abraza el cambio y la innovación.",
+      "reflexion": "Hoy, practica pensar en abundancia en lugar de escasez."
+    },
+    {
+      "id": 325,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios invierten en activos, no en estilo de vida.",
+      "reflexion": "Hoy, enfócate en crear un activo en lugar de solo ganar dinero."
+    },
+    {
+      "id": 326,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La riqueza verdadera incluye salud, relaciones y libertad temporal.",
+      "reflexion": "Hoy, piensa como propietario en alguna situación."
+    },
+    {
+      "id": 327,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos entienden el poder del interés compuesto.",
+      "reflexion": "Hoy, invierte en algo que se aprecie con el tiempo."
+    },
+    {
+      "id": 328,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria ve el fracaso como educación.",
+      "reflexion": "Hoy, revisa qué porcentaje de tus ingresos estás conservando."
+    },
+    {
+      "id": 329,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios se enfocan en aumentar su valor, no solo sus ingresos.",
+      "reflexion": "Hoy, usa el dinero como herramienta para lograr un objetivo mayor."
+    },
+    {
+      "id": 330,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La abundancia mental atrae oportunidades abundantes.",
+      "reflexion": "Hoy, aprende algo nuevo sobre finanzas o inversiones."
+    },
+    {
+      "id": 331,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos crean sistemas que generan riqueza pasivamente.",
+      "reflexion": "Hoy, busca una oportunidad en lugar de enfocarte en problemas."
+    },
+    {
+      "id": 332,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria invierte en conocimiento especializado.",
+      "reflexion": "Hoy, cambia un pensamiento limitante sobre el dinero."
+    },
+    {
+      "id": 333,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios entienden que el tiempo es más valioso que el dinero.",
+      "reflexion": "Hoy, lee algo que expanda tu conocimiento financiero."
+    },
+    {
+      "id": 334,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La riqueza mental precede a la riqueza material.",
+      "reflexion": "Hoy, practica pensar en abundancia en lugar de escasez."
+    },
+    {
+      "id": 335,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos se enfocan en resolver problemas de muchas personas.",
+      "reflexion": "Hoy, enfócate en crear un activo en lugar de solo ganar dinero."
+    },
+    {
+      "id": 336,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria ve las crisis como oportunidades.",
+      "reflexion": "Hoy, piensa como propietario en alguna situación."
+    },
+    {
+      "id": 337,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios automatizan sus finanzas para crear riqueza.",
+      "reflexion": "Hoy, invierte en algo que se aprecie con el tiempo."
+    },
+    {
+      "id": 338,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La abundancia mental elimina las creencias limitantes sobre el dinero.",
+      "reflexion": "Hoy, revisa qué porcentaje de tus ingresos estás conservando."
+    },
+    {
+      "id": 339,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos invierten en activos que generan ingresos pasivos.",
+      "reflexion": "Hoy, usa el dinero como herramienta para lograr un objetivo mayor."
+    },
+    {
+      "id": 340,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria practica la gratitud por la abundancia presente.",
+      "reflexion": "Hoy, aprende algo nuevo sobre finanzas o inversiones."
+    },
+    {
+      "id": 341,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios entienden que la riqueza es un juego mental.",
+      "reflexion": "Hoy, busca una oportunidad en lugar de enfocarte en problemas."
+    },
+    {
+      "id": 342,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La abundancia mental atrae socios y oportunidades valiosas.",
+      "reflexion": "Hoy, cambia un pensamiento limitante sobre el dinero."
+    },
+    {
+      "id": 343,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos se enfocan en crear, no solo en consumir.",
+      "reflexion": "Hoy, lee algo que expanda tu conocimiento financiero."
+    },
+    {
+      "id": 344,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria ve el dinero como un recurso renovable.",
+      "reflexion": "Hoy, practica pensar en abundancia en lugar de escasez."
+    },
+    {
+      "id": 345,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios invierten en su red de contactos constantemente.",
+      "reflexion": "Hoy, enfócate en crear un activo en lugar de solo ganar dinero."
+    },
+    {
+      "id": 346,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La riqueza mental genera confianza para tomar riesgos inteligentes.",
+      "reflexion": "Hoy, piensa como propietario en alguna situación."
+    },
+    {
+      "id": 347,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos entienden que la generosidad aumenta la abundancia.",
+      "reflexion": "Hoy, invierte en algo que se aprecie con el tiempo."
+    },
+    {
+      "id": 348,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria busca mentores y modelos a seguir.",
+      "reflexion": "Hoy, revisa qué porcentaje de tus ingresos estás conservando."
+    },
+    {
+      "id": 349,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios crean valor antes de esperar recompensas.",
+      "reflexion": "Hoy, usa el dinero como herramienta para lograr un objetivo mayor."
+    },
+    {
+      "id": 350,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La abundancia mental elimina la envidia y la comparación.",
+      "reflexion": "Hoy, aprende algo nuevo sobre finanzas o inversiones."
+    },
+    {
+      "id": 351,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos se enfocan en activos que se aprecian con el tiempo.",
+      "reflexion": "Hoy, busca una oportunidad en lugar de enfocarte en problemas."
+    },
+    {
+      "id": 352,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria abraza la educación financiera continua.",
+      "reflexion": "Hoy, cambia un pensamiento limitante sobre el dinero."
+    },
+    {
+      "id": 353,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios entienden el poder de reinvertir las ganancias.",
+      "reflexion": "Hoy, lee algo que expanda tu conocimiento financiero."
+    },
+    {
+      "id": 354,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La riqueza mental atrae recursos y oportunidades inesperadas.",
+      "reflexion": "Hoy, practica pensar en abundancia en lugar de escasez."
+    },
+    {
+      "id": 355,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos crean legados que trascienden el dinero.",
+      "reflexion": "Hoy, enfócate en crear un activo en lugar de solo ganar dinero."
+    },
+    {
+      "id": 356,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria ve el dinero como servicio a otros.",
+      "reflexion": "Hoy, piensa como propietario en alguna situación."
+    },
+    {
+      "id": 357,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios invierten en su desarrollo personal constantemente.",
+      "reflexion": "Hoy, invierte en algo que se aprecie con el tiempo."
+    },
+    {
+      "id": 358,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La abundancia mental rechaza la mentalidad de víctima financiera.",
+      "reflexion": "Hoy, revisa qué porcentaje de tus ingresos estás conservando."
+    },
+    {
+      "id": 359,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos entienden que la paciencia multiplica la riqueza.",
+      "reflexion": "Hoy, usa el dinero como herramienta para lograr un objetivo mayor."
+    },
+    {
+      "id": 360,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria celebra el éxito de otros.",
+      "reflexion": "Hoy, aprende algo nuevo sobre finanzas o inversiones."
+    },
+    {
+      "id": 361,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios crean sistemas que funcionan sin su presencia constante.",
+      "reflexion": "Hoy, busca una oportunidad en lugar de enfocarte en problemas."
+    },
+    {
+      "id": 362,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La riqueza mental atrae mentores y guías experimentados.",
+      "reflexion": "Hoy, cambia un pensamiento limitante sobre el dinero."
+    },
+    {
+      "id": 363,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos se enfocan en maximizar el valor, no minimizar costos.",
+      "reflexion": "Hoy, lee algo que expanda tu conocimiento financiero."
+    },
+    {
+      "id": 364,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria invierte en tendencias futuras.",
+      "reflexion": "Hoy, practica pensar en abundancia en lugar de escasez."
+    },
+    {
+      "id": 365,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios entienden que la información privilegiada es poder.",
+      "reflexion": "Hoy, enfócate en crear un activo en lugar de solo ganar dinero."
+    },
+    {
+      "id": 366,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La abundancia mental transforma la relación con el dinero.",
+      "reflexion": "Hoy, piensa como propietario en alguna situación."
+    },
+    {
+      "id": 367,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos crean múltiples corrientes de ingresos diversificadas.",
+      "reflexion": "Hoy, invierte en algo que se aprecie con el tiempo."
+    },
+    {
+      "id": 368,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria ve cada gasto como una inversión.",
+      "reflexion": "Hoy, revisa qué porcentaje de tus ingresos estás conservando."
+    },
+    {
+      "id": 369,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios entienden que la riqueza real incluye la libertad.",
+      "reflexion": "Hoy, usa el dinero como herramienta para lograr un objetivo mayor."
+    },
+    {
+      "id": 370,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La abundancia mental atrae abundancia material.",
+      "reflexion": "Hoy, aprende algo nuevo sobre finanzas o inversiones."
+    },
+    {
+      "id": 371,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos se enfocan en construir activos, no acumular posesiones.",
+      "reflexion": "Hoy, busca una oportunidad en lugar de enfocarte en problemas."
+    },
+    {
+      "id": 372,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria practica la disciplina financiera diaria.",
+      "reflexion": "Hoy, cambia un pensamiento limitante sobre el dinero."
+    },
+    {
+      "id": 373,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios invierten en activos que otros no ven o entienden.",
+      "reflexion": "Hoy, lee algo que expanda tu conocimiento financiero."
+    },
+    {
+      "id": 374,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La riqueza mental genera decisiones financieras inteligentes.",
+      "reflexion": "Hoy, practica pensar en abundancia en lugar de escasez."
+    },
+    {
+      "id": 375,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos entienden que la educación es la inversión más rentable.",
+      "reflexion": "Hoy, enfócate en crear un activo en lugar de solo ganar dinero."
+    },
+    {
+      "id": 376,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria abraza la responsabilidad financiera total.",
+      "reflexion": "Hoy, piensa como propietario en alguna situación."
+    },
+    {
+      "id": 377,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios crean valor sostenible a largo plazo.",
+      "reflexion": "Hoy, invierte en algo que se aprecie con el tiempo."
+    },
+    {
+      "id": 378,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La abundancia mental elimina el miedo a la inversión inteligente.",
+      "reflexion": "Hoy, revisa qué porcentaje de tus ingresos estás conservando."
+    },
+    {
+      "id": 379,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los ricos se enfocan en construir imperios, no solo acumular dinero.",
+      "reflexion": "Hoy, usa el dinero como herramienta para lograr un objetivo mayor."
+    },
+    {
+      "id": 380,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La mentalidad millonaria ve cada desafío como crecimiento.",
+      "reflexion": "Hoy, aprende algo nuevo sobre finanzas o inversiones."
+    },
+    {
+      "id": 381,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "Los millonarios entienden que la riqueza verdadera es la libertad de elección.",
+      "reflexion": "Hoy, busca una oportunidad en lugar de enfocarte en problemas."
+    },
+    {
+      "id": 382,
+      "categoria": "Mentalidad Millonaria y Abundancia",
+      "mensaje": "La abundancia mental atrae las mejores oportunidades de inversión.",
+      "reflexion": "Hoy, cambia un pensamiento limitante sobre el dinero."
+    },
+    {
+      "id": 383,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera no es tener mucho dinero, es que tu dinero trabaje para ti.",
+      "reflexion": "Hoy, crea o mejora una fuente de ingresos que no requiera tu tiempo constante."
+    },
+    {
+      "id": 384,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos te dan la libertad de elegir cómo usar tu tiempo.",
+      "reflexion": "Hoy, evalúa qué activos tienes que generen dinero mientras no trabajas."
+    },
+    {
+      "id": 385,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera comienza cuando tus activos generan más que tus gastos.",
+      "reflexion": "Hoy, da un paso hacia la independencia de tu salario principal."
+    },
+    {
+      "id": 386,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Construye puentes de ingresos pasivos hacia tu libertad financiera.",
+      "reflexion": "Hoy, invierte en algo que genere flujo de efectivo positivo."
+    },
+    {
+      "id": 387,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La verdadera riqueza es poder decir 'no' sin consecuencias financieras.",
+      "reflexion": "Hoy, automatiza una parte de tu estrategia de construcción de riqueza."
+    },
+    {
+      "id": 388,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos son el camino hacia la libertad temporal.",
+      "reflexion": "Hoy, calcula cuánto necesitas en activos para cubrir tus gastos básicos."
+    },
+    {
+      "id": 389,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te permite seguir tu pasión sin presión económica.",
+      "reflexion": "Hoy, enfócate en crear valor que puedas monetizar repetidamente."
+    },
+    {
+      "id": 390,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Crea activos que generen dinero mientras duermes.",
+      "reflexion": "Hoy, revisa y optimiza tus fuentes de ingresos pasivos existentes."
+    },
+    {
+      "id": 391,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera es la capacidad de vivir sin depender de un salario.",
+      "reflexion": "Hoy, invierte tiempo en aprender sobre nuevas formas de generar ingresos pasivos."
+    },
+    {
+      "id": 392,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos convierten tu dinero en empleados que trabajan 24/7.",
+      "reflexion": "Hoy, identifica una habilidad o conocimiento que puedas convertir en ingreso pasivo."
+    },
+    {
+      "id": 393,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te da opciones, y las opciones te dan poder.",
+      "reflexion": "Hoy, crea o mejora una fuente de ingresos que no requiera tu tiempo constante."
+    },
+    {
+      "id": 394,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Construye múltiples flujos de ingresos pasivos para mayor seguridad.",
+      "reflexion": "Hoy, evalúa qué activos tienes que generen dinero mientras no trabajas."
+    },
+    {
+      "id": 395,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera no es un destino, es un estilo de vida.",
+      "reflexion": "Hoy, da un paso hacia la independencia de tu salario principal."
+    },
+    {
+      "id": 396,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos te permiten ser generoso sin límites.",
+      "reflexion": "Hoy, invierte en algo que genere flujo de efectivo positivo."
+    },
+    {
+      "id": 397,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera comienza con la disciplina de gastar menos de lo que ganas.",
+      "reflexion": "Hoy, automatiza una parte de tu estrategia de construcción de riqueza."
+    },
+    {
+      "id": 398,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Crea sistemas que generen ingresos sin tu participación activa constante.",
+      "reflexion": "Hoy, calcula cuánto necesitas en activos para cubrir tus gastos básicos."
+    },
+    {
+      "id": 399,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te permite tomar riesgos calculados sin miedo.",
+      "reflexion": "Hoy, enfócate en crear valor que puedas monetizar repetidamente."
+    },
+    {
+      "id": 400,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos son la diferencia entre trabajar por dinero y que el dinero trabaje para ti.",
+      "reflexion": "Hoy, revisa y optimiza tus fuentes de ingresos pasivos existentes."
+    },
+    {
+      "id": 401,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te da la seguridad para perseguir tus sueños.",
+      "reflexion": "Hoy, invierte tiempo en aprender sobre nuevas formas de generar ingresos pasivos."
+    },
+    {
+      "id": 402,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Construye activos que generen cash flow positivo consistentemente.",
+      "reflexion": "Hoy, identifica una habilidad o conocimiento que puedas convertir en ingreso pasivo."
+    },
+    {
+      "id": 403,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te permite ayudar a otros sin sacrificar tu estabilidad.",
+      "reflexion": "Hoy, crea o mejora una fuente de ingresos que no requiera tu tiempo constante."
+    },
+    {
+      "id": 404,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos te liberan de la trampa del tiempo por dinero.",
+      "reflexion": "Hoy, evalúa qué activos tienes que generen dinero mientras no trabajas."
+    },
+    {
+      "id": 405,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera comienza con una mentalidad de abundancia.",
+      "reflexion": "Hoy, da un paso hacia la independencia de tu salario principal."
+    },
+    {
+      "id": 406,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Crea valor una vez y recibe ingresos repetidamente.",
+      "reflexion": "Hoy, invierte en algo que genere flujo de efectivo positivo."
+    },
+    {
+      "id": 407,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te da tiempo para las cosas que realmente importan.",
+      "reflexion": "Hoy, automatiza una parte de tu estrategia de construcción de riqueza."
+    },
+    {
+      "id": 408,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos crecen con el interés compuesto y el tiempo.",
+      "reflexion": "Hoy, calcula cuánto necesitas en activos para cubrir tus gastos básicos."
+    },
+    {
+      "id": 409,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera no es lujo, es una necesidad en el mundo moderno.",
+      "reflexion": "Hoy, enfócate en crear valor que puedas monetizar repetidamente."
+    },
+    {
+      "id": 410,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Construye activos que se aprecien y generen ingresos simultáneamente.",
+      "reflexion": "Hoy, revisa y optimiza tus fuentes de ingresos pasivos existentes."
+    },
+    {
+      "id": 411,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te permite ser selectivo con tus oportunidades.",
+      "reflexion": "Hoy, invierte tiempo en aprender sobre nuevas formas de generar ingresos pasivos."
+    },
+    {
+      "id": 412,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos te dan estabilidad en tiempos de incertidumbre económica.",
+      "reflexion": "Hoy, identifica una habilidad o conocimiento que puedas convertir en ingreso pasivo."
+    },
+    {
+      "id": 413,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera comienza con educación y disciplina financiera.",
+      "reflexion": "Hoy, crea o mejora una fuente de ingresos que no requiera tu tiempo constante."
+    },
+    {
+      "id": 414,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Crea negocios que funcionen sin tu supervisión constante.",
+      "reflexion": "Hoy, evalúa qué activos tienes que generen dinero mientras no trabajas."
+    },
+    {
+      "id": 415,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te permite jubilarte en tus términos.",
+      "reflexion": "Hoy, da un paso hacia la independencia de tu salario principal."
+    },
+    {
+      "id": 416,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos multiplican el valor de tu tiempo.",
+      "reflexion": "Hoy, invierte en algo que genere flujo de efectivo positivo."
+    },
+    {
+      "id": 417,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te da la confianza para tomar decisiones basadas en valores, no en necesidad.",
+      "reflexion": "Hoy, automatiza una parte de tu estrategia de construcción de riqueza."
+    },
+    {
+      "id": 418,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Construye un portafolio de activos diversificados que generen ingresos.",
+      "reflexion": "Hoy, calcula cuánto necesitas en activos para cubrir tus gastos básicos."
+    },
+    {
+      "id": 419,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te permite vivir donde quieras, cuando quieras.",
+      "reflexion": "Hoy, enfócate en crear valor que puedas monetizar repetidamente."
+    },
+    {
+      "id": 420,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos son la clave para escapar de la carrera de la rata.",
+      "reflexion": "Hoy, revisa y optimiza tus fuentes de ingresos pasivos existentes."
+    },
+    {
+      "id": 421,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera comienza cuando dejas de intercambiar tiempo por dinero.",
+      "reflexion": "Hoy, invierte tiempo en aprender sobre nuevas formas de generar ingresos pasivos."
+    },
+    {
+      "id": 422,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Crea productos o servicios que vendan mientras tú haces otras cosas.",
+      "reflexion": "Hoy, identifica una habilidad o conocimiento que puedas convertir en ingreso pasivo."
+    },
+    {
+      "id": 423,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te permite decir 'sí' a las oportunidades que amas.",
+      "reflexion": "Hoy, crea o mejora una fuente de ingresos que no requiera tu tiempo constante."
+    },
+    {
+      "id": 424,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos te dan poder de negociación en todas las áreas de la vida.",
+      "reflexion": "Hoy, evalúa qué activos tienes que generen dinero mientras no trabajas."
+    },
+    {
+      "id": 425,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera no es sobre el dinero, es sobre las opciones que el dinero te da.",
+      "reflexion": "Hoy, da un paso hacia la independencia de tu salario principal."
+    },
+    {
+      "id": 426,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Construye sistemas automatizados que generen ingresos continuamente.",
+      "reflexion": "Hoy, invierte en algo que genere flujo de efectivo positivo."
+    },
+    {
+      "id": 427,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te permite invertir más tiempo en relaciones y experiencias.",
+      "reflexion": "Hoy, automatiza una parte de tu estrategia de construcción de riqueza."
+    },
+    {
+      "id": 428,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos te protegen contra la pérdida de empleo o crisis económicas.",
+      "reflexion": "Hoy, calcula cuánto necesitas en activos para cubrir tus gastos básicos."
+    },
+    {
+      "id": 429,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera comienza con el primer peso que inviertes en lugar de gastar.",
+      "reflexion": "Hoy, enfócate en crear valor que puedas monetizar repetidamente."
+    },
+    {
+      "id": 430,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Crea activos intelectuales que generen regalías a largo plazo.",
+      "reflexion": "Hoy, revisa y optimiza tus fuentes de ingresos pasivos existentes."
+    },
+    {
+      "id": 431,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te da la paciencia para tomar mejores decisiones de inversión.",
+      "reflexion": "Hoy, invierte tiempo en aprender sobre nuevas formas de generar ingresos pasivos."
+    },
+    {
+      "id": 432,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos te permiten ser más generoso con tu tiempo y recursos.",
+      "reflexion": "Hoy, identifica una habilidad o conocimiento que puedas convertir en ingreso pasivo."
+    },
+    {
+      "id": 433,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera es el resultado de decisiones inteligentes repetidas consistentemente.",
+      "reflexion": "Hoy, crea o mejora una fuente de ingresos que no requiera tu tiempo constante."
+    },
+    {
+      "id": 434,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Construye negocios escalables que crezcan sin aumentar proporcionalmente tu trabajo.",
+      "reflexion": "Hoy, evalúa qué activos tienes que generen dinero mientras no trabajas."
+    },
+    {
+      "id": 435,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te permite enfocarte en el impacto, no solo en los ingresos.",
+      "reflexion": "Hoy, da un paso hacia la independencia de tu salario principal."
+    },
+    {
+      "id": 436,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos te dan la flexibilidad para adaptarte a cambios del mercado.",
+      "reflexion": "Hoy, invierte en algo que genere flujo de efectivo positivo."
+    },
+    {
+      "id": 437,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera comienza cuando tus activos superan tus pasivos significativamente.",
+      "reflexion": "Hoy, automatiza una parte de tu estrategia de construcción de riqueza."
+    },
+    {
+      "id": 438,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Crea múltiples fuentes de ingresos que no dependan de tu tiempo.",
+      "reflexion": "Hoy, calcula cuánto necesitas en activos para cubrir tus gastos básicos."
+    },
+    {
+      "id": 439,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te permite ser paciente con inversiones a largo plazo.",
+      "reflexion": "Hoy, enfócate en crear valor que puedas monetizar repetidamente."
+    },
+    {
+      "id": 440,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Los ingresos pasivos convierten el tiempo en tu aliado, no en tu limitación.",
+      "reflexion": "Hoy, revisa y optimiza tus fuentes de ingresos pasivos existentes."
+    },
+    {
+      "id": 441,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "La libertad financiera te da la seguridad para ser creativo y innovador.",
+      "reflexion": "Hoy, invierte tiempo en aprender sobre nuevas formas de generar ingresos pasivos."
+    },
+    {
+      "id": 442,
+      "categoria": "Libertad Financiera e Ingresos Pasivos",
+      "mensaje": "Construye riqueza que trabaje para ti generación tras generación.",
+      "reflexion": "Hoy, identifica una habilidad o conocimiento que puedas convertir en ingreso pasivo."
+    },
+    {
+      "id": 443,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los pequeños hábitos financieros diarios crean grandes resultados a largo plazo.",
+      "reflexion": "Hoy, practica un hábito financiero pequeño pero consistente."
+    },
+    {
+      "id": 444,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera hoy te da libertad mañana.",
+      "reflexion": "Hoy, elige la disciplina a corto plazo sobre la gratificación inmediata."
+    },
+    {
+      "id": 445,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Cada peso que ahorras es un empleado que trabaja para tu futuro.",
+      "reflexion": "Hoy, ahorra automáticamente antes de gastar en cualquier otra cosa."
+    },
+    {
+      "id": 446,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros positivos son la base de toda riqueza duradera.",
+      "reflexion": "Hoy, evita un gasto impulsivo y destina ese dinero a inversión."
+    },
+    {
+      "id": 447,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera no es privación, es inversión en tu futuro yo.",
+      "reflexion": "Hoy, revisa y mejora uno de tus sistemas financieros automáticos."
+    },
+    {
+      "id": 448,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los millonarios se hacen con hábitos diarios, no con golpes de suerte.",
+      "reflexion": "Hoy, toma una decisión financiera basada en tu futuro, no en tu presente."
+    },
+    {
+      "id": 449,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La consistencia en pequeñas acciones financieras supera los grandes gestos esporádicos.",
+      "reflexion": "Hoy, practica decir 'no' a algo que no aporte valor financiero a largo plazo."
+    },
+    {
+      "id": 450,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Automatiza tus finanzas para que los buenos hábitos funcionen sin esfuerzo consciente.",
+      "reflexion": "Hoy, establece o mejora un hábito que automatice tu construcción de riqueza."
+    },
+    {
+      "id": 451,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera es elegir tu dolor: el dolor de la disciplina o el dolor del arrepentimiento.",
+      "reflexion": "Hoy, celebra un pequeño hábito financiero que has mantenido consistentemente."
+    },
+    {
+      "id": 452,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros correctos hacen que ganar dinero sea inevitable.",
+      "reflexion": "Hoy, convierte una buena decisión financiera en un hábito automático."
+    },
+    {
+      "id": 453,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera no es lo que haces ocasionalmente, sino lo que haces consistentemente.",
+      "reflexion": "Hoy, practica un hábito financiero pequeño pero consistente."
+    },
+    {
+      "id": 454,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Cada día que no mejoras financieramente, alguien más lo hace y te supera.",
+      "reflexion": "Hoy, elige la disciplina a corto plazo sobre la gratificación inmediata."
+    },
+    {
+      "id": 455,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros son como el interés compuesto: pequeños al principio, poderosos con el tiempo.",
+      "reflexion": "Hoy, ahorra automáticamente antes de gastar en cualquier otra cosa."
+    },
+    {
+      "id": 456,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera convierte los ingresos ordinarios en riqueza extraordinaria.",
+      "reflexion": "Hoy, evita un gasto impulsivo y destina ese dinero a inversión."
+    },
+    {
+      "id": 457,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los buenos hábitos financieros son inversiones que pagan dividendos por vida.",
+      "reflexion": "Hoy, revisa y mejora uno de tus sistemas financieros automáticos."
+    },
+    {
+      "id": 458,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera no requiere perfección, solo progreso constante.",
+      "reflexion": "Hoy, toma una decisión financiera basada en tu futuro, no en tu presente."
+    },
+    {
+      "id": 459,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros positivos eliminan la necesidad de tomar decisiones difíciles repetidamente.",
+      "reflexion": "Hoy, practica decir 'no' a algo que no aporte valor financiero a largo plazo."
+    },
+    {
+      "id": 460,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera es la diferencia entre desear riqueza y crearla.",
+      "reflexion": "Hoy, establece o mejora un hábito que automatice tu construcción de riqueza."
+    },
+    {
+      "id": 461,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Cada hábito financiero positivo es un voto por la persona rica que quieres ser.",
+      "reflexion": "Hoy, celebra un pequeño hábito financiero que has mantenido consistentemente."
+    },
+    {
+      "id": 462,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera hoy evita la desesperación financiera mañana.",
+      "reflexion": "Hoy, convierte una buena decisión financiera en un hábito automático."
+    },
+    {
+      "id": 463,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros correctos hacen que el éxito sea sistemático, no accidental.",
+      "reflexion": "Hoy, practica un hábito financiero pequeño pero consistente."
+    },
+    {
+      "id": 464,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera es hacer lo correcto incluso cuando no tienes ganas.",
+      "reflexion": "Hoy, elige la disciplina a corto plazo sobre la gratificación inmediata."
+    },
+    {
+      "id": 465,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los pequeños gastos evitados consistentemente crean grandes fortunas.",
+      "reflexion": "Hoy, ahorra automáticamente antes de gastar en cualquier otra cosa."
+    },
+    {
+      "id": 466,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera transforma la fuerza de voluntad en sistemas automáticos.",
+      "reflexion": "Hoy, evita un gasto impulsivo y destina ese dinero a inversión."
+    },
+    {
+      "id": 467,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros positivos son la diferencia entre sobrevivir y prosperar.",
+      "reflexion": "Hoy, revisa y mejora uno de tus sistemas financieros automáticos."
+    },
+    {
+      "id": 468,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera no es restrictiva, es liberadora a largo plazo.",
+      "reflexion": "Hoy, toma una decisión financiera basada en tu futuro, no en tu presente."
+    },
+    {
+      "id": 469,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Cada decisión financiera consciente fortalece tu músculo de disciplina.",
+      "reflexion": "Hoy, practica decir 'no' a algo que no aporte valor financiero a largo plazo."
+    },
+    {
+      "id": 470,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros correctos convierten la construcción de riqueza en un proceso natural.",
+      "reflexion": "Hoy, establece o mejora un hábito que automatice tu construcción de riqueza."
+    },
+    {
+      "id": 471,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera es pagar el precio del éxito por adelantado.",
+      "reflexion": "Hoy, celebra un pequeño hábito financiero que has mantenido consistentemente."
+    },
+    {
+      "id": 472,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los buenos hábitos financieros son inversiones en tu futuro yo más sabio.",
+      "reflexion": "Hoy, convierte una buena decisión financiera en un hábito automático."
+    },
+    {
+      "id": 473,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera diaria evita las crisis financieras futuras.",
+      "reflexion": "Hoy, practica un hábito financiero pequeño pero consistente."
+    },
+    {
+      "id": 474,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros positivos crean un ciclo virtuoso de prosperidad creciente.",
+      "reflexion": "Hoy, elige la disciplina a corto plazo sobre la gratificación inmediata."
+    },
+    {
+      "id": 475,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera es la práctica de valorar tu futuro más que tu presente inmediato.",
+      "reflexion": "Hoy, ahorra automáticamente antes de gastar en cualquier otra cosa."
+    },
+    {
+      "id": 476,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Cada hábito financiero mejorado acerca tu realidad a tus sueños financieros.",
+      "reflexion": "Hoy, evita un gasto impulsivo y destina ese dinero a inversión."
+    },
+    {
+      "id": 477,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera convierte los sacrificios temporales en beneficios permanentes.",
+      "reflexion": "Hoy, revisa y mejora uno de tus sistemas financieros automáticos."
+    },
+    {
+      "id": 478,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros correctos hacen que la riqueza sea inevitable, no accidental.",
+      "reflexion": "Hoy, toma una decisión financiera basada en tu futuro, no en tu presente."
+    },
+    {
+      "id": 479,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera es la inversión más rentable que puedes hacer.",
+      "reflexion": "Hoy, practica decir 'no' a algo que no aporte valor financiero a largo plazo."
+    },
+    {
+      "id": 480,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los pequeños hábitos de ahorro se convierten en grandes cuentas de inversión.",
+      "reflexion": "Hoy, establece o mejora un hábito que automatice tu construcción de riqueza."
+    },
+    {
+      "id": 481,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera hoy te da opciones mañana.",
+      "reflexion": "Hoy, celebra un pequeño hábito financiero que has mantenido consistentemente."
+    },
+    {
+      "id": 482,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros positivos son semillas que crecen en árboles de dinero.",
+      "reflexion": "Hoy, convierte una buena decisión financiera en un hábito automático."
+    },
+    {
+      "id": 483,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera es elegir el placer duradero sobre el placer momentáneo.",
+      "reflexion": "Hoy, practica un hábito financiero pequeño pero consistente."
+    },
+    {
+      "id": 484,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Cada día de disciplina financiera es un día más cerca de la libertad financiera.",
+      "reflexion": "Hoy, elige la disciplina a corto plazo sobre la gratificación inmediata."
+    },
+    {
+      "id": 485,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros correctos automatizan el camino hacia la riqueza.",
+      "reflexion": "Hoy, ahorra automáticamente antes de gastar en cualquier otra cosa."
+    },
+    {
+      "id": 486,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera transforma los ingresos promedio en riqueza excepcional.",
+      "reflexion": "Hoy, evita un gasto impulsivo y destina ese dinero a inversión."
+    },
+    {
+      "id": 487,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los buenos hábitos financieros son el secreto que los ricos no quieren que sepas.",
+      "reflexion": "Hoy, revisa y mejora uno de tus sistemas financieros automáticos."
+    },
+    {
+      "id": 488,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera es la diferencia entre parecer rico y ser rico.",
+      "reflexion": "Hoy, toma una decisión financiera basada en tu futuro, no en tu presente."
+    },
+    {
+      "id": 489,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Cada hábito financiero positivo es un ladrillo en la construcción de tu fortuna.",
+      "reflexion": "Hoy, practica decir 'no' a algo que no aporte valor financiero a largo plazo."
+    },
+    {
+      "id": 490,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera no es lo que pierdes, sino todo lo que ganas.",
+      "reflexion": "Hoy, establece o mejora un hábito que automatice tu construcción de riqueza."
+    },
+    {
+      "id": 491,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros correctos hacen que el dinero trabaje más duro que tú.",
+      "reflexion": "Hoy, celebra un pequeño hábito financiero que has mantenido consistentemente."
+    },
+    {
+      "id": 492,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera diaria es más poderosa que las ganancias inesperadas.",
+      "reflexion": "Hoy, convierte una buena decisión financiera en un hábito automático."
+    },
+    {
+      "id": 493,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los buenos hábitos financieros convierten el tiempo en tu mayor aliado financiero.",
+      "reflexion": "Hoy, practica un hábito financiero pequeño pero consistente."
+    },
+    {
+      "id": 494,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera es la práctica de amar tu futuro yo más que tu presente yo.",
+      "reflexion": "Hoy, elige la disciplina a corto plazo sobre la gratificación inmediata."
+    },
+    {
+      "id": 495,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Cada decisión disciplinada hoy se convierte en libertad mañana.",
+      "reflexion": "Hoy, ahorra automáticamente antes de gastar en cualquier otra cosa."
+    },
+    {
+      "id": 496,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros positivos son la diferencia entre trabajar hasta morir y jubilarse cómodamente.",
+      "reflexion": "Hoy, evita un gasto impulsivo y destina ese dinero a inversión."
+    },
+    {
+      "id": 497,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera no es restricción, es redirección hacia la abundancia.",
+      "reflexion": "Hoy, revisa y mejora uno de tus sistemas financieros automáticos."
+    },
+    {
+      "id": 498,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los buenos hábitos financieros transforman los ingresos en activos generadores de riqueza.",
+      "reflexion": "Hoy, toma una decisión financiera basada en tu futuro, no en tu presente."
+    },
+    {
+      "id": 499,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera convierte cada peso en un soldado en tu ejército de riqueza.",
+      "reflexion": "Hoy, practica decir 'no' a algo que no aporte valor financiero a largo plazo."
+    },
+    {
+      "id": 500,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Los hábitos financieros correctos hacen que la prosperidad sea tu estado natural.",
+      "reflexion": "Hoy, establece o mejora un hábito que automatice tu construcción de riqueza."
+    },
+    {
+      "id": 501,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "La disciplina financiera es el puente entre donde estás y donde quieres estar financieramente.",
+      "reflexion": "Hoy, celebra un pequeño hábito financiero que has mantenido consistentemente."
+    },
+    {
+      "id": 502,
+      "categoria": "Disciplina y Hábitos Financieros",
+      "mensaje": "Cada hábito financiero mejorado multiplica tu potencial de creación de riqueza.",
+      "reflexion": "Hoy, convierte una buena decisión financiera en un hábito automático."
+    },
+    {
+      "id": 503,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy un imán para el dinero y la abundancia fluye fácilmente hacia mí.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 504,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Merezco toda la riqueza que el universo tiene para ofrecerme.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 505,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi mente está programada para el éxito financiero y la prosperidad.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 506,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Atraigo oportunidades de oro que multiplican mi riqueza constantemente.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 507,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "El dinero viene a mí de múltiples fuentes y de maneras inesperadas.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 508,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy próspero, exitoso y financieramente libre en todos los aspectos.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 509,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi cuenta bancaria crece cada día sin esfuerzo y naturalmente.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 510,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Estoy alineado con la energía de la abundancia y la prosperidad infinita.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 511,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Cada peso que invierto se multiplica y regresa a mí amplificado.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 512,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy digno de riqueza, abundancia y libertad financiera total.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 513,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi relación con el dinero es saludable, positiva y abundante.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 514,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Atraigo socios de negocios prósperos y oportunidades lucrativas.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 515,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi valor en el mercado aumenta constantemente y soy muy bien remunerado.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 516,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "El éxito financiero es mi estado natural y mi derecho divino.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 517,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Genero riqueza fácilmente a través de mi talento y creatividad únicos.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 518,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy próspero en mente, cuerpo, espíritu y finanzas.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 519,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi patrimonio neto crece exponencialmente mes tras mes.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 520,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Atraigo abundancia en todas las áreas de mi vida sin límites.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 521,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy un creador natural de riqueza y oportunidades prósperas.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 522,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "El dinero fluye hacia mí como un río constante e inagotable.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 523,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi éxito financiero inspira y beneficia a todas las personas que amo.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 524,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy próspero, estoy agradecido y comparto mi abundancia generosamente.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 525,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Cada decisión que tomo me acerca más a mi libertad financiera.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 526,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mis ingresos superan mis gastos y mi riqueza crece automáticamente.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 527,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy un maestro de las finanzas y manejo mi dinero con sabiduría.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 528,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "La abundancia es mi estado mental natural y permanente.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 529,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Atraigo inversiones rentables que se multiplican sin esfuerzo.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 530,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi mente subconsciente trabaja constantemente para crear riqueza.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 531,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy próspero en el presente y mi futuro financiero está asegurado.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 532,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "El dinero me ama y yo amo el dinero de manera saludable.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 533,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mis activos generan ingresos pasivos que crecen continuamente.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 534,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy abundante en recursos, oportunidades y bendiciones financieras.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 535,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi riqueza beneficia no solo a mí, sino a toda mi familia y comunidad.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 536,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Atraigo mentores millonarios que me guían hacia el éxito.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 537,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy próspero, exitoso y mi vida está llena de abundancia infinita.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 538,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Cada respiración que tomo me conecta más con la prosperidad.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 539,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi energía de abundancia atrae clientes, inversores y oportunidades.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 540,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy financieramente libre y mis decisiones están basadas en el amor, no en el miedo.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 541,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "La riqueza fluye hacia mí desde direcciones conocidas y desconocidas.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 542,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi creatividad y talento son fuentes inagotables de prosperidad.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 543,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy próspero hoy, mañana y por el resto de mi vida.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 544,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Atraigo dinero fácilmente porque ofrezco valor genuino al mundo.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 545,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi riqueza crece mientras duermo, trabajo y me divierto.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 546,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy un canal de abundancia que bendice todo lo que toco.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 547,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "El éxito financiero fluye hacia mí de manera natural y sin esfuerzo.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 548,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi mentalidad de millonario atrae experiencias de millonario.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 549,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy próspero, estoy bendecido y vivo en abundancia total.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 550,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Cada día descubro nuevas formas de crear y multiplicar riqueza.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 551,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi riqueza interior se refleja en mi prosperidad exterior.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 552,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Atraigo todo el dinero que necesito para vivir mis sueños.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 553,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy un imán para las oportunidades de inversión más rentables.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 554,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi abundancia financiera crece en armonía con mi crecimiento personal.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 555,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "El dinero es mi amigo y trabajamos juntos para crear valor.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 556,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy próspero en formas que van más allá de mi imaginación actual.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 557,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi riqueza se expande constantemente y toca positivamente muchas vidas.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 558,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Atraigo abundancia porque estoy alineado con los principios del éxito.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 559,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy financieramente próspero y mi seguridad económica está garantizada.",
+      "reflexion": "Hoy, afirma tu merecimiento de abundancia y actúa en consecuencia."
+    },
+    {
+      "id": 560,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Cada acción que tomo multiplica mi capacidad de generar riqueza.",
+      "reflexion": "Hoy, visualiza tu riqueza futura como si ya fuera real."
+    },
+    {
+      "id": 561,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Mi abundancia es ilimitada porque mi potencial es infinito.",
+      "reflexion": "Hoy, actúa desde la abundancia, no desde la escasez."
+    },
+    {
+      "id": 562,
+      "categoria": "Afirmaciones de Abundancia y Prosperidad",
+      "mensaje": "Soy próspero, próspero, próspero en todos los aspectos de la vida.",
+      "reflexion": "Hoy, alinea tus pensamientos con la prosperidad que deseas."
+    },
+    {
+      "id": 563,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El dinero es buen sirviente pero mal amo. Aprende a controlarlo.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 564,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La paciencia es la virtud más rentable en el mundo de las inversiones.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 565,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No pongas todos tus huevos en una sola canasta. Diversifica siempre.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 566,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El interés compuesto es la octava maravilla del mundo. Úsalo a tu favor.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 567,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Invierte en ti mismo. Es la inversión más segura y rentable.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 568,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El tiempo en el mercado vence al timing del mercado.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 569,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Compra cuando hay sangre en las calles, incluso si es tu propia sangre.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 570,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La educación financiera es más valiosa que cualquier herencia.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 571,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No gastes lo que no tienes para impresionar a quien no te importa.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 572,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El dinero no puede comprar la felicidad, pero la pobreza tampoco.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 573,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Invierte en activos que se aprecien, no en pasivos que se deprecien.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 574,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La riqueza no es cuánto ganas, sino cuánto conservas y multiplicas.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 575,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El mejor momento para invertir fue hace 20 años. El segundo mejor momento es ahora.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 576,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No busques el timing perfecto. Busca el tiempo perfecto en el mercado.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 577,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La volatilidad es el precio que pagas por los rendimientos superiores.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 578,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Compra el miedo y vende la codicia del mercado.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 579,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La diversificación es la única comida gratis en las finanzas.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 580,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Invierte solo en lo que entiendes completamente.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 581,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El dinero perdido se puede recuperar, pero el tiempo perdido nunca.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 582,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La información es poder, pero la acción basada en información es riqueza.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 583,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No sigas a la multitud en las inversiones. Sé contrario cuando sea apropiado.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 584,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El riesgo no es volatilidad. El riesgo es perder dinero permanentemente.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 585,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Compra acciones como si fueras a quedarte con ellas para siempre.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 586,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La humildad es la virtud más importante en las finanzas.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 587,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No predecir el mercado. Prepárate para cualquier escenario.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 588,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La paciencia multiplica el dinero mejor que cualquier fórmula mágica.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 589,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Invierte en tendencias a largo plazo, no en modas pasajeras.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 590,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El dinero inteligente compra cuando otros venden por pánico.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 591,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La educación continua es la clave del éxito financiero duradero.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 592,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No busques enriquecerte rápido. Busca enriquecerte de manera segura.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 593,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Las crisis crean las mejores oportunidades de inversión.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 594,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Mantén siempre liquidez para aprovechar oportunidades inesperadas.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 595,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La disciplina en las finanzas supera la inteligencia en las finanzas.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 596,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Invierte en empresas que entiendes y en las que confías.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 597,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El dinero no tiene emociones. No dejes que las tuyas arruinen tus finanzas.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 598,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La riqueza se construye lentamente pero se puede perder rápidamente.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 599,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No busques el consejo financiero de personas sin éxito financiero.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 600,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La mejor defensa contra la inflación es una buena ofensa en inversiones.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 601,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Compra activos, no pasivos. Compra cosas que te hagan rico.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 602,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El dinero es como el agua: fluye hacia donde encuentra menos resistencia.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 603,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La riqueza real incluye tiempo, salud, relaciones y recursos financieros.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 604,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No gastes dinero que no tienes en cosas que no necesitas.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 605,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La inversión más importante es en tu propio conocimiento y habilidades.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 606,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El mercado puede permanecer irracional más tiempo del que puedes mantenerte solvente.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 607,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La codicia y el miedo son los enemigos más grandes del inversionista.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 608,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Compra calidad y manténla. Compra basura y piérdela.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 609,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La diversificación geográfica es tan importante como la sectorial.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 610,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No inviertas dinero que necesitas en los próximos cinco años.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 611,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Las pequeñas cantidades invertidas consistentemente superan las grandes cantidades esporádicas.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 612,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La inflación es un impuesto silencioso que devora la riqueza.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 613,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Invierte en activos reales que mantengan valor a través del tiempo.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 614,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El dinero no duerme. Haz que trabaje para ti las 24 horas.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 615,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La mejor estrategia de inversión es aquella que puedes seguir consistentemente.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 616,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No dejes que las emociones del momento dicten tus decisiones financieras.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 617,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La riqueza verdadera es tener activos que generen más activos.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 618,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Invierte primero en seguridad, después en rentabilidad.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 619,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El conocimiento sin acción es inútil en las finanzas.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 620,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La paciencia es más valiosa que el capital en las inversiones.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 621,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No busques batir el mercado. Busca acompañar el mercado consistentemente.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 622,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La riqueza sostenible requiere principios, no solo estrategias.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 623,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Invierte en lo que vas a usar y usa lo que vas a invertir.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 624,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El dinero bien invertido es dinero que trabaja más duro que tú.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 625,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La educación financiera es una inversión que paga dividendos de por vida.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 626,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No confundas un mercado alcista con genio financiero.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 627,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La riqueza real es la capacidad de mantener tu estilo de vida sin trabajar.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 628,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "Invierte en activos que otros necesiten y siempre demandarán.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 629,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La mejor herencia que puedes dejar es educación financiera.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 630,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "El dinero inteligente invierte en soluciones a problemas permanentes.",
+      "reflexion": "Hoy, practica la disciplina financiera que construye riqueza duradera."
+    },
+    {
+      "id": 631,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La riqueza construida lentamente es la que permanece más tiempo.",
+      "reflexion": "Hoy, aplica un principio financiero atemporal a tu situación actual."
+    },
+    {
+      "id": 632,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "No inviertas por emociones. Invierte por matemáticas y lógica.",
+      "reflexion": "Hoy, actúa con paciencia y sabiduría en tus decisiones de dinero."
+    },
+    {
+      "id": 633,
+      "categoria": "Sabiduría Financiera Universal",
+      "mensaje": "La verdadera riqueza se mide en tiempo libre, no solo en dinero.",
+      "reflexion": "Hoy, busca consejo de alguien más exitoso financieramente que tú."
+    },
+    {
+      "id": 634,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu situación financiera actual es temporal. Tu potencial de riqueza es permanente.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 635,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Cada día es una nueva oportunidad para mejorar tu situación financiera.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 636,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "No necesitas ser perfecto financieramente. Solo necesitas ser mejor que ayer.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 637,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza futura depende de las decisiones que tomes hoy.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 638,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "El camino hacia la riqueza comienza con el primer peso que decides no gastar.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 639,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres más capaz de crear riqueza de lo que te imaginas.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 640,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu mentalidad financiera determina tu destino financiero.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 641,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "No hay límite para tu potencial de creación de riqueza.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 642,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Cada peso que ahorras es un soldado en tu ejército de libertad financiera.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 643,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu éxito financiero no depende de la suerte, sino de tus decisiones.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 644,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres el CEO de tu propia vida financiera. Actúa como tal.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 645,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "La riqueza que buscas ya existe. Solo necesitas atraerla.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 646,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu edad no determina tu capacidad de crear riqueza. Tu actitud sí.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 647,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Cada fracaso financiero es una lección que te acerca al éxito.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 648,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu pasado financiero no define tu futuro financiero.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 649,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres capaz de crear riqueza desde cualquier punto de partida.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 650,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu determinación es más poderosa que cualquier obstáculo financiero.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 651,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "La riqueza que mereces está esperando que la reclames.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 652,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Cada día que no mejoras financieramente, pierdes una oportunidad única.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 653,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu potencial de riqueza no tiene fecha de vencimiento.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 654,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres el único límite para tu propia prosperidad financiera.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 655,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza futura justifica cualquier sacrificio presente.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 656,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "No necesitas nacer rico para morir rico. Solo necesitas decidirlo.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 657,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu historia financiera más exitosa aún no se ha escrito.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 658,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Cada peso que inviertes en ti mismo regresa multiplicado.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 659,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza comienza donde termina tu zona de confort financiera.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 660,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres más fuerte que cualquier desafío financiero que enfrentes.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 661,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu libertad financiera vale cualquier esfuerzo que requiera.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 662,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "No subestimes tu capacidad de transformar tu realidad financiera.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 663,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza futura será proporcional a tu fe presente.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 664,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Cada acción financiera positiva te acerca a tu mejor versión.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 665,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu éxito financiero inspirará a otros a creer en sí mismos.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 666,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres capaz de lograr cualquier meta financiera que te propongas.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 667,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza interior se manifestará como riqueza exterior.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 668,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "No hay problema financiero que no puedas resolver con educación y acción.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 669,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu potencial de generar riqueza es infinito e ilimitado.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 670,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Cada día de disciplina financiera es una inversión en tu libertad.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 671,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza futura agradecerá las decisiones inteligentes de hoy.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 672,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres capaz de crear riqueza incluso en las peores circunstancias.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 673,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu mentalidad millonaria está despertando más cada día.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 674,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "No hay momento equivocado para comenzar a construir riqueza.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 675,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza futura justifica cualquier incomodidad presente.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 676,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres más resiliente financieramente de lo que crees.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 677,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu éxito financiero es inevitable cuando combinas conocimiento con acción.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 678,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Cada peso que ganas es una oportunidad para crear más riqueza.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 679,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza futura depende de tu coraje presente para actuar.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 680,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres capaz de superar cualquier creencia limitante sobre el dinero.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 681,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu potencial de riqueza crece cada día que inviertes en aprender.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 682,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "No hay límite superior para tu capacidad de generar ingresos.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 683,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza futura comenzó el día que decidiste cambiar tu mentalidad.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 684,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres el arquitecto de tu propia fortuna financiera.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 685,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu éxito financiero es cuestión de cuándo, no de si sucederá.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 686,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Cada decisión financiera consciente fortalece tu poder de crear riqueza.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 687,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza futura será el resultado de tu persistencia presente.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 688,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres capaz de transformar cualquier ingreso en riqueza significativa.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 689,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu libertad financiera está más cerca de lo que imaginas.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 690,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Cada día de progreso financiero te acerca a tus sueños.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 691,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza futura recompensará tu paciencia y disciplina presente.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 692,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres más poderoso financieramente cuando actúas con propósito claro.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 693,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu potencial de riqueza se multiplica cuando ayudas a otros a prosperar.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 694,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "No hay meta financiera demasiado grande para tu determinación.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 695,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza futura será proporcional a tu contribución al mundo.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 696,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres capaz de crear abundancia en cualquier circunstancia económica.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 697,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu éxito financiero es el resultado inevitable de aplicar principios correctos.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 698,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Cada peso que inviertes sabiamente es una semilla de riqueza futura.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    },
+    {
+      "id": 699,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu riqueza futura celebrará cada sacrificio que haces hoy.",
+      "reflexion": "Hoy, toma una decisión financiera que tu futuro yo te agradecerá."
+    },
+    {
+      "id": 700,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Eres más capaz de lo que crees y más poderoso de lo que sabes.",
+      "reflexion": "Hoy, actúa con la confianza de que tu éxito financiero es inevitable."
+    },
+    {
+      "id": 701,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "Tu libertad financiera es tu derecho y tu responsabilidad.",
+      "reflexion": "Hoy, invierte en tu educación financiera para multiplicar tu potencial."
+    },
+    {
+      "id": 702,
+      "categoria": "Motivación Financiera Final",
+      "mensaje": "La riqueza que buscas ya está buscándote a ti.",
+      "reflexion": "Hoy, da un paso concreto hacia la versión próspera de ti mismo."
+    }
+  ]
+}

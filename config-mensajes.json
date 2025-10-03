@@ -1,0 +1,48 @@
+{
+  "configuracion": {
+    "nombre_aplicacion": "Piense y Hágase Rico - Mensajes Diarios",
+    "version": "1.0.0",
+    "descripcion": "Sistema de mensajes motivacionales personalizados"
+  },
+  "horarios": {
+    "mensaje_manana": {
+      "hora": "08:00",
+      "zona_horaria": "America/Mexico_City",
+      "activo": true,
+      "archivo_fuente": "mensajes-manana.json"
+    },
+    "mensaje_noche": {
+      "hora": "20:00",
+      "zona_horaria": "America/Mexico_City",
+      "activo": true,
+      "archivo_fuente": "mensajes-noche.json"
+    }
+  },
+  "personalizacion": {
+    "usar_nombre": true,
+    "modo_seleccion_mensaje": "secuencial",
+    "opciones_modo": ["secuencial", "aleatorio", "por_fecha"],
+    "incluir_reflexion": true,
+    "incluir_categoria": true
+  },
+  "formato_mensaje": {
+    "estructura": "saludo + mensaje + reflexion + despedida",
+    "ejemplo": "{saludo_intro}\n\n{mensaje}\n\n{reflexion}\n\n{despedida}"
+  },
+  "usuarios_ejemplo": [
+    {
+      "id": 1,
+      "nombre": "Daniel",
+      "activo": true,
+      "mensaje_actual_manana": 1,
+      "mensaje_actual_noche": 1,
+      "fecha_registro": "2025-10-03"
+    }
+  ],
+  "notas_implementacion": {
+    "backend": "Puedes usar Node.js con node-cron o Python con schedule",
+    "base_datos": "Opcional: SQLite, MongoDB o PostgreSQL para gestionar usuarios",
+    "notificaciones": "WhatsApp API, Telegram Bot, Email, o SMS",
+    "recomendacion": "Usa node-cron + WhatsApp Business API para mejor experiencia"
+  }
+}

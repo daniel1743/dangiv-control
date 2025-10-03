@@ -1,0 +1,85 @@
+{
+  "libro": {
+    "titulo": "Piense y Hágase Rico - Mensajes de Noche",
+    "autor": "Napoleon Hill",
+    "horario": "08:00 PM"
+  },
+  "saludos_intro": [
+    "{nombre}, antes de terminar el día, reflexiona sobre esto",
+    "{nombre}, este mensaje de noche es para ti",
+    "Buenas noches {nombre}, lee este pensamiento antes de dormir",
+    "{nombre}, cierra tu día con esta reflexión poderosa",
+    "Hola {nombre}, que este mensaje te inspire para mañana",
+    "{nombre}, termina tu día con este pensamiento"
+  ],
+  "despedidas": [
+    "Que tengas una linda noche",
+    "Descansa bien y despierta renovado",
+    "Que tengas dulces sueños y despiertes con energía",
+    "Que esta noche tu mente se prepare para el éxito de mañana",
+    "Descansa, mañana será un gran día",
+    "Que tengas una noche tranquila y reparadora"
+  ],
+  "mensajes": [
+    {
+      "id": 1,
+      "categoria": "Reflexión Nocturna",
+      "mensaje": "Los pensamientos son cosas, y cosas poderosas cuando se mezclan con un propósito definido y un deseo ardiente.",
+      "reflexion": "Antes de dormir, visualiza claramente tus metas cumplidas."
+    },
+    {
+      "id": 2,
+      "categoria": "Preparación Mental",
+      "mensaje": "Cuando comiences a pensar y hacerte rico, observarás que la riqueza comienza con un estado mental, con un propósito definido.",
+      "reflexion": "Esta noche, programa tu mente subconsciente para el éxito."
+    },
+    {
+      "id": 3,
+      "categoria": "Aprendizaje Diario",
+      "mensaje": "El camino del éxito es el camino de la búsqueda continua del conocimiento. Cada día es una oportunidad de aprender.",
+      "reflexion": "Reflexiona sobre lo que aprendiste hoy."
+    },
+    {
+      "id": 4,
+      "categoria": "Hábitos de Éxito",
+      "mensaje": "Tanto el éxito como el fracaso son en gran medida resultados de hábitos. Construye hábitos que te lleven al éxito.",
+      "reflexion": "¿Qué hábito puedes mejorar mañana?"
+    },
+    {
+      "id": 5,
+      "categoria": "Fuerza de Voluntad",
+      "mensaje": "La base de la perseverancia es la fuerza de voluntad. Cultiva tu voluntad cada día.",
+      "reflexion": "Esta noche, fortalece tu compromiso con tus metas."
+    },
+    {
+      "id": 6,
+      "categoria": "Conciencia del Éxito",
+      "mensaje": "El éxito llega a quienes se vuelven conscientes del éxito. El fracaso llega a quienes se permiten ser conscientes del fracaso.",
+      "reflexion": "Antes de dormir, enfócate solo en pensamientos de éxito."
+    },
+    {
+      "id": 7,
+      "categoria": "Determinación",
+      "mensaje": "La determinación y la persistencia en respaldar un único deseo están destinadas a arrasar con toda oposición.",
+      "reflexion": "Reafirma tu compromiso con tu objetivo principal."
+    },
+    {
+      "id": 8,
+      "categoria": "Mente Creadora",
+      "mensaje": "Todo lo que el hombre crea comienza en forma de un impulso de pensamiento. El hombre no puede crear nada que no conciba primero en pensamiento.",
+      "reflexion": "Esta noche, imagina en detalle lo que quieres crear."
+    },
+    {
+      "id": 9,
+      "categoria": "Preparación para Recibir",
+      "mensaje": "Hay una diferencia entre desear algo y estar listo para recibirlo. Prepárate para recibir lo que deseas.",
+      "reflexion": "¿Estás verdaderamente listo para recibir tu éxito?"
+    },
+    {
+      "id": 10,
+      "categoria": "Victoria Mental",
+      "mensaje": "Si piensas que estás derrotado, lo estás. El éxito comienza con la voluntad de una persona, todo está en el estado mental.",
+      "reflexion": "Duerme con la certeza absoluta de tu victoria."
+    }
+  ]
+}

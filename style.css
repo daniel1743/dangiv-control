@@ -11143,3 +11143,101 @@ select.form-control {
     font-size: 18px;
   }
 }
+/* === ESTILOS PARA INGRESOS EXTRAS === */
+.btn-add-extra-income {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, var(--color-success-light), var(--color-success));
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(var(--color-success-rgb, 46, 213, 115), 0.2);
+}
+
+.btn-add-extra-income:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--color-success-rgb, 46, 213, 115), 0.3);
+}
+
+.btn-add-extra-income i {
+  font-size: 18px;
+}
+
+.extra-income-display {
+  margin-top: 12px;
+  padding: 8px 10px;
+  background: var(--color-info-light);
+  border-radius: var(--radius-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 3px solid var(--color-info);
+}
+
+.extra-income-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.extra-income-info span:first-child {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.extra-amount {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-info);
+}
+
+.btn-reset-extras {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.btn-reset-extras:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--color-warning);
+}
+
+.total-income-display {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+  color: white;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb, 116, 97, 238), 0.2);
+}
+
+.total-income-display strong {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+.total-amount {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  line-height: 1.2;
+}
