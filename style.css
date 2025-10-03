@@ -11034,3 +11034,112 @@ select.form-control {
 .total-additional-income .amount {
   font-size: var(--font-size-xl);
 }
+
+/* ===================================
+   MOBILE BOTTOM NAVIGATION FOR SETTINGS
+   =================================== */
+
+/* Desktop: Hide mobile navigation */
+.settings-bottom-nav {
+  display: none;
+}
+
+/* Mobile & Tablet: Show bottom navigation bar */
+@media (max-width: 768px) {
+  /* Hide desktop sidebar on mobile */
+  .settings-sidebar {
+    display: none;
+  }
+
+  /* Settings content takes full width on mobile */
+  .settings-content {
+    width: 100%;
+    padding-bottom: 100px; /* Space for fixed bottom nav */
+  }
+
+  /* Bottom Navigation Container */
+  .settings-bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* Perfect equal distribution */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, var(--color-teal-500), var(--color-teal-600));
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    padding: 16px 0 20px; /* Increased height for comfort */
+    gap: 0;
+  }
+
+  /* Individual Navigation Items */
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 8px 4px;
+    position: relative;
+    gap: 4px;
+  }
+
+  .bottom-nav-item i {
+    font-size: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .bottom-nav-item span {
+    font-size: 11px;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  /* Active state */
+  .bottom-nav-item.active {
+    color: var(--color-white);
+  }
+
+  .bottom-nav-item.active i {
+    transform: scale(1.1);
+  }
+
+  /* Active indicator line */
+  .bottom-nav-item.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: var(--color-white);
+    border-radius: 0 0 3px 3px;
+  }
+
+  /* Hover effect (for tablets with mouse) */
+  .bottom-nav-item:hover:not(.active) {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Active tap feedback */
+  .bottom-nav-item:active {
+    transform: scale(0.95);
+  }
+}
+
+/* Extra small phones: Smaller text */
+@media (max-width: 480px) {
+  .bottom-nav-item span {
+    font-size: 10px;
+  }
+
+  .bottom-nav-item i {
+    font-size: 18px;
+  }
+}

@@ -9300,6 +9300,14 @@ FinanceApp.prototype.saveProfileSettings = async function () {
     if (newName !== this.userProfile.name) {
       this.userProfile.name = newName;
       updated = true;
+
+      // Add user to customUsers if not already there
+      if (!this.customUsers.includes(newName)) {
+        this.customUsers.push(newName);
+      }
+
+      // Set as default user automatically
+      this.defaultUser = newName;
     }
   }
 
@@ -12587,29 +12595,55 @@ FinanceApp.prototype.setupQuickUserHandler = function () {
 // ========================================
 
 FinanceApp.prototype.setupPremiumSettings = function () {
-  // Settings tab navigation
+  // Settings tab navigation (desktop sidebar + mobile bottom nav)
   const settingsNavItems = document.querySelectorAll('.settings-nav-item');
+  const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
   const settingsTabs = document.querySelectorAll('.settings-tab');
 
+  // Function to switch tabs (shared between desktop and mobile)
+  const switchTab = (targetTab) => {
+    // Update active state for desktop nav
+    settingsNavItems.forEach((item) => item.classList.remove('active'));
+    const desktopNav = document.querySelector(`.settings-nav-item[data-settings-tab="${targetTab}"]`);
+    if (desktopNav) desktopNav.classList.add('active');
+
+    // Update active state for mobile nav
+    bottomNavItems.forEach((item) => item.classList.remove('active'));
+    const mobileNav = document.querySelector(`.bottom-nav-item[data-settings-tab="${targetTab}"]`);
+    if (mobileNav) mobileNav.classList.add('active');
+
+    // Update active tab content
+    settingsTabs.forEach((tab) => tab.classList.remove('active'));
+    const targetTabElement = document.getElementById(`settings-${targetTab}`);
+    if (targetTabElement) {
+      targetTabElement.classList.add('active');
+    }
+
+    // Scroll to top of page when switching tabs
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+
+    // Update statistics if on profile tab
+    if (targetTab === 'profile') {
+      this.updateUsageStatistics();
+    }
+  };
+
+  // Desktop sidebar navigation
   settingsNavItems.forEach((navItem) => {
     navItem.addEventListener('click', () => {
       const targetTab = navItem.dataset.settingsTab;
+      switchTab(targetTab);
+    });
+  });
 
-      // Update active nav item
-      settingsNavItems.forEach((item) => item.classList.remove('active'));
-      navItem.classList.add('active');
-
-      // Update active tab
-      settingsTabs.forEach((tab) => tab.classList.remove('active'));
-      const targetTabElement = document.getElementById(`settings-${targetTab}`);
-      if (targetTabElement) {
-        targetTabElement.classList.add('active');
-      }
-
-      // Update statistics if on profile tab
-      if (targetTab === 'profile') {
-        this.updateUsageStatistics();
-      }
+  // Mobile bottom navigation
+  bottomNavItems.forEach((navItem) => {
+    navItem.addEventListener('click', () => {
+      const targetTab = navItem.dataset.settingsTab;
+      switchTab(targetTab);
     });
   });
 
