@@ -1612,7 +1612,7 @@ input:checked + .toggle-slider:before {
   width: 40px;
   height: 40px;
   border-radius: var(--radius-md);
-  background: var(--color-surface);
+  background: #21808d;
   display: flex;
   align-items: center;
   justify-content: center;

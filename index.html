@@ -4439,6 +4439,26 @@
                   <option value="__add_new__">+ Añadir usuario</option>
                 </select>
               </div>
+
+              <!-- New User Input for Quick Mode (Hidden by default) -->
+              <div class="form-group hidden" id="quickNewUserGroup">
+                <label class="form-label">
+                  <i class="fas fa-user-plus"></i>
+                  Nombre del nuevo usuario
+                </label>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <input
+                    type="text"
+                    id="quickNewUserName"
+                    class="form-control"
+                    placeholder="Nombre del usuario"
+                    style="flex: 1;"
+                  />
+                  <button type="button" class="btn btn--icon btn--primary" id="quickSaveNewUserBtn" title="Guardar usuario">
+                    <i class="fas fa-check"></i>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div class="quick-actions">
@@ -4454,6 +4474,74 @@
               </button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Confirmación de Eliminación -->
+    <div class="modal" id="deleteConfirmModal">
+      <div class="modal__content modal--sm">
+        <div class="modal__header">
+          <h2>
+            <i class="fas fa-exclamation-triangle" style="color: #FF5459;"></i>
+            ¿Seguro quieres eliminar este gasto?
+          </h2>
+          <button class="modal__close" id="closeDeleteConfirmModal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal__body">
+          <!-- Información del gasto a eliminar -->
+          <div class="delete-expense-info">
+            <div class="expense-detail">
+              <i class="fas fa-dollar-sign"></i>
+              <span id="deleteExpenseAmount">$0.00</span>
+            </div>
+            <div class="expense-detail">
+              <i class="fas fa-tag"></i>
+              <span id="deleteExpenseCategory">Categoría</span>
+            </div>
+            <div class="expense-detail">
+              <i class="fas fa-align-left"></i>
+              <span id="deleteExpenseDescription">Descripción</span>
+            </div>
+          </div>
+
+          <!-- Campo opcional de motivo -->
+          <div class="form-group" style="margin-top: var(--space-20);">
+            <label class="form-label" style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+              <i class="fas fa-comment"></i>
+              Motivo de eliminación <span style="opacity: 0.6;">(opcional)</span>
+            </label>
+            <textarea
+              id="deleteReasonInput"
+              class="form-control"
+              placeholder="Ej: Gasto duplicado, error de registro, compra cancelada..."
+              rows="3"
+              style="resize: vertical; min-height: 60px;"
+            ></textarea>
+            <small class="form-text" style="display: block; margin-top: var(--space-8); color: var(--color-text-secondary);">
+              Este motivo quedará visible en tus notificaciones para futuras referencias
+            </small>
+          </div>
+
+          <!-- Advertencia -->
+          <div class="delete-warning">
+            <i class="fas fa-info-circle"></i>
+            <span>Esta acción no se puede deshacer, pero quedará registrada en tu historial</span>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="modal-actions">
+            <button type="button" class="btn btn--secondary" id="cancelDeleteBtn">
+              <i class="fas fa-times"></i>
+              Cancelar
+            </button>
+            <button type="button" class="btn btn--danger" id="confirmDeleteBtn">
+              <i class="fas fa-trash-alt"></i>
+              Sí, eliminar
+            </button>
+          </div>
         </div>
       </div>
     </div>

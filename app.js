@@ -78,6 +78,20 @@ class FinanceApp {
     this.lastMessageUpdate = savedData.lastMessageUpdate || null;
     this.dailyMessageScheduled = false;
 
+    // Notification States (Map to track read/unread status)
+    // Convert from object or array to Map
+    if (savedData.notificationStates) {
+      if (Array.isArray(savedData.notificationStates)) {
+        // Old format: array of [key, value] pairs
+        this.notificationStates = new Map(savedData.notificationStates);
+      } else {
+        // New format: object with key-value pairs
+        this.notificationStates = new Map(Object.entries(savedData.notificationStates));
+      }
+    } else {
+      this.notificationStates = new Map();
+    }
+
     // Chart Styles System
     this.chartStyles = [
       {
@@ -335,21 +349,21 @@ class FinanceApp {
       name: 'Usuario',
       email: '',
       avatar:
-        'https://ui-avatars.com/api/?name=Usuario&background=3da1ac&color=fff&size=128',
+        'https://ui-avatars.com/api/?name=Usuario&background=21808D&color=fff&size=128',
       avatarType: 'default', // 'default' or 'custom'
       selectedAvatar: 0, // Index for default avatars
     };
     this.defaultAvatars = [
-      'https://ui-avatars.com/api/?name=U1&background=3da1ac&color=fff&size=128&font-size=0.6',
-      'https://ui-avatars.com/api/?name=U2&background=f97316&color=fff&size=128&font-size=0.6',
-      'https://ui-avatars.com/api/?name=U3&background=ef4444&color=fff&size=128&font-size=0.6',
-      'https://ui-avatars.com/api/?name=U4&background=22c55e&color=fff&size=128&font-size=0.6',
-      'https://ui-avatars.com/api/?name=U5&background=8b5cf6&color=fff&size=128&font-size=0.6',
-      'https://ui-avatars.com/api/?name=U6&background=f59e0b&color=fff&size=128&font-size=0.6',
-      'https://ui-avatars.com/api/?name=U7&background=6366f1&color=fff&size=128&font-size=0.6',
-      'https://ui-avatars.com/api/?name=U8&background=ec4899&color=fff&size=128&font-size=0.6',
-      'https://ui-avatars.com/api/?name=U9&background=14b8a6&color=fff&size=128&font-size=0.6',
-      'https://ui-avatars.com/api/?name=U10&background=64748b&color=fff&size=128&font-size=0.6',
+      'https://ui-avatars.com/api/?name=U1&background=21808D&color=fff&size=128&font-size=0.6', // Teal 500
+      'https://ui-avatars.com/api/?name=U2&background=1D7480&color=fff&size=128&font-size=0.6', // Teal 600
+      'https://ui-avatars.com/api/?name=U3&background=2DA6B2&color=fff&size=128&font-size=0.6', // Teal 400
+      'https://ui-avatars.com/api/?name=U4&background=32B8C6&color=fff&size=128&font-size=0.6', // Teal 300
+      'https://ui-avatars.com/api/?name=U5&background=1A6873&color=fff&size=128&font-size=0.6', // Teal 700
+      'https://ui-avatars.com/api/?name=U6&background=E68161&color=fff&size=128&font-size=0.6', // Orange 400
+      'https://ui-avatars.com/api/?name=U7&background=A84B2F&color=fff&size=128&font-size=0.6', // Orange 500
+      'https://ui-avatars.com/api/?name=U8&background=C0152F&color=fff&size=128&font-size=0.6', // Red 500
+      'https://ui-avatars.com/api/?name=U9&background=FF5459&color=fff&size=128&font-size=0.6', // Red 400
+      'https://ui-avatars.com/api/?name=U10&background=2996A1&color=fff&size=128&font-size=0.6', // Teal 800
     ];
     this.pendingDeleteId = null;
     this.aiRecommendations = [];
@@ -645,6 +659,7 @@ class FinanceApp {
       defaultUser: this.defaultUser,
       motivationalMessages: this.motivationalMessages,
       lastMessageUpdate: this.lastMessageUpdate,
+      notificationStates: this.notificationStates ? Object.fromEntries(this.notificationStates) : {},
       lastUpdate: Date.now(),
     };
 
@@ -3191,10 +3206,8 @@ class FinanceApp {
   }
 
   updateNotifications() {
-    // Initialize notification tracking if not exists
-    if (!this.notificationStates) {
-      this.notificationStates = new Map();
-    }
+    // Notification tracking is already initialized in constructor
+    // No need to reinitialize here
 
     let notifications = [];
     const today = new Date();
@@ -3564,8 +3577,11 @@ class FinanceApp {
       item.classList.add('removing');
 
       setTimeout(() => {
-        this.updateNotifications(); // Refresh the list
+        this.updateNotifications(); // Refresh the list and update badge
       }, 200);
+    } else {
+      // If item doesn't exist in DOM, still update badge
+      this.updateNotifications();
     }
   }
 
@@ -5334,27 +5350,76 @@ class FinanceApp {
       return;
     }
 
-    const item = this.expenses[idx];
+    const expense = this.expenses[idx];
+
+    // Abrir modal de confirmación
+    this.openDeleteConfirmModal(expense);
+  }
+
+  openDeleteConfirmModal(expense) {
+    const modal = document.getElementById('deleteConfirmModal');
+    const amountEl = document.getElementById('deleteExpenseAmount');
+    const categoryEl = document.getElementById('deleteExpenseCategory');
+    const descriptionEl = document.getElementById('deleteExpenseDescription');
+    const reasonInput = document.getElementById('deleteReasonInput');
+
+    // Llenar información del gasto
+    if (amountEl) amountEl.textContent = this.formatCurrency(expense.amount);
+    if (categoryEl) categoryEl.textContent = expense.category;
+    if (descriptionEl) descriptionEl.textContent = expense.description || 'Sin descripción';
+    if (reasonInput) reasonInput.value = '';
+
+    // Mostrar modal
+    modal?.classList.add('show');
+    document.body.style.overflow = 'hidden';
+
+    // Guardar ID temporalmente
+    this.pendingDeleteExpenseId = expense.id;
+  }
+
+  confirmDeleteExpense() {
+    const idx = this.expenses.findIndex((exp) => exp.id === this.pendingDeleteExpenseId);
+    if (idx === -1) return;
+
+    const expense = this.expenses[idx];
+    const reasonInput = document.getElementById('deleteReasonInput');
+    const deleteReason = reasonInput?.value.trim() || 'Sin motivo especificado';
 
     // Registrar en auditoría antes de eliminar
     this.logAudit(
       'expense_deleted',
       'deleted',
-      `Gasto eliminado: $${item.amount} - ${item.description}`,
-      '',
+      `Gasto eliminado: $${expense.amount} - ${expense.description}`,
+      deleteReason,
       {
-        amount: item.amount,
-        category: item.category,
-        description: item.description,
+        amount: expense.amount,
+        category: expense.category,
+        description: expense.description,
+        reason: deleteReason,
       }
     );
 
-    // Eliminar directamente sin verificación de protección
+    // La notificación se crea automáticamente desde logAudit
+    // El sistema de notificaciones leerá el auditLog y mostrará la eliminación
+
+    // Eliminar gasto
     this.expenses.splice(idx, 1);
     this.saveData();
     this.renderDashboard();
     this.renderExpenses();
-    this.showToast('Gasto eliminado', 'success');
+
+    // Cerrar modal
+    this.closeDeleteConfirmModal();
+
+    // Mostrar notificación de éxito
+    this.showToast('Gasto eliminado correctamente', 'success');
+  }
+
+  closeDeleteConfirmModal() {
+    const modal = document.getElementById('deleteConfirmModal');
+    modal?.classList.remove('show');
+    document.body.style.overflow = '';
+    this.pendingDeleteExpenseId = null;
   }
 
   // DESHABILITADO - Sistema de gastos protegidos
@@ -5796,7 +5861,7 @@ class FinanceApp {
           {
             label: 'Gastos por Usuario',
             data: Object.values(userData),
-            backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C'],
+            backgroundColor: ['#21808D', '#E68161', '#C0152F', '#2DA6B2', '#A84B2F', '#32B8C6'],
             borderRadius: 8,
           },
         ],
@@ -12004,6 +12069,39 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
     });
   }
 
+  // === DELETE CONFIRMATION MODAL LISTENERS ===
+  const deleteModal = document.getElementById('deleteConfirmModal');
+  const closeDeleteBtn = document.getElementById('closeDeleteConfirmModal');
+  const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+  if (closeDeleteBtn) {
+    closeDeleteBtn.addEventListener('click', () => {
+      this.closeDeleteConfirmModal();
+    });
+  }
+
+  if (cancelDeleteBtn) {
+    cancelDeleteBtn.addEventListener('click', () => {
+      this.closeDeleteConfirmModal();
+    });
+  }
+
+  if (confirmDeleteBtn) {
+    confirmDeleteBtn.addEventListener('click', () => {
+      this.confirmDeleteExpense();
+    });
+  }
+
+  // Close delete modal on backdrop click
+  if (deleteModal) {
+    deleteModal.addEventListener('click', (e) => {
+      if (e.target === deleteModal) {
+        this.closeDeleteConfirmModal();
+      }
+    });
+  }
+
   // Mode Toggle Buttons
   const quickModeBtn = document.getElementById('quickModeBtn');
   const normalModeBtn = document.getElementById('normalModeBtn');
@@ -12080,6 +12178,9 @@ FinanceApp.prototype.openQuickExpenseModal = function () {
 
     // Populate user dropdown with custom users
     this.updateQuickUserDropdown();
+
+    // Setup quick user selection handler
+    this.setupQuickUserHandler();
 
     // Focus on amount input
     setTimeout(() => {
@@ -12398,6 +12499,86 @@ FinanceApp.prototype.updateQuickUserDropdown = function () {
   // Set default user if exists
   if (this.defaultUser && this.customUsers.includes(this.defaultUser)) {
     userSelect.value = this.defaultUser;
+  }
+};
+
+FinanceApp.prototype.setupQuickUserHandler = function () {
+  const quickUserSelect = document.getElementById('quickUser');
+  const quickNewUserGroup = document.getElementById('quickNewUserGroup');
+  const quickNewUserNameInput = document.getElementById('quickNewUserName');
+  const quickSaveNewUserBtn = document.getElementById('quickSaveNewUserBtn');
+
+  // Handler for user selection change
+  if (quickUserSelect) {
+    // Remove previous listeners
+    const newSelect = quickUserSelect.cloneNode(true);
+    quickUserSelect.parentNode.replaceChild(newSelect, quickUserSelect);
+    const userSelect = document.getElementById('quickUser');
+
+    userSelect.addEventListener('change', (e) => {
+      if (e.target.value === '__add_new__') {
+        quickNewUserGroup?.classList.remove('hidden');
+        quickNewUserNameInput?.focus();
+      } else {
+        quickNewUserGroup?.classList.add('hidden');
+      }
+    });
+  }
+
+  // Function to save new user
+  const saveQuickNewUser = () => {
+    const newUserName = quickNewUserNameInput?.value.trim();
+
+    if (newUserName && !this.customUsers.includes(newUserName)) {
+      this.customUsers.push(newUserName);
+      this.saveData();
+      this.updateQuickUserDropdown();
+      this.updateUserSelectionDropdown(); // Update normal form dropdown too
+      this.updateDefaultUserDropdown(); // Update settings dropdown too
+
+      // Select the newly created user
+      const userSelect = document.getElementById('quickUser');
+      if (userSelect) {
+        userSelect.value = newUserName;
+      }
+      quickNewUserGroup?.classList.add('hidden');
+      if (quickNewUserNameInput) {
+        quickNewUserNameInput.value = '';
+      }
+
+      this.showToast(`Usuario "${newUserName}" añadido`, 'success');
+    } else if (this.customUsers.includes(newUserName)) {
+      this.showToast('Este usuario ya existe', 'error');
+    } else {
+      this.showToast('Ingresa un nombre de usuario', 'error');
+    }
+  };
+
+  // Save with Enter key
+  if (quickNewUserNameInput) {
+    // Remove previous listeners
+    const newInput = quickNewUserNameInput.cloneNode(true);
+    quickNewUserNameInput.parentNode.replaceChild(newInput, quickNewUserNameInput);
+    const userInput = document.getElementById('quickNewUserName');
+
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveQuickNewUser();
+      }
+    });
+  }
+
+  // Save with button
+  if (quickSaveNewUserBtn) {
+    // Remove previous listeners
+    const newBtn = quickSaveNewUserBtn.cloneNode(true);
+    quickSaveNewUserBtn.parentNode.replaceChild(newBtn, quickSaveNewUserBtn);
+    const saveBtn = document.getElementById('quickSaveNewUserBtn');
+
+    saveBtn.addEventListener('click', () => {
+      saveQuickNewUser();
+    });
   }
 };
 
