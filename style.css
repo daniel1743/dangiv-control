@@ -9330,12 +9330,17 @@ select.form-control {
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-16);
-  background: transparent;
-  border: 2px solid transparent;
+  background: var(--color-surface-raised);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
+  font-family: inherit;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  outline: none;
 }
 
 .mode-btn i {
@@ -9357,8 +9362,10 @@ select.form-control {
 }
 
 .mode-btn:hover {
-  background: var(--color-surface-raised);
-  border-color: var(--color-primary-light);
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.15);
 }
 
 .mode-btn.active {
@@ -9374,6 +9381,61 @@ select.form-control {
 .mode-btn.active span,
 .mode-btn.active small {
   color: white;
+}
+
+/* Responsive: Mobile adjustments */
+@media (max-width: 768px) {
+  .expense-mode-selector {
+    gap: var(--space-8);
+    padding: var(--space-2);
+  }
+
+  .mode-btn {
+    padding: var(--space-12) var(--space-8);
+    min-height: 80px;
+  }
+
+  .mode-btn i {
+    font-size: 1.25rem;
+  }
+
+  .mode-btn span {
+    font-size: 0.85rem;
+  }
+
+  .mode-btn small {
+    font-size: 0.7rem;
+    display: block;
+    margin-top: var(--space-2);
+  }
+}
+
+@media (max-width: 480px) {
+  .expense-mode-selector {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .mode-btn {
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+    min-height: auto;
+    padding: var(--space-12);
+  }
+
+  .mode-btn i {
+    font-size: 1.5rem;
+    margin-right: var(--space-8);
+  }
+
+  .mode-btn span {
+    font-size: 0.9rem;
+  }
+
+  .mode-btn small {
+    display: none;
+  }
 }
 
 /* Autocomplete Suggestions */

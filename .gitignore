@@ -36,6 +36,7 @@ backend/.env.local
 **/*-key.json
 **/*.pem
 **/*.key
+config.js
 
 # IDE & Editor files
 .vscode/
