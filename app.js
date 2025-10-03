@@ -279,6 +279,7 @@ class FinanceApp {
       'Poco Necesario',
       'No Necesario',
       'Compra por Impulso',
+      'Malgasto',
     ];
     this.users = ['Daniel', 'Givonik', 'Otro'];
 
@@ -1849,27 +1850,43 @@ class FinanceApp {
       });
     }
 
+    // Función para guardar nuevo usuario
+    const saveNewUser = () => {
+      const newUserName = newUserNameInput.value.trim();
+
+      if (newUserName && !this.customUsers.includes(newUserName)) {
+        this.customUsers.push(newUserName);
+        this.saveData();
+        this.updateUserSelectionDropdown();
+
+        // Seleccionar el usuario recién creado
+        userSelect.value = newUserName;
+        newUserGroup.classList.add('hidden');
+        newUserNameInput.value = '';
+
+        this.showToast(`Usuario "${newUserName}" añadido`, 'success');
+      } else if (this.customUsers.includes(newUserName)) {
+        this.showToast('Este usuario ya existe', 'error');
+      } else {
+        this.showToast('Ingresa un nombre de usuario', 'error');
+      }
+    };
+
     if (newUserNameInput) {
+      // Guardar con Enter
       newUserNameInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          const newUserName = newUserNameInput.value.trim();
-
-          if (newUserName && !this.customUsers.includes(newUserName)) {
-            this.customUsers.push(newUserName);
-            this.saveData();
-            this.updateUserSelectionDropdown();
-
-            // Seleccionar el usuario recién creado
-            userSelect.value = newUserName;
-            newUserGroup.classList.add('hidden');
-            newUserNameInput.value = '';
-
-            this.showToast(`Usuario "${newUserName}" añadido`, 'success');
-          } else if (this.customUsers.includes(newUserName)) {
-            this.showToast('Este usuario ya existe', 'error');
-          }
+          saveNewUser();
         }
+      });
+    }
+
+    // Guardar con botón
+    const saveNewUserBtn = document.getElementById('saveNewUserBtn');
+    if (saveNewUserBtn) {
+      saveNewUserBtn.addEventListener('click', () => {
+        saveNewUser();
       });
     }
 
@@ -5827,7 +5844,8 @@ class FinanceApp {
         (exp) =>
           exp.necessity === 'Poco Necesario' ||
           exp.necessity === 'No Necesario' ||
-          exp.necessity === 'Compra por Impulso'
+          exp.necessity === 'Compra por Impulso' ||
+          exp.necessity === 'Malgasto'
       )
       .reduce((sum, exp) => sum + exp.amount, 0);
 
@@ -5868,7 +5886,8 @@ class FinanceApp {
     const unnecessary = this.expenses.filter(
       (exp) =>
         exp.necessity === 'No Necesario' ||
-        exp.necessity === 'Compra por Impulso'
+        exp.necessity === 'Compra por Impulso' ||
+        exp.necessity === 'Malgasto'
     );
 
     if (unnecessary.length === 0) {
@@ -7236,6 +7255,9 @@ FinanceApp.prototype.renderRadarChart = function () {
         categories.ocio += amount;
         break;
       case 'Compra por Impulso':
+        categories.impulso += amount;
+        break;
+      case 'Malgasto':
         categories.impulso += amount;
         break;
     }
@@ -11299,7 +11321,7 @@ FinanceApp.prototype.initializeStatsScroll = function () {
 
 FinanceApp.prototype.analyzeNecessity = function (expenses, total) {
   const necessary = ['Muy Necesario', 'Necesario'];
-  const unnecessary = ['Poco Necesario', 'No Necesario', 'Compra por Impulso'];
+  const unnecessary = ['Poco Necesario', 'No Necesario', 'Compra por Impulso', 'Malgasto'];
 
   const necessaryExpenses = expenses.filter((e) =>
     necessary.includes(e.necessity)
@@ -11351,6 +11373,7 @@ FinanceApp.prototype.renderNecessityBars = function (expenses, total) {
     { name: 'Poco Necesario', class: 'little-necessary' },
     { name: 'No Necesario', class: 'not-necessary' },
     { name: 'Compra por Impulso', class: 'impulse' },
+    { name: 'Malgasto', class: 'waste' },
   ];
 
   container.innerHTML = necessityLevels

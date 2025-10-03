@@ -1105,11 +1105,12 @@
                   required
                 >
                   <option value="">Nivel de necesidad</option>
-                  <option value="Muy Necesario">⭐⭐⭐⭐⭐ Esencial</option>
-                  <option value="Necesario">⭐⭐⭐⭐ Necesario</option>
-                  <option value="Poco Necesario">⭐⭐⭐ Opcional</option>
-                  <option value="No Necesario">⭐⭐ Prescindible</option>
-                  <option value="Compra por Impulso">⭐ Impulso</option>
+                  <option value="Muy Necesario">⭐⭐⭐⭐⭐ Muy Indispensable</option>
+                  <option value="Necesario">⭐⭐⭐⭐ Muy Necesario</option>
+                  <option value="Poco Necesario">⭐⭐⭐ Necesario</option>
+                  <option value="No Necesario">⭐⭐ Poco Necesario</option>
+                  <option value="Compra por Impulso">⭐ Nada Necesario</option>
+                  <option value="Malgasto">❌ Malgasto/Arrepentimiento</option>
                 </select>
               </div>
             </div>
@@ -1150,12 +1151,18 @@
                 <i class="fas fa-user-plus"></i>
                 Nombre del nuevo usuario
               </label>
-              <input
-                type="text"
-                id="newUserName"
-                class="form-input-premium"
-                placeholder="Presiona Enter para guardar"
-              />
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <input
+                  type="text"
+                  id="newUserName"
+                  class="form-input-premium"
+                  placeholder="Nombre del usuario"
+                  style="flex: 1;"
+                />
+                <button type="button" class="btn-icon-primary" id="saveNewUserBtn" title="Guardar usuario">
+                  <i class="fas fa-check"></i>
+                </button>
+              </div>
             </div>
 
             <!-- Budget Impact Alert -->
@@ -4018,13 +4025,27 @@
     <div class="modal" id="quickExpenseModal">
       <div class="modal__content modal--sm">
         <div class="modal__header">
-          <h2><i class="fas fa-bolt"></i> Agregar Gasto Rápido</h2>
+          <h2><i class="fas fa-bolt"></i> Agregar Gasto</h2>
           <button class="modal__close" id="closeQuickExpenseModal">
             <i class="fas fa-times"></i>
           </button>
         </div>
         <div class="modal__body">
-          <!-- Expense Templates -->
+          <!-- Mode Selector -->
+          <div class="expense-mode-selector">
+            <button type="button" class="mode-btn active" data-mode="quick" id="quickModeBtn">
+              <i class="fas fa-bolt"></i>
+              <span>Modo Rápido</span>
+              <small>Para personas sin tiempo</small>
+            </button>
+            <button type="button" class="mode-btn" data-mode="normal" id="normalModeBtn">
+              <i class="fas fa-list-ul"></i>
+              <span>Registrar Gasto</span>
+              <small>Formulario completo</small>
+            </button>
+          </div>
+
+          <!-- Expense Templates (Quick Mode) -->
           <div class="quick-templates" id="quickTemplates">
             <!-- Se llenará dinámicamente con plantillas -->
           </div>
@@ -4048,6 +4069,23 @@
             </div>
 
             <div class="form-group">
+              <label class="form-label" for="quickDescription">
+                <i class="fas fa-pencil-alt"></i> Descripción
+              </label>
+              <div class="input-with-autocomplete">
+                <input
+                  type="text"
+                  id="quickDescription"
+                  class="form-control"
+                  placeholder="Ej. Mayonesa, Café, Uber..."
+                  autocomplete="off"
+                  required
+                />
+                <div class="autocomplete-suggestions hidden" id="quickAutocomplete"></div>
+              </div>
+            </div>
+
+            <div class="form-group">
               <label class="form-label" for="quickCategory">
                 <i class="fas fa-tag"></i> Categoría
               </label>
@@ -4063,16 +4101,39 @@
               </select>
             </div>
 
-            <div class="form-group">
-              <label class="form-label" for="quickDescription">
-                <i class="fas fa-pencil-alt"></i> Descripción (opcional)
-              </label>
-              <input
-                type="text"
-                id="quickDescription"
-                class="form-control"
-                placeholder="Ej. Café Starbucks"
-              />
+            <!-- Additional Fields (Normal Mode Only) -->
+            <div class="normal-mode-fields hidden">
+              <div class="form-group">
+                <label class="form-label" for="quickNecessity">
+                  <i class="fas fa-chart-line"></i> Prioridad
+                </label>
+                <select id="quickNecessity" class="form-control">
+                  <option value="">Nivel de necesidad</option>
+                  <option value="Muy Necesario">⭐⭐⭐⭐⭐ Muy Indispensable</option>
+                  <option value="Necesario">⭐⭐⭐⭐ Muy Necesario</option>
+                  <option value="Poco Necesario">⭐⭐⭐ Necesario</option>
+                  <option value="No Necesario">⭐⭐ Poco Necesario</option>
+                  <option value="Compra por Impulso">⭐ Nada Necesario</option>
+                  <option value="Malgasto">❌ Malgasto/Arrepentimiento</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="quickDate">
+                  <i class="fas fa-calendar-alt"></i> Fecha
+                </label>
+                <input type="date" id="quickDate" class="form-control" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="quickUser">
+                  <i class="fas fa-user"></i> Usuario
+                </label>
+                <select id="quickUser" class="form-control">
+                  <option value="">Sin asignar</option>
+                  <option value="__add_new__">+ Añadir usuario</option>
+                </select>
+              </div>
             </div>
 
             <div class="quick-actions">
