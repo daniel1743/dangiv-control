@@ -3432,8 +3432,11 @@ class FinanceApp {
 
     if (!list || !emptyState) return;
 
+    // Filtrar solo notificaciones NO leídas
+    const unreadNotifications = notifications.filter((n) => !n.isRead);
+
     // Show/hide empty state
-    if (notifications.length === 0) {
+    if (unreadNotifications.length === 0) {
       list.classList.add('hidden');
       emptyState.classList.remove('hidden');
       return;
@@ -3442,9 +3445,8 @@ class FinanceApp {
     list.classList.remove('hidden');
     emptyState.classList.add('hidden');
 
-    // Sort notifications by priority and read status
-    const sortedNotifications = notifications.sort((a, b) => {
-      if (a.isRead !== b.isRead) return a.isRead ? 1 : -1;
+    // Sort notifications by priority
+    const sortedNotifications = unreadNotifications.sort((a, b) => {
       const priorityOrder = { high: 3, medium: 2, low: 1 };
       return priorityOrder[b.priority] - priorityOrder[a.priority];
     });
@@ -6594,6 +6596,60 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // 2d. Manejo del botón de retroceso del móvil
+  let backPressCount = 0;
+  let backPressTimer = null;
+
+  // Agregar estado inicial al historial
+  history.pushState({ page: 'current' }, '', '');
+
+  window.addEventListener('popstate', function(event) {
+    backPressCount++;
+
+    // Si es la primera vez que presiona atrás
+    if (backPressCount === 1) {
+      // Verificar si NO está en el dashboard
+      const currentSection = document.querySelector('.section.active');
+      const dashboardSection = document.getElementById('dashboard');
+
+      if (currentSection && currentSection !== dashboardSection) {
+        // Ir al dashboard
+        window.app.showSection('dashboard');
+        window.app.showToast('📱 Presiona atrás de nuevo para salir', 'info');
+
+        // Resetear el contador después de 2 segundos
+        backPressTimer = setTimeout(() => {
+          backPressCount = 0;
+        }, 2000);
+
+        // Agregar estado de nuevo para capturar el siguiente "atrás"
+        history.pushState({ page: 'current' }, '', '');
+      } else {
+        // Ya está en dashboard, mostrar mensaje de salida
+        window.app.showToast('📱 Presiona atrás de nuevo para salir', 'info');
+
+        // Resetear el contador después de 2 segundos
+        backPressTimer = setTimeout(() => {
+          backPressCount = 0;
+        }, 2000);
+
+        // Agregar estado de nuevo para capturar el siguiente "atrás"
+        history.pushState({ page: 'current' }, '', '');
+      }
+    }
+    // Si es la segunda vez (dentro de 2 segundos)
+    else if (backPressCount === 2) {
+      // Cerrar la app (volver atrás en el historial del navegador)
+      clearTimeout(backPressTimer);
+      window.app.showToast('👋 Hasta pronto!', 'success');
+
+      // En móviles, esto cerrará la app si es una PWA o volverá a la página anterior
+      setTimeout(() => {
+        history.back();
+      }, 500);
+    }
+  });
 
   // 3. Configura las animaciones de scroll.
   const reveals = document.querySelectorAll('.reveal');
