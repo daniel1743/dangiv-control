@@ -55,6 +55,7 @@ class FinanceApp {
     this.goals = savedData.goals || [];
     this.shoppingItems = savedData.shoppingItems || [];
     this.monthlyIncome = savedData.monthlyIncome || 2500;
+    this.additionalIncomes = savedData.additionalIncomes || []; // Nuevos ingresos adicionales
     this.userCoins = savedData.userCoins || 100;
     this.ownedStyles = savedData.ownedStyles || ['classic'];
     this.currentStyle = savedData.currentStyle || 'classic';
@@ -627,6 +628,7 @@ class FinanceApp {
       goals: this.goals,
       shoppingItems: this.shoppingItems,
       monthlyIncome: this.monthlyIncome,
+      additionalIncomes: this.additionalIncomes,
       userCoins: this.userCoins,
       ownedStyles: this.ownedStyles,
       currentStyle: this.currentStyle,
@@ -1184,6 +1186,7 @@ class FinanceApp {
     this.goals = [];
     this.shoppingItems = [];
     this.monthlyIncome = 2500;
+    this.additionalIncomes = [];
     this.budgets = {};
     this.expenseTemplates = [];
     this.currentUser = 'anonymous';
@@ -1900,6 +1903,14 @@ class FinanceApp {
       });
     }
 
+    // === INGRESOS ADICIONALES ===
+    const addAdditionalIncomeBtn = document.getElementById('addAdditionalIncomeBtn');
+    if (addAdditionalIncomeBtn) {
+      addAdditionalIncomeBtn.addEventListener('click', () => {
+        this.addAdditionalIncome();
+      });
+    }
+
     // === ASISTENTE DE IA ===
     const aiOnboardingForm = document.getElementById('aiOnboardingForm');
     if (aiOnboardingForm) {
@@ -2093,10 +2104,17 @@ class FinanceApp {
       });
 
       // SOLUCIÓN: Cerrar sidebar automáticamente al cambiar a desktop
+      let resizeTimeout;
       window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) {
-          closeSidebar();
-        }
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (window.innerWidth > 768) {
+            closeSidebar();
+            // Forzar limpieza de estilos inline que puedan interferir
+            sidebar.style.transform = '';
+            overlay.style.display = '';
+          }
+        }, 100);
       });
     }
 
@@ -2724,7 +2742,7 @@ class FinanceApp {
       (sum, exp) => sum + exp.amount,
       0
     );
-    const monthlyIncome = this.monthlyIncome || 0;
+    const monthlyIncome = this.getTotalIncome();
     const balance = monthlyIncome - totalExpenses;
     const savings = balance > 0 ? balance : 0;
     const activeGoals = this.goals.filter(
@@ -6039,11 +6057,91 @@ class FinanceApp {
     this.showToast('Ingresos actualizados', 'success');
   }
 
+  // Additional Incomes Methods
+  addAdditionalIncome() {
+    const descriptionInput = document.getElementById('additionalIncomeDescription');
+    const amountInput = document.getElementById('additionalIncomeAmount');
+
+    const description = descriptionInput.value.trim();
+    const amount = parseFloat(amountInput.value);
+
+    if (!description || !amount || amount <= 0) {
+      this.showToast('Completa descripción y monto válido', 'error');
+      return;
+    }
+
+    const newIncome = {
+      id: Date.now(),
+      description: description,
+      amount: amount
+    };
+
+    this.additionalIncomes.push(newIncome);
+    this.saveData();
+    this.renderAdditionalIncomes();
+    this.updateStats();
+
+    // Limpiar campos
+    descriptionInput.value = '';
+    amountInput.value = '';
+    descriptionInput.focus();
+
+    this.showToast('Ingreso adicional agregado', 'success');
+  }
+
+  deleteAdditionalIncome(id) {
+    this.additionalIncomes = this.additionalIncomes.filter(income => income.id !== id);
+    this.saveData();
+    this.renderAdditionalIncomes();
+    this.updateStats();
+    this.showToast('Ingreso eliminado', 'success');
+  }
+
+  getTotalAdditionalIncome() {
+    return this.additionalIncomes.reduce((sum, income) => sum + income.amount, 0);
+  }
+
+  getTotalIncome() {
+    return this.monthlyIncome + this.getTotalAdditionalIncome();
+  }
+
+  renderAdditionalIncomes() {
+    const listContainer = document.getElementById('additionalIncomesList');
+    const totalContainer = document.getElementById('totalAdditionalIncome');
+
+    if (!listContainer || !totalContainer) return;
+
+    const totalAdditional = this.getTotalAdditionalIncome();
+
+    // Renderizar lista
+    if (this.additionalIncomes.length === 0) {
+      listContainer.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); padding: var(--space-12);">No hay ingresos adicionales</p>';
+    } else {
+      listContainer.innerHTML = this.additionalIncomes.map(income => `
+        <div class="additional-income-item">
+          <div class="additional-income-info">
+            <span class="additional-income-description">${income.description}</span>
+            <span class="additional-income-amount">$${income.amount.toLocaleString()}</span>
+          </div>
+          <button class="additional-income-delete" onclick="app.deleteAdditionalIncome(${income.id})" title="Eliminar">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // Actualizar total
+    totalContainer.querySelector('.amount').textContent = `$${totalAdditional.toLocaleString()}`;
+  }
+
   renderConfig() {
     const incomeField = document.getElementById('monthlyIncome');
     if (incomeField) {
       incomeField.value = this.monthlyIncome;
     }
+
+    // Renderizar ingresos adicionales
+    this.renderAdditionalIncomes();
 
     const container = document.getElementById('monthSummary');
     if (!container) return;
@@ -6052,18 +6150,22 @@ class FinanceApp {
       (sum, exp) => sum + exp.amount,
       0
     );
-    const available = this.monthlyIncome - totalExpenses;
+    const totalIncome = this.getTotalIncome();
+    const available = totalIncome - totalExpenses;
     const savingsGoal = this.goals.reduce(
       (sum, goal) => sum + (goal.target - goal.current),
       0
     );
 
+    const additionalTotal = this.getTotalAdditionalIncome();
+
     container.innerHTML = `
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-content">
-            <h3>Ingresos del Mes</h3>
-            <p class="stat-value">$${this.monthlyIncome.toLocaleString()}</p>
+            <h3>Ingresos Totales</h3>
+            <p class="stat-value">$${totalIncome.toLocaleString()}</p>
+            ${additionalTotal > 0 ? `<span class="form-hint" style="margin-top: 4px;">Base: $${this.monthlyIncome.toLocaleString()} + Adicionales: $${additionalTotal.toLocaleString()}</span>` : ''}
           </div>
         </div>
         <div class="stat-card">
@@ -8082,7 +8184,7 @@ FinanceApp.prototype.joinSharedAccount = function (
   this.showToast('Te has unido a la cuenta compartida exitosamente', 'success');
 };
 
-FinanceApp.prototype.handleLogin = function () {
+FinanceApp.prototype.handleLogin = async function () {
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
 
@@ -8091,21 +8193,8 @@ FinanceApp.prototype.handleLogin = function () {
     return;
   }
 
-  // MODIFICADO - Solo un usuario (accountUsers es objeto)
-  const userEntry = Object.entries(this.accountUsers || {}).find(
-    ([id, userData]) => userData.email === email
-  );
-  if (userEntry) {
-    const [userId, userData] = userEntry;
-    this.currentUser = userId;
-    this.logActivity('user_login', `${userData.name} inició sesión`, userId);
-    this.saveData();
-    this.updateAccountDisplay();
-    this.closeAuthModal();
-    this.showToast(`Bienvenido de vuelta, ${userData.name}`, 'success');
-  } else {
-    this.showToast('Credenciales incorrectas', 'error');
-  }
+  // Usar Firebase Auth para login
+  await this.loginWithEmail(email, password);
 };
 
 // DESHABILITADO - Ya no se usa showInvitationModal
