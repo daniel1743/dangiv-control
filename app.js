@@ -57,6 +57,11 @@ class FinanceApp {
     this.monthlyIncome = savedData.monthlyIncome || 2500;
     this.additionalIncomes = savedData.additionalIncomes || []; // Nuevos ingresos adicionales
     this.extraIncome = savedData.extraIncome || 0; // Ingresos extras acumulados (sin descripción)
+
+    // Sistema de ahorro para metas
+    this.availableBalance = savedData.availableBalance || 0; // Balance acumulado disponible
+    this.freeBalance = savedData.freeBalance || 0; // Balance libre (no asignado a metas)
+    this.lastBalanceUpdate = savedData.lastBalanceUpdate || null; // Última actualización de balance
     this.userCoins = savedData.userCoins || 100;
     this.ownedStyles = savedData.ownedStyles || ['classic'];
     this.currentStyle = savedData.currentStyle || 'classic';
@@ -665,6 +670,9 @@ class FinanceApp {
       monthlyIncome: this.monthlyIncome,
       additionalIncomes: this.additionalIncomes,
       extraIncome: this.extraIncome,
+      availableBalance: this.availableBalance,
+      freeBalance: this.freeBalance,
+      lastBalanceUpdate: this.lastBalanceUpdate,
       userCoins: this.userCoins,
       ownedStyles: this.ownedStyles,
       currentStyle: this.currentStyle,
@@ -2363,6 +2371,22 @@ class FinanceApp {
       goalForm.addEventListener('submit', (e) => {
         e.preventDefault();
         this.addGoal(e);
+      });
+    }
+
+    // Botón de ahorrar en dashboard
+    const btnSaveToGoals = document.getElementById('btnSaveToGoals');
+    if (btnSaveToGoals) {
+      btnSaveToGoals.addEventListener('click', () => {
+        this.showSavingsModal();
+      });
+    }
+
+    // Tarjeta de transacciones clickeable
+    const transactionsCard = document.getElementById('transactionsCard');
+    if (transactionsCard) {
+      transactionsCard.addEventListener('click', () => {
+        this.showTransactionsModal();
       });
     }
 
@@ -4116,19 +4140,40 @@ class FinanceApp {
     }
 
     const totalBalanceEl = document.getElementById('totalBalance');
-    totalBalanceEl.textContent = `$${stats.availableBalance.toLocaleString()}`;
+    const assignedToGoals = this.goals.reduce((sum, g) => sum + (g.current || 0), 0);
+    const trueAvailable = Math.max(0, stats.availableBalance - assignedToGoals);
 
-    // Agregar tooltip con breakdown de ingresos si hay extras
+    totalBalanceEl.textContent = `$${trueAvailable.toLocaleString()}`;
+
+    // Agregar tooltip con breakdown completo
     if (this.extraIncome > 0) {
       const totalIncome = this.getTotalIncome();
-      totalBalanceEl.title = `Ingresos: $${totalIncome.toLocaleString()} (Base: $${this.monthlyIncome.toLocaleString()} + Extras: $${this.extraIncome.toLocaleString()}) - Gastos: $${stats.totalExpenses.toLocaleString()}`;
+      totalBalanceEl.title = `Ingresos: $${totalIncome.toLocaleString()} (Base: $${this.monthlyIncome.toLocaleString()} + Extras: $${this.extraIncome.toLocaleString()})\nGastos: $${stats.totalExpenses.toLocaleString()}\nAsignado a Metas: $${assignedToGoals.toLocaleString()}\nDisponible: $${trueAvailable.toLocaleString()}`;
     } else {
-      totalBalanceEl.title = `Ingresos: $${this.monthlyIncome.toLocaleString()} - Gastos: $${stats.totalExpenses.toLocaleString()}`;
+      totalBalanceEl.title = `Ingresos: $${this.monthlyIncome.toLocaleString()}\nGastos: $${stats.totalExpenses.toLocaleString()}\nAsignado a Metas: $${assignedToGoals.toLocaleString()}\nDisponible: $${trueAvailable.toLocaleString()}`;
     }
 
     document.getElementById(
       'totalExpenses'
     ).textContent = `$${stats.totalExpenses.toLocaleString()}`;
+
+    // Progreso mensual
+    const totalIncome = this.getTotalIncome();
+    const usedPercent = totalIncome > 0 ? ((stats.totalExpenses / totalIncome) * 100).toFixed(0) : 0;
+    const remaining = Math.max(0, totalIncome - stats.totalExpenses - assignedToGoals);
+
+    const monthlyProgressEl = document.getElementById('monthlyProgress');
+    const monthlyProgressTextEl = document.getElementById('monthlyProgressText');
+
+    if (monthlyProgressEl) {
+      monthlyProgressEl.textContent = `${usedPercent}%`;
+    }
+
+    if (monthlyProgressTextEl) {
+      monthlyProgressTextEl.textContent = `Comenzaste con $${totalIncome.toLocaleString()} • Te queda $${remaining.toLocaleString()}`;
+      monthlyProgressTextEl.className = usedPercent > 80 ? 'stat-change negative' : 'stat-change positive';
+    }
+
     document.getElementById(
       'totalSavings'
     ).textContent = `$${stats.totalSavings.toLocaleString()}`;
@@ -6579,6 +6624,345 @@ class FinanceApp {
     return userData;
   }
 
+  // === SISTEMA DE AHORRO HACIA METAS ===
+
+  getAvailableBalance() {
+    const totalIncome = this.getTotalIncome();
+    const totalExpenses = this.expenses.reduce((sum, e) => sum + e.amount, 0);
+    const currentBalance = totalIncome - totalExpenses;
+    const assignedToGoals = this.goals.reduce((sum, g) => sum + (g.current || 0), 0);
+    return Math.max(0, currentBalance - assignedToGoals);
+  }
+
+  transferToGoal(goalId, amount) {
+    const availableBalance = this.getAvailableBalance();
+
+    if (amount <= 0) {
+      this.showToast('El monto debe ser mayor a cero', 'error');
+      return false;
+    }
+
+    if (amount > availableBalance) {
+      this.showToast(`Solo tienes $${availableBalance.toLocaleString()} disponibles`, 'error');
+      return false;
+    }
+
+    const goal = this.goals.find(g => g.id === goalId);
+    if (!goal) {
+      this.showToast('Meta no encontrada', 'error');
+      return false;
+    }
+
+    const remaining = goal.target - goal.current;
+    const transferAmount = Math.min(amount, remaining);
+
+    goal.current += transferAmount;
+
+    this.logAudit(
+      'goal_deposit',
+      'modified',
+      `Transferencia a meta: ${goal.name}`,
+      '',
+      { goalName: goal.name, amount: transferAmount }
+    );
+
+    this.saveData();
+    this.renderGoals();
+    this.renderGoalsProgress();
+    this.renderDashboard();
+
+    this.showToast(`$${transferAmount.toLocaleString()} transferidos a "${goal.name}"`, 'success');
+    return true;
+  }
+
+  autoDistributeToGoals() {
+    const availableBalance = this.getAvailableBalance();
+
+    if (availableBalance <= 0) {
+      this.showToast('No hay balance disponible para distribuir', 'info');
+      return;
+    }
+
+    const activeGoals = this.goals.filter(g => g.current < g.target);
+
+    if (activeGoals.length === 0) {
+      this.showToast('No hay metas activas', 'info');
+      return;
+    }
+
+    const totalRemaining = activeGoals.reduce((sum, g) => sum + (g.target - g.current), 0);
+    let distributed = 0;
+
+    activeGoals.forEach((goal, index) => {
+      const remaining = goal.target - goal.current;
+      const proportion = remaining / totalRemaining;
+      const amount = (index === activeGoals.length - 1)
+        ? (availableBalance - distributed)
+        : Math.floor(availableBalance * proportion);
+
+      goal.current += amount;
+      distributed += amount;
+    });
+
+    this.logAudit(
+      'auto_distribute',
+      'modified',
+      `Distribución automática de $${availableBalance.toLocaleString()}`,
+      '',
+      { amount: availableBalance, goalsCount: activeGoals.length }
+    );
+
+    this.saveData();
+    this.renderGoals();
+    this.renderGoalsProgress();
+    this.renderDashboard();
+
+    this.showToast(`$${availableBalance.toLocaleString()} distribuidos entre ${activeGoals.length} metas`, 'success');
+  }
+
+  withdrawFromGoal(goalId, amount) {
+    const goal = this.goals.find(g => g.id === goalId);
+
+    if (!goal) {
+      this.showToast('Meta no encontrada', 'error');
+      return false;
+    }
+
+    if (amount <= 0 || amount > goal.current) {
+      this.showToast('Monto inválido', 'error');
+      return false;
+    }
+
+    const confirmed = confirm(
+      `¿Retirar $${amount.toLocaleString()} de "${goal.name}"?\n\n` +
+      `Esto reducirá tu progreso en esta meta.`
+    );
+
+    if (!confirmed) return false;
+
+    goal.current -= amount;
+
+    this.logAudit(
+      'goal_withdrawal',
+      'modified',
+      `Retiro de meta: ${goal.name}`,
+      '',
+      { goalName: goal.name, amount }
+    );
+
+    this.saveData();
+    this.renderGoals();
+    this.renderGoalsProgress();
+    this.renderDashboard();
+
+    this.showToast(`$${amount.toLocaleString()} retirados de "${goal.name}"`, 'info');
+    return true;
+  }
+
+  showTransactionsModal() {
+    if (this.expenses.length === 0) {
+      this.showToast('No hay transacciones registradas', 'info');
+      return;
+    }
+
+    // Agrupar por fecha
+    const groupedByDate = {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    this.expenses.forEach(expense => {
+      const expenseDate = new Date(expense.date);
+      expenseDate.setHours(0, 0, 0, 0);
+      const dateKey = expenseDate.getTime();
+
+      if (!groupedByDate[dateKey]) {
+        groupedByDate[dateKey] = {
+          date: expenseDate,
+          expenses: [],
+          total: 0,
+          necessary: 0,
+          unnecessary: 0
+        };
+      }
+
+      groupedByDate[dateKey].expenses.push(expense);
+      groupedByDate[dateKey].total += expense.amount;
+
+      // Clasificar necesidad
+      if (expense.necessity === 'Muy Necesario' || expense.necessity === 'Necesario') {
+        groupedByDate[dateKey].necessary += expense.amount;
+      } else {
+        groupedByDate[dateKey].unnecessary += expense.amount;
+      }
+    });
+
+    // Ordenar por fecha descendente
+    const sortedDates = Object.keys(groupedByDate).sort((a, b) => b - a);
+
+    // Generar HTML de días
+    const daysHtml = sortedDates.map(dateKey => {
+      const dayData = groupedByDate[dateKey];
+      const date = dayData.date;
+      const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+
+      let dayLabel;
+      if (diffDays === 0) dayLabel = 'Hoy';
+      else if (diffDays === 1) dayLabel = 'Ayer';
+      else if (diffDays < 7) {
+        const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        dayLabel = dayNames[date.getDay()];
+      } else {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        dayLabel = `${day}/${month}`;
+      }
+
+      const necessaryPercent = dayData.total > 0 ? ((dayData.necessary / dayData.total) * 100).toFixed(0) : 0;
+      const unnecessaryPercent = dayData.total > 0 ? ((dayData.unnecessary / dayData.total) * 100).toFixed(0) : 0;
+
+      return `
+        <div class="day-group" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s;"
+             onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'"
+             onclick="document.getElementById('dayDetails_${dateKey}').style.display = document.getElementById('dayDetails_${dateKey}').style.display === 'none' ? 'block' : 'none'">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong style="font-size: 1rem;">${dayLabel}</strong>
+              <span style="color: #6b7280; font-size: 0.875rem; margin-left: 8px;">${dayData.expenses.length} transacciones</span>
+            </div>
+            <strong style="color: var(--color-primary);">$${dayData.total.toLocaleString()}</strong>
+          </div>
+
+          <div id="dayDetails_${dateKey}" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+              <div style="flex: 1; padding: 8px; background: #ecfdf5; border-radius: 6px; text-align: center;">
+                <div style="font-size: 0.75rem; color: #059669;">Necesario</div>
+                <div style="font-weight: bold; color: #059669;">${necessaryPercent}%</div>
+              </div>
+              <div style="flex: 1; padding: 8px; background: #fef2f2; border-radius: 6px; text-align: center;">
+                <div style="font-size: 0.75rem; color: #dc2626;">Innecesario</div>
+                <div style="font-weight: bold; color: #dc2626;">${unnecessaryPercent}%</div>
+              </div>
+            </div>
+
+            <div style="max-height: 300px; overflow-y: auto;">
+              ${dayData.expenses.map(exp => `
+                <div style="display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #f3f4f6;">
+                  <div>
+                    <div style="font-weight: 500;">${exp.description}</div>
+                    <div style="font-size: 0.75rem; color: #6b7280;">${exp.category} • ${exp.necessity}</div>
+                  </div>
+                  <div style="font-weight: 600; color: #dc2626;">$${exp.amount.toLocaleString()}</div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div style="margin-top: 12px; padding: 8px; background: #f9fafb; border-radius: 6px; text-align: center;">
+              <strong>Total gastado: $${dayData.total.toLocaleString()}</strong>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const modalHtml = `
+      <div style="padding: 20px;">
+        <h3 style="margin-bottom: 16px;"><i class="fas fa-receipt"></i> Historial de Transacciones</h3>
+        <p style="color: #6b7280; margin-bottom: 20px;">Haz clic en un día para ver detalles</p>
+        <div style="max-height: 60vh; overflow-y: auto;">
+          ${daysHtml}
+        </div>
+        <button onclick="document.getElementById('transactionsModalOverlay').remove();"
+                style="width: 100%; padding: 12px; margin-top: 16px; background: #f3f4f6; border: none; border-radius: 8px; cursor: pointer;">
+          Cerrar
+        </button>
+      </div>
+    `;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'transactionsModalOverlay';
+    overlay.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+    overlay.innerHTML = `<div style="background: white; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">${modalHtml}</div>`;
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.remove();
+    });
+
+    document.body.appendChild(overlay);
+  }
+
+  showSavingsModal() {
+    const availableBalance = this.getAvailableBalance();
+
+    if (availableBalance <= 0) {
+      this.showToast('No tienes balance disponible para ahorrar', 'info');
+      return;
+    }
+
+    const activeGoals = this.goals.filter(g => g.current < g.target);
+
+    if (activeGoals.length === 0) {
+      this.showToast('Crea metas primero para poder ahorrar', 'info');
+      this.showSection('goals');
+      return;
+    }
+
+    const goalsOptions = activeGoals.map(g =>
+      `<option value="${g.id}">${g.name} (${((g.current/g.target)*100).toFixed(0)}%)</option>`
+    ).join('');
+
+    const modalHtml = `
+      <div style="padding: 20px;">
+        <h3 style="margin-bottom: 16px;">💰 Ahorrar a Metas</h3>
+        <p style="margin-bottom: 16px;">Balance disponible: <strong>$${availableBalance.toLocaleString()}</strong></p>
+
+        <div style="margin-bottom: 20px;">
+          <button onclick="window.app.autoDistributeToGoals(); document.getElementById('savingsModalOverlay').remove();"
+                  style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; margin-bottom: 12px;">
+            ⚡ Distribuir Automáticamente
+          </button>
+          <p style="font-size: 0.85rem; color: #666; margin: 0;">Distribuye proporcionalmente entre todas las metas activas</p>
+        </div>
+
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+
+        <div>
+          <h4 style="margin-bottom: 12px;">O transferir a meta específica:</h4>
+          <select id="savingsGoalSelect" style="width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 6px;">
+            ${goalsOptions}
+          </select>
+          <input type="number" id="savingsAmount" placeholder="Monto a ahorrar"
+                 style="width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 6px;"
+                 min="1" max="${availableBalance}">
+          <button onclick="
+            const goalId = parseInt(document.getElementById('savingsGoalSelect').value);
+            const amount = parseFloat(document.getElementById('savingsAmount').value);
+            if (window.app.transferToGoal(goalId, amount)) {
+              document.getElementById('savingsModalOverlay').remove();
+            }
+          " style="width: 100%; padding: 12px; background: var(--color-primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+            Transferir
+          </button>
+        </div>
+
+        <button onclick="document.getElementById('savingsModalOverlay').remove();"
+                style="width: 100%; padding: 10px; margin-top: 12px; background: #f3f4f6; border: none; border-radius: 6px; cursor: pointer;">
+          Cancelar
+        </button>
+      </div>
+    `;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'savingsModalOverlay';
+    overlay.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+    overlay.innerHTML = `<div style="background: white; border-radius: 12px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">${modalHtml}</div>`;
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.remove();
+    });
+
+    document.body.appendChild(overlay);
+  }
+
   renderNecessityChart() {
     const canvas = document.getElementById('necessityChart');
     if (!canvas) return;
@@ -7673,12 +8057,21 @@ FinanceApp.prototype.updateQuickAccessGreeting = function () {
     else if (hour < 18) greeting = '¡Buenas tardes';
     else greeting = '¡Buenas noches';
 
+    console.log('🔍 Debug Quick Access Greeting:');
+    console.log('  currentUser:', this.currentUser);
+    console.log('  userProfile:', this.userProfile);
+    console.log('  userProfile.name:', this.userProfile.name);
+
     if (this.currentUser && this.currentUser !== 'anonymous') {
-      greeting += `, ${this.currentUser}!`;
+      // Usar nombre personalizado del perfil, no el UID
+      const userName = this.userProfile.name || this.currentUser;
+      console.log('  userName usado:', userName);
+      greeting += `, ${userName}!`;
     } else {
       greeting += ', Usuario!';
     }
 
+    console.log('  greeting final:', greeting);
     greetingEl.textContent = greeting;
   }
 };
@@ -10151,6 +10544,7 @@ FinanceApp.prototype.saveProfileSettings = async function () {
     this.updateProfileDisplay();
     this.updateUserSelectionDropdown();
     this.updateDashboardWelcome();
+    this.updateQuickAccessGreeting(); // Actualizar saludo de accesos rápidos
     this.renderDashboard();
 
     this.showToast('Perfil actualizado correctamente', 'success');

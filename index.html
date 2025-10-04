@@ -739,7 +739,7 @@
       <nav class="sidebar-nav">
         <button class="nav-item active" data-section="dashboard">
           <i class="fas fa-chart-line"></i>
-          <span>Dashboard</span>
+          <span>Inicio</span>
         </button>
         <button class="nav-item" data-section="expenses">
           <i class="fas fa-plus-circle"></i>
@@ -786,7 +786,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-      <!-- Dashboard Section -->
+      <!-- Sección Inicio -->
       <section id="dashboard" class="section active">
         <div class="section-header">
           <h1>¡Bienvenido a tu asistente financiero!</h1>
@@ -804,9 +804,12 @@
               <i class="fas fa-wallet stat-icon"></i>
             </div>
             <div class="stat-details">
-              <h3>Balance Total</h3>
+              <h3>Balance Disponible</h3>
               <p class="stat-value" id="totalBalance">$0</p>
               <span class="stat-change">&nbsp;</span>
+              <button class="btn-save-to-goals" id="btnSaveToGoals" style="margin-top: 8px; padding: 6px 12px; font-size: 0.85rem; background: var(--color-primary); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
+                <i class="fas fa-arrow-right" style="margin-right: 4px;"></i> Ahorrar
+              </button>
             </div>
           </div>
 
@@ -878,9 +881,11 @@
 
           <!-- Tarjeta de Transacciones -->
           <div
-            class="stat-card animate-on-scroll"
+            class="stat-card stat-card--clickable animate-on-scroll"
+            id="transactionsCard"
             data-animation="fadeInUp"
             data-delay="400"
+            style="cursor: pointer;"
           >
             <div class="stat-icon-wrapper">
               <i class="fas fa-receipt stat-icon"></i>
@@ -903,13 +908,13 @@
             </div>
             <div class="stat-details">
               <h3>Progreso Mensual</h3>
-              <p class="stat-value" id="monthlyProgress">75%</p>
-              <span class="stat-change positive">Meta alcanzada</span>
+              <p class="stat-value" id="monthlyProgress">0%</p>
+              <span class="stat-change" id="monthlyProgressText">Comenzaste con $0</span>
             </div>
           </div>
         </div>
 
-        <!-- Premium Interactive Dashboard -->
+        <!-- Panel Interactivo Premium -->
         <div
           class="premium-dashboard animate-on-scroll"
           data-animation="fadeIn"
@@ -3934,7 +3939,7 @@
             <div class="footer-column">
               <h4 class="footer-column-title">Plataforma</h4>
               <ul class="footer-links-list">
-                <li><a href="#" class="footer-link-item">Dashboard</a></li>
+                <li><a href="#" class="footer-link-item">Inicio</a></li>
                 <li><a href="#" class="footer-link-item">Análisis</a></li>
                 <li>
                   <a href="#" class="footer-link-item">Metas Financieras</a>
