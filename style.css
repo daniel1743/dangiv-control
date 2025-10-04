@@ -11241,3 +11241,56 @@ select.form-control {
   font-weight: 700;
   line-height: 1.2;
 }
+
+/* === ANIMACIONES PARA NOTIFICACIONES DE MENSAJES === */
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
+/* Scrollbar personalizado para notificaciones */
+.message-notification div::-webkit-scrollbar {
+  width: 6px;
+}
+
+.message-notification div::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.message-notification div::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.message-notification div::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .message-notification {
+    bottom: 16px !important;
+    right: 16px !important;
+    left: 16px !important;
+    max-width: none !important;
+  }
+}

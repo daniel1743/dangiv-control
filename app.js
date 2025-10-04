@@ -77,7 +77,20 @@ class FinanceApp {
     // Motivational Messages System (Gemini API)
     this.motivationalMessages = savedData.motivationalMessages || [];
     this.lastMessageUpdate = savedData.lastMessageUpdate || null;
+
+    // Sistema de mensajes sin repetición
+    this.messageHistory = savedData.messageHistory || {
+      saludos: [],
+      principales: [],
+      explicacion: [],
+      cierre: [],
+      accion: []
+    };
+    this.allMessages = null; // Se cargará del JSON
+    this.lastMorningMessage = savedData.lastMorningMessage || null; // Timestamp del último mensaje de mañana
+    this.lastNightMessage = savedData.lastNightMessage || null; // Timestamp del último mensaje de noche
     this.dailyMessageScheduled = false;
+    this.activeMessageNotifications = savedData.activeMessageNotifications || []; // Notificaciones activas de mensajes
 
     // Notification States (Map to track read/unread status)
     // Convert from object or array to Map
@@ -661,6 +674,10 @@ class FinanceApp {
       defaultUser: this.defaultUser,
       motivationalMessages: this.motivationalMessages,
       lastMessageUpdate: this.lastMessageUpdate,
+      messageHistory: this.messageHistory,
+      lastMorningMessage: this.lastMorningMessage,
+      lastNightMessage: this.lastNightMessage,
+      activeMessageNotifications: this.activeMessageNotifications,
       notificationStates: this.notificationStates ? Object.fromEntries(this.notificationStates) : {},
       lastUpdate: Date.now(),
     };
@@ -722,13 +739,410 @@ class FinanceApp {
     }
   }
 
-  // === MOTIVATIONAL MESSAGES SYSTEM (GEMINI API) ===
+  // === MOTIVATIONAL MESSAGES SYSTEM (JSON LOCAL) ===
+
+  /**
+   * Cargar mensajes desde JSON local
+   */
+  async loadMessagesFromJSON() {
+    try {
+      const response = await fetch('mensaje-bienvenida.json');
+      const data = await response.json();
+      this.allMessages = data.mensajes;
+      console.log('✅ Mensajes cargados desde JSON:', data.metadata.total_mensajes);
+    } catch (error) {
+      console.error('Error cargando mensajes:', error);
+    }
+  }
+
+  /**
+   * Selecciona un mensaje aleatorio sin repetir de una categoría
+   */
+  getRandomMessage(category, categoryName) {
+    if (!category || category.length === 0) return '';
+
+    // Obtener historial de esta categoría
+    const history = this.messageHistory[categoryName] || [];
+
+    // Si ya usamos todos, resetear historial
+    if (history.length >= category.length) {
+      this.messageHistory[categoryName] = [];
+      history.length = 0;
+    }
+
+    // Índices disponibles (no usados)
+    const availableIndexes = [];
+    for (let i = 0; i < category.length; i++) {
+      if (!history.includes(i)) {
+        availableIndexes.push(i);
+      }
+    }
+
+    // Seleccionar índice aleatorio de los disponibles
+    const randomIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+
+    // Guardar en historial
+    this.messageHistory[categoryName].push(randomIndex);
+    this.saveData();
+
+    return category[randomIndex];
+  }
+
+  /**
+   * Genera un mensaje completo personalizado sin repetir
+   */
+  generatePersonalizedMessage() {
+    if (!this.allMessages) {
+      console.warn('Mensajes no cargados aún');
+      return null;
+    }
+
+    const userName = this.userProfile.name || 'Usuario';
+
+    const saludo = this.getRandomMessage(this.allMessages.saludos_iniciales, 'saludos');
+    const principal = this.getRandomMessage(this.allMessages.mensajes_principales, 'principales');
+    const explicacion = this.getRandomMessage(this.allMessages.explicacion_servicio, 'explicacion');
+    const cierre = this.getRandomMessage(this.allMessages.cierre_motivacional, 'cierre');
+    const accion = this.getRandomMessage(this.allMessages.llamado_accion, 'accion');
+
+    // Construir mensaje completo
+    const mensajeCompleto = `${saludo}\n\n${principal}\n\n${explicacion}\n\n${cierre}\n\n${accion}`;
+
+    // Reemplazar {nombre} con el nombre real del usuario
+    return mensajeCompleto.replace(/{nombre}/g, userName);
+  }
+
+  /**
+   * Crea una notificación de mensaje personalizado (dura 8 horas)
+   */
+  createMessageNotification(messageType = 'general') {
+    const message = this.generatePersonalizedMessage();
+    if (!message) return;
+
+    const titles = {
+      morning: '☀️ Buenos Días',
+      night: '🌙 Buenas Noches',
+      welcome: '🎉 Bienvenido',
+      general: '💡 Mensaje'
+    };
+
+    const icons = {
+      morning: 'fa-sun',
+      night: 'fa-moon',
+      welcome: 'fa-hand-sparkles',
+      general: 'fa-lightbulb'
+    };
+
+    const colors = {
+      morning: '#f59e0b',
+      night: '#6366f1',
+      welcome: '#10b981',
+      general: '#8b5cf6'
+    };
+
+    const notificationId = `msg-${Date.now()}`;
+    const expiresAt = Date.now() + (8 * 60 * 60 * 1000); // 8 horas
+
+    // Guardar en array de notificaciones activas
+    this.activeMessageNotifications.push({
+      id: notificationId,
+      type: messageType,
+      message: message,
+      createdAt: Date.now(),
+      expiresAt: expiresAt
+    });
+    this.saveData();
+
+    // Crear elemento de notificación
+    const notificationHTML = `
+      <div class="message-notification" id="${notificationId}" style="
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        max-width: 380px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        z-index: 9999;
+        animation: slideInRight 0.4s ease-out;
+        border-left: 4px solid ${colors[messageType]};
+      ">
+        <div style="padding: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="
+                width: 36px;
+                height: 36px;
+                background: ${colors[messageType]}20;
+                color: ${colors[messageType]};
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+              ">
+                <i class="fas ${icons[messageType]}"></i>
+              </div>
+              <h4 style="margin: 0; font-size: 15px; font-weight: 600; color: #1e293b;">${titles[messageType]}</h4>
+            </div>
+            <button onclick="window.app.closeMessageNotification('${notificationId}')" style="
+              background: none;
+              border: none;
+              cursor: pointer;
+              color: #94a3b8;
+              font-size: 20px;
+              padding: 0;
+              width: 24px;
+              height: 24px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              transition: color 0.2s;
+            ">&times;</button>
+          </div>
+          <div style="
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-line;
+            line-height: 1.6;
+            font-size: 13px;
+            color: #475569;
+            padding-right: 8px;
+          ">${message}</div>
+        </div>
+      </div>
+    `;
+
+    // Insertar en el body
+    const container = document.createElement('div');
+    container.innerHTML = notificationHTML;
+    document.body.appendChild(container.firstElementChild);
+
+    // Auto-eliminar después de 8 horas
+    setTimeout(() => {
+      this.closeMessageNotification(notificationId);
+    }, 8 * 60 * 60 * 1000);
+  }
+
+  /**
+   * Cierra una notificación de mensaje
+   */
+  closeMessageNotification(notificationId) {
+    const notification = document.getElementById(notificationId);
+    if (notification) {
+      notification.style.animation = 'slideOutRight 0.3s ease-out';
+      setTimeout(() => {
+        notification.remove();
+      }, 300);
+    }
+
+    // Eliminar del array de notificaciones activas
+    this.activeMessageNotifications = this.activeMessageNotifications.filter(n => n.id !== notificationId);
+    this.saveData();
+  }
+
+  /**
+   * Limpia notificaciones expiradas (más de 8 horas)
+   */
+  cleanExpiredNotifications() {
+    const now = Date.now();
+    const expiredIds = [];
+
+    this.activeMessageNotifications = this.activeMessageNotifications.filter(notification => {
+      if (notification.expiresAt < now) {
+        expiredIds.push(notification.id);
+        return false;
+      }
+      return true;
+    });
+
+    // Eliminar del DOM
+    expiredIds.forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.remove();
+    });
+
+    if (expiredIds.length > 0) {
+      this.saveData();
+    }
+  }
+
+  /**
+   * Restaura notificaciones activas al cargar la página
+   */
+  restoreActiveNotifications() {
+    this.cleanExpiredNotifications();
+
+    this.activeMessageNotifications.forEach(notification => {
+      const titles = {
+        morning: '☀️ Buenos Días',
+        night: '🌙 Buenas Noches',
+        welcome: '🎉 Bienvenido',
+        general: '💡 Mensaje'
+      };
+
+      const icons = {
+        morning: 'fa-sun',
+        night: 'fa-moon',
+        welcome: 'fa-hand-sparkles',
+        general: 'fa-lightbulb'
+      };
+
+      const colors = {
+        morning: '#f59e0b',
+        night: '#6366f1',
+        welcome: '#10b981',
+        general: '#8b5cf6'
+      };
+
+      // Crear elemento de notificación
+      const notificationHTML = `
+        <div class="message-notification" id="${notification.id}" style="
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          max-width: 380px;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+          z-index: 9999;
+          border-left: 4px solid ${colors[notification.type]};
+        ">
+          <div style="padding: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="
+                  width: 36px;
+                  height: 36px;
+                  background: ${colors[notification.type]}20;
+                  color: ${colors[notification.type]};
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 16px;
+                ">
+                  <i class="fas ${icons[notification.type]}"></i>
+                </div>
+                <h4 style="margin: 0; font-size: 15px; font-weight: 600; color: #1e293b;">${titles[notification.type]}</h4>
+              </div>
+              <button onclick="window.app.closeMessageNotification('${notification.id}')" style="
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: #94a3b8;
+                font-size: 20px;
+                padding: 0;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: color 0.2s;
+              ">&times;</button>
+            </div>
+            <div style="
+              max-height: 200px;
+              overflow-y: auto;
+              white-space: pre-line;
+              line-height: 1.6;
+              font-size: 13px;
+              color: #475569;
+              padding-right: 8px;
+            ">${notification.message}</div>
+          </div>
+        </div>
+      `;
+
+      const container = document.createElement('div');
+      container.innerHTML = notificationHTML;
+      document.body.appendChild(container.firstElementChild);
+
+      // Auto-eliminar cuando expire
+      const remainingTime = notification.expiresAt - Date.now();
+      if (remainingTime > 0) {
+        setTimeout(() => {
+          this.closeMessageNotification(notification.id);
+        }, remainingTime);
+      }
+    });
+  }
+
+  /**
+   * Verifica si debe mostrar mensaje de mañana (8 AM)
+   */
+  checkMorningMessage() {
+    const now = new Date();
+    const hour = now.getHours();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+    // Si es las 8 AM (entre 8:00 y 8:59) y no se ha mostrado hoy
+    if (hour === 8 && (!this.lastMorningMessage || this.lastMorningMessage < today)) {
+      this.lastMorningMessage = Date.now();
+      this.saveData();
+      this.createMessageNotification('morning');
+    }
+  }
+
+  /**
+   * Verifica si debe mostrar mensaje de noche (8 PM)
+   */
+  checkNightMessage() {
+    const now = new Date();
+    const hour = now.getHours();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+    // Si es las 8 PM (entre 20:00 y 20:59) y no se ha mostrado hoy
+    if (hour === 20 && (!this.lastNightMessage || this.lastNightMessage < today)) {
+      this.lastNightMessage = Date.now();
+      this.saveData();
+      this.createMessageNotification('night');
+    }
+  }
+
+  /**
+   * Inicia el sistema de verificación de mensajes programados
+   */
+  startMessageScheduler() {
+    // Restaurar notificaciones activas al cargar
+    this.restoreActiveNotifications();
+
+    // Verificar inmediatamente
+    this.checkMorningMessage();
+    this.checkNightMessage();
+
+    // Verificar cada minuto
+    setInterval(() => {
+      this.checkMorningMessage();
+      this.checkNightMessage();
+    }, 60000); // 60 segundos
+
+    // Limpiar notificaciones expiradas cada hora
+    setInterval(() => {
+      this.cleanExpiredNotifications();
+    }, 60 * 60 * 1000); // 1 hora
+  }
+
+  /**
+   * Muestra mensaje de bienvenida al registrarse
+   */
+  showWelcomeMessage() {
+    // Esperar 1 segundo para que se cargue la interfaz
+    setTimeout(() => {
+      this.createMessageNotification('welcome');
+    }, 1000);
+  }
 
   /**
    * Obtiene mensajes motivadores desde la API de Gemini
    * Solo funciona cuando el usuario está logueado
    */
   async fetchMotivationalMessages() {
+    // Cargar mensajes del JSON si no están cargados
+    if (!this.allMessages) {
+      await this.loadMessagesFromJSON();
+    }
+
     // Solo fetch si el usuario está logueado (no anónimo)
     if (this.currentUser === 'anonymous' || !this.firebaseUser) {
       console.log('Usuario anónimo - usando mensajes por defecto');
@@ -1641,6 +2055,11 @@ class FinanceApp {
       // Cerrar modal y redirigir al dashboard
       this.closeAuthModal();
       this.showSection('dashboard');
+
+      // Mostrar mensaje de bienvenida personalizado
+      if (this.allMessages) {
+        this.showWelcomeMessage();
+      }
 
       // Iniciar tour después de redirigir
       setTimeout(() => {
@@ -6545,6 +6964,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cargar preferencias guardadas
     window.app.loadThemePreference();
     window.app.loadAvatarPreference();
+    // Cargar mensajes personalizados del JSON
+    window.app.loadMessagesFromJSON().then(() => {
+      // Iniciar sistema de mensajes programados
+      window.app.startMessageScheduler();
+    });
   }
 
   // 2. Configurar event delegation para el enlace de cambio de formulario auth
