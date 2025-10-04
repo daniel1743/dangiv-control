@@ -1187,6 +1187,10 @@ class FinanceApp {
         }
       ]`;
 
+      // Crear AbortController para timeout de 8 segundos
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`,
         {
@@ -1205,8 +1209,11 @@ class FinanceApp {
               },
             ],
           }),
+          signal: controller.signal,
         }
       );
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`Gemini API error: ${response.status}`);
@@ -1229,7 +1236,11 @@ class FinanceApp {
         this.updateNotifications();
       }
     } catch (error) {
-      console.error('Error al obtener mensajes de Gemini:', error);
+      if (error.name === 'AbortError') {
+        console.warn('⏱️ Timeout al obtener mensajes de Gemini (8s) - usando mensajes guardados');
+      } else {
+        console.error('Error al obtener mensajes de Gemini:', error);
+      }
     }
   }
 
@@ -1377,9 +1388,15 @@ class FinanceApp {
         this.updateDashboardWelcome();
         this.updateMenuRestrictions(); // Update menu access
 
-        // Iniciar sistema de mensajes motivadores
-        this.fetchMotivationalMessages(); // Obtener mensajes si es necesario
+        // Iniciar sistema de mensajes motivadores (SIN BLOQUEAR EL DASHBOARD)
+        // Primero actualizar con mensajes guardados (inmediato)
         this.updateCarouselWithMessages(); // Actualizar carrusel con mensajes guardados
+
+        // Luego fetch nuevos mensajes en background (no bloquea)
+        setTimeout(() => {
+          this.fetchMotivationalMessages(); // Obtener mensajes si es necesario
+        }, 100); // Ejecutar después de que se cargue el dashboard
+
         this.scheduleDailyMessageUpdate(); // Programar actualización diaria a la 1 AM
 
         // Actualizar notificaciones al iniciar sesión
@@ -4333,7 +4350,12 @@ class FinanceApp {
           animateScale: true,
         },
         onHover: (event, elements) => {
-          canvas.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+          canvas.style.cursor = 'pointer'; // Siempre pointer para indicar que es clickeable
+        },
+        onClick: (event, elements) => {
+          // Abrir modal de estadísticas al hacer click
+          console.log('🎯 Chart clicked! Opening stats modal...');
+          self.openChartStatsModal();
         },
       },
     });
@@ -5164,6 +5186,20 @@ class FinanceApp {
         }
         chartContainer.appendChild(centerDiv);
       }
+
+      // Agregar evento click al canvas para abrir modal de estadísticas
+      canvas.style.cursor = 'pointer';
+      canvas.addEventListener('click', () => {
+        this.openChartStatsModal();
+      });
+    }
+
+    // También agregar click si ya existe el chart (para actualizaciones)
+    if (this.charts.expenseChart && canvas) {
+      canvas.style.cursor = 'pointer';
+      canvas.addEventListener('click', () => {
+        this.openChartStatsModal();
+      });
     }
   }
 
@@ -5174,6 +5210,221 @@ class FinanceApp {
         (categoryData[expense.category] || 0) + expense.amount;
     });
     return categoryData;
+  }
+
+  openChartStatsModal() {
+    console.log('📊 openChartStatsModal called');
+
+    // Calcular todas las estadísticas
+    const totalExpenses = this.expenses.reduce((sum, e) => sum + e.amount, 0);
+    const totalIncome = this.getTotalIncome();
+    const categoryData = this.getCategoryData();
+
+    // Calcular gastos por necesidad
+    const necessityData = {};
+    const necessityTypes = ['Muy Necesario', 'Necesario', 'Poco Necesario', 'No Necesario', 'Compra por Impulso'];
+    necessityTypes.forEach(type => {
+      necessityData[type] = this.expenses
+        .filter(e => e.necessity === type)
+        .reduce((sum, e) => sum + e.amount, 0);
+    });
+
+    // Calcular porcentaje de innecesario (Poco Necesario + No Necesario + Compra por Impulso)
+    const unnecessaryExpenses = (necessityData['Poco Necesario'] || 0) +
+                                  (necessityData['No Necesario'] || 0) +
+                                  (necessityData['Compra por Impulso'] || 0);
+    const unnecessaryPercentage = totalExpenses > 0 ? (unnecessaryExpenses / totalExpenses * 100) : 0;
+
+    // Calcular gastos por usuario
+    const userExpenses = {};
+    this.expenses.forEach(e => {
+      const user = e.user || 'Otro';
+      userExpenses[user] = (userExpenses[user] || 0) + e.amount;
+    });
+
+    // Crear HTML del modal
+    const modal = document.getElementById('chartStatsModal');
+    const modalBody = document.getElementById('chartStatsModalBody');
+
+    if (!modal || !modalBody) return;
+
+    let alertHtml = '';
+    if (unnecessaryPercentage > 10) {
+      alertHtml = `
+        <div class="stats-alert stats-alert-warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div>
+            <strong>⚠️ Cuidado!</strong>
+            <p>Has malgastado <strong>${unnecessaryPercentage.toFixed(1)}%</strong> de tu presupuesto en gastos innecesarios.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // Generar HTML de categorías
+    const categoriesHtml = Object.entries(categoryData)
+      .sort(([,a], [,b]) => b - a)
+      .map(([category, amount]) => {
+        const percentage = (amount / totalExpenses * 100).toFixed(1);
+        const color = this.getCategoryColor(category);
+        return `
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-category-badge" style="background: ${color}20; color: ${color}">
+                ${this.getCategoryEmoji(category)} ${category}
+              </span>
+              <span class="stat-percentage">${percentage}%</span>
+            </div>
+            <div class="stat-card-amount">$${amount.toLocaleString()}</div>
+            <div class="stat-progress-bar">
+              <div class="stat-progress-fill" style="width: ${percentage}%; background: ${color}"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    // Generar HTML de necesidades
+    const necessityHtml = Object.entries(necessityData)
+      .filter(([,amount]) => amount > 0)
+      .sort(([,a], [,b]) => b - a)
+      .map(([necessity, amount]) => {
+        const percentage = (amount / totalExpenses * 100).toFixed(1);
+        const color = this.getNecessityColor(necessity);
+        return `
+          <div class="stat-card stat-card-compact">
+            <div class="stat-card-header">
+              <span class="stat-category-badge" style="background: ${color}20; color: ${color}">
+                ${necessity}
+              </span>
+              <span class="stat-percentage">${percentage}%</span>
+            </div>
+            <div class="stat-card-amount-sm">$${amount.toLocaleString()}</div>
+          </div>
+        `;
+      }).join('');
+
+    // Generar HTML de usuarios
+    const usersHtml = Object.entries(userExpenses)
+      .sort(([,a], [,b]) => b - a)
+      .map(([user, amount]) => {
+        const percentage = (amount / totalExpenses * 100).toFixed(1);
+        const color = this.getUserColor(user);
+        return `
+          <div class="stat-card stat-card-compact">
+            <div class="stat-card-header">
+              <span class="stat-category-badge" style="background: ${color}20; color: ${color}">
+                <i class="fas fa-user"></i> ${user}
+              </span>
+              <span class="stat-percentage">${percentage}%</span>
+            </div>
+            <div class="stat-card-amount-sm">$${amount.toLocaleString()}</div>
+          </div>
+        `;
+      }).join('');
+
+    modalBody.innerHTML = `
+      ${alertHtml}
+
+      <div class="stats-summary">
+        <div class="summary-item summary-item-primary">
+          <div class="summary-icon"><i class="fas fa-wallet"></i></div>
+          <div class="summary-content">
+            <div class="summary-label">Ingresos</div>
+            <div class="summary-value">$${totalIncome.toLocaleString()}</div>
+          </div>
+        </div>
+        <div class="summary-item summary-item-danger">
+          <div class="summary-icon"><i class="fas fa-shopping-cart"></i></div>
+          <div class="summary-content">
+            <div class="summary-label">Gastos</div>
+            <div class="summary-value">$${totalExpenses.toLocaleString()}</div>
+          </div>
+        </div>
+        <div class="summary-item summary-item-success">
+          <div class="summary-icon"><i class="fas fa-piggy-bank"></i></div>
+          <div class="summary-content">
+            <div class="summary-label">Balance</div>
+            <div class="summary-value">$${(totalIncome - totalExpenses).toLocaleString()}</div>
+          </div>
+        </div>
+        <div class="summary-item summary-item-info">
+          <div class="summary-icon"><i class="fas fa-receipt"></i></div>
+          <div class="summary-content">
+            <div class="summary-label">Transacciones</div>
+            <div class="summary-value">${this.expenses.length}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-section">
+        <h3 class="stats-section-title">
+          <i class="fas fa-chart-pie"></i> Gastos por Categoría
+        </h3>
+        <div class="stats-grid">
+          ${categoriesHtml}
+        </div>
+      </div>
+
+      <div class="stats-section">
+        <h3 class="stats-section-title">
+          <i class="fas fa-exclamation-circle"></i> Nivel de Necesidad
+        </h3>
+        <div class="stats-grid stats-grid-compact">
+          ${necessityHtml}
+        </div>
+      </div>
+
+      <div class="stats-section">
+        <h3 class="stats-section-title">
+          <i class="fas fa-users"></i> Gastos por Usuario
+        </h3>
+        <div class="stats-grid stats-grid-compact">
+          ${usersHtml}
+        </div>
+      </div>
+    `;
+
+    console.log('✅ Modal HTML generated, adding active class...');
+    console.log('Modal element:', modal);
+    console.log('Modal classes before:', modal.className);
+
+    modal.classList.add('active');
+
+    console.log('Modal classes after:', modal.className);
+    console.log('Modal should now be visible!');
+  }
+
+  getCategoryColor(category) {
+    const colors = {
+      'Alimentación': '#10b981',
+      'Transporte': '#3b82f6',
+      'Entretenimiento': '#8b5cf6',
+      'Salud': '#ec4899',
+      'Servicios': '#f59e0b',
+      'Compras': '#06b6d4',
+      'Otros': '#6b7280'
+    };
+    return colors[category] || '#6b7280';
+  }
+
+  getNecessityColor(necessity) {
+    const colors = {
+      'Muy Necesario': '#10b981',
+      'Necesario': '#3b82f6',
+      'Poco Necesario': '#f59e0b',
+      'No Necesario': '#ef4444',
+      'Compra por Impulso': '#dc2626'
+    };
+    return colors[necessity] || '#6b7280';
+  }
+
+  getUserColor(user) {
+    const colors = {
+      'Daniel': '#3b82f6',
+      'Givonik': '#8b5cf6',
+      'Otro': '#6b7280'
+    };
+    return colors[user] || '#6b7280';
   }
 
   renderGoalsProgress() {
@@ -7074,6 +7325,24 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 500);
     }
   });
+
+  // 2e. Configurar modal de estadísticas del gráfico
+  const chartStatsModal = document.getElementById('chartStatsModal');
+  const closeChartStatsModal = document.getElementById('closeChartStatsModal');
+
+  if (closeChartStatsModal) {
+    closeChartStatsModal.addEventListener('click', () => {
+      chartStatsModal.classList.remove('active');
+    });
+  }
+
+  if (chartStatsModal) {
+    chartStatsModal.addEventListener('click', (e) => {
+      if (e.target === chartStatsModal) {
+        chartStatsModal.classList.remove('active');
+      }
+    });
+  }
 
   // 3. Configura las animaciones de scroll.
   const reveals = document.querySelectorAll('.reveal');

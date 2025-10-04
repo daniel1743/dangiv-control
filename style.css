@@ -4023,7 +4023,8 @@ select.form-control {
   z-index: 9000;
 }
 
-.modal.show {
+.modal.show,
+.modal.active {
   display: flex;
 }
 
