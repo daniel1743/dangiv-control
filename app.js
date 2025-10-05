@@ -3414,6 +3414,90 @@ class FinanceApp {
     }, 100);
   }
 
+  /**
+   * Maneja las acciones del avatar sidebar
+   * Conecta los botones del menú lateral con las funcionalidades de la app
+   */
+  handleMenuAction(action) {
+    console.log(`[FinanceApp] Manejando acción del menú: ${action}`);
+
+    switch (action) {
+      case 'change-photo':
+        // Ir a configuración y abrir modal de cambio de avatar
+        this.showSection('config');
+        setTimeout(() => {
+          const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+          if (changeAvatarBtn) {
+            changeAvatarBtn.click();
+          } else {
+            this.showToast('Abrir la sección de Configuración para cambiar foto', 'info');
+          }
+        }, 300);
+        break;
+
+      case 'change-name':
+        // Abrir modal para cambiar nombre
+        this.openChangeNameModal();
+        break;
+
+      case 'edit-quote':
+        // Abrir modal para editar frase personal
+        this.openEditQuoteModal();
+        break;
+
+      case 'my-achievements':
+        // Ir a la sección de logros
+        this.showSection('achievements');
+        break;
+
+      case 'go-premium':
+        // Ir a la tienda/premium
+        this.showSection('store');
+        break;
+
+      case 'report-problem':
+        // Mostrar información de soporte
+        this.showToast('Envía un email a soporte@dangivcontrol.com', 'info');
+        break;
+
+      default:
+        console.warn(`[FinanceApp] Acción no reconocida: ${action}`);
+        this.showToast('Función en desarrollo', 'info');
+    }
+  }
+
+  /**
+   * Abre modal para cambiar el nombre del usuario
+   */
+  openChangeNameModal() {
+    const currentName = this.userProfile.name || 'Usuario';
+    const newName = prompt('Ingresa tu nuevo nombre:', currentName);
+
+    if (newName && newName.trim() !== '' && newName !== currentName) {
+      this.userProfile.name = newName.trim();
+      this.saveUserProfile();
+      this.updateProfileDisplay();
+      this.showToast('Nombre actualizado correctamente', 'success');
+    } else if (newName !== null && newName.trim() === '') {
+      this.showToast('El nombre no puede estar vacío', 'error');
+    }
+  }
+
+  /**
+   * Abre modal para editar la frase personal
+   */
+  openEditQuoteModal() {
+    const currentQuote = this.userProfile.quote || '';
+    const newQuote = prompt('Ingresa tu frase personal:', currentQuote);
+
+    if (newQuote !== null) {
+      this.userProfile.quote = newQuote.trim();
+      this.saveUserProfile();
+      this.updateProfileDisplay();
+      this.showToast('Frase personal actualizada', 'success');
+    }
+  }
+
   // Dashboard Methods
   // QuedarÃ¡ asÃ­
   // QuedarÃ¡ asÃ­
