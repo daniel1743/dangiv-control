@@ -2130,31 +2130,9 @@ body {
   margin-right: var(--space-16);
 }
 
+/* Icono de cámara deshabilitado - ahora se usa el menú del avatar */
 .mobile-avatar-container::after {
-  content: '\f030'; /* Font Awesome camera icon */
-  font-family: 'Font Awesome 5 Free';
-  font-weight: 900;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 28px;
-  height: 28px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-teal-700));
-  border-radius: 50%;
-  border: 3px solid var(--color-surface);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 0.7rem;
-  z-index: 3;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.mobile-avatar-container:hover::after {
-  opacity: 1;
+  display: none;
 }
 
 .mobile-avatar {

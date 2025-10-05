@@ -371,6 +371,10 @@ class FinanceApp {
         'https://ui-avatars.com/api/?name=Usuario&background=21808D&color=fff&size=128',
       avatarType: 'default', // 'default' or 'custom'
       selectedAvatar: 0, // Index for default avatars
+      quote: '', // Frase personal
+      country: 'US', // Código de país
+      countryFlag: '🇺🇸', // Bandera del país
+      currency: 'USD', // Moneda
     };
     this.defaultAvatars = [
       'https://ui-avatars.com/api/?name=U1&background=21808D&color=fff&size=128&font-size=0.6', // Teal 500
@@ -1417,9 +1421,13 @@ class FinanceApp {
 
       if (user) {
         this.currentUser = user.uid;
+        this.firebaseUser = user; // Guardar usuario de Firebase
         this.userProfile.email = user.email || '';
         this.userProfile.name =
           user.displayName || user.email?.split('@')[0] || 'Usuario';
+
+        // Marcar como autenticado
+        localStorage.setItem('financia_auth_status', 'authenticated');
 
         // Show profile menu, hide login button
         if (navbarLoginBtn) navbarLoginBtn.style.display = 'none';
@@ -1449,9 +1457,13 @@ class FinanceApp {
         this.updateNotifications();
       } else {
         this.currentUser = 'anonymous';
+        this.firebaseUser = null;
         this.userPlan = 'free';
         this.userProfile.name = 'Usuario';
         this.userProfile.email = '';
+
+        // Marcar como no autenticado
+        localStorage.removeItem('financia_auth_status');
 
         // Show login button, hide profile menu
         if (navbarLoginBtn) navbarLoginBtn.style.display = 'inline-flex';
@@ -1771,6 +1783,24 @@ class FinanceApp {
     // Update mobile profile info
     const mobileUsername = document.getElementById('mobileUsername');
     if (mobileUsername) mobileUsername.textContent = this.userProfile.name;
+
+    // Update mobile user quote
+    const mobileUserQuote = document.getElementById('mobileUserQuote');
+    if (mobileUserQuote) {
+      if (this.userProfile.quote && this.userProfile.quote.trim()) {
+        mobileUserQuote.textContent = this.userProfile.quote;
+        mobileUserQuote.style.opacity = '1';
+      } else {
+        mobileUserQuote.textContent = 'Agrega una frase inspiradora...';
+        mobileUserQuote.style.opacity = '0.5';
+      }
+    }
+
+    // Update avatar menu if exists
+    if (typeof this.updateAvatarMenu === 'function') {
+      this.updateAvatarMenu();
+    }
+
     if (profilePlan) {
       profilePlan.textContent =
         this.userPlan === 'pro' ? 'Plan Pro' : 'Plan Free';
@@ -2301,6 +2331,7 @@ class FinanceApp {
     this.initScrollAnimations();
     this.updateDashboardWelcome();
     this.initAchievements();
+    // initMobileMenu() se llama desde mobile-menu.js cuando esté listo
   }
   // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
   resetPasswords() {
@@ -7934,8 +7965,11 @@ class CookieConsent {
     const banner = document.getElementById('cookieBanner');
     const modal = document.getElementById('cookieModal');
 
-    // Mostrar banner si no hay consentimiento
-    if (!this.hasConsent() && banner) {
+    // Verificar si el usuario está autenticado
+    const isAuthenticated = localStorage.getItem('financia_auth_status') === 'authenticated';
+
+    // Mostrar banner si no hay consentimiento Y no está autenticado
+    if (!this.hasConsent() && !isAuthenticated && banner) {
       banner.classList.remove('hidden');
     }
 
@@ -14310,13 +14344,14 @@ FinanceApp.prototype.setupInstagramQuickActions = function () {
   }
 
   // Mobile avatar customization
-  const mobileAvatar = document.getElementById('mobileAvatar');
-  if (mobileAvatar) {
-    mobileAvatar.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent banner click event
-      this.openAvatarUploader();
-    });
-  }
+  // DESHABILITADO: Ahora el avatar móvil abre el menú del avatar (mobile-menu.js)
+  // const mobileAvatar = document.getElementById('mobileAvatar');
+  // if (mobileAvatar) {
+  //   mobileAvatar.addEventListener('click', (e) => {
+  //     e.stopPropagation(); // Prevent banner click event
+  //     this.openAvatarUploader();
+  //   });
+  // }
 };
 
 FinanceApp.prototype.changeBannerCover = async function () {
