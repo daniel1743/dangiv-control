@@ -1422,6 +1422,7 @@ class FinanceApp {
       // NUEVOS BOTONES SIMPLES
       const mobileQuickLoginBtn = document.getElementById('mobileQuickLoginBtn');
       const mobileQuickLogoutBtn = document.getElementById('mobileQuickLogoutBtn');
+      const footerLoginLink = document.getElementById('footerLoginLink');
 
       if (user) {
         this.currentUser = user.uid;
@@ -1444,6 +1445,9 @@ class FinanceApp {
         // NUEVOS: Mostrar logout, ocultar login
         if (mobileQuickLoginBtn) mobileQuickLoginBtn.style.display = 'none';
         if (mobileQuickLogoutBtn) mobileQuickLogoutBtn.style.display = 'flex';
+
+        // Footer: Ocultar link de login
+        if (footerLoginLink) footerLoginLink.style.display = 'none';
 
         this.updateProfileDisplay();
 
@@ -1520,6 +1524,9 @@ class FinanceApp {
         // NUEVOS: Mostrar login, ocultar logout
         if (mobileQuickLoginBtn) mobileQuickLoginBtn.style.display = 'flex';
         if (mobileQuickLogoutBtn) mobileQuickLogoutBtn.style.display = 'none';
+
+        // Footer: Mostrar link de login
+        if (footerLoginLink) footerLoginLink.style.display = 'block';
 
         // Para usuario anónimo, ocultar loading y renderizar inmediatamente
         this.hideAppLoading();
@@ -9949,6 +9956,15 @@ FinanceApp.prototype.setupUserSystemListeners = function () {
   };
 
   document.addEventListener('click', this._documentClickHandler);
+
+  // Footer login link
+  const footerLoginLink = document.getElementById('footerLoginLink');
+  if (footerLoginLink) {
+    footerLoginLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.openAuthModal();
+    });
+  }
 
   // Update user selection dropdown
   this.updateUserSelectionDropdown();
