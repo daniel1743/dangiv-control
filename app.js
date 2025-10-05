@@ -14392,12 +14392,13 @@ FinanceApp.prototype.setupInstagramQuickActions = function () {
   });
 
   // Banner cover customization
-  const mobileBannerCover = document.getElementById('mobileBannerCover');
-  if (mobileBannerCover) {
-    mobileBannerCover.addEventListener('click', () => {
-      this.changeBannerCover();
-    });
-  }
+  // DESHABILITADO: Interfiere con el botón de login
+  // const mobileBannerCover = document.getElementById('mobileBannerCover');
+  // if (mobileBannerCover) {
+  //   mobileBannerCover.addEventListener('click', () => {
+  //     this.changeBannerCover();
+  //   });
+  // }
 
   // Mobile avatar customization
   // DESHABILITADO: Ahora el avatar móvil abre el menú del avatar (mobile-menu.js)
