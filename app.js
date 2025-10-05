@@ -1438,23 +1438,45 @@ class FinanceApp {
         if (mobileProfileBtn) mobileProfileBtn.classList.add('show');
 
         this.updateProfileDisplay();
-        this.syncFromFirebase();
-        this.updateDashboardWelcome();
-        this.updateMenuRestrictions(); // Update menu access
 
-        // Iniciar sistema de mensajes motivadores (SIN BLOQUEAR EL DASHBOARD)
-        // Primero actualizar con mensajes guardados (inmediato)
-        this.updateCarouselWithMessages(); // Actualizar carrusel con mensajes guardados
+        // Sincronizar desde Firebase y LUEGO renderizar
+        this.syncFromFirebase().then(() => {
+          // Ocultar loading
+          this.hideAppLoading();
 
-        // Luego fetch nuevos mensajes en background (no bloquea)
-        setTimeout(() => {
-          this.fetchMotivationalMessages(); // Obtener mensajes si es necesario
-        }, 100); // Ejecutar después de que se cargue el dashboard
+          // Ahora sí renderizar todo con datos personales
+          this.renderDashboard();
+          this.renderSavingsAccountsList();
+          this.updateDashboardSavings();
+          this.renderRecurringPaymentsList();
+          this.updateDashboardPayments();
+          this.initTrendChart();
+          this.updateDashboardWelcome();
+          this.initAchievements();
+          this.updateMenuRestrictions();
 
-        this.scheduleDailyMessageUpdate(); // Programar actualización diaria a la 1 AM
+          // Iniciar sistema de mensajes motivadores
+          this.updateCarouselWithMessages();
+          setTimeout(() => {
+            this.fetchMotivationalMessages();
+          }, 100);
+          this.scheduleDailyMessageUpdate();
 
-        // Actualizar notificaciones al iniciar sesión
-        this.updateNotifications();
+          // Actualizar notificaciones
+          this.updateNotifications();
+        }).catch(err => {
+          console.error('Error en sincronización:', err);
+          this.hideAppLoading();
+          // Renderizar con datos locales si falla
+          this.renderDashboard();
+          this.renderSavingsAccountsList();
+          this.updateDashboardSavings();
+          this.renderRecurringPaymentsList();
+          this.updateDashboardPayments();
+          this.initTrendChart();
+          this.updateDashboardWelcome();
+          this.initAchievements();
+        });
       } else {
         this.currentUser = 'anonymous';
         this.firebaseUser = null;
@@ -1473,8 +1495,10 @@ class FinanceApp {
         if (mobileLogoutBtn) mobileLogoutBtn.classList.remove('show');
         if (mobileProfileBtn) mobileProfileBtn.classList.remove('show');
 
+        // Para usuario anónimo, ocultar loading y renderizar inmediatamente
+        this.hideAppLoading();
         this.updateDashboardWelcome();
-        this.updateMenuRestrictions(); // Update menu access
+        this.updateMenuRestrictions();
         this.renderDashboard();
       }
     });
@@ -2320,17 +2344,16 @@ class FinanceApp {
     // Forzar normalización de datos existentes al inicio
     this.forceDataNormalization();
 
-    this.renderDashboard();
-    this.renderSavingsAccountsList();
-    this.updateDashboardSavings();
-    this.renderRecurringPaymentsList();
-    this.updateDashboardPayments();
-    this.initTrendChart();
+    // Mostrar loading mientras se sincroniza con Firebase
+    this.showAppLoading();
+
+    // NO renderizar nada aquí - esperar a que Firebase termine de sincronizar
+    // this.renderDashboard(); // MOVIDO a setupAuth después de syncFromFirebase
+
+    // Solo inicializar componentes que no dependen de datos
     this.initSidebarScrollBehavior();
     this.initLazyLoading();
     this.initScrollAnimations();
-    this.updateDashboardWelcome();
-    this.initAchievements();
     // initMobileMenu() se llama desde mobile-menu.js cuando esté listo
   }
   // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
@@ -15532,6 +15555,37 @@ FinanceApp.prototype.updateExtraIncomeDisplay = function() {
 
 FinanceApp.prototype.getTotalIncome = function() {
   return this.monthlyIncome + this.extraIncome;
+};
+
+// ========================================
+// LOADING SPINNER METHODS
+// ========================================
+FinanceApp.prototype.showAppLoading = function() {
+  const dashboard = document.getElementById('dashboard');
+  if (!dashboard) return;
+
+  // Crear loading overlay si no existe
+  let loadingOverlay = document.getElementById('appLoadingOverlay');
+  if (!loadingOverlay) {
+    loadingOverlay = document.createElement('div');
+    loadingOverlay.id = 'appLoadingOverlay';
+    loadingOverlay.innerHTML = `
+      <div class="loading-spinner-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Cargando tus datos...</p>
+      </div>
+    `;
+    dashboard.appendChild(loadingOverlay);
+  }
+
+  loadingOverlay.style.display = 'flex';
+};
+
+FinanceApp.prototype.hideAppLoading = function() {
+  const loadingOverlay = document.getElementById('appLoadingOverlay');
+  if (loadingOverlay) {
+    loadingOverlay.style.display = 'none';
+  }
 };
 
 if (typeof window !== 'undefined') {
