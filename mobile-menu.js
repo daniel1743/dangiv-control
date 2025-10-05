@@ -46,6 +46,40 @@ window.FinanceApp.prototype.initMobileMenu = function() {
     console.warn('⚠️ Avatar container no encontrado');
   }
 
+  // BOTÓN LOGIN
+  const loginBtn = document.getElementById('mobileQuickLoginBtn');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', () => {
+      // Abrir modal de autenticación directamente
+      const authModal = document.getElementById('authModal');
+      if (authModal) {
+        authModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+
+        // Activar pestaña de login por defecto
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+
+        if (loginTab && registerTab && loginForm && registerForm) {
+          loginTab.classList.add('active');
+          registerTab.classList.remove('active');
+          loginForm.classList.add('active');
+          registerForm.classList.remove('active');
+        }
+      }
+    });
+  }
+
+  // BOTÓN LOGOUT
+  const logoutBtn = document.getElementById('mobileQuickLogoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      this.showLogoutConfirmModal();
+    });
+  }
+
   if (this.notificationBtn) {
     this.notificationBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -93,6 +127,7 @@ window.FinanceApp.prototype.initMobileMenu = function() {
 };
 
 // Toggle menú del avatar
+// Toggle menú del avatar
 window.FinanceApp.prototype.toggleAvatarMenu = function() {
   if (this.avatarMenu.classList.contains('show')) {
     this.closeAvatarMenu();
@@ -103,15 +138,42 @@ window.FinanceApp.prototype.toggleAvatarMenu = function() {
 
 // Abrir menú del avatar
 window.FinanceApp.prototype.openAvatarMenu = function() {
+  console.log('🔓 Abriendo menú del avatar...');
+  console.log('   this.avatarMenu:', this.avatarMenu);
+  console.log('   this.menuBackdrop:', this.menuBackdrop);
+
+  if (!this.avatarMenu) {
+    console.error('❌ avatarMenu no encontrado!');
+    return;
+  }
+
+  if (!this.menuBackdrop) {
+    console.error('❌ menuBackdrop no encontrado!');
+    return;
+  }
+
+  console.log('✅ Agregando clase show...');
   this.avatarMenu.classList.add('show');
-  this.menuBackdrop.classList.add('show');
-  this.closeNotificationPanel(); // Cerrar notificaciones si están abiertas
+  this.menuBackdrop.classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  console.log('   Clase show agregada:', this.avatarMenu.classList.contains('show'));
+
+  if (this.closeNotificationPanel) {
+    this.closeNotificationPanel(); // Cerrar notificaciones si están abiertas
+  }
 };
 
 // Cerrar menú del avatar
 window.FinanceApp.prototype.closeAvatarMenu = function() {
-  this.avatarMenu.classList.remove('show');
-  this.menuBackdrop.classList.remove('show');
+  if (this.avatarMenu) {
+    this.avatarMenu.classList.remove('show');
+  }
+  if (this.menuBackdrop) {
+    this.menuBackdrop.classList.remove('show');
+    this.menuBackdrop.classList.remove('active');
+  }
+  document.body.style.overflow = '';
 };
 
 // Toggle panel de notificaciones
@@ -512,6 +574,13 @@ window.FinanceApp.prototype.toggleTheme = function(isDark) {
 window.FinanceApp.prototype.renderMobileAchievements = function() {
   const container = document.getElementById('mobileAchievements');
   if (!container) return;
+
+  // Verificar que achievements exista
+  if (!this.achievements || !Array.isArray(this.achievements)) {
+    container.innerHTML = '';
+    container.style.display = 'none';
+    return;
+  }
 
   // Obtener últimos 5 logros desbloqueados
   const unlockedAchievements = this.achievements

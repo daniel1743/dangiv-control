@@ -111,7 +111,7 @@
     <link rel="stylesheet" href="user-system.css" />
     <link rel="stylesheet" href="store.css" />
     <link rel="stylesheet" href="config.css" />
-    <link rel="stylesheet" href="mobile-menu-styles.css" />
+    <link rel="stylesheet" href="mobile-menu-styles.css?v=3.0.0" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -317,7 +317,8 @@
           personalizadas
         </li>
         <li>
-          <strong>Presupuesto de Ocio:</strong> Planifica tus gastos extras y caprichos
+          <strong>Presupuesto de Ocio:</strong> Planifica tus gastos extras y
+          caprichos
         </li>
         <li>
           <strong>Gestión Multi-Usuario:</strong> Comparte finanzas con tu
@@ -745,21 +746,27 @@
       <div class="mobile-banner-cover" id="mobileBannerCover">
         <!-- Banner de fondo personalizable -->
 
-        <!-- Icono de notificaciones (esquina superior derecha) -->
-        <button class="banner-notification-btn" id="bannerNotificationBtn">
-          <i class="fas fa-bell"></i>
-          <span class="notification-badge" id="notificationBadge">3</span>
+        <!-- Botón LOGIN (esquina superior izquierda) -->
+        <button class="banner-login-btn" id="mobileQuickLoginBtn">
+          <i class="fas fa-sign-in-alt"></i>
+        </button>
+
+        <!-- Botón LOGOUT (junto a notificaciones) -->
+        <button class="banner-logout-btn" id="mobileQuickLogoutBtn" style="display: none;">
+          <i class="fas fa-sign-out-alt"></i>
         </button>
       </div>
 
       <div class="mobile-profile-info">
         <div class="mobile-avatar-container" id="mobileAvatarContainer">
-          <img class="mobile-avatar" id="mobileAvatar" src="" alt="Avatar">
+          <img class="mobile-avatar" id="mobileAvatar" src="" alt="Avatar" />
           <div class="mobile-avatar-ring"></div>
         </div>
         <div class="mobile-user-details">
           <h3 class="mobile-username" id="mobileUsername">Usuario</h3>
-          <p class="mobile-user-quote" id="mobileUserQuote">Agrega una frase inspiradora...</p>
+          <p class="mobile-user-quote" id="mobileUserQuote">
+            Agrega una frase inspiradora...
+          </p>
           <p class="mobile-user-stats" id="mobileUserStats">Balance: $0</p>
         </div>
       </div>
@@ -773,7 +780,7 @@
     <!-- Menú desplegable del avatar -->
     <div class="avatar-menu" id="avatarMenu">
       <div class="avatar-menu-header">
-        <img class="avatar-menu-img" id="avatarMenuImg" src="" alt="Avatar">
+        <img class="avatar-menu-img" id="avatarMenuImg" src="" alt="Avatar" />
         <div class="avatar-menu-info">
           <h4 id="avatarMenuName">Usuario</h4>
           <p id="avatarMenuEmail">email@ejemplo.com</p>
@@ -809,7 +816,10 @@
             <i class="fas fa-trophy"></i>
             <span>Mis logros</span>
           </button>
-          <button class="avatar-menu-item premium-item" data-action="go-premium">
+          <button
+            class="avatar-menu-item premium-item"
+            data-action="go-premium"
+          >
             <i class="fas fa-crown"></i>
             <span>Ir a Premium</span>
             <span class="premium-badge">PRO</span>
@@ -826,7 +836,7 @@
               <span>Tema oscuro</span>
             </div>
             <label class="theme-toggle">
-              <input type="checkbox" id="themeToggle">
+              <input type="checkbox" id="themeToggle" />
               <span class="theme-toggle-slider"></span>
             </label>
           </div>
@@ -846,7 +856,10 @@
 
         <!-- Sección: Cuenta -->
         <div class="avatar-menu-section">
-          <button class="avatar-menu-item danger-item" data-action="delete-account">
+          <button
+            class="avatar-menu-item danger-item"
+            data-action="delete-account"
+          >
             <i class="fas fa-trash-alt"></i>
             <span>Eliminar cuenta</span>
           </button>
@@ -947,8 +960,23 @@
               <h3>Balance Disponible</h3>
               <p class="stat-value" id="totalBalance">$0</p>
               <span class="stat-change">&nbsp;</span>
-              <button class="btn-save-to-goals" id="btnSaveToGoals" style="margin-top: 8px; padding: 6px 12px; font-size: 0.85rem; background: var(--color-primary); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s;">
-                <i class="fas fa-arrow-right" style="margin-right: 4px;"></i> Ahorrar
+              <button
+                class="btn-save-to-goals"
+                id="btnSaveToGoals"
+                style="
+                  margin-top: 8px;
+                  padding: 6px 12px;
+                  font-size: 0.85rem;
+                  background: var(--color-primary);
+                  color: white;
+                  border: none;
+                  border-radius: 6px;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                "
+              >
+                <i class="fas fa-arrow-right" style="margin-right: 4px"></i>
+                Ahorrar
               </button>
             </div>
           </div>
@@ -1025,7 +1053,7 @@
             id="transactionsCard"
             data-animation="fadeInUp"
             data-delay="400"
-            style="cursor: pointer;"
+            style="cursor: pointer"
           >
             <div class="stat-icon-wrapper">
               <i class="fas fa-receipt stat-icon"></i>
@@ -1049,7 +1077,9 @@
             <div class="stat-details">
               <h3>Progreso Mensual</h3>
               <p class="stat-value" id="monthlyProgress">0%</p>
-              <span class="stat-change" id="monthlyProgressText">Comenzaste con $0</span>
+              <span class="stat-change" id="monthlyProgressText"
+                >Comenzaste con $0</span
+              >
             </div>
           </div>
 
@@ -1059,7 +1089,7 @@
             id="budgetCard"
             data-animation="fadeInUp"
             data-delay="600"
-            style="cursor: pointer;"
+            style="cursor: pointer"
           >
             <div class="stat-icon-wrapper">
               <i class="fas fa-gift stat-icon"></i>
@@ -1067,7 +1097,9 @@
             <div class="stat-details">
               <h3>Presupuesto Extras</h3>
               <p class="stat-value" id="budgetValue">$0</p>
-              <span class="stat-change" id="budgetRemaining">Para gustos: $0</span>
+              <span class="stat-change" id="budgetRemaining"
+                >Para gustos: $0</span
+              >
             </div>
           </div>
         </div>
@@ -1989,7 +2021,8 @@
         <div class="section-header">
           <h1>🎉 Presupuesto de Ocio</h1>
           <p>
-            Planifica tus gastos extras: entretenimiento, salidas, caprichos y diversión
+            Planifica tus gastos extras: entretenimiento, salidas, caprichos y
+            diversión
           </p>
         </div>
 
@@ -2077,7 +2110,7 @@
               <!-- Formulario para agregar nuevo gasto de ocio -->
               <div class="leisure-item-form">
                 <div class="form-row">
-                  <div class="form-group" style="flex: 2;">
+                  <div class="form-group" style="flex: 2">
                     <label>¿Para qué?</label>
                     <input
                       type="text"
@@ -2087,7 +2120,7 @@
                       maxlength="50"
                     />
                   </div>
-                  <div class="form-group" style="flex: 1;">
+                  <div class="form-group" style="flex: 1">
                     <label>Monto (solo números)</label>
                     <input
                       type="text"
@@ -2098,16 +2131,24 @@
                       pattern="[0-9]*"
                     />
                   </div>
-                  <div class="form-group" style="flex: 0 0 auto;">
-                    <label style="visibility: hidden;">.</label>
-                    <button type="button" class="btn btn--success" id="addLeisureItemBtn">
+                  <div class="form-group" style="flex: 0 0 auto">
+                    <label style="visibility: hidden">.</label>
+                    <button
+                      type="button"
+                      class="btn btn--success"
+                      id="addLeisureItemBtn"
+                    >
                       <i class="fas fa-plus"></i> Agregar
                     </button>
                   </div>
                 </div>
               </div>
 
-              <button type="submit" class="btn btn--primary btn--block" style="margin-top: 20px;">
+              <button
+                type="submit"
+                class="btn btn--primary btn--block"
+                style="margin-top: 20px"
+              >
                 <i class="fas fa-save"></i> Guardar Presupuesto de Ocio
               </button>
             </form>
@@ -3077,17 +3118,25 @@
                           <i class="fas fa-cookie-bite"></i>
                         </div>
                         <div class="settings-list-content">
-                          <span class="settings-list-title">Configuración de cookies</span>
-                          <span class="settings-list-subtitle">Controla qué cookies acepta tu navegador</span>
+                          <span class="settings-list-title"
+                            >Configuración de cookies</span
+                          >
+                          <span class="settings-list-subtitle"
+                            >Controla qué cookies acepta tu navegador</span
+                          >
                         </div>
-                        <button class="btn-premium btn-premium-outline" id="openCookieSettings">
+                        <button
+                          class="btn-premium btn-premium-outline"
+                          id="openCookieSettings"
+                        >
                           <i class="fas fa-cog"></i> Configurar
                         </button>
                       </div>
                     </div>
                     <p class="form-hint" style="margin-top: var(--space-12)">
-                      <i class="fas fa-shield-alt"></i> Cumplimiento GDPR, CCPA y LGPD.
-                      Puedes cambiar tus preferencias en cualquier momento.
+                      <i class="fas fa-shield-alt"></i> Cumplimiento GDPR, CCPA
+                      y LGPD. Puedes cambiar tus preferencias en cualquier
+                      momento.
                     </p>
                   </div>
                 </div>
@@ -3428,9 +3477,15 @@
       <div class="modal__content modal--lg">
         <div class="modal__header">
           <h3><i class="fas fa-chart-line"></i> Estadísticas Detalladas</h3>
-          <button class="modal__close" id="closeChartStatsModal">&times;</button>
+          <button class="modal__close" id="closeChartStatsModal">
+            &times;
+          </button>
         </div>
-        <div class="modal__body" id="chartStatsModalBody" style="max-height: 70vh; overflow-y: auto;">
+        <div
+          class="modal__body"
+          id="chartStatsModalBody"
+          style="max-height: 70vh; overflow-y: auto"
+        >
           <!-- El contenido se generará dinámicamente -->
         </div>
       </div>
@@ -4593,7 +4648,11 @@
     </button>
 
     <!-- Instagram-style Quick Actions Button (Mobile Only) -->
-    <button class="fab-instagram" id="fabInstagram" aria-label="Acciones rápidas">
+    <button
+      class="fab-instagram"
+      id="fabInstagram"
+      aria-label="Acciones rápidas"
+    >
       <i class="fas fa-plus"></i>
     </button>
 
@@ -4609,7 +4668,10 @@
         </div>
         <div class="quick-actions-list">
           <button class="quick-action-item" data-action="expense">
-            <div class="quick-action-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+            <div
+              class="quick-action-icon"
+              style="background: linear-gradient(135deg, #ef4444, #dc2626)"
+            >
               <i class="fas fa-wallet"></i>
             </div>
             <div class="quick-action-text">
@@ -4619,7 +4681,10 @@
           </button>
 
           <button class="quick-action-item" data-action="goal">
-            <div class="quick-action-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+            <div
+              class="quick-action-icon"
+              style="background: linear-gradient(135deg, #8b5cf6, #7c3aed)"
+            >
               <i class="fas fa-bullseye"></i>
             </div>
             <div class="quick-action-text">
@@ -4629,7 +4694,10 @@
           </button>
 
           <button class="quick-action-item" data-action="leisure">
-            <div class="quick-action-icon" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">
+            <div
+              class="quick-action-icon"
+              style="background: linear-gradient(135deg, #14b8a6, #0d9488)"
+            >
               <i class="fas fa-gift"></i>
             </div>
             <div class="quick-action-text">
@@ -4639,7 +4707,10 @@
           </button>
 
           <button class="quick-action-item" data-action="shopping">
-            <div class="quick-action-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <div
+              class="quick-action-icon"
+              style="background: linear-gradient(135deg, #f59e0b, #d97706)"
+            >
               <i class="fas fa-shopping-cart"></i>
             </div>
             <div class="quick-action-text">
@@ -4649,7 +4720,10 @@
           </button>
 
           <button class="quick-action-item" data-action="income">
-            <div class="quick-action-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+            <div
+              class="quick-action-icon"
+              style="background: linear-gradient(135deg, #10b981, #059669)"
+            >
               <i class="fas fa-hand-holding-usd"></i>
             </div>
             <div class="quick-action-text">
@@ -5105,12 +5179,14 @@
     <!-- Cookie Consent Banner -->
     <div class="cookie-banner" id="cookieBanner">
       <div class="cookie-banner__content">
-        <div class="cookie-banner__icon">
-          🍪
-        </div>
+        <div class="cookie-banner__icon">🍪</div>
         <div class="cookie-banner__text">
           <h3>Valoramos tu privacidad</h3>
-          <p>Usamos cookies para mejorar tu experiencia, analizar el uso de la app y personalizar el contenido. Puedes aceptar todas o configurarlas.</p>
+          <p>
+            Usamos cookies para mejorar tu experiencia, analizar el uso de la
+            app y personalizar el contenido. Puedes aceptar todas o
+            configurarlas.
+          </p>
         </div>
         <div class="cookie-banner__actions">
           <button class="btn-cookie btn-cookie--settings" id="cookieSettings">
@@ -5145,12 +5221,15 @@
                 <p>Necesarias para el funcionamiento básico de la aplicación</p>
               </div>
               <label class="cookie-toggle cookie-toggle--disabled">
-                <input type="checkbox" checked disabled>
+                <input type="checkbox" checked disabled />
                 <span class="cookie-toggle__slider"></span>
               </label>
             </div>
             <div class="cookie-category__details">
-              <small>Incluye: sesión de usuario, preferencias de interfaz, datos guardados localmente</small>
+              <small
+                >Incluye: sesión de usuario, preferencias de interfaz, datos
+                guardados localmente</small
+              >
             </div>
           </div>
 
@@ -5161,12 +5240,15 @@
                 <p>Nos ayudan a entender cómo usas la app para mejorarla</p>
               </div>
               <label class="cookie-toggle">
-                <input type="checkbox" id="cookieAnalytics">
+                <input type="checkbox" id="cookieAnalytics" />
                 <span class="cookie-toggle__slider"></span>
               </label>
             </div>
             <div class="cookie-category__details">
-              <small>Firebase Analytics, métricas de uso, estadísticas anónimas</small>
+              <small
+                >Firebase Analytics, métricas de uso, estadísticas
+                anónimas</small
+              >
             </div>
           </div>
 
@@ -5177,12 +5259,15 @@
                 <p>Mejoran la experiencia con funciones personalizadas</p>
               </div>
               <label class="cookie-toggle">
-                <input type="checkbox" id="cookieFunctional">
+                <input type="checkbox" id="cookieFunctional" />
                 <span class="cookie-toggle__slider"></span>
               </label>
             </div>
             <div class="cookie-category__details">
-              <small>Recordar preferencias, sincronización de datos, notificaciones</small>
+              <small
+                >Recordar preferencias, sincronización de datos,
+                notificaciones</small
+              >
             </div>
           </div>
         </div>
@@ -5191,15 +5276,19 @@
           <button class="btn-cookie btn-cookie--reject" id="cookieRejectAll">
             Rechazar todas
           </button>
-          <button class="btn-cookie btn-cookie--accept" id="cookieSavePreferences">
+          <button
+            class="btn-cookie btn-cookie--accept"
+            id="cookieSavePreferences"
+          >
             <i class="fas fa-save"></i> Guardar preferencias
           </button>
         </div>
 
         <div class="cookie-modal__legal">
           <small>
-            Al usar Dan&Giv Control, aceptas nuestro uso de cookies según tu configuración.
-            Puedes cambiar tus preferencias en cualquier momento desde Configuración.
+            Al usar Dan&Giv Control, aceptas nuestro uso de cookies según tu
+            configuración. Puedes cambiar tus preferencias en cualquier momento
+            desde Configuración.
           </small>
         </div>
       </div>
@@ -5210,5 +5299,6 @@
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="app.js"></script>
     <script defer src="mobile-menu.js?v=1.0.1"></script>
+    <script src="mobile-menu.js?v=1.0.1"></script>
   </body>
 </html>

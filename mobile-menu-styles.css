@@ -2,6 +2,70 @@
    MENÚ DEL AVATAR Y NOTIFICACIONES
    ======================================== */
 
+/* === BOTÓN LOGIN EN BANNER === */
+.banner-login-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.banner-login-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.banner-login-btn i {
+  font-size: 18px;
+  color: white;
+}
+
+/* === BOTÓN LOGOUT EN BANNER === */
+.banner-logout-btn {
+  position: absolute;
+  top: 16px;
+  right: 70px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.banner-logout-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: #EF4444;
+}
+
+.banner-logout-btn:hover i {
+  color: white;
+}
+
+.banner-logout-btn i {
+  font-size: 18px;
+  color: #EF4444;
+}
+
 /* === ICONO DE NOTIFICACIONES EN BANNER === */
 .banner-notification-btn {
   position: absolute;
@@ -107,30 +171,40 @@
   50% { filter: brightness(1.2); }
 }
 
-/* === MENÚ DESPLEGABLE DEL AVATAR === */
+/* === MENÚ DESPLEGABLE DEL AVATAR (Panel deslizante desde la derecha) === */
 .avatar-menu {
   position: fixed;
-  top: 160px;
-  left: 50%;
-  transform: translateX(-50%) scale(0.9);
-  width: 90%;
-  max-width: 320px;
+  top: 0;
+  right: -100%;
+  width: 300px;
+  height: 100vh;
   background: var(--color-surface);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-  z-index: 1100;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  backdrop-filter: blur(20px);
-  max-height: 80vh;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+  z-index: 10001 !important;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
 }
 
 .avatar-menu.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) scale(1);
+  right: 0 !important;
+}
+
+/* Ajustes responsive */
+@media (max-width: 768px) {
+  .avatar-menu {
+    width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .avatar-menu {
+    width: 100vw;
+    right: -100vw;
+  }
+
+  .avatar-menu.show {
+    right: 0 !important;
+  }
 }
 
 .avatar-menu-header {
@@ -431,15 +505,16 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
-  z-index: 1050;
+  z-index: 10000;
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
 }
 
-.menu-backdrop.show {
-  opacity: 1;
-  visibility: visible;
+.menu-backdrop.show,
+.menu-backdrop.active {
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* === RESPONSIVE === */

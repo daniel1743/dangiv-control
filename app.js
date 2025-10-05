@@ -1419,6 +1419,10 @@ class FinanceApp {
       const mobileProfileBtn = document.getElementById('mobileProfileBtn');
       const navbarLoginBtn = document.getElementById('navbarLoginBtn');
 
+      // NUEVOS BOTONES SIMPLES
+      const mobileQuickLoginBtn = document.getElementById('mobileQuickLoginBtn');
+      const mobileQuickLogoutBtn = document.getElementById('mobileQuickLogoutBtn');
+
       if (user) {
         this.currentUser = user.uid;
         this.firebaseUser = user; // Guardar usuario de Firebase
@@ -1436,6 +1440,10 @@ class FinanceApp {
         // Show mobile buttons (CSS handles responsive visibility)
         if (mobileLogoutBtn) mobileLogoutBtn.classList.add('show');
         if (mobileProfileBtn) mobileProfileBtn.classList.add('show');
+
+        // NUEVOS: Mostrar logout, ocultar login
+        if (mobileQuickLoginBtn) mobileQuickLoginBtn.style.display = 'none';
+        if (mobileQuickLogoutBtn) mobileQuickLogoutBtn.style.display = 'flex';
 
         this.updateProfileDisplay();
 
@@ -1508,6 +1516,10 @@ class FinanceApp {
         // Hide mobile buttons
         if (mobileLogoutBtn) mobileLogoutBtn.classList.remove('show');
         if (mobileProfileBtn) mobileProfileBtn.classList.remove('show');
+
+        // NUEVOS: Mostrar login, ocultar logout
+        if (mobileQuickLoginBtn) mobileQuickLoginBtn.style.display = 'flex';
+        if (mobileQuickLogoutBtn) mobileQuickLogoutBtn.style.display = 'none';
 
         // Para usuario anónimo, ocultar loading y renderizar inmediatamente
         this.hideAppLoading();
