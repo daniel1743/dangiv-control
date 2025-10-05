@@ -1455,6 +1455,13 @@ class FinanceApp {
           this.initAchievements();
           this.updateMenuRestrictions();
 
+          // Inicializar menú móvil DESPUÉS de que todo esté listo
+          setTimeout(() => {
+            if (typeof this.initMobileMenu === 'function') {
+              this.initMobileMenu();
+            }
+          }, 100);
+
           // Iniciar sistema de mensajes motivadores
           this.updateCarouselWithMessages();
           setTimeout(() => {
@@ -1476,6 +1483,13 @@ class FinanceApp {
           this.initTrendChart();
           this.updateDashboardWelcome();
           this.initAchievements();
+
+          // Inicializar menú móvil aunque falle
+          setTimeout(() => {
+            if (typeof this.initMobileMenu === 'function') {
+              this.initMobileMenu();
+            }
+          }, 100);
         });
       } else {
         this.currentUser = 'anonymous';
@@ -1500,6 +1514,13 @@ class FinanceApp {
         this.updateDashboardWelcome();
         this.updateMenuRestrictions();
         this.renderDashboard();
+
+        // Inicializar menú móvil para anónimo
+        setTimeout(() => {
+          if (typeof this.initMobileMenu === 'function') {
+            this.initMobileMenu();
+          }
+        }, 100);
       }
     });
 
@@ -2344,8 +2365,8 @@ class FinanceApp {
     // Forzar normalización de datos existentes al inicio
     this.forceDataNormalization();
 
-    // Mostrar loading mientras se sincroniza con Firebase
-    this.showAppLoading();
+    // El loading spinner ya está visible desde el HTML
+    // Solo se ocultará cuando Firebase termine de sincronizar
 
     // NO renderizar nada aquí - esperar a que Firebase termine de sincronizar
     // this.renderDashboard(); // MOVIDO a setupAuth después de syncFromFirebase
@@ -2354,7 +2375,7 @@ class FinanceApp {
     this.initSidebarScrollBehavior();
     this.initLazyLoading();
     this.initScrollAnimations();
-    // initMobileMenu() se llama desde mobile-menu.js cuando esté listo
+    // initMobileMenu() se llama después de Firebase sync
   }
   // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
   resetPasswords() {
@@ -15560,31 +15581,10 @@ FinanceApp.prototype.getTotalIncome = function() {
 // ========================================
 // LOADING SPINNER METHODS
 // ========================================
-FinanceApp.prototype.showAppLoading = function() {
-  const dashboard = document.getElementById('dashboard');
-  if (!dashboard) return;
-
-  // Crear loading overlay si no existe
-  let loadingOverlay = document.getElementById('appLoadingOverlay');
-  if (!loadingOverlay) {
-    loadingOverlay = document.createElement('div');
-    loadingOverlay.id = 'appLoadingOverlay';
-    loadingOverlay.innerHTML = `
-      <div class="loading-spinner-container">
-        <div class="loading-spinner"></div>
-        <p class="loading-text">Cargando tus datos...</p>
-      </div>
-    `;
-    dashboard.appendChild(loadingOverlay);
-  }
-
-  loadingOverlay.style.display = 'flex';
-};
-
 FinanceApp.prototype.hideAppLoading = function() {
-  const loadingOverlay = document.getElementById('appLoadingOverlay');
-  if (loadingOverlay) {
-    loadingOverlay.style.display = 'none';
+  const loader = document.getElementById('loader-wrapper');
+  if (loader) {
+    loader.classList.add('hidden');
   }
 };
 
