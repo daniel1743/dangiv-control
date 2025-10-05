@@ -6486,7 +6486,7 @@ select.form-control {
     z-index: 1000;
     margin-bottom: 0 !important;
     background: transparent;
-    height: 180px; /* Altura total: 140px banner + 40px para mitad del avatar */
+    height: auto; /* Altura automática para ajustarse al contenido */
   }
 
   /* Banner cover (fondo) */
@@ -6579,7 +6579,7 @@ select.form-control {
   /* Main content con espacio para banner arriba y navbar abajo */
   .main-content {
     margin-left: 0 !important;
-    padding-top: 200px !important; /* Espacio para banner fijo (180px altura + 20px padding) */
+   
     padding-bottom: 80px !important; /* Espacio para navbar inferior */
     padding-left: var(--space-20);
     padding-right: var(--space-20);
@@ -12383,7 +12383,6 @@ select.form-control {
   /* MAIN CONTENT */
   .main-content {
     margin-left: 0 !important;
-    padding-top: 170px !important; /* Reducido: 120px banner + 35px mitad avatar + 15px margen */
     padding-bottom: 80px !important;
     padding-left: var(--space-20) !important;
     padding-right: var(--space-20) !important;
