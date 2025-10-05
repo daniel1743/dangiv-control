@@ -310,8 +310,7 @@
           personalizadas
         </li>
         <li>
-          <strong>Presupuesto Mensual:</strong> Planifica tus finanzas por
-          categorías
+          <strong>Presupuesto de Ocio:</strong> Planifica tus gastos extras y caprichos
         </li>
         <li>
           <strong>Gestión Multi-Usuario:</strong> Comparte finanzas con tu
@@ -910,6 +909,24 @@
               <h3>Progreso Mensual</h3>
               <p class="stat-value" id="monthlyProgress">0%</p>
               <span class="stat-change" id="monthlyProgressText">Comenzaste con $0</span>
+            </div>
+          </div>
+
+          <!-- Tarjeta de Presupuesto de Extras -->
+          <div
+            class="stat-card stat-card--clickable stat-card--budget animate-on-scroll"
+            id="budgetCard"
+            data-animation="fadeInUp"
+            data-delay="600"
+            style="cursor: pointer;"
+          >
+            <div class="stat-icon-wrapper">
+              <i class="fas fa-gift stat-icon"></i>
+            </div>
+            <div class="stat-details">
+              <h3>Presupuesto Extras</h3>
+              <p class="stat-value" id="budgetValue">$0</p>
+              <span class="stat-change" id="budgetRemaining">Para gustos: $0</span>
             </div>
           </div>
         </div>
@@ -1829,16 +1846,16 @@
       <!-- Budget Section -->
       <section id="budget" class="section">
         <div class="section-header">
-          <h1>💰 Presupuesto Mensual</h1>
+          <h1>🎉 Presupuesto de Ocio</h1>
           <p>
-            Controla tus gastos con el sistema de sobres (Envelope Budgeting)
+            Planifica tus gastos extras: entretenimiento, salidas, caprichos y diversión
           </p>
         </div>
 
-        <!-- Budget Summary Card -->
+        <!-- Leisure Budget Summary Card -->
         <div class="card budget-summary-card">
           <div class="card__header">
-            <h3>Resumen del Mes</h3>
+            <h3>Resumen de Ocio del Mes</h3>
             <div class="budget-month-selector">
               <button class="btn btn--icon" id="prevMonthBtn">
                 <i class="fas fa-chevron-left"></i>
@@ -1853,10 +1870,10 @@
             <div class="budget-summary-stats">
               <div class="budget-stat">
                 <div class="budget-stat-icon budget-stat-icon--primary">
-                  <i class="fas fa-hand-holding-usd"></i>
+                  <i class="fas fa-gift"></i>
                 </div>
                 <div class="budget-stat-content">
-                  <span class="budget-stat-label">Presupuesto Total</span>
+                  <span class="budget-stat-label">Presupuesto de Ocio</span>
                   <span class="budget-stat-value" id="totalBudgetLimit"
                     >$0</span
                   >
@@ -1867,7 +1884,7 @@
                   <i class="fas fa-shopping-cart"></i>
                 </div>
                 <div class="budget-stat-content">
-                  <span class="budget-stat-label">Gastado</span>
+                  <span class="budget-stat-label">Gastado en Ocio</span>
                   <span class="budget-stat-value" id="totalBudgetSpent"
                     >$0</span
                   >
@@ -1878,7 +1895,7 @@
                   <i class="fas fa-piggy-bank"></i>
                 </div>
                 <div class="budget-stat-content">
-                  <span class="budget-stat-label">Disponible</span>
+                  <span class="budget-stat-label">Disponible para Gustos</span>
                   <span class="budget-stat-value" id="totalBudgetAvailable"
                     >$0</span
                   >
@@ -1887,7 +1904,7 @@
             </div>
             <div class="budget-overall-progress">
               <div class="progress-header">
-                <span>Progreso General</span>
+                <span>Progreso de Ocio</span>
                 <span id="overallBudgetPercentage">0%</span>
               </div>
               <div class="progress-bar">
@@ -1901,165 +1918,69 @@
           </div>
         </div>
 
-        <!-- Budget Setup Card -->
+        <!-- Leisure Budget Setup Card -->
         <div class="card">
           <div class="card__header">
-            <h3>Configurar Presupuesto</h3>
+            <h3>🎊 Configurar Gastos de Ocio</h3>
             <button class="btn btn--secondary btn--sm" id="resetBudgetBtn">
               <i class="fas fa-redo"></i> Restablecer
             </button>
           </div>
           <div class="card__body">
             <form id="budgetSetupForm">
-              <div class="budget-setup-grid">
-                <div class="budget-category-item">
-                  <div class="budget-category-header">
-                    <i
-                      class="fas fa-utensils category-icon category-icon--food"
-                    ></i>
-                    <span class="category-name">Alimentación</span>
-                  </div>
-                  <div class="form-group">
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="budget-Alimentación"
-                      placeholder="$0"
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-                </div>
+              <!-- Lista de gastos de ocio -->
+              <div id="leisureItemsList" class="leisure-items-list">
+                <!-- Se llenará dinámicamente con items de ocio -->
+              </div>
 
-                <div class="budget-category-item">
-                  <div class="budget-category-header">
-                    <i
-                      class="fas fa-bus category-icon category-icon--transport"
-                    ></i>
-                    <span class="category-name">Transporte</span>
-                  </div>
-                  <div class="form-group">
+              <!-- Formulario para agregar nuevo gasto de ocio -->
+              <div class="leisure-item-form">
+                <div class="form-row">
+                  <div class="form-group" style="flex: 2;">
+                    <label>¿Para qué?</label>
                     <input
-                      type="number"
+                      type="text"
                       class="form-control"
-                      id="budget-Transporte"
-                      placeholder="$0"
-                      min="0"
-                      step="0.01"
+                      id="leisureItemDescription"
+                      placeholder="Ej: Cine, Cumpleaños, Salida a comer..."
+                      maxlength="50"
                     />
                   </div>
-                </div>
-
-                <div class="budget-category-item">
-                  <div class="budget-category-header">
-                    <i
-                      class="fas fa-film category-icon category-icon--entertainment"
-                    ></i>
-                    <span class="category-name">Entretenimiento</span>
-                  </div>
-                  <div class="form-group">
+                  <div class="form-group" style="flex: 1;">
+                    <label>Monto (solo números)</label>
                     <input
-                      type="number"
+                      type="text"
                       class="form-control"
-                      id="budget-Entretenimiento"
-                      placeholder="$0"
-                      min="0"
-                      step="0.01"
+                      id="leisureItemAmount"
+                      placeholder="Ej: 30000"
+                      inputmode="numeric"
+                      pattern="[0-9]*"
                     />
                   </div>
-                </div>
-
-                <div class="budget-category-item">
-                  <div class="budget-category-header">
-                    <i
-                      class="fas fa-heartbeat category-icon category-icon--health"
-                    ></i>
-                    <span class="category-name">Salud</span>
-                  </div>
-                  <div class="form-group">
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="budget-Salud"
-                      placeholder="$0"
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-                </div>
-
-                <div class="budget-category-item">
-                  <div class="budget-category-header">
-                    <i
-                      class="fas fa-wrench category-icon category-icon--services"
-                    ></i>
-                    <span class="category-name">Servicios</span>
-                  </div>
-                  <div class="form-group">
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="budget-Servicios"
-                      placeholder="$0"
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-                </div>
-
-                <div class="budget-category-item">
-                  <div class="budget-category-header">
-                    <i
-                      class="fas fa-shopping-bag category-icon category-icon--shopping"
-                    ></i>
-                    <span class="category-name">Compras</span>
-                  </div>
-                  <div class="form-group">
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="budget-Compras"
-                      placeholder="$0"
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-                </div>
-
-                <div class="budget-category-item">
-                  <div class="budget-category-header">
-                    <i
-                      class="fas fa-ellipsis-h category-icon category-icon--other"
-                    ></i>
-                    <span class="category-name">Otros</span>
-                  </div>
-                  <div class="form-group">
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="budget-Otros"
-                      placeholder="$0"
-                      min="0"
-                      step="0.01"
-                    />
+                  <div class="form-group" style="flex: 0 0 auto;">
+                    <label style="visibility: hidden;">.</label>
+                    <button type="button" class="btn btn--success" id="addLeisureItemBtn">
+                      <i class="fas fa-plus"></i> Agregar
+                    </button>
                   </div>
                 </div>
               </div>
-              <button type="submit" class="btn btn--primary">
-                <i class="fas fa-save"></i> Guardar Presupuesto
+
+              <button type="submit" class="btn btn--primary btn--block" style="margin-top: 20px;">
+                <i class="fas fa-save"></i> Guardar Presupuesto de Ocio
               </button>
             </form>
           </div>
         </div>
 
-        <!-- Budget Categories Progress -->
+        <!-- Leisure Items Progress -->
         <div class="card">
           <div class="card__header">
-            <h3>Estado por Categoría</h3>
+            <h3>Estado de Gastos de Ocio</h3>
           </div>
           <div class="card__body">
             <div id="budgetCategoriesProgress">
-              <!-- Se llenará dinámicamente -->
+              <!-- Se llenará dinámicamente con el progreso de cada item -->
             </div>
           </div>
         </div>

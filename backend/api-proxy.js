@@ -118,6 +118,50 @@ app.post('/api/gemini', async (req, res) => {
 // ========================================
 // PROXY PARA UNSPLASH
 // ========================================
+
+// Endpoint para foto random
+app.get('/api/unsplash/random', async (req, res) => {
+  const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY;
+
+  if (!UNSPLASH_ACCESS_KEY) {
+    console.error('❌ UNSPLASH_ACCESS_KEY no configurada en .env');
+    return res.status(500).json({
+      error: 'Servicio de imágenes no configurado'
+    });
+  }
+
+  try {
+    const { query, orientation = 'landscape' } = req.query;
+
+    if (!query) {
+      return res.status(400).json({ error: 'Query requerido' });
+    }
+
+    const response = await fetch(
+      `https://api.unsplash.com/photos/random?query=${encodeURIComponent(query)}&orientation=${orientation}`,
+      {
+        headers: {
+          'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Unsplash API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Error en proxy Unsplash random:', error);
+    res.status(500).json({
+      error: 'Error al obtener imagen random',
+      details: error.message
+    });
+  }
+});
+
+// Endpoint para búsqueda
 app.get('/api/unsplash/search', async (req, res) => {
   const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY;
 

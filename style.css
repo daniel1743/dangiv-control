@@ -2578,6 +2578,10 @@ body.sidebar-collapsed .main-content {
   color: var(--color-error);
 }
 
+.stat-change.warning {
+  color: #f59e0b;
+}
+
 .stat-change.neutral {
   color: var(--color-text-secondary);
 }
@@ -2622,6 +2626,23 @@ body.sidebar-collapsed .main-content {
 
 .btn--secondary:hover:not(:disabled) {
   background-color: var(--color-secondary-hover);
+}
+
+.btn--success {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal-700) 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(var(--color-teal-500-rgb), 0.3);
+}
+
+.btn--success:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--color-teal-700) 0%, var(--color-primary) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--color-teal-500-rgb), 0.4);
+}
+
+.btn--success:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(var(--color-teal-500-rgb), 0.3);
 }
 
 .btn--danger {
@@ -9202,6 +9223,199 @@ select.form-control {
   background: #fee2e2;
   color: #991b1b;
   border: 1px solid #f87171;
+}
+
+/* ========================================
+   LEISURE BUDGET STYLES
+   ======================================== */
+
+.leisure-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  margin-bottom: var(--space-20);
+  max-height: 400px;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+.leisure-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  background: linear-gradient(135deg, rgba(var(--color-teal-500-rgb), 0.05), rgba(var(--color-purple-500-rgb), 0.05));
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: all 0.3s ease;
+}
+
+.leisure-item:hover {
+  border-color: var(--color-primary);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(var(--color-teal-500-rgb), 0.15);
+}
+
+.leisure-item-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-teal-700));
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.leisure-item-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.leisure-item-description {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.leisure-item-amount {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.leisure-item-delete {
+  padding: var(--space-8) var(--space-12);
+  background: rgba(255, 84, 89, 0.1);
+  color: var(--color-danger);
+  border: 1px solid rgba(255, 84, 89, 0.3);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.leisure-item-delete:hover {
+  background: var(--color-danger);
+  color: white;
+  transform: scale(1.05);
+}
+
+.leisure-item-form {
+  padding: var(--space-20);
+  background: linear-gradient(135deg, rgba(var(--color-teal-500-rgb), 0.03), rgba(var(--color-purple-500-rgb), 0.03));
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-16);
+}
+
+.leisure-item-form .form-row {
+  display: flex;
+  gap: var(--space-12);
+  align-items: stretch;
+}
+
+.leisure-item-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  justify-content: flex-start;
+}
+
+.leisure-item-form label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+.leisure-item-form .form-control {
+  height: 44px;
+  padding: var(--space-12);
+}
+
+.leisure-item-form small {
+  display: block;
+  margin-top: 4px;
+  line-height: 1.2;
+}
+
+.leisure-item-form .btn {
+  height: 44px;
+  margin-top: auto;
+}
+
+/* Responsive adjustments for leisure items */
+@media (max-width: 768px) {
+  /* Formulario */
+  .leisure-item-form .form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .leisure-item-form .form-group {
+    width: 100% !important;
+    flex: 1 !important;
+  }
+
+  .leisure-item-form .form-group label {
+    visibility: visible !important;
+  }
+
+  .leisure-item-form .btn {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  /* Items de la lista */
+  .leisure-item {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .leisure-item-icon {
+    order: 1;
+  }
+
+  .leisure-item-content {
+    order: 2;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .leisure-item-description {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .leisure-item-amount {
+    flex-shrink: 0;
+    margin-left: var(--space-8);
+  }
+
+  .leisure-item-delete {
+    order: 3;
+    margin-left: auto;
+  }
 }
 
 /* ========================================

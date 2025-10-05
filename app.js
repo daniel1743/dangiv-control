@@ -2390,6 +2390,13 @@ class FinanceApp {
       });
     }
 
+    const budgetCard = document.getElementById('budgetCard');
+    if (budgetCard) {
+      budgetCard.addEventListener('click', () => {
+        this.showBudgetModal();
+      });
+    }
+
     const shoppingForm = document.getElementById('shoppingForm');
     if (shoppingForm) {
       shoppingForm.addEventListener('submit', (e) => {
@@ -4113,6 +4120,7 @@ class FinanceApp {
 
   // QuedarÃ¡ asÃ­ (updateStats)
   updateStats(demoStats = null) {
+    console.log('📊 updateStats ejecutándose...');
     let stats;
     if (demoStats) {
       stats = {
@@ -4172,6 +4180,53 @@ class FinanceApp {
     if (monthlyProgressTextEl) {
       monthlyProgressTextEl.textContent = `Comenzaste con $${totalIncome.toLocaleString()} • Te queda $${remaining.toLocaleString()}`;
       monthlyProgressTextEl.className = usedPercent > 80 ? 'stat-change negative' : 'stat-change positive';
+    }
+
+    // Tarjeta de Presupuesto (Solo gastos extras/no esenciales)
+    const currentMonth = this.getCurrentMonthKey();
+    const currentBudget = this.budgets[currentMonth] || { totalLimit: 0, totalSpent: 0 };
+    const budgetLimit = currentBudget.totalLimit || 0;
+
+    // Calcular solo gastos no esenciales (Poco Necesario, No Necesario, Compra por Impulso)
+    const extraExpenses = this.expenses.filter(e =>
+      e.necessity === 'Poco Necesario' ||
+      e.necessity === 'No Necesario' ||
+      e.necessity === 'Compra por Impulso'
+    );
+    const budgetSpent = extraExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const budgetRemaining = Math.max(0, budgetLimit - budgetSpent);
+    const budgetUsedPercent = budgetLimit > 0 ? ((budgetSpent / budgetLimit) * 100).toFixed(0) : 0;
+
+    console.log('💰 Debug Presupuesto de Extras:', {
+      currentMonth,
+      budgetLimit,
+      extraExpensesCount: extraExpenses.length,
+      budgetSpent,
+      budgetRemaining,
+      budgetUsedPercent: budgetUsedPercent + '%'
+    });
+
+    const budgetValueEl = document.getElementById('budgetValue');
+    const budgetRemainingEl = document.getElementById('budgetRemaining');
+
+    if (budgetValueEl) {
+      budgetValueEl.textContent = budgetLimit > 0 ? `$${budgetLimit.toLocaleString()}` : 'No configurado';
+      console.log('✅ Budget Value actualizado:', budgetValueEl.textContent);
+    } else {
+      console.error('❌ No se encontró elemento budgetValue');
+    }
+
+    if (budgetRemainingEl) {
+      if (budgetLimit > 0) {
+        budgetRemainingEl.textContent = `Para gustos: $${budgetRemaining.toLocaleString()}`;
+        budgetRemainingEl.className = budgetUsedPercent > 90 ? 'stat-change negative' : budgetUsedPercent > 70 ? 'stat-change warning' : 'stat-change positive';
+      } else {
+        budgetRemainingEl.textContent = 'Configura extras';
+        budgetRemainingEl.className = 'stat-change';
+      }
+      console.log('✅ Budget Remaining actualizado:', budgetRemainingEl.textContent);
+    } else {
+      console.error('❌ No se encontró elemento budgetRemaining');
     }
 
     document.getElementById(
@@ -6890,6 +6945,161 @@ class FinanceApp {
     document.body.appendChild(overlay);
   }
 
+  showBudgetModal() {
+    const currentMonth = this.getCurrentMonthKey();
+    const currentBudget = this.budgets[currentMonth] || { totalLimit: 0, totalSpent: 0, leisureItems: [] };
+    const budgetLimit = currentBudget.totalLimit || 0;
+    const leisureItems = currentBudget.leisureItems || [];
+
+    console.log('🎉 Modal - Budget info:', {
+      currentMonth,
+      budgetLimit,
+      leisureItemsCount: leisureItems.length,
+      leisureItems
+    });
+
+    // Calcular solo gastos extras/no esenciales
+    const extraExpenses = this.expenses.filter(e =>
+      e.necessity === 'Poco Necesario' ||
+      e.necessity === 'No Necesario' ||
+      e.necessity === 'Compra por Impulso'
+    );
+    const budgetSpent = extraExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const budgetRemaining = Math.max(0, budgetLimit - budgetSpent);
+    const budgetUsedPercent = budgetLimit > 0 ? ((budgetSpent / budgetLimit) * 100).toFixed(0) : 0;
+
+    const modalHtml = `
+      <div style="padding: 24px;">
+        <h3 style="margin: 0 0 20px 0; font-size: 1.5rem; color: var(--color-text);">
+          🎉 Presupuesto de Ocio
+        </h3>
+
+        ${budgetLimit === 0 ? `
+          <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+            <p style="margin: 0; color: #92400e;">
+              ⚠️ No has configurado un presupuesto de ocio. Ve a <strong>Configuración → Presupuesto de Ocio</strong> para apartar dinero para tus gustos y caprichos.
+            </p>
+          </div>
+        ` : `
+          <div style="background: var(--color-surface); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <div>
+                <div style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 4px;">Presupuesto Total de Ocio</div>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--color-primary);">$${budgetLimit.toLocaleString()}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 4px;">Usado</div>
+                <div style="font-size: 1.5rem; font-weight: 600; color: ${budgetUsedPercent > 90 ? '#dc2626' : budgetUsedPercent > 70 ? '#f59e0b' : '#10b981'};">${budgetUsedPercent}%</div>
+              </div>
+            </div>
+
+            <div style="background: var(--color-background); border-radius: 8px; height: 12px; overflow: hidden; margin-bottom: 16px;">
+              <div style="background: ${budgetUsedPercent > 90 ? '#dc2626' : budgetUsedPercent > 70 ? '#f59e0b' : '#10b981'}; height: 100%; width: ${Math.min(budgetUsedPercent, 100)}%; transition: width 0.3s;"></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div style="background: #fef2f2; padding: 12px; border-radius: 8px;">
+                <div style="font-size: 0.75rem; color: #dc2626; margin-bottom: 4px;">Gastado en Ocio</div>
+                <div style="font-size: 1.25rem; font-weight: 600; color: #dc2626;">$${budgetSpent.toLocaleString()}</div>
+              </div>
+              <div style="background: #f0fdf4; padding: 12px; border-radius: 8px;">
+                <div style="font-size: 0.75rem; color: #10b981; margin-bottom: 4px;">Para Gustos</div>
+                <div style="font-size: 1.25rem; font-weight: 600; color: #10b981;">$${budgetRemaining.toLocaleString()}</div>
+              </div>
+            </div>
+          </div>
+
+          ${leisureItems.length > 0 ? `
+            <div style="background: var(--color-surface); border-radius: 12px; padding: 20px;">
+              <h4 style="margin: 0 0 16px 0; font-size: 1rem; color: var(--color-text);">🎊 Gastos de Ocio Planeados</h4>
+              <div style="max-height: 400px; overflow-y: auto;">
+                ${leisureItems.map((item, index) => {
+                  const isUsed = item.used || false;
+
+                  return `
+                    <div style="padding: 16px; border: 2px solid var(--color-border); border-radius: 8px; margin-bottom: 12px; background: ${isUsed ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(220, 38, 38, 0.05))' : 'linear-gradient(135deg, rgba(20, 184, 166, 0.03), rgba(168, 85, 247, 0.03))'}; opacity: ${isUsed ? '0.6' : '1'};">
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                        <div style="flex: 1;">
+                          <div style="font-weight: 600; font-size: 1rem; color: var(--color-text); margin-bottom: 4px;">
+                            <i class="fas ${isUsed ? 'fa-check-circle' : 'fa-star'}" style="color: ${isUsed ? '#10b981' : 'var(--color-primary)'}; margin-right: 8px;"></i>${item.description}
+                          </div>
+                          <div style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 8px;">
+                            Monto apartado: <strong>$${item.amount.toLocaleString()}</strong>
+                          </div>
+                          ${isUsed ? `
+                            <div style="display: inline-block; padding: 4px 12px; background: #10b981; color: white; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+                              ✓ Ya se usó este presupuesto
+                            </div>
+                          ` : ''}
+                        </div>
+                        ${!isUsed ? `
+                          <button
+                            onclick="window.app.markLeisureItemAsUsed('${currentMonth}', ${index})"
+                            style="padding: 8px 16px; background: linear-gradient(135deg, var(--color-primary), var(--color-teal-700)); color: white; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(var(--color-teal-500-rgb), 0.3);"
+                            onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(var(--color-teal-500-rgb), 0.4)';"
+                            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(var(--color-teal-500-rgb), 0.3)';">
+                            ¿Usado? ✓
+                          </button>
+                        ` : ''}
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          ` : ''}
+        `}
+
+        <div style="margin-top: 20px; text-align: center;">
+          <button onclick="document.getElementById('budgetModalOverlay').remove();"
+                  style="padding: 12px 32px; background: var(--color-primary); color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: opacity 0.2s;"
+                  onmouseover="this.style.opacity='0.9'"
+                  onmouseout="this.style.opacity='1'">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    `;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'budgetModalOverlay';
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      animation: fadeIn 0.2s;
+    `;
+
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      background: var(--color-background);
+      border-radius: 16px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s;
+    `;
+    modal.innerHTML = modalHtml;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        overlay.remove();
+      }
+    });
+  }
+
   showSavingsModal() {
     const availableBalance = this.getAvailableBalance();
 
@@ -7857,15 +8067,40 @@ FinanceApp.prototype.loadInspirationImage = async function () {
   currentCategoryIndex = (currentCategoryIndex + 1) % goalCategories.length;
 
   try {
-    const response = await fetch(
-      `https://api.unsplash.com/photos/random?query=${category}&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`
-    );
+    // Intentar usar backend proxy primero
+    const backendUrl = 'http://localhost:3000';
+    let response;
+    let data;
 
-    if (!response.ok) {
-      throw new Error(`Unsplash API error: ${response.status}`);
+    try {
+      // Opción 1: Usar backend proxy (más seguro)
+      response = await fetch(
+        `${backendUrl}/api/unsplash/random?query=${encodeURIComponent(category)}&orientation=landscape`
+      );
+
+      if (!response.ok) {
+        throw new Error('Backend no disponible');
+      }
+
+      data = await response.json();
+    } catch (backendError) {
+      console.warn('⚠️ Backend no disponible, intentando directo a Unsplash...', backendError.message);
+
+      // Opción 2: Fallback directo a Unsplash (solo si hay API key)
+      if (!UNSPLASH_ACCESS_KEY) {
+        throw new Error('No hay API key de Unsplash configurada');
+      }
+
+      response = await fetch(
+        `https://api.unsplash.com/photos/random?query=${category}&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Unsplash API error: ${response.status}`);
+      }
+
+      data = await response.json();
     }
-
-    const data = await response.json();
 
     if (!data || !data.urls || !data.urls.regular) {
       throw new Error('Invalid response from Unsplash API');
@@ -12947,6 +13182,168 @@ FinanceApp.prototype.updateBudgetSpending = function (monthKey) {
   this.saveData();
 };
 
+// ========================================
+// LEISURE BUDGET FUNCTIONS
+// ========================================
+
+FinanceApp.prototype.addLeisureItem = function (monthKey, description, amount) {
+  console.log('🎉 addLeisureItem called with:', { monthKey, description, amount, amountType: typeof amount });
+
+  // Limpiar estructura antigua si existe
+  if (!this.budgets[monthKey]) {
+    this.budgets[monthKey] = {
+      leisureItems: [],
+      totalLimit: 0,
+      totalSpent: 0,
+      createdAt: new Date().toISOString(),
+    };
+  } else if (this.budgets[monthKey].categories) {
+    // Migrar de estructura antigua a nueva
+    console.log('⚠️ Migrando de estructura antigua (categories) a nueva (leisureItems)');
+    this.budgets[monthKey] = {
+      leisureItems: [],
+      totalLimit: 0,
+      totalSpent: 0,
+      createdAt: this.budgets[monthKey].createdAt || new Date().toISOString(),
+    };
+  }
+
+  if (!this.budgets[monthKey].leisureItems) {
+    this.budgets[monthKey].leisureItems = [];
+  }
+
+  const numericAmount = Number(amount);
+
+  this.budgets[monthKey].leisureItems.push({
+    description: description,
+    amount: numericAmount,
+    createdAt: new Date().toISOString()
+  });
+
+  console.log('📋 Current leisureItems:', this.budgets[monthKey].leisureItems);
+
+  // Recalcular total
+  this.budgets[monthKey].totalLimit = this.budgets[monthKey].leisureItems
+    .reduce((sum, item) => {
+      console.log('  Adding:', item.amount, 'to sum:', sum);
+      return sum + item.amount;
+    }, 0);
+
+  console.log('💰 Total budget calculated:', this.budgets[monthKey].totalLimit);
+
+  this.updateLeisureBudgetSpending(monthKey);
+  this.saveData();
+  this.renderBudgetSection();
+  this.showToast(`Gasto de ocio agregado: ${description}`, 'success');
+};
+
+FinanceApp.prototype.removeLeisureItem = function (monthKey, index) {
+  if (!this.budgets[monthKey] || !this.budgets[monthKey].leisureItems) return;
+
+  const item = this.budgets[monthKey].leisureItems[index];
+  this.budgets[monthKey].leisureItems.splice(index, 1);
+
+  // Recalcular total
+  this.budgets[monthKey].totalLimit = this.budgets[monthKey].leisureItems
+    .reduce((sum, item) => sum + item.amount, 0);
+
+  this.updateLeisureBudgetSpending(monthKey);
+  this.saveData();
+  this.renderBudgetSection();
+  this.showToast(`Gasto de ocio eliminado: ${item.description}`, 'info');
+
+  console.log('🗑️ Leisure item removed:', { monthKey, index, item });
+};
+
+FinanceApp.prototype.markLeisureItemAsUsed = function (monthKey, index) {
+  if (!this.budgets[monthKey] || !this.budgets[monthKey].leisureItems) return;
+
+  const item = this.budgets[monthKey].leisureItems[index];
+
+  if (item.used) {
+    this.showToast('Este gasto de ocio ya fue marcado como usado', 'info');
+    return;
+  }
+
+  console.log('✅ Marking leisure item as used:', { monthKey, index, item });
+
+  // Marcar como usado
+  item.used = true;
+  item.usedDate = new Date().toISOString();
+
+  // Crear gasto automáticamente
+  const newExpense = {
+    id: Date.now(),
+    description: `Ocio: ${item.description}`,
+    amount: item.amount,
+    category: 'Entretenimiento',
+    date: new Date().toISOString(),
+    user: this.currentUser || 'Daniel',
+    necessity: 'No Necesario', // Marcado como gasto de ocio
+    isProtected: false
+  };
+
+  this.expenses.push(newExpense);
+
+  // Actualizar spending
+  this.updateLeisureBudgetSpending(monthKey);
+
+  // Guardar y actualizar UI completa
+  this.saveData();
+  this.renderDashboard();
+
+  // Actualizar la lista de gastos si estamos en esa sección
+  if (document.getElementById('expenses').style.display !== 'none') {
+    this.renderExpenses();
+  }
+
+  // Actualizar análisis si está visible
+  if (document.getElementById('analysis').style.display !== 'none') {
+    this.renderAnalysis();
+  }
+
+  // Cerrar el modal actual y mostrar uno nuevo actualizado
+  const modalOverlay = document.getElementById('budgetModalOverlay');
+  if (modalOverlay) {
+    modalOverlay.remove();
+  }
+
+  this.showBudgetModal();
+  this.showToast(`💰 Gasto registrado: ${item.description} por $${item.amount.toLocaleString()}`, 'success');
+
+  console.log('💰 Expense created from leisure item:', newExpense);
+};
+
+FinanceApp.prototype.updateLeisureBudgetSpending = function (monthKey) {
+  if (!this.budgets[monthKey]) return;
+
+  const budget = this.budgets[monthKey];
+  const [year, month] = monthKey.split('-');
+
+  budget.totalSpent = 0;
+
+  // Calcular gastos extras (solo los no esenciales)
+  this.expenses.forEach((expense) => {
+    const expenseDate = new Date(expense.date);
+    const expenseYear = expenseDate.getFullYear();
+    const expenseMonth = String(expenseDate.getMonth() + 1).padStart(2, '0');
+    const expenseMonthKey = `${expenseYear}-${expenseMonth}`;
+
+    if (expenseMonthKey === monthKey) {
+      // Solo contar gastos de ocio
+      if (
+        expense.necessity === 'Poco Necesario' ||
+        expense.necessity === 'No Necesario' ||
+        expense.necessity === 'Compra por Impulso'
+      ) {
+        budget.totalSpent += parseFloat(expense.amount);
+      }
+    }
+  });
+
+  this.saveData();
+};
+
 FinanceApp.prototype.checkBudgetAlerts = function (monthKey) {
   if (!this.budgets[monthKey]) return [];
 
@@ -12988,7 +13385,7 @@ FinanceApp.prototype.renderBudgetSection = function () {
   }
 
   this.renderBudgetSummary(monthKey);
-  this.renderBudgetSetupForm(monthKey);
+  this.renderLeisureItemsList(monthKey);
   this.renderBudgetProgress(monthKey);
 };
 
@@ -13035,23 +13432,44 @@ FinanceApp.prototype.renderBudgetSummary = function (monthKey) {
   }
 };
 
-FinanceApp.prototype.renderBudgetSetupForm = function (monthKey) {
-  const budget = this.budgets[monthKey];
-  const categories = [
-    'Alimentación',
-    'Transporte',
-    'Entretenimiento',
-    'Salud',
-    'Servicios',
-    'Compras',
-    'Otros',
-  ];
+FinanceApp.prototype.renderLeisureItemsList = function (monthKey) {
+  const container = document.getElementById('leisureItemsList');
+  if (!container) return;
 
-  categories.forEach((category) => {
-    const input = document.getElementById(`budget-${category}`);
-    if (input && budget && budget.categories[category]) {
-      input.value = budget.categories[category].limit || '';
-    }
+  const budget = this.budgets[monthKey];
+
+  if (!budget || !budget.leisureItems || budget.leisureItems.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state" style="padding: 20px; text-align: center; color: var(--color-text-muted);">
+        <i class="fas fa-gift" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
+        <p>No hay gastos de ocio configurados</p>
+        <p style="font-size: 0.9rem;">Agrega un gasto usando el formulario de abajo</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = budget.leisureItems.map((item, index) => `
+    <div class="leisure-item" data-index="${index}">
+      <div class="leisure-item-icon">
+        <i class="fas fa-star"></i>
+      </div>
+      <div class="leisure-item-content">
+        <div class="leisure-item-description">${item.description}</div>
+        <div class="leisure-item-amount">$${item.amount.toLocaleString()}</div>
+      </div>
+      <button type="button" class="leisure-item-delete" data-index="${index}">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+  `).join('');
+
+  // Agregar event listeners para eliminar items
+  container.querySelectorAll('.leisure-item-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const index = parseInt(e.currentTarget.getAttribute('data-index'));
+      this.removeLeisureItem(monthKey, index);
+    });
   });
 };
 
@@ -13060,142 +13478,133 @@ FinanceApp.prototype.renderBudgetProgress = function (monthKey) {
   if (!container) return;
 
   const budget = this.budgets[monthKey];
-  if (!budget || Object.keys(budget.categories).length === 0) {
+  if (!budget || !budget.leisureItems || budget.leisureItems.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
-        <i class="fas fa-wallet"></i>
-        <p>No hay presupuesto configurado para este mes</p>
-        <p class="text-muted">Usa el formulario arriba para establecer límites por categoría</p>
+        <i class="fas fa-gift"></i>
+        <p>No hay gastos de ocio configurados</p>
+        <p class="text-muted">Agrega gastos de ocio para ver su progreso aquí</p>
       </div>
     `;
     return;
   }
 
-  const categoryIcons = {
-    Alimentación: 'fas fa-utensils',
-    Transporte: 'fas fa-bus',
-    Entretenimiento: 'fas fa-film',
-    Salud: 'fas fa-heartbeat',
-    Servicios: 'fas fa-wrench',
-    Compras: 'fas fa-shopping-bag',
-    Otros: 'fas fa-ellipsis-h',
-  };
+  container.innerHTML = budget.leisureItems.map((item, index) => {
+    // Por lógica: no podemos saber específicamente qué se gastó en cada item
+    // Solo mostramos el límite configurado
+    const itemLimit = item.amount;
+    const itemSpent = 0; // Siempre 0 porque no hay tracking específico
+    const itemRemaining = itemLimit;
+    const itemExceeded = 0; // Solo si manualmente se marca
 
-  const categoryColors = {
-    Alimentación: 'food',
-    Transporte: 'transport',
-    Entretenimiento: 'entertainment',
-    Salud: 'health',
-    Servicios: 'services',
-    Compras: 'shopping',
-    Otros: 'other',
-  };
-
-  container.innerHTML = Object.entries(budget.categories)
-    .filter(([, data]) => data.limit > 0)
-    .map(([category, data]) => {
-      const percentage =
-        data.limit > 0 ? Math.min((data.spent / data.limit) * 100, 100) : 0;
-      const available = data.limit - data.spent;
-
-      let progressClass = 'progress-fill';
-      let alertHtml = '';
-
-      if (percentage >= 100) {
-        progressClass += ' danger';
-        alertHtml = `
-          <div class="budget-alert danger">
-            <i class="fas fa-exclamation-circle"></i>
-            ¡Presupuesto superado en $${Math.abs(available).toLocaleString(
-              'es-ES',
-              { minimumFractionDigits: 2 }
-            )}!
+    return `
+      <div class="budget-category-progress">
+        <div class="budget-category-progress-header">
+          <div class="budget-category-info">
+            <i class="fas fa-star category-icon category-icon--entertainment"></i>
+            <span class="category-name">${item.description}</span>
           </div>
-        `;
-      } else if (percentage >= 80) {
-        progressClass += ' warning';
-        alertHtml = `
-          <div class="budget-alert warning">
-            <i class="fas fa-exclamation-triangle"></i>
-            Te quedan $${available.toLocaleString('es-ES', {
-              minimumFractionDigits: 2,
-            })} (${(100 - percentage).toFixed(0)}%)
-          </div>
-        `;
-      }
-
-      return `
-        <div class="budget-category-progress">
-          <div class="budget-category-progress-header">
-            <div class="budget-category-info">
-              <i class="${
-                categoryIcons[category]
-              } category-icon category-icon--${categoryColors[category]}"></i>
-              <span class="category-name">${category}</span>
+          <div class="budget-category-amounts">
+            <div class="budget-category-amounts-row">
+              <span class="budget-amount-label">Límite:</span>
+              <span class="budget-amount-value">$${itemLimit.toLocaleString()}</span>
             </div>
-            <div class="budget-category-amounts">
-              <div class="budget-category-amounts-row">
-                <span class="budget-amount-label">Gastado:</span>
-                <span class="budget-amount-value spent">$${data.spent.toLocaleString(
-                  'es-ES',
-                  { minimumFractionDigits: 2 }
-                )}</span>
-              </div>
-              <div class="budget-category-amounts-row">
-                <span class="budget-amount-label">Límite:</span>
-                <span class="budget-amount-value">$${data.limit.toLocaleString(
-                  'es-ES',
-                  { minimumFractionDigits: 2 }
-                )}</span>
-              </div>
+            <div class="budget-category-amounts-row">
+              <span class="budget-amount-label">Gastado:</span>
+              <span class="budget-amount-value spent">$${itemSpent.toLocaleString()}</span>
+            </div>
+            <div class="budget-category-amounts-row">
+              <span class="budget-amount-label">Restante:</span>
+              <span class="budget-amount-value available">$${itemRemaining.toLocaleString()}</span>
+            </div>
+            <div class="budget-category-amounts-row">
+              <span class="budget-amount-label">Excedido:</span>
+              <span class="budget-amount-value exceeded">$${itemExceeded.toLocaleString()}</span>
             </div>
           </div>
-          <div class="progress-header">
-            <span>${percentage.toFixed(0)}% utilizado</span>
-            <span class="budget-amount-value ${
-              available < 0 ? 'exceeded' : 'available'
-            }">
-              ${available >= 0 ? 'Disponible: ' : 'Excedido: '}$${Math.abs(
-        available
-      ).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
-            </span>
-          </div>
-          <div class="progress-bar">
-            <div class="${progressClass}" style="width: ${percentage}%"></div>
-          </div>
-          ${alertHtml}
         </div>
-      `;
-    })
-    .join('');
+      </div>
+    `;
+  }).join('');
 };
 
 FinanceApp.prototype.setupBudgetListeners = function () {
-  // Budget setup form
+  // Format amount input with thousands separator
+  const amountInput = document.getElementById('leisureItemAmount');
+  if (amountInput) {
+    amountInput.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/[^0-9]/g, ''); // Solo números
+      if (value) {
+        // Formatear con separador de miles
+        e.target.value = parseInt(value, 10).toLocaleString('es-ES');
+      }
+    });
+  }
+
+  // Add leisure item button
+  const addLeisureBtn = document.getElementById('addLeisureItemBtn');
+  if (addLeisureBtn) {
+    addLeisureBtn.addEventListener('click', () => {
+      const descInput = document.getElementById('leisureItemDescription');
+      const amountInput = document.getElementById('leisureItemAmount');
+
+      const description = descInput.value.trim();
+      const amountRaw = amountInput.value.trim();
+
+      // Limpiar el valor: eliminar todo lo que no sea dígito
+      const amountCleaned = amountRaw.replace(/[^0-9]/g, '');
+      const amount = parseInt(amountCleaned, 10) || 0;
+
+      console.log('🎉 Adding leisure item:', {
+        description,
+        amountRaw,
+        amountCleaned,
+        amount,
+        type: typeof amount
+      });
+
+      if (!description) {
+        this.showToast('Debes especificar para qué es el gasto', 'error');
+        return;
+      }
+
+      if (amount <= 0) {
+        this.showToast('El monto debe ser mayor a 0', 'error');
+        return;
+      }
+
+      this.addLeisureItem(this.currentBudgetMonth, description, amount);
+
+      // Limpiar inputs
+      descInput.value = '';
+      amountInput.value = '';
+      descInput.focus();
+    });
+  }
+
+  // Budget setup form (save all leisure items)
   const budgetForm = document.getElementById('budgetSetupForm');
   if (budgetForm) {
     budgetForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
-      const budgetConfig = {};
-      const categories = [
-        'Alimentación',
-        'Transporte',
-        'Entretenimiento',
-        'Salud',
-        'Servicios',
-        'Compras',
-        'Otros',
-      ];
+      const monthKey = this.currentBudgetMonth;
+      const budget = this.budgets[monthKey];
 
-      categories.forEach((category) => {
-        const input = document.getElementById(`budget-${category}`);
-        budgetConfig[category] = input ? parseFloat(input.value) || 0 : 0;
+      if (!budget || !budget.leisureItems || budget.leisureItems.length === 0) {
+        this.showToast('Agrega al menos un gasto de ocio antes de guardar', 'error');
+        return;
+      }
+
+      console.log('💾 Guardando presupuesto de ocio:', {
+        month: monthKey,
+        leisureItems: budget.leisureItems,
+        totalBudget: budget.totalLimit
       });
 
-      this.setupBudget(this.currentBudgetMonth, budgetConfig);
-      this.renderBudgetSection();
-      this.showToast('Presupuesto configurado exitosamente', 'success');
+      this.saveData();
+      this.renderDashboard(); // Actualizar tarjeta de presupuesto
+      this.showToast('Presupuesto de ocio guardado exitosamente', 'success');
     });
   }
 
