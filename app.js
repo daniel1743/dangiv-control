@@ -730,6 +730,7 @@ class FinanceApp {
               avatar: normalizedData.userProfile.avatar || '',
               avatarType: normalizedData.userProfile.avatarType || 'default',
               selectedAvatar: normalizedData.userProfile.selectedAvatar || 0,
+              bannerCover: normalizedData.userProfile.bannerCover || '',
             }
           : undefined,
       };
@@ -1909,7 +1910,32 @@ class FinanceApp {
         this.sharedAccountId ? 'SÍ' : 'NO'
       );
 
-      const docSnap = await FB.getDoc(userDocRef);
+      let docSnap;
+      try {
+        docSnap = await FB.getDoc(userDocRef);
+      } catch (firestoreError) {
+        console.error('Error al leer documento de Firestore:', firestoreError);
+
+        // Si falla la lectura, probablemente hay datos corruptos (imágenes base64 grandes)
+        // Intentar limpiar el documento
+        console.log('Intentando limpiar datos corruptos...');
+
+        try {
+          // Actualizar solo con campos básicos para limpiar el documento
+          await FB.updateDoc(userDocRef, {
+            'userProfile.avatar': '',
+            'userProfile.bannerCover': '',
+            updatedAt: Date.now(),
+          });
+
+          this.showToast('Datos de perfil limpiados. Por favor, recarga la página.', 'warning');
+        } catch (cleanError) {
+          console.error('Error al limpiar datos:', cleanError);
+          this.showToast('Error de sincronización. Usando datos locales.', 'error');
+        }
+
+        return; // Salir de la función
+      }
 
       if (docSnap.exists()) {
         const cloudRaw = docSnap.data() || {};
@@ -7819,6 +7845,41 @@ class FinanceApp {
     }
   }
 } // <-- FIN DE LA CLASE FINANCEAPP
+
+// === FUNCIÓN GLOBAL DE LIMPIEZA DE FIRESTORE ===
+// Usar desde consola: window.cleanFirestoreData()
+window.cleanFirestoreData = async function() {
+  const FB = window.FB;
+  const app = window.app;
+
+  if (!FB || !app || !app.currentUser || app.currentUser === 'anonymous') {
+    console.error('No hay sesión activa de Firebase');
+    return;
+  }
+
+  try {
+    const firestoreDocId = app.sharedAccountId || app.currentUser;
+    const userDocRef = FB.doc(FB.db, 'userData', firestoreDocId);
+
+    console.log('🧹 Limpiando datos de Firestore para:', firestoreDocId);
+
+    // Limpiar solo las imágenes, mantener el resto de datos
+    await FB.updateDoc(userDocRef, {
+      'userProfile.avatar': '',
+      'userProfile.bannerCover': '',
+      updatedAt: Date.now(),
+    });
+
+    console.log('✅ Datos limpiados exitosamente');
+    console.log('🔄 Recarga la página para aplicar cambios');
+
+    if (app.showToast) {
+      app.showToast('Datos limpiados. Recarga la página.', 'success');
+    }
+  } catch (error) {
+    console.error('❌ Error al limpiar datos:', error);
+  }
+};
 
 // === INICIO DE SECCIÃƒâ€œN: INICIALIZACIÃƒâ€œN GLOBAL DE LA APP ===
 
@@ -13910,50 +13971,89 @@ FinanceApp.prototype.setupInstagramQuickActions = function () {
   }
 };
 
-FinanceApp.prototype.changeBannerCover = function () {
+FinanceApp.prototype.changeBannerCover = async function () {
   // Create hidden file input
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
   input.style.display = 'none';
 
-  input.addEventListener('change', (e) => {
+  input.addEventListener('change', async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        this.showToast('Por favor selecciona una imagen válida', 'error');
-        return;
-      }
+    if (!file) return;
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        this.showToast('La imagen debe ser menor a 5MB', 'error');
-        return;
-      }
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      this.showToast('Por favor selecciona una imagen válida', 'error');
+      return;
+    }
 
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      this.showToast('La imagen debe ser menor a 5MB', 'error');
+      return;
+    }
+
+    // Show loading
+    this.showToast('Subiendo portada...', 'info');
+
+    try {
       const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageUrl = event.target.result;
+      reader.onload = async (event) => {
+        const imageData = event.target.result;
 
         // Save to profile
         if (!this.userProfile) {
           this.userProfile = {};
         }
-        this.userProfile.bannerCover = imageUrl;
+        this.userProfile.bannerCover = imageData;
+
+        // Save to localStorage first
         this.saveData();
 
-        // Update banner
+        // Update banner UI
         const mobileBannerCover = document.getElementById('mobileBannerCover');
         if (mobileBannerCover) {
-          mobileBannerCover.style.backgroundImage = `url(${imageUrl})`;
+          mobileBannerCover.style.backgroundImage = `url(${imageData})`;
           mobileBannerCover.style.backgroundSize = 'cover';
           mobileBannerCover.style.backgroundPosition = 'center';
         }
 
-        this.showToast('Portada actualizada exitosamente', 'success');
+        // Upload to Firebase Storage if logged in
+        const FB = window.FB;
+        if (FB?.auth && this.firebaseUser) {
+          try {
+            const storageRef = FB.ref(
+              FB.storage,
+              `banners/${this.firebaseUser.uid}`
+            );
+            await FB.uploadString(storageRef, imageData, 'data_url');
+            const downloadURL = await FB.getDownloadURL(storageRef);
+
+            // Update with Firebase URL
+            this.userProfile.bannerCover = downloadURL;
+
+            // Update Firestore
+            const userDocRef = FB.doc(FB.db, 'userData', this.firebaseUser.uid);
+            await FB.updateDoc(userDocRef, {
+              'userProfile.bannerCover': downloadURL,
+              updatedAt: Date.now(),
+            });
+
+            this.showToast('Portada actualizada correctamente', 'success');
+          } catch (error) {
+            console.error('Error uploading banner to Firebase:', error);
+            this.showToast('Portada guardada localmente', 'warning');
+          }
+        } else {
+          this.showToast('Portada actualizada exitosamente', 'success');
+        }
       };
+
       reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error uploading banner:', error);
+      this.showToast('Error al subir la portada', 'error');
     }
   });
 

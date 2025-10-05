@@ -51,6 +51,8 @@ const auth = getAuth(app);
 const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
   useFetchStreams: false,
+  // Aumentar límite de tamaño de documentos
+  cacheSizeBytes: 40000000, // 40MB cache
 });
 const storage = getStorage(app);
 
