@@ -3605,8 +3605,8 @@ class FinanceApp {
         break;
 
       case 'go-premium':
-        // Ir a la tienda/premium
-        this.showSection('store');
+        // Mostrar modal de "en desarrollo"
+        this.showPremiumComingSoonModal();
         break;
 
       case 'report-problem':
@@ -3635,6 +3635,62 @@ class FinanceApp {
     } else if (newName !== null && newName.trim() === '') {
       this.showToast('El nombre no puede estar vacío', 'error');
     }
+  }
+
+  /**
+   * Muestra modal de Premium próximamente
+   */
+  showPremiumComingSoonModal() {
+    // Crear modal
+    const modal = document.createElement('div');
+    modal.className = 'daily-message-modal';
+    modal.innerHTML = `
+      <div class="daily-message-overlay"></div>
+      <div class="daily-message-content">
+        <div class="daily-message-header" style="background: linear-gradient(135deg, #667EEA, #764BA2, #F093FB); color: white;">
+          <span class="daily-message-icon">👑</span>
+          <h2>Dan&Giv Premium</h2>
+          <button class="daily-message-close" onclick="this.closest('.daily-message-modal').remove()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="daily-message-body">
+          <p class="daily-message-greeting">¡Estamos trabajando en algo especial! ✨</p>
+          <p class="daily-message-text">
+            Dan&Giv Control Premium está en desarrollo y pronto estará disponible con características increíbles:
+          </p>
+          <div class="daily-message-reflection">
+            <strong>🎯 Próximamente:</strong><br><br>
+            • Análisis avanzado con IA personalizada<br>
+            • Sincronización multi-dispositivo<br>
+            • Reportes financieros profesionales<br>
+            • Metas ilimitadas y categorías personalizadas<br>
+            • Soporte prioritario 24/7<br>
+            • Y muchas sorpresas más...
+          </div>
+          <p class="daily-message-farewell">
+            Mientras tanto, sigue disfrutando de todas las funciones actuales. ¡Gracias por tu interés! 💙
+          </p>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Cerrar al hacer click en overlay
+    const overlay = modal.querySelector('.daily-message-overlay');
+    if (overlay) {
+      overlay.addEventListener('click', () => modal.remove());
+    }
+
+    // Cerrar con ESC
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') {
+        modal.remove();
+        document.removeEventListener('keydown', handleEsc);
+      }
+    };
+    document.addEventListener('keydown', handleEsc);
   }
 
   /**
@@ -7309,6 +7365,7 @@ class FinanceApp {
   }
 
   showTransactionsModal() {
+    console.log('showTransactionsModal called, expenses:', this.expenses.length);
     if (this.expenses.length === 0) {
       this.showToast('No hay transacciones registradas', 'info');
       return;
@@ -12879,14 +12936,19 @@ FinanceApp.prototype.editSavingsAmount = function (id) {
 };
 
 FinanceApp.prototype.showSavingsDetailModal = function () {
+  console.log('showSavingsDetailModal called');
   const modal = document.getElementById('savingsDetailModal');
-  if (!modal) return;
+  if (!modal) {
+    console.error('savingsDetailModal not found');
+    return;
+  }
 
   const modalTotal = document.getElementById('modalTotalSavings');
   const modalSources = document.getElementById('modalTotalSources');
   const breakdownList = document.getElementById('savingsBreakdownList');
 
   const total = this.savingsAccounts.reduce((sum, acc) => sum + acc.amount, 0);
+  console.log('Total savings:', total, 'Accounts:', this.savingsAccounts.length);
 
   if (modalTotal) modalTotal.textContent = `$${total.toLocaleString()}`;
   if (modalSources) modalSources.textContent = this.savingsAccounts.length;
@@ -14714,13 +14776,18 @@ FinanceApp.prototype.setupInstagramQuickActions = function () {
   });
 
   // Banner cover customization
-  // DESHABILITADO: Interfiere con el botón de login
-  // const mobileBannerCover = document.getElementById('mobileBannerCover');
-  // if (mobileBannerCover) {
-  //   mobileBannerCover.addEventListener('click', () => {
-  //     this.changeBannerCover();
-  //   });
-  // }
+  const mobileBannerCover = document.getElementById('mobileBannerCover');
+  if (mobileBannerCover) {
+    mobileBannerCover.addEventListener('click', (e) => {
+      // Evitar que se abra si se hace click en botones
+      if (e.target.closest('.banner-hamburger-btn') ||
+          e.target.closest('.banner-notification-btn') ||
+          e.target.closest('#mobileAvatar')) {
+        return;
+      }
+      this.changeBannerCover();
+    });
+  }
 
   // Mobile avatar customization
   // DESHABILITADO: Ahora el avatar móvil abre el menú del avatar (mobile-menu.js)
