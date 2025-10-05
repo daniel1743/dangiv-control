@@ -1419,9 +1419,7 @@ class FinanceApp {
       const mobileProfileBtn = document.getElementById('mobileProfileBtn');
       const navbarLoginBtn = document.getElementById('navbarLoginBtn');
 
-      // NUEVOS BOTONES SIMPLES
-      const mobileQuickLoginBtn = document.getElementById('mobileQuickLoginBtn');
-      const mobileQuickLogoutBtn = document.getElementById('mobileQuickLogoutBtn');
+      // FOOTER Y HAMBURGUESA
       const footerLoginLink = document.getElementById('footerLoginLink');
 
       if (user) {
@@ -1441,10 +1439,6 @@ class FinanceApp {
         // Show mobile buttons (CSS handles responsive visibility)
         if (mobileLogoutBtn) mobileLogoutBtn.classList.add('show');
         if (mobileProfileBtn) mobileProfileBtn.classList.add('show');
-
-        // NUEVOS: Mostrar logout, ocultar login
-        if (mobileQuickLoginBtn) mobileQuickLoginBtn.style.display = 'none';
-        if (mobileQuickLogoutBtn) mobileQuickLogoutBtn.style.display = 'flex';
 
         // Footer: Ocultar link de login
         if (footerLoginLink) footerLoginLink.style.display = 'none';
@@ -1520,10 +1514,6 @@ class FinanceApp {
         // Hide mobile buttons
         if (mobileLogoutBtn) mobileLogoutBtn.classList.remove('show');
         if (mobileProfileBtn) mobileProfileBtn.classList.remove('show');
-
-        // NUEVOS: Mostrar login, ocultar logout
-        if (mobileQuickLoginBtn) mobileQuickLoginBtn.style.display = 'flex';
-        if (mobileQuickLogoutBtn) mobileQuickLogoutBtn.style.display = 'none';
 
         // Footer: Mostrar link de login
         if (footerLoginLink) footerLoginLink.style.display = 'block';
@@ -1898,6 +1888,47 @@ class FinanceApp {
       mobileBannerCover.style.backgroundImage = `url(${this.userProfile.bannerCover})`;
       mobileBannerCover.style.backgroundSize = 'cover';
       mobileBannerCover.style.backgroundPosition = 'center';
+    }
+  }
+
+  /**
+   * SOLUCIÓN: Actualiza la información del avatar sidebar
+   * Sincroniza el avatar, nombre y email en el menú lateral
+   */
+  updateAvatarMenu() {
+    const avatarSidebarImage = document.getElementById('avatarSidebarImage');
+    const avatarSidebarName = document.getElementById('avatarSidebarName');
+    const avatarSidebarEmail = document.getElementById('avatarSidebarEmail');
+
+    // Obtener la fuente del avatar actual
+    const avatarSrc =
+      this.userProfile.avatarType === 'custom'
+        ? this.userProfile.avatar
+        : this.defaultAvatars[this.userProfile.selectedAvatar];
+
+    // Actualizar imagen del avatar
+    if (avatarSidebarImage) {
+      avatarSidebarImage.src = avatarSrc;
+      // Fallback en caso de error
+      avatarSidebarImage.onerror = () => {
+        avatarSidebarImage.src = this.defaultAvatars[0]; // Usar primer avatar por defecto
+      };
+    }
+
+    // Actualizar nombre
+    if (avatarSidebarName) {
+      avatarSidebarName.textContent = this.userProfile.name || 'Usuario';
+    }
+
+    // Actualizar email
+    if (avatarSidebarEmail) {
+      avatarSidebarEmail.textContent = this.userProfile.email || 'email@ejemplo.com';
+    }
+
+    // Notificar al avatar-sidebar.js si existe
+    // NOTA: Usamos avatarSidebarManager porque avatarSidebar es el elemento HTML
+    if (window.avatarSidebarManager && typeof window.avatarSidebarManager.updateUserInfo === 'function') {
+      window.avatarSidebarManager.updateUserInfo();
     }
   }
 
@@ -2774,6 +2805,9 @@ class FinanceApp {
         sidebar.classList.toggle('open');
         overlay.classList.toggle('active');
       });
+
+      // NOTA: El botón mobileHamburgerBtn es manejado por avatar-sidebar.js
+      // No agregamos listener aquí para evitar duplicados
 
       overlay.addEventListener('click', closeSidebar);
 
@@ -8031,9 +8065,15 @@ class CookieConsent {
     // Verificar si el usuario está autenticado
     const isAuthenticated = localStorage.getItem('financia_auth_status') === 'authenticated';
 
-    // Mostrar banner si no hay consentimiento Y no está autenticado
-    if (!this.hasConsent() && !isAuthenticated && banner) {
-      banner.classList.remove('hidden');
+    // SOLUCIÓN: Ocultar banner por defecto y solo mostrar si corresponde
+    if (banner) {
+      // Siempre empezar con el banner oculto
+      banner.classList.add('hidden');
+
+      // Mostrar solo si no hay consentimiento Y no está autenticado
+      if (!this.hasConsent() && !isAuthenticated) {
+        banner.classList.remove('hidden');
+      }
     }
 
     // Botones del banner

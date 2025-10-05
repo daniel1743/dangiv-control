@@ -1,0 +1,381 @@
+/* ============================================
+   AVATAR SIDEBAR - Menú lateral moderno
+   Arquitectura: BEM (Block Element Modifier)
+   ============================================ */
+
+/* ============================================
+   VARIABLES CSS (Custom Properties)
+   ============================================ */
+:root {
+  --avatar-sidebar-width: 320px;
+  --avatar-sidebar-width-mobile: 100vw;
+  --avatar-sidebar-z-index: 9999;
+  --avatar-sidebar-backdrop-z-index: 9998;
+  --avatar-sidebar-transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --avatar-sidebar-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ============================================
+   SIDEBAR PRINCIPAL
+   ============================================ */
+.avatar-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: var(--avatar-sidebar-width);
+  height: 100vh;
+  background: var(--color-surface);
+  box-shadow: var(--avatar-sidebar-shadow);
+  z-index: var(--avatar-sidebar-z-index);
+  transform: translateX(100%);
+  transition: var(--avatar-sidebar-transition);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Estado abierto */
+.avatar-sidebar--open {
+  transform: translateX(0);
+}
+
+/* ============================================
+   HEADER DEL SIDEBAR
+   ============================================ */
+.avatar-sidebar__header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 20px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal-700) 100%);
+  color: white;
+  flex-shrink: 0;
+}
+
+.avatar-sidebar__profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0; /* Para que el texto se trunque correctamente */
+}
+
+.avatar-sidebar__image {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.avatar-sidebar__image:hover {
+  transform: scale(1.05);
+}
+
+.avatar-sidebar__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.avatar-sidebar__name {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar-sidebar__email {
+  margin: 4px 0 0;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar-sidebar__close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.avatar-sidebar__close:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(90deg);
+}
+
+.avatar-sidebar__close i {
+  font-size: 18px;
+}
+
+/* ============================================
+   CONTENIDO DEL SIDEBAR
+   ============================================ */
+.avatar-sidebar__content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 0;
+}
+
+/* Scrollbar personalizado */
+.avatar-sidebar__content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.avatar-sidebar__content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.avatar-sidebar__content::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.avatar-sidebar__content::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* ============================================
+   SECCIONES DEL MENÚ
+   ============================================ */
+.avatar-sidebar__section {
+  margin-bottom: 8px;
+}
+
+.avatar-sidebar__section-title {
+  margin: 0;
+  padding: 12px 20px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+}
+
+.avatar-sidebar__menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================
+   ITEMS DEL MENÚ
+   ============================================ */
+.avatar-sidebar__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border: none;
+  background: none;
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.avatar-sidebar__item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--color-primary);
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+}
+
+.avatar-sidebar__item:hover {
+  background: var(--color-background);
+}
+
+.avatar-sidebar__item:hover::before {
+  transform: scaleY(1);
+}
+
+.avatar-sidebar__item:active {
+  background: var(--color-surface-raised);
+}
+
+.avatar-sidebar__item i {
+  width: 20px;
+  font-size: 18px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.avatar-sidebar__item:hover i {
+  color: var(--color-primary);
+}
+
+.avatar-sidebar__item span {
+  flex: 1;
+}
+
+/* Item Premium */
+.avatar-sidebar__item--premium i {
+  color: var(--color-primary);
+}
+
+.avatar-sidebar__badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Item Peligroso */
+.avatar-sidebar__item--danger {
+  color: var(--color-red-500);
+}
+
+.avatar-sidebar__item--danger i {
+  color: var(--color-red-500);
+}
+
+.avatar-sidebar__item--danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Item con Toggle */
+.avatar-sidebar__item--toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: default;
+}
+
+.avatar-sidebar__item--toggle:hover::before {
+  transform: scaleY(0);
+}
+
+.avatar-sidebar__toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+/* ============================================
+   SWITCH (Toggle)
+   ============================================ */
+.avatar-sidebar__switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.avatar-sidebar__switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.avatar-sidebar__slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-border);
+  transition: 0.3s;
+  border-radius: 26px;
+}
+
+.avatar-sidebar__slider::before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.avatar-sidebar__switch input:checked + .avatar-sidebar__slider {
+  background-color: var(--color-primary);
+}
+
+.avatar-sidebar__switch input:checked + .avatar-sidebar__slider::before {
+  transform: translateX(22px);
+}
+
+/* ============================================
+   BACKDROP
+   ============================================ */
+.avatar-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: var(--avatar-sidebar-backdrop-z-index);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.avatar-sidebar-backdrop--visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .avatar-sidebar {
+    width: var(--avatar-sidebar-width-mobile);
+  }
+}
+
+/* ============================================
+   ACCESIBILIDAD
+   ============================================ */
+.avatar-sidebar__item:focus-visible,
+.avatar-sidebar__close:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .avatar-sidebar,
+  .avatar-sidebar-backdrop,
+  .avatar-sidebar__item,
+  .avatar-sidebar__close,
+  .avatar-sidebar__slider {
+    transition: none;
+  }
+}
