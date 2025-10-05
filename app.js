@@ -7846,6 +7846,233 @@ class FinanceApp {
   }
 } // <-- FIN DE LA CLASE FINANCEAPP
 
+// === SISTEMA DE CONSENTIMIENTO DE COOKIES ===
+class CookieConsent {
+  constructor() {
+    this.consentKey = 'cookie_consent';
+    this.preferences = this.loadPreferences();
+    this.init();
+  }
+
+  loadPreferences() {
+    const saved = localStorage.getItem(this.consentKey);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {
+      essential: true, // Siempre true
+      analytics: false,
+      functional: false,
+      timestamp: null
+    };
+  }
+
+  savePreferences() {
+    this.preferences.timestamp = Date.now();
+    localStorage.setItem(this.consentKey, JSON.stringify(this.preferences));
+  }
+
+  hasConsent() {
+    return this.preferences.timestamp !== null;
+  }
+
+  init() {
+    const banner = document.getElementById('cookieBanner');
+    const modal = document.getElementById('cookieModal');
+
+    // Mostrar banner si no hay consentimiento
+    if (!this.hasConsent() && banner) {
+      banner.classList.remove('hidden');
+    }
+
+    // Botones del banner
+    document.getElementById('cookieAccept')?.addEventListener('click', () => {
+      this.acceptAll();
+    });
+
+    document.getElementById('cookieReject')?.addEventListener('click', () => {
+      this.rejectAll();
+    });
+
+    document.getElementById('cookieSettings')?.addEventListener('click', () => {
+      this.openModal();
+    });
+
+    // Modal
+    document.getElementById('cookieModalClose')?.addEventListener('click', () => {
+      this.closeModal();
+    });
+
+    document.getElementById('cookieModalOverlay')?.addEventListener('click', () => {
+      this.closeModal();
+    });
+
+    document.getElementById('cookieRejectAll')?.addEventListener('click', () => {
+      this.rejectAll();
+      this.closeModal();
+    });
+
+    document.getElementById('cookieSavePreferences')?.addEventListener('click', () => {
+      this.saveCustomPreferences();
+    });
+
+    // Cargar preferencias actuales en el modal
+    this.loadModalState();
+  }
+
+  acceptAll() {
+    this.preferences = {
+      essential: true,
+      analytics: true,
+      functional: true,
+      timestamp: Date.now()
+    };
+    this.savePreferences();
+    this.hideBanner();
+    this.applyConsent();
+
+    const app = window.app;
+    if (app && app.showToast) {
+      app.showToast('Preferencias de cookies guardadas', 'success');
+    }
+  }
+
+  rejectAll() {
+    this.preferences = {
+      essential: true,
+      analytics: false,
+      functional: false,
+      timestamp: Date.now()
+    };
+    this.savePreferences();
+    this.hideBanner();
+    this.applyConsent();
+
+    const app = window.app;
+    if (app && app.showToast) {
+      app.showToast('Solo cookies esenciales activadas', 'info');
+    }
+  }
+
+  saveCustomPreferences() {
+    this.preferences = {
+      essential: true,
+      analytics: document.getElementById('cookieAnalytics')?.checked || false,
+      functional: document.getElementById('cookieFunctional')?.checked || false,
+      timestamp: Date.now()
+    };
+    this.savePreferences();
+    this.hideBanner();
+    this.closeModal();
+    this.applyConsent();
+
+    const app = window.app;
+    if (app && app.showToast) {
+      app.showToast('Preferencias de cookies guardadas', 'success');
+    }
+  }
+
+  loadModalState() {
+    const analyticsCheckbox = document.getElementById('cookieAnalytics');
+    const functionalCheckbox = document.getElementById('cookieFunctional');
+
+    if (analyticsCheckbox) {
+      analyticsCheckbox.checked = this.preferences.analytics;
+    }
+    if (functionalCheckbox) {
+      functionalCheckbox.checked = this.preferences.functional;
+    }
+  }
+
+  openModal() {
+    const modal = document.getElementById('cookieModal');
+    if (modal) {
+      this.loadModalState();
+      modal.classList.remove('hidden');
+    }
+  }
+
+  closeModal() {
+    const modal = document.getElementById('cookieModal');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
+  hideBanner() {
+    const banner = document.getElementById('cookieBanner');
+    if (banner) {
+      banner.classList.add('hidden');
+    }
+  }
+
+  applyConsent() {
+    // Aquí se aplicarían las preferencias
+    // Por ejemplo, inicializar Google Analytics solo si analytics: true
+
+    if (this.preferences.analytics) {
+      console.log('✅ Analytics cookies enabled');
+      // Inicializar Google Analytics, Firebase Analytics, etc.
+      this.initAnalytics();
+    } else {
+      console.log('❌ Analytics cookies disabled');
+    }
+
+    if (this.preferences.functional) {
+      console.log('✅ Functional cookies enabled');
+      // Inicializar funcionalidades extra
+    } else {
+      console.log('❌ Functional cookies disabled');
+    }
+  }
+
+  initAnalytics() {
+    // Firebase Analytics (si está disponible)
+    const FB = window.FB;
+    if (FB && FB.analytics) {
+      console.log('🔥 Firebase Analytics initialized');
+      // FB.logEvent(FB.analytics, 'cookie_consent', { analytics: true });
+    }
+
+    // Google Analytics (si está disponible)
+    if (window.gtag) {
+      window.gtag('consent', 'update', {
+        'analytics_storage': 'granted'
+      });
+    }
+  }
+
+  // Método público para abrir configuración desde menú
+  openSettings() {
+    this.openModal();
+  }
+}
+
+// Inicializar sistema de cookies cuando el DOM esté listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.cookieConsent = new CookieConsent();
+
+    // Conectar botón de configuración
+    const openCookieSettingsBtn = document.getElementById('openCookieSettings');
+    if (openCookieSettingsBtn) {
+      openCookieSettingsBtn.addEventListener('click', () => {
+        window.cookieConsent.openSettings();
+      });
+    }
+  });
+} else {
+  window.cookieConsent = new CookieConsent();
+
+  // Conectar botón de configuración
+  const openCookieSettingsBtn = document.getElementById('openCookieSettings');
+  if (openCookieSettingsBtn) {
+    openCookieSettingsBtn.addEventListener('click', () => {
+      window.cookieConsent.openSettings();
+    });
+  }
+}
+
 // === FUNCIÓN GLOBAL DE LIMPIEZA DE FIRESTORE ===
 // Usar desde consola: window.cleanFirestoreData()
 window.cleanFirestoreData = async function() {

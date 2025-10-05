@@ -2941,6 +2941,33 @@
                   </div>
                 </div>
 
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <h3>🍪 Cookies y privacidad</h3>
+                    <p>Gestiona tus preferencias de cookies</p>
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="settings-list">
+                      <div class="settings-list-item">
+                        <div class="settings-list-icon">
+                          <i class="fas fa-cookie-bite"></i>
+                        </div>
+                        <div class="settings-list-content">
+                          <span class="settings-list-title">Configuración de cookies</span>
+                          <span class="settings-list-subtitle">Controla qué cookies acepta tu navegador</span>
+                        </div>
+                        <button class="btn-premium btn-premium-outline" id="openCookieSettings">
+                          <i class="fas fa-cog"></i> Configurar
+                        </button>
+                      </div>
+                    </div>
+                    <p class="form-hint" style="margin-top: var(--space-12)">
+                      <i class="fas fa-shield-alt"></i> Cumplimiento GDPR, CCPA y LGPD.
+                      Puedes cambiar tus preferencias en cualquier momento.
+                    </p>
+                  </div>
+                </div>
+
                 <div class="settings-card settings-card-danger">
                   <div class="settings-card-header">
                     <h3>Zona de peligro</h3>
@@ -4947,6 +4974,109 @@
               Cerrar sesión
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cookie Consent Banner -->
+    <div class="cookie-banner" id="cookieBanner">
+      <div class="cookie-banner__content">
+        <div class="cookie-banner__icon">
+          🍪
+        </div>
+        <div class="cookie-banner__text">
+          <h3>Valoramos tu privacidad</h3>
+          <p>Usamos cookies para mejorar tu experiencia, analizar el uso de la app y personalizar el contenido. Puedes aceptar todas o configurarlas.</p>
+        </div>
+        <div class="cookie-banner__actions">
+          <button class="btn-cookie btn-cookie--settings" id="cookieSettings">
+            <i class="fas fa-cog"></i> Configurar
+          </button>
+          <button class="btn-cookie btn-cookie--reject" id="cookieReject">
+            Rechazar
+          </button>
+          <button class="btn-cookie btn-cookie--accept" id="cookieAccept">
+            <i class="fas fa-check"></i> Aceptar todas
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cookie Settings Modal -->
+    <div class="cookie-modal hidden" id="cookieModal">
+      <div class="cookie-modal__overlay" id="cookieModalOverlay"></div>
+      <div class="cookie-modal__content">
+        <div class="cookie-modal__header">
+          <h2><i class="fas fa-shield-alt"></i> Configuración de Cookies</h2>
+          <button class="cookie-modal__close" id="cookieModalClose">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="cookie-modal__body">
+          <div class="cookie-category">
+            <div class="cookie-category__header">
+              <div class="cookie-category__info">
+                <h4>🔒 Cookies Esenciales</h4>
+                <p>Necesarias para el funcionamiento básico de la aplicación</p>
+              </div>
+              <label class="cookie-toggle cookie-toggle--disabled">
+                <input type="checkbox" checked disabled>
+                <span class="cookie-toggle__slider"></span>
+              </label>
+            </div>
+            <div class="cookie-category__details">
+              <small>Incluye: sesión de usuario, preferencias de interfaz, datos guardados localmente</small>
+            </div>
+          </div>
+
+          <div class="cookie-category">
+            <div class="cookie-category__header">
+              <div class="cookie-category__info">
+                <h4>📊 Cookies Analíticas</h4>
+                <p>Nos ayudan a entender cómo usas la app para mejorarla</p>
+              </div>
+              <label class="cookie-toggle">
+                <input type="checkbox" id="cookieAnalytics">
+                <span class="cookie-toggle__slider"></span>
+              </label>
+            </div>
+            <div class="cookie-category__details">
+              <small>Firebase Analytics, métricas de uso, estadísticas anónimas</small>
+            </div>
+          </div>
+
+          <div class="cookie-category">
+            <div class="cookie-category__header">
+              <div class="cookie-category__info">
+                <h4>🎯 Cookies Funcionales</h4>
+                <p>Mejoran la experiencia con funciones personalizadas</p>
+              </div>
+              <label class="cookie-toggle">
+                <input type="checkbox" id="cookieFunctional">
+                <span class="cookie-toggle__slider"></span>
+              </label>
+            </div>
+            <div class="cookie-category__details">
+              <small>Recordar preferencias, sincronización de datos, notificaciones</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="cookie-modal__footer">
+          <button class="btn-cookie btn-cookie--reject" id="cookieRejectAll">
+            Rechazar todas
+          </button>
+          <button class="btn-cookie btn-cookie--accept" id="cookieSavePreferences">
+            <i class="fas fa-save"></i> Guardar preferencias
+          </button>
+        </div>
+
+        <div class="cookie-modal__legal">
+          <small>
+            Al usar Dan&Giv Control, aceptas nuestro uso de cookies según tu configuración.
+            Puedes cambiar tus preferencias en cualquier momento desde Configuración.
+          </small>
         </div>
       </div>
     </div>
