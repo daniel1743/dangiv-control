@@ -1330,36 +1330,184 @@ class FinanceApp {
   }
 
   /**
-   * Programa actualización diaria a la 1 AM
+   * NUEVO: Carga mensajes desde JSON local
    */
-  scheduleDailyMessageUpdate() {
+   async loadMessagesFromJSON() {
+    try {
+      // Cargar mensajes de mañana y noche
+      const [morningResponse, nightResponse] = await Promise.all([
+        fetch('mensajes-manana.json'),
+        fetch('mensajes-noche.json')
+      ]);
+
+      if (!morningResponse.ok || !nightResponse.ok) {
+        console.error('Error al cargar archivos JSON de mensajes');
+        return;
+      }
+
+      const morningData = await morningResponse.json();
+      const nightData = await nightResponse.json();
+
+      // Guardar en propiedades de la clase
+      this.morningMessages = morningData;
+      this.nightMessages = nightData;
+
+      console.log('✅ Mensajes JSON cargados correctamente');
+      console.log(`📅 Mañana (${morningData.libro.horario}):`, morningData.saludos_intro?.length || 0, 'saludos');
+      console.log(`🌙 Noche (${nightData.libro.horario}):`, nightData.saludos_intro?.length || 0, 'saludos');
+
+      // Inicializar contadores si no existen
+      if (!this.currentMorningIndex) this.currentMorningIndex = 0;
+      if (!this.currentNightIndex) this.currentNightIndex = 0;
+
+    } catch (error) {
+      console.error('Error al cargar mensajes JSON:', error);
+    }
+  }
+
+  /**
+   * NUEVO: Obtiene un mensaje aleatorio de mañana o noche
+   */
+  getRandomMessage(type = 'morning') {
+    const data = type === 'morning' ? this.morningMessages : this.nightMessages;
+
+    if (!data || !data.mensajes || data.mensajes.length === 0) {
+      return {
+        saludo: 'Hola',
+        mensaje: 'Ten un excelente día',
+        reflexion: 'La constancia es la clave del éxito',
+        despedida: '¡Adelante!'
+      };
+    }
+
+    // Seleccionar índice actual
+    const currentIndex = type === 'morning' ? this.currentMorningIndex : this.currentNightIndex;
+    const mensaje = data.mensajes[currentIndex % data.mensajes.length];
+
+    // Incrementar índice para la próxima vez
+    if (type === 'morning') {
+      this.currentMorningIndex = (currentIndex + 1) % data.mensajes.length;
+    } else {
+      this.currentNightIndex = (currentIndex + 1) % data.mensajes.length;
+    }
+
+    // Personalizar con nombre del usuario
+    const userName = this.userProfile?.name || 'Usuario';
+    const saludoIndex = Math.floor(Math.random() * (data.saludos_intro?.length || 1));
+    const saludo = (data.saludos_intro?.[saludoIndex] || 'Hola').replace('{nombre}', userName);
+
+    return {
+      saludo,
+      ...mensaje,
+      userName
+    };
+  }
+
+  /**
+   * NUEVO: Programa notificaciones a las 8 AM y 8 PM
+   */
+  scheduleDailyMessages() {
     if (this.dailyMessageScheduled) return;
 
-    const scheduleNext = () => {
+    const scheduleNotification = (hour, type) => {
       const now = new Date();
-      const tomorrow1AM = new Date(now);
-      tomorrow1AM.setDate(tomorrow1AM.getDate() + 1);
-      tomorrow1AM.setHours(1, 0, 0, 0);
+      const next = new Date(now);
+      next.setHours(hour, 0, 0, 0);
 
-      const timeUntil1AM = tomorrow1AM.getTime() - now.getTime();
+      // Si ya pasó la hora hoy, programar para mañana
+      if (next.getTime() <= now.getTime()) {
+        next.setDate(next.getDate() + 1);
+      }
 
-      setTimeout(async () => {
-        console.log(
-          'Ejecutando actualización programada de mensajes a la 1 AM'
-        );
-        await this.fetchMotivationalMessages();
-        scheduleNext(); // Programar la siguiente
-      }, timeUntil1AM);
+      const timeUntil = next.getTime() - now.getTime();
 
-      console.log(
-        `Próxima actualización de mensajes programada para: ${tomorrow1AM.toLocaleString(
-          'es-ES'
-        )}`
-      );
+      setTimeout(() => {
+        console.log(`⏰ ${type === 'morning' ? '🌅' : '🌙'} Activando notificación de ${type === 'morning' ? 'mañana' : 'noche'}`);
+        this.createDailyMessageNotification(type);
+        scheduleNotification(hour, type); // Reprogramar para el día siguiente
+      }, timeUntil);
+
+      console.log(`📅 Notificación de ${type} programada para: ${next.toLocaleString('es-ES')}`);
     };
 
-    scheduleNext();
+    // Programar 8 AM (mañana)
+    scheduleNotification(8, 'morning');
+
+    // Programar 8 PM (noche)
+    scheduleNotification(20, 'night');
+
     this.dailyMessageScheduled = true;
+  }
+
+  /**
+   * NUEVO: Crea notificación con mensaje del día
+   */
+  createDailyMessageNotification(type) {
+    const mensaje = this.getRandomMessage(type);
+    const icon = type === 'morning' ? 'fa-sun' : 'fa-moon';
+    const category = type === 'morning' ? 'morning' : 'night';
+    const time = type === 'morning' ? '8:00 AM' : '8:00 PM';
+
+    // Crear notificación visible
+    const notification = {
+      id: `daily-${type}-${Date.now()}`,
+      type: 'daily_message',
+      category,
+      icon,
+      title: `${type === 'morning' ? '🌅' : '🌙'} Mensaje ${type === 'morning' ? 'Matutino' : 'Nocturno'}`,
+      subtitle: mensaje.saludo,
+      message: mensaje.mensaje,
+      time: 'Ahora',
+      priority: 'high',
+      isRead: false,
+      data: { ...mensaje, type }
+    };
+
+    // Mostrar notificación
+    this.showDailyMessageModal(mensaje, type);
+
+    // Actualizar sistema de notificaciones
+    this.updateNotifications();
+
+    console.log(`✨ Notificación de ${type} creada:`, mensaje);
+  }
+
+  /**
+   * NUEVO: Muestra modal con mensaje del día
+   */
+  showDailyMessageModal(mensaje, type) {
+    const icon = type === 'morning' ? '🌅' : '🌙';
+    const title = type === 'morning' ? 'Mensaje Matutino' : 'Mensaje Nocturno';
+
+    const modalHTML = `
+      <div class="daily-message-modal" id="dailyMessageModal">
+        <div class="daily-message-overlay"></div>
+        <div class="daily-message-content">
+          <div class="daily-message-header ${type}">
+            <span class="daily-message-icon">${icon}</span>
+            <h2>${title}</h2>
+            <button class="daily-message-close" onclick="document.getElementById('dailyMessageModal').remove()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="daily-message-body">
+            <p class="daily-message-greeting">${mensaje.saludo}</p>
+            <p class="daily-message-text">${mensaje.mensaje}</p>
+            ${mensaje.reflexion ? `<p class="daily-message-reflection"><em>"${mensaje.reflexion}"</em></p>` : ''}
+            ${mensaje.despedida ? `<p class="daily-message-farewell">${mensaje.despedida}</p>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Insertar en el DOM
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Auto-cerrar después de 15 segundos
+    setTimeout(() => {
+      const modal = document.getElementById('dailyMessageModal');
+      if (modal) modal.remove();
+    }, 15000);
   }
 
   // Dentro de class FinanceApp { ... }
@@ -1471,9 +1619,15 @@ class FinanceApp {
           // Iniciar sistema de mensajes motivadores
           this.updateCarouselWithMessages();
           setTimeout(() => {
-            this.fetchMotivationalMessages();
+            // DESACTIVADO: Sistema Gemini
+            // this.fetchMotivationalMessages();
+
+            // NUEVO: Sistema JSON de mensajes personalizados
+            this.loadMessagesFromJSON();
           }, 100);
-          this.scheduleDailyMessageUpdate();
+
+          // NUEVO: Programar mensajes a las 8 AM y 8 PM
+          this.scheduleDailyMessages();
 
           // Actualizar notificaciones
           this.updateNotifications();

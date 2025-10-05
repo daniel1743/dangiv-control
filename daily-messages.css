@@ -1,0 +1,133 @@
+/* ============================================
+   MODAL DE MENSAJES DIARIOS (8 AM / 8 PM)
+   ============================================ */
+.daily-message-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.daily-message-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.daily-message-content {
+  position: relative;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.daily-message-header {
+  padding: var(--space-24);
+  text-align: center;
+  position: relative;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.daily-message-header.morning {
+  background: linear-gradient(135deg, #FDB99B, #F6B58D, #FDB99B);
+  color: #5D4037;
+}
+
+.daily-message-header.night {
+  background: linear-gradient(135deg, #667EEA, #764BA2, #667EEA);
+  color: white;
+}
+
+.daily-message-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: var(--space-8);
+}
+
+.daily-message-header h2 {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.daily-message-close {
+  position: absolute;
+  top: var(--space-12);
+  right: var(--space-12);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: currentColor;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.daily-message-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.daily-message-body {
+  padding: var(--space-24);
+}
+
+.daily-message-greeting {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  margin: 0 0 var(--space-16) 0;
+}
+
+.daily-message-text {
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  color: var(--color-text);
+  margin: 0 0 var(--space-16) 0;
+}
+
+.daily-message-reflection {
+  font-size: var(--font-size-sm);
+  font-style: italic;
+  color: var(--color-text-secondary);
+  padding: var(--space-12);
+  background: var(--color-background);
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  margin: 0 0 var(--space-16) 0;
+}
+
+.daily-message-farewell {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  text-align: center;
+  margin: 0;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
