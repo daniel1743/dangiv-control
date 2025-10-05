@@ -4116,6 +4116,23 @@ class FinanceApp {
         }
       });
     }
+
+    // ===== CAMPANA DE NOTIFICACIONES DEL BANNER MÓVIL =====
+    const bannerArea = document.getElementById('bannerNotificationArea');
+    const bannerBadge = document.getElementById('bannerNotificationCount');
+
+    if (bannerArea && dropdown) {
+      bannerArea.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
+
+        // Ocultar badge al abrir
+        if (!dropdown.classList.contains('hidden')) {
+          if (bannerBadge) bannerBadge.style.display = 'none';
+          if (badge) badge.style.display = 'none';
+        }
+      });
+    }
   }
 
   updateNotifications() {
@@ -4327,12 +4344,23 @@ class FinanceApp {
 
   updateNotificationBadge(count) {
     const badge = document.getElementById('notificationCount');
+    const bannerBadge = document.getElementById('bannerNotificationCount');
+
     if (badge) {
       if (count > 0) {
         badge.style.display = 'flex';
         badge.textContent = count > 99 ? '99+' : count.toString();
       } else {
         badge.style.display = 'none';
+      }
+    }
+
+    // Sincronizar badge del banner móvil
+    if (bannerBadge) {
+      if (count > 0) {
+        bannerBadge.style.display = 'flex';
+      } else {
+        bannerBadge.style.display = 'none';
       }
     }
   }

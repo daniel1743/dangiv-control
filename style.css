@@ -2153,6 +2153,80 @@ body {
   color: white;
 }
 
+/* === CAMPANA DE NOTIFICACIONES EN BANNER === */
+.banner-notification-btn {
+  position: absolute;
+  top: var(--space-12);
+  right: var(--space-12);
+  z-index: 150;
+}
+
+.banner-notification-bell {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.banner-notification-bell:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.banner-notification-bell:active {
+  transform: scale(0.95);
+}
+
+.banner-notification-bell i {
+  font-size: 20px;
+  color: white;
+}
+
+.banner-notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: linear-gradient(135deg, #FF6B6B, #EE5A6F);
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  border: 2px solid white;
+  animation: pulse 2s infinite;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.5);
+}
+
+.banner-notification-badge i {
+  font-size: 10px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
+}
+
 .mobile-profile-info {
   padding: 0 var(--space-20) var(--space-16);
   margin-top: -40px;
