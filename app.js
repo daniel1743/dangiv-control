@@ -695,10 +695,47 @@ class FinanceApp {
     let localSaveOk = false;
 
     try {
-      localStorage.setItem('financiaProData', JSON.stringify(normalizedData));
+      const dataString = JSON.stringify(normalizedData);
+      const dataSize = new Blob([dataString]).size;
+
+      // Detectar si los datos son demasiado grandes (>5MB)
+      if (dataSize > 5 * 1024 * 1024) {
+        console.warn(`⚠️ Datos muy grandes (${(dataSize / 1024 / 1024).toFixed(2)} MB). Limpiando imágenes base64...`);
+
+        // Limpiar imágenes base64 del userProfile
+        if (normalizedData.userProfile) {
+          if (normalizedData.userProfile.avatar?.startsWith('data:image')) {
+            normalizedData.userProfile.avatar = '';
+          }
+          if (normalizedData.userProfile.bannerCover?.startsWith('data:image')) {
+            normalizedData.userProfile.bannerCover = '';
+          }
+        }
+
+        // Reintentar con datos limpios
+        const cleanedString = JSON.stringify(normalizedData);
+        localStorage.setItem('financiaProData', cleanedString);
+        console.log('✅ Datos limpiados y guardados correctamente');
+      } else {
+        localStorage.setItem('financiaProData', dataString);
+      }
+
       localSaveOk = true;
     } catch (error) {
       console.error('Error al guardar en localStorage:', error);
+
+      // Si falla, intentar limpiar imágenes y reintentar
+      try {
+        if (normalizedData.userProfile) {
+          normalizedData.userProfile.avatar = '';
+          normalizedData.userProfile.bannerCover = '';
+        }
+        localStorage.setItem('financiaProData', JSON.stringify(normalizedData));
+        localSaveOk = true;
+        console.log('✅ Guardado exitoso después de limpiar imágenes');
+      } catch (retryError) {
+        console.error('❌ Error crítico al guardar:', retryError);
+      }
     }
 
     if (!this.currentUser || this.currentUser === 'anonymous') {
@@ -3392,7 +3429,7 @@ class FinanceApp {
               },
             },
           },
-          cutout: '60%',
+          cutout: '84%', // Grosor más fino y elegante
         },
       });
 
@@ -3444,7 +3481,7 @@ class FinanceApp {
             },
           },
         },
-        cutout: '60%',
+        cutout: '84%', // Grosor más fino y elegante
       },
     });
 
@@ -4190,22 +4227,38 @@ class FinanceApp {
 
     const totalBalanceEl = document.getElementById('totalBalance');
     const assignedToGoals = this.goals.reduce((sum, g) => sum + (g.current || 0), 0);
-    const trueAvailable = Math.max(0, stats.availableBalance - assignedToGoals);
+    // Permitir balance negativo - NO usar Math.max(0, ...)
+    const trueAvailable = stats.availableBalance - assignedToGoals;
 
-    totalBalanceEl.textContent = `$${trueAvailable.toLocaleString()}`;
+    // Formatear con signo negativo si corresponde
+    const formattedBalance = trueAvailable < 0
+      ? `-$${Math.abs(trueAvailable).toLocaleString()}`
+      : `$${trueAvailable.toLocaleString()}`;
+
+    totalBalanceEl.textContent = formattedBalance;
+
+    // Agregar clase para balance negativo (color rojo)
+    const statCard = totalBalanceEl.closest('.stat-card');
+    if (statCard) {
+      if (trueAvailable < 0) {
+        statCard.classList.add('balance-negative');
+      } else {
+        statCard.classList.remove('balance-negative');
+      }
+    }
 
     // Update mobile user stats
     const mobileUserStats = document.getElementById('mobileUserStats');
     if (mobileUserStats) {
-      mobileUserStats.textContent = `Balance: $${trueAvailable.toLocaleString()}`;
+      mobileUserStats.textContent = `Balance: ${formattedBalance}`;
     }
 
     // Agregar tooltip con breakdown completo
     if (this.extraIncome > 0) {
       const totalIncome = this.getTotalIncome();
-      totalBalanceEl.title = `Ingresos: $${totalIncome.toLocaleString()} (Base: $${this.monthlyIncome.toLocaleString()} + Extras: $${this.extraIncome.toLocaleString()})\nGastos: $${stats.totalExpenses.toLocaleString()}\nAsignado a Metas: $${assignedToGoals.toLocaleString()}\nDisponible: $${trueAvailable.toLocaleString()}`;
+      totalBalanceEl.title = `Ingresos: $${totalIncome.toLocaleString()} (Base: $${this.monthlyIncome.toLocaleString()} + Extras: $${this.extraIncome.toLocaleString()})\nGastos: $${stats.totalExpenses.toLocaleString()}\nAsignado a Metas: $${assignedToGoals.toLocaleString()}\nDisponible: ${formattedBalance}`;
     } else {
-      totalBalanceEl.title = `Ingresos: $${this.monthlyIncome.toLocaleString()}\nGastos: $${stats.totalExpenses.toLocaleString()}\nAsignado a Metas: $${assignedToGoals.toLocaleString()}\nDisponible: $${trueAvailable.toLocaleString()}`;
+      totalBalanceEl.title = `Ingresos: $${this.monthlyIncome.toLocaleString()}\nGastos: $${stats.totalExpenses.toLocaleString()}\nAsignado a Metas: $${assignedToGoals.toLocaleString()}\nDisponible: ${formattedBalance}`;
     }
 
     document.getElementById(
@@ -4463,7 +4516,7 @@ class FinanceApp {
       options: {
         responsive: false,
         maintainAspectRatio: false,
-        cutout: '65%', // Anillo óptimo para visualización
+        cutout: '88%', // Grosor más fino y elegante
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -5041,7 +5094,7 @@ class FinanceApp {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          cutout: '85%',
+          cutout: '94%', // Grosor más fino y elegante
           layout: {
             padding: {
               top: 40,
@@ -7255,8 +7308,8 @@ class FinanceApp {
           {
             data: [necessaryExpenses, unnecessaryExpenses],
             backgroundColor: [
-              this.getCurrentStyleColors()[0],
-              this.getCurrentStyleColors()[1],
+              '#33808D', // Verde azulado para necesario
+              '#C0152F', // Rojo para no necesario
             ],
             borderWidth: 2,
             borderColor: '#fff',
@@ -7266,6 +7319,7 @@ class FinanceApp {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        cutout: '84%', // Grosor más fino y elegante
         plugins: {
           legend: {
             position: 'bottom',
@@ -11126,43 +11180,93 @@ FinanceApp.prototype.openAvatarUploader = function () {
       reader.onload = async (event) => {
         const imageData = event.target.result;
 
-        // Update profile
-        this.userProfile.avatar = imageData;
+        // Update profile type
         this.userProfile.avatarType = 'custom';
 
-        // Save to local storage
-        this.saveData();
+        // Update UI temporarily with base64 (solo visual, no guardar)
+        const tempAvatar = imageData;
 
-        // Upload to Firebase Storage if logged in
+        // Verificar plan del usuario
+        const isPro = this.userPlan === 'pro';
         const FB = window.FB;
-        if (FB?.auth && this.firebaseUser) {
+        const currentFirebaseUser = this.firebaseUser || FB.auth?.currentUser;
+        const isLoggedIn = currentFirebaseUser && this.currentUser && this.currentUser !== 'anonymous';
+
+        // Plan PRO: Subir a Firebase Storage (nube)
+        if (isPro && FB?.auth && isLoggedIn) {
           try {
+            // Subir a Firebase Storage
             const storageRef = FB.ref(
               FB.storage,
-              `avatars/${this.firebaseUser.uid}`
+              `avatars/${currentFirebaseUser.uid}`
             );
             await FB.uploadString(storageRef, imageData, 'data_url');
             const downloadURL = await FB.getDownloadURL(storageRef);
 
+            // Guardar URL en perfil
+            this.userProfile.avatar = downloadURL;
+            this.userProfile.avatarType = 'custom';
+
+            // Guardar en localStorage (solo URL)
+            this.saveData();
+
             // Update Firestore with image URL
-            const userDocRef = FB.doc(FB.db, 'userData', this.firebaseUser.uid);
+            const userDocRef = FB.doc(FB.db, 'userData', currentFirebaseUser.uid);
             await FB.updateDoc(userDocRef, {
-              avatar: downloadURL,
-              avatarType: 'custom',
+              'userProfile.avatar': downloadURL,
+              'userProfile.avatarType': 'custom',
               updatedAt: Date.now(),
             });
 
-            this.userProfile.avatar = downloadURL;
+            // Update UI
+            this.updateConfigurationDisplay();
+            this.updateProfileDisplay();
+
+            this.showToast('Avatar guardado en la nube ✓', 'success');
           } catch (error) {
             console.error('Error uploading to Firebase:', error);
+            this.showToast('Error al subir avatar: ' + error.message, 'error');
           }
         }
+        // Plan FREE: Guardar localmente (temporal)
+        else if (isLoggedIn) {
+          // Comprimir imagen para localStorage
+          const maxSize = 100; // 100x100 px para plan free
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
 
-        // Update UI
-        this.updateConfigurationDisplay();
-        this.updateProfileDisplay();
+            // Resize
+            canvas.width = maxSize;
+            canvas.height = maxSize;
+            ctx.drawImage(img, 0, 0, maxSize, maxSize);
 
-        this.showToast('Avatar actualizado correctamente', 'success');
+            // Convertir a base64 comprimido
+            const compressedData = canvas.toDataURL('image/jpeg', 0.6);
+
+            // Guardar localmente
+            this.userProfile.avatar = compressedData;
+            this.userProfile.avatarType = 'custom';
+
+            // Guardar en localStorage
+            this.saveData();
+
+            // Update UI
+            this.updateConfigurationDisplay();
+            this.updateProfileDisplay();
+
+            this.showToast('Avatar guardado localmente. Actualiza a PRO para sincronizar en la nube.', 'info');
+          };
+          img.src = imageData;
+        }
+        // Usuario anónimo
+        else {
+          console.log('Usuario no logueado');
+          this.showToast('Inicia sesión para guardar el avatar', 'warning');
+          this.userProfile.avatar = '';
+          this.userProfile.avatarType = 'default';
+        }
       };
 
       reader.readAsDataURL(file);
@@ -13469,11 +13573,27 @@ FinanceApp.prototype.updateBudgetSpending = function (monthKey) {
   const budget = this.budgets[monthKey];
   const [year, month] = monthKey.split('-');
 
+  // Validar que existan las propiedades necesarias
+  if (!budget.categories) {
+    budget.categories = {};
+  }
+  if (!this.expenses) {
+    this.expenses = [];
+  }
+
   // Reset spent amounts
   Object.keys(budget.categories).forEach((category) => {
+    if (!budget.categories[category]) {
+      budget.categories[category] = { limit: 0, spent: 0 };
+    }
     budget.categories[category].spent = 0;
   });
-  budget.totalSpent = 0;
+
+  if (typeof budget.totalSpent === 'undefined') {
+    budget.totalSpent = 0;
+  } else {
+    budget.totalSpent = 0;
+  }
 
   // Calculate spent amounts from expenses
   this.expenses.forEach((expense) => {
@@ -14071,18 +14191,22 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
     });
   }
 
-  // Quick expense form
+  // Quick expense form - Solo agregar listener si no existe
   const form = document.getElementById('quickExpenseForm');
-  if (form) {
+  if (form && !form.dataset.listenerAdded) {
+    form.dataset.listenerAdded = 'true';
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       this.handleQuickExpenseSubmit();
     });
   }
 
-  // Save as template button
+  // Save as template button - Solo agregar listener si no existe
   const saveTemplateBtn = document.getElementById('saveAsTemplateBtn');
-  if (saveTemplateBtn) {
+  if (saveTemplateBtn && !saveTemplateBtn.dataset.listenerAdded) {
+    saveTemplateBtn.dataset.listenerAdded = 'true';
+
     saveTemplateBtn.addEventListener('click', () => {
       this.saveExpenseTemplate();
     });
@@ -14133,11 +14257,8 @@ FinanceApp.prototype.setupInstagramQuickActions = function () {
       setTimeout(() => {
         switch (action) {
           case 'expense':
-            // Open quick expense modal
-            const fabQuickExpense = document.getElementById('fabQuickExpense');
-            if (fabQuickExpense) {
-              fabQuickExpense.click();
-            }
+            // Open quick expense modal directly
+            this.openQuickExpenseModal();
             break;
 
           case 'goal':
@@ -14229,16 +14350,12 @@ FinanceApp.prototype.changeBannerCover = async function () {
       reader.onload = async (event) => {
         const imageData = event.target.result;
 
-        // Save to profile
+        // Initialize userProfile if needed
         if (!this.userProfile) {
           this.userProfile = {};
         }
-        this.userProfile.bannerCover = imageData;
 
-        // Save to localStorage first
-        this.saveData();
-
-        // Update banner UI
+        // Update banner UI immediately (sin guardar base64 en localStorage)
         const mobileBannerCover = document.getElementById('mobileBannerCover');
         if (mobileBannerCover) {
           mobileBannerCover.style.backgroundImage = `url(${imageData})`;
@@ -14246,34 +14363,80 @@ FinanceApp.prototype.changeBannerCover = async function () {
           mobileBannerCover.style.backgroundPosition = 'center';
         }
 
-        // Upload to Firebase Storage if logged in
+        // Verificar plan del usuario
+        const isPro = this.userPlan === 'pro';
         const FB = window.FB;
-        if (FB?.auth && this.firebaseUser) {
+        const currentFirebaseUser = this.firebaseUser || FB.auth?.currentUser;
+        const isLoggedIn = currentFirebaseUser && this.currentUser && this.currentUser !== 'anonymous';
+
+        // Plan PRO: Subir a Firebase Storage (nube)
+        if (isPro && FB?.auth && isLoggedIn) {
           try {
+            // Subir a Firebase Storage
             const storageRef = FB.ref(
               FB.storage,
-              `banners/${this.firebaseUser.uid}`
+              `banners/${currentFirebaseUser.uid}`
             );
             await FB.uploadString(storageRef, imageData, 'data_url');
             const downloadURL = await FB.getDownloadURL(storageRef);
 
-            // Update with Firebase URL
+            // Guardar URL en perfil
             this.userProfile.bannerCover = downloadURL;
 
+            // Guardar en localStorage (solo URL)
+            this.saveData();
+
             // Update Firestore
-            const userDocRef = FB.doc(FB.db, 'userData', this.firebaseUser.uid);
+            const userDocRef = FB.doc(FB.db, 'userData', currentFirebaseUser.uid);
             await FB.updateDoc(userDocRef, {
               'userProfile.bannerCover': downloadURL,
               updatedAt: Date.now(),
             });
 
-            this.showToast('Portada actualizada correctamente', 'success');
+            this.showToast('Portada guardada en la nube ✓', 'success');
           } catch (error) {
             console.error('Error uploading banner to Firebase:', error);
-            this.showToast('Portada guardada localmente', 'warning');
+            this.showToast('Error al subir portada: ' + error.message, 'error');
           }
-        } else {
-          this.showToast('Portada actualizada exitosamente', 'success');
+        }
+        // Plan FREE: Guardar localmente (temporal)
+        else if (isLoggedIn) {
+          // Comprimir imagen para localStorage
+          const maxWidth = 800; // 800px ancho para plan free
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Calcular dimensiones proporcionales
+            const ratio = img.height / img.width;
+            canvas.width = maxWidth;
+            canvas.height = maxWidth * ratio;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // Convertir a base64 comprimido
+            const compressedData = canvas.toDataURL('image/jpeg', 0.5);
+
+            // Guardar localmente
+            this.userProfile.bannerCover = compressedData;
+
+            // Guardar en localStorage
+            this.saveData();
+
+            // Update UI
+            if (mobileBannerCover) {
+              mobileBannerCover.style.backgroundImage = `url(${compressedData})`;
+            }
+
+            this.showToast('Portada guardada localmente. Actualiza a PRO para sincronizar en la nube.', 'info');
+          };
+          img.src = imageData;
+        }
+        // Usuario anónimo
+        else {
+          console.log('Usuario no logueado');
+          this.showToast('Inicia sesión para guardar la portada', 'warning');
+          this.userProfile.bannerCover = '';
         }
       };
 
@@ -14319,9 +14482,11 @@ FinanceApp.prototype.openQuickExpenseModal = function () {
       quickModeBtn.classList.remove('active');
       normalModeFields.classList.remove('hidden');
 
-      // Make fields required in normal mode
-      document.getElementById('quickNecessity')?.setAttribute('required', 'required');
-      document.getElementById('quickDate')?.setAttribute('required', 'required');
+      // No marcar como required - la validación se hace en JavaScript
+      // Esto evita que el navegador bloquee el submit
+      document.getElementById('quickNecessity')?.removeAttribute('required');
+      document.getElementById('quickDate')?.removeAttribute('required');
+      document.getElementById('quickUser')?.removeAttribute('required');
     }
 
     // Focus on amount input
@@ -14352,6 +14517,8 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function () {
     this.showToast('Por favor completa los campos requeridos', 'error');
     return;
   }
+
+  console.log('💰 Registrando gasto...', { amount, category, description });
 
   // Create expense
   const expense = {
@@ -14384,10 +14551,24 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function () {
     });
   }
 
+  console.log('🔒 Cerrando modal...');
+
   // Close modal and reset form
-  document.getElementById('quickExpenseModal').classList.remove('show');
+  const modal = document.getElementById('quickExpenseModal');
+  if (modal) {
+    modal.classList.remove('show');
+    console.log('✅ Clase "show" removida del modal');
+  } else {
+    console.error('❌ No se encontró el modal quickExpenseModal');
+  }
+
   document.body.style.overflow = '';
-  document.getElementById('quickExpenseForm').reset();
+
+  const form = document.getElementById('quickExpenseForm');
+  if (form) {
+    form.reset();
+    console.log('✅ Formulario reseteado');
+  }
 
   // Update dashboard if visible
   if (document.getElementById('dashboard').classList.contains('active')) {
@@ -14397,6 +14578,7 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function () {
   this.renderExpenses();
   this.updateExpenseStats(); // Update expense form stats
   this.showToast('Gasto registrado exitosamente', 'success');
+  console.log('✅ Gasto registrado completamente');
 };
 
 FinanceApp.prototype.saveExpenseTemplate = function () {

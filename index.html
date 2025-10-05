@@ -733,25 +733,25 @@
       </div>
     </header>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <!-- Mobile Profile Banner -->
-      <div class="mobile-profile-banner" id="mobileProfileBanner">
-        <div class="mobile-banner-cover" id="mobileBannerCover">
-          <!-- Banner de fondo personalizable -->
+    <!-- Mobile Profile Banner (INDEPENDIENTE - Fuera del sidebar) -->
+    <div class="mobile-profile-banner" id="mobileProfileBanner">
+      <div class="mobile-banner-cover" id="mobileBannerCover">
+        <!-- Banner de fondo personalizable -->
+      </div>
+      <div class="mobile-profile-info">
+        <div class="mobile-avatar-container">
+          <img class="mobile-avatar" id="mobileAvatar" src="" alt="Avatar">
+          <div class="mobile-avatar-ring"></div>
         </div>
-        <div class="mobile-profile-info">
-          <div class="mobile-avatar-container">
-            <img class="mobile-avatar" id="mobileAvatar" src="" alt="Avatar">
-            <div class="mobile-avatar-ring"></div>
-          </div>
-          <div class="mobile-user-details">
-            <h3 class="mobile-username" id="mobileUsername">Usuario</h3>
-            <p class="mobile-user-stats" id="mobileUserStats">Balance: $0</p>
-          </div>
+        <div class="mobile-user-details">
+          <h3 class="mobile-username" id="mobileUsername">Usuario</h3>
+          <p class="mobile-user-stats" id="mobileUserStats">Balance: $0</p>
         </div>
       </div>
+    </div>
 
+    <!-- Sidebar (solo navegación) -->
+    <aside class="sidebar">
       <nav class="sidebar-nav">
         <button class="nav-item active" data-section="dashboard">
           <i class="fas fa-chart-line"></i>
@@ -763,7 +763,7 @@
         </button>
         <button class="nav-item requires-auth" data-section="goals">
           <i class="fas fa-bullseye"></i>
-          <span>Metas Financieras</span>
+          <span>Metas</span>
         </button>
         <button class="nav-item requires-auth" data-section="budget">
           <i class="fas fa-wallet"></i>
@@ -791,11 +791,11 @@
         </button>
         <button class="nav-item requires-auth" data-section="audit">
           <i class="fas fa-history"></i>
-          <span>Historial de Cambios</span>
+          <span>Historial</span>
         </button>
         <button class="nav-item requires-auth" data-section="config">
           <i class="fas fa-cog"></i>
-          <span>Configuración</span>
+          <span>Config</span>
         </button>
       </nav>
     </aside>
@@ -2137,7 +2137,7 @@
       <!-- Audit History Section -->
       <section id="audit" class="section">
         <div class="section-header">
-          <h1>Historial de Cambios</h1>
+          <h1>Historial</h1>
           <p>Registro completo de todas las modificaciones realizadas</p>
         </div>
 
