@@ -1704,6 +1704,7 @@ class FinanceApp {
   updateProfileDisplay() {
     const profileAvatar = document.getElementById('profileAvatar');
     const profileHeaderImg = document.getElementById('profileHeaderImg');
+    const mobileAvatar = document.getElementById('mobileAvatar');
     const profileName = document.getElementById('profileName');
     const profilePlan = document.getElementById('profilePlan');
     const profileAvatarWrapper = document.getElementById(
@@ -1724,9 +1725,14 @@ class FinanceApp {
 
     if (profileAvatar) profileAvatar.src = avatarSrc;
     if (profileHeaderImg) profileHeaderImg.src = avatarSrc;
+    if (mobileAvatar) mobileAvatar.src = avatarSrc;
 
     // Update profile info
     if (profileName) profileName.textContent = this.userProfile.name;
+
+    // Update mobile profile info
+    const mobileUsername = document.getElementById('mobileUsername');
+    if (mobileUsername) mobileUsername.textContent = this.userProfile.name;
     if (profilePlan) {
       profilePlan.textContent =
         this.userPlan === 'pro' ? 'Plan Pro' : 'Plan Free';
@@ -1752,6 +1758,14 @@ class FinanceApp {
       profileDropdownFooter.className = `profile-dropdown-footer ${
         this.userPlan === 'pro' ? 'user-pro' : ''
       }`;
+    }
+
+    // Load saved banner cover
+    const mobileBannerCover = document.getElementById('mobileBannerCover');
+    if (mobileBannerCover && this.userProfile.bannerCover) {
+      mobileBannerCover.style.backgroundImage = `url(${this.userProfile.bannerCover})`;
+      mobileBannerCover.style.backgroundSize = 'cover';
+      mobileBannerCover.style.backgroundPosition = 'center';
     }
   }
 
@@ -2207,6 +2221,7 @@ class FinanceApp {
     // NEW: Budget & Quick Expense Systems
     this.setupBudgetListeners(); // Sistema de presupuesto
     this.setupQuickExpenseListeners(); // Entrada rápida de gastos
+    this.setupInstagramQuickActions(); // Instagram-style quick actions (mobile)
     this.setupPremiumSettings(); // Premium Settings Navigation
 
     // Forzar normalización de datos existentes al inicio
@@ -3174,13 +3189,13 @@ class FinanceApp {
 
     this.currentSection = sectionId;
 
-    // Show/hide FAB based on section
-    const fab = document.getElementById('fabQuickExpense');
-    if (fab) {
+    // Show/hide Instagram FAB based on section
+    const fabInstagram = document.getElementById('fabInstagram');
+    if (fabInstagram) {
       if (sectionId === 'config' || sectionId === 'store') {
-        fab.style.display = 'none';
+        fabInstagram.style.display = 'none';
       } else {
-        fab.style.display = 'flex';
+        fabInstagram.style.display = 'flex';
       }
     }
 
@@ -4152,6 +4167,12 @@ class FinanceApp {
     const trueAvailable = Math.max(0, stats.availableBalance - assignedToGoals);
 
     totalBalanceEl.textContent = `$${trueAvailable.toLocaleString()}`;
+
+    // Update mobile user stats
+    const mobileUserStats = document.getElementById('mobileUserStats');
+    if (mobileUserStats) {
+      mobileUserStats.textContent = `Balance: $${trueAvailable.toLocaleString()}`;
+    }
 
     // Agregar tooltip con breakdown completo
     if (this.extraIncome > 0) {
@@ -13780,6 +13801,167 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
   }
 };
 
+// ========================================
+// INSTAGRAM-STYLE QUICK ACTIONS
+// ========================================
+
+FinanceApp.prototype.setupInstagramQuickActions = function () {
+  const fabInstagram = document.getElementById('fabInstagram');
+  const quickActionsMenu = document.getElementById('quickActionsMenu');
+  const closeBtn = document.getElementById('closeQuickActions');
+  const backdrop = document.getElementById('quickActionsBackdrop');
+
+  // Open menu
+  if (fabInstagram) {
+    fabInstagram.addEventListener('click', () => {
+      if (quickActionsMenu) {
+        quickActionsMenu.classList.remove('hidden');
+      }
+    });
+  }
+
+  // Close menu
+  const closeMenu = () => {
+    if (quickActionsMenu) {
+      quickActionsMenu.classList.add('hidden');
+    }
+  };
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeMenu);
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener('click', closeMenu);
+  }
+
+  // Action items
+  const actionItems = document.querySelectorAll('.quick-action-item');
+  actionItems.forEach((item) => {
+    item.addEventListener('click', () => {
+      const action = item.getAttribute('data-action');
+      closeMenu();
+
+      setTimeout(() => {
+        switch (action) {
+          case 'expense':
+            // Open quick expense modal
+            const fabQuickExpense = document.getElementById('fabQuickExpense');
+            if (fabQuickExpense) {
+              fabQuickExpense.click();
+            }
+            break;
+
+          case 'goal':
+            // Navigate to goals section
+            this.showSection('goals');
+            setTimeout(() => {
+              document.getElementById('goalName')?.focus();
+            }, 300);
+            break;
+
+          case 'leisure':
+            // Navigate to budget section and focus on leisure form
+            this.showSection('budget');
+            setTimeout(() => {
+              document.getElementById('leisureItemDescription')?.focus();
+            }, 300);
+            break;
+
+          case 'shopping':
+            // Navigate to shopping section
+            this.showSection('shopping');
+            setTimeout(() => {
+              document.getElementById('shoppingItem')?.focus();
+            }, 300);
+            break;
+
+          case 'income':
+            // Navigate to config section for income
+            this.showSection('config');
+            setTimeout(() => {
+              // Scroll to income section
+              const incomeSection = document.getElementById('incomeForm');
+              if (incomeSection) {
+                incomeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }, 300);
+            break;
+        }
+      }, 200); // Small delay to let menu close animation finish
+    });
+  });
+
+  // Banner cover customization
+  const mobileBannerCover = document.getElementById('mobileBannerCover');
+  if (mobileBannerCover) {
+    mobileBannerCover.addEventListener('click', () => {
+      this.changeBannerCover();
+    });
+  }
+
+  // Mobile avatar customization
+  const mobileAvatar = document.getElementById('mobileAvatar');
+  if (mobileAvatar) {
+    mobileAvatar.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent banner click event
+      this.openAvatarUploader();
+    });
+  }
+};
+
+FinanceApp.prototype.changeBannerCover = function () {
+  // Create hidden file input
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.style.display = 'none';
+
+  input.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        this.showToast('Por favor selecciona una imagen válida', 'error');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        this.showToast('La imagen debe ser menor a 5MB', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageUrl = event.target.result;
+
+        // Save to profile
+        if (!this.userProfile) {
+          this.userProfile = {};
+        }
+        this.userProfile.bannerCover = imageUrl;
+        this.saveData();
+
+        // Update banner
+        const mobileBannerCover = document.getElementById('mobileBannerCover');
+        if (mobileBannerCover) {
+          mobileBannerCover.style.backgroundImage = `url(${imageUrl})`;
+          mobileBannerCover.style.backgroundSize = 'cover';
+          mobileBannerCover.style.backgroundPosition = 'center';
+        }
+
+        this.showToast('Portada actualizada exitosamente', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  document.body.appendChild(input);
+  input.click();
+  document.body.removeChild(input);
+};
+
 FinanceApp.prototype.openQuickExpenseModal = function () {
   const modal = document.getElementById('quickExpenseModal');
   if (modal) {
@@ -13798,6 +13980,22 @@ FinanceApp.prototype.openQuickExpenseModal = function () {
 
     // Setup quick user selection handler
     this.setupQuickUserHandler();
+
+    // Set default mode to NORMAL (gasto completo)
+    const quickModeBtn = document.getElementById('quickModeBtn');
+    const normalModeBtn = document.getElementById('normalModeBtn');
+    const normalModeFields = document.querySelector('.normal-mode-fields');
+
+    if (normalModeBtn && quickModeBtn && normalModeFields) {
+      // Activate normal mode
+      normalModeBtn.classList.add('active');
+      quickModeBtn.classList.remove('active');
+      normalModeFields.classList.remove('hidden');
+
+      // Make fields required in normal mode
+      document.getElementById('quickNecessity')?.setAttribute('required', 'required');
+      document.getElementById('quickDate')?.setAttribute('required', 'required');
+    }
 
     // Focus on amount input
     setTimeout(() => {
@@ -14120,31 +14318,19 @@ FinanceApp.prototype.updateQuickUserDropdown = function () {
 };
 
 FinanceApp.prototype.setupQuickUserHandler = function () {
+  // Get fresh references
   const quickUserSelect = document.getElementById('quickUser');
   const quickNewUserGroup = document.getElementById('quickNewUserGroup');
   const quickNewUserNameInput = document.getElementById('quickNewUserName');
   const quickSaveNewUserBtn = document.getElementById('quickSaveNewUserBtn');
 
-  // Handler for user selection change
-  if (quickUserSelect) {
-    // Remove previous listeners
-    const newSelect = quickUserSelect.cloneNode(true);
-    quickUserSelect.parentNode.replaceChild(newSelect, quickUserSelect);
-    const userSelect = document.getElementById('quickUser');
-
-    userSelect.addEventListener('change', (e) => {
-      if (e.target.value === '__add_new__') {
-        quickNewUserGroup?.classList.remove('hidden');
-        quickNewUserNameInput?.focus();
-      } else {
-        quickNewUserGroup?.classList.add('hidden');
-      }
-    });
-  }
+  if (!quickUserSelect) return;
 
   // Function to save new user
   const saveQuickNewUser = () => {
-    const newUserName = quickNewUserNameInput?.value.trim();
+    const userInput = document.getElementById('quickNewUserName');
+    const userGroup = document.getElementById('quickNewUserGroup');
+    const newUserName = userInput?.value.trim();
 
     if (newUserName && !this.customUsers.includes(newUserName)) {
       this.customUsers.push(newUserName);
@@ -14158,9 +14344,9 @@ FinanceApp.prototype.setupQuickUserHandler = function () {
       if (userSelect) {
         userSelect.value = newUserName;
       }
-      quickNewUserGroup?.classList.add('hidden');
-      if (quickNewUserNameInput) {
-        quickNewUserNameInput.value = '';
+      userGroup?.classList.add('hidden');
+      if (userInput) {
+        userInput.value = '';
       }
 
       this.showToast(`Usuario "${newUserName}" añadido`, 'success');
@@ -14171,14 +14357,29 @@ FinanceApp.prototype.setupQuickUserHandler = function () {
     }
   };
 
-  // Save with Enter key
+  // Remove previous listener by cloning
+  const newSelect = quickUserSelect.cloneNode(true);
+  quickUserSelect.parentNode.replaceChild(newSelect, quickUserSelect);
+
+  // Add change listener to new element
+  newSelect.addEventListener('change', (e) => {
+    const group = document.getElementById('quickNewUserGroup');
+    const input = document.getElementById('quickNewUserName');
+
+    if (e.target.value === '__add_new__') {
+      group?.classList.remove('hidden');
+      input?.focus();
+    } else {
+      group?.classList.add('hidden');
+    }
+  });
+
+  // Setup input handler
   if (quickNewUserNameInput) {
-    // Remove previous listeners
     const newInput = quickNewUserNameInput.cloneNode(true);
     quickNewUserNameInput.parentNode.replaceChild(newInput, quickNewUserNameInput);
-    const userInput = document.getElementById('quickNewUserName');
 
-    userInput.addEventListener('keypress', (e) => {
+    newInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
         saveQuickNewUser();
@@ -14186,14 +14387,12 @@ FinanceApp.prototype.setupQuickUserHandler = function () {
     });
   }
 
-  // Save with button
+  // Setup button handler
   if (quickSaveNewUserBtn) {
-    // Remove previous listeners
     const newBtn = quickSaveNewUserBtn.cloneNode(true);
     quickSaveNewUserBtn.parentNode.replaceChild(newBtn, quickSaveNewUserBtn);
-    const saveBtn = document.getElementById('quickSaveNewUserBtn');
 
-    saveBtn.addEventListener('click', () => {
+    newBtn.addEventListener('click', () => {
       saveQuickNewUser();
     });
   }

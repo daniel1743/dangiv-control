@@ -735,6 +735,23 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
+      <!-- Mobile Profile Banner -->
+      <div class="mobile-profile-banner" id="mobileProfileBanner">
+        <div class="mobile-banner-cover" id="mobileBannerCover">
+          <!-- Banner de fondo personalizable -->
+        </div>
+        <div class="mobile-profile-info">
+          <div class="mobile-avatar-container">
+            <img class="mobile-avatar" id="mobileAvatar" src="" alt="Avatar">
+            <div class="mobile-avatar-ring"></div>
+          </div>
+          <div class="mobile-user-details">
+            <h3 class="mobile-username" id="mobileUsername">Usuario</h3>
+            <p class="mobile-user-stats" id="mobileUserStats">Balance: $0</p>
+          </div>
+        </div>
+      </div>
+
       <nav class="sidebar-nav">
         <button class="nav-item active" data-section="dashboard">
           <i class="fas fa-chart-line"></i>
@@ -4423,6 +4440,75 @@
     <button class="fab" id="fabQuickExpense" aria-label="Agregar gasto rápido">
       <i class="fas fa-plus"></i>
     </button>
+
+    <!-- Instagram-style Quick Actions Button (Mobile Only) -->
+    <button class="fab-instagram" id="fabInstagram" aria-label="Acciones rápidas">
+      <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Quick Actions Menu -->
+    <div class="quick-actions-menu hidden" id="quickActionsMenu">
+      <div class="quick-actions-backdrop" id="quickActionsBackdrop"></div>
+      <div class="quick-actions-content">
+        <div class="quick-actions-header">
+          <h3>Crear nuevo</h3>
+          <button class="quick-actions-close" id="closeQuickActions">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="quick-actions-list">
+          <button class="quick-action-item" data-action="expense">
+            <div class="quick-action-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+              <i class="fas fa-wallet"></i>
+            </div>
+            <div class="quick-action-text">
+              <span class="quick-action-title">Registrar Gasto</span>
+              <span class="quick-action-desc">Añade un nuevo gasto</span>
+            </div>
+          </button>
+
+          <button class="quick-action-item" data-action="goal">
+            <div class="quick-action-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+              <i class="fas fa-bullseye"></i>
+            </div>
+            <div class="quick-action-text">
+              <span class="quick-action-title">Meta Financiera</span>
+              <span class="quick-action-desc">Crea una nueva meta</span>
+            </div>
+          </button>
+
+          <button class="quick-action-item" data-action="leisure">
+            <div class="quick-action-icon" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">
+              <i class="fas fa-gift"></i>
+            </div>
+            <div class="quick-action-text">
+              <span class="quick-action-title">Presupuesto de Ocio</span>
+              <span class="quick-action-desc">Aparta dinero para gustos</span>
+            </div>
+          </button>
+
+          <button class="quick-action-item" data-action="shopping">
+            <div class="quick-action-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="quick-action-text">
+              <span class="quick-action-title">Lista de Compras</span>
+              <span class="quick-action-desc">Añade productos</span>
+            </div>
+          </button>
+
+          <button class="quick-action-item" data-action="income">
+            <div class="quick-action-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+              <i class="fas fa-hand-holding-usd"></i>
+            </div>
+            <div class="quick-action-text">
+              <span class="quick-action-title">Ingreso Mensual</span>
+              <span class="quick-action-desc">Actualiza tu ingreso</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Quick Expense Modal -->
     <div class="modal" id="quickExpenseModal">
