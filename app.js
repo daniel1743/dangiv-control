@@ -2516,32 +2516,54 @@ class FinanceApp {
     }
   }
   async loginWithEmail(email, password) {
+    // Limpiar espacios en blanco y normalizar
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanPassword = password.trim();
+
+    console.log('[Login] Intentando login con:', cleanEmail);
+
     try {
       const userCredential = await FB.signInWithEmailAndPassword(
         FB.auth,
-        email,
-        password
+        cleanEmail,
+        cleanPassword
       );
+
+      console.log('[Login] Login exitoso:', userCredential.user.uid);
+
       this.showToast(
         `¡Bienvenido de nuevo, ${userCredential.user.email}!`,
         'success'
       );
+
       // Cerrar modal y redirigir al dashboard
       const authModal = document.getElementById('authModal');
       if (authModal) authModal.classList.remove('show');
       this.showSection('dashboard');
       return true;
     } catch (error) {
-      console.error('Error de inicio de sesiÃ³n:', error.code);
-      if (
-        error.code === 'auth/wrong-password' ||
-        error.code === 'auth/user-not-found' ||
-        error.code === 'auth/invalid-credential'
-      ) {
-        this.showToast('Correo o contraseña incorrectos.', 'error');
-      } else {
-        this.showToast('Error al iniciar sesión.', 'error');
-      }
+      console.error('[Login] Error completo:', {
+        code: error.code,
+        message: error.message,
+        email: cleanEmail,
+        passwordLength: cleanPassword.length
+      });
+
+      // Mensajes de error más específicos
+      const errorMessages = {
+        'auth/wrong-password': 'Contraseña incorrecta. Verifica e intenta nuevamente.',
+        'auth/user-not-found': 'No existe una cuenta con este correo. Verifica el correo o regístrate.',
+        'auth/invalid-credential': 'Credenciales inválidas. Verifica tu correo y contraseña.',
+        'auth/invalid-email': 'El formato del correo no es válido.',
+        'auth/user-disabled': 'Esta cuenta ha sido deshabilitada.',
+        'auth/too-many-requests': 'Demasiados intentos fallidos. Espera unos minutos e intenta de nuevo.',
+        'auth/network-request-failed': 'Error de conexión. Verifica tu internet e intenta de nuevo.',
+        'auth/operation-not-allowed': 'El inicio de sesión con email/password no está habilitado.',
+      };
+
+      const message = errorMessages[error.code] || `Error al iniciar sesión: ${error.code}`;
+      this.showToast(message, 'error');
+
       return false;
     }
   }
@@ -4760,7 +4782,7 @@ class FinanceApp {
     const budgetRemainingEl = document.getElementById('budgetRemaining');
 
     if (budgetValueEl) {
-      budgetValueEl.textContent = budgetLimit > 0 ? `$${budgetLimit.toLocaleString()}` : 'No configurado';
+      budgetValueEl.textContent = budgetLimit > 0 ? `$${this.formatNumber(budgetLimit)}` : 'No configurado';
       console.log('✅ Budget Value actualizado:', budgetValueEl.textContent);
     } else {
       console.error('❌ No se encontró elemento budgetValue');
@@ -4768,7 +4790,7 @@ class FinanceApp {
 
     if (budgetRemainingEl) {
       if (budgetLimit > 0) {
-        budgetRemainingEl.textContent = `Para gustos: $${budgetRemaining.toLocaleString()}`;
+        budgetRemainingEl.textContent = `Para gustos: $${this.formatNumber(budgetRemaining)}`;
         budgetRemainingEl.className = budgetUsedPercent > 90 ? 'stat-change negative' : budgetUsedPercent > 70 ? 'stat-change warning' : 'stat-change positive';
       } else {
         budgetRemainingEl.textContent = 'Configura extras';
