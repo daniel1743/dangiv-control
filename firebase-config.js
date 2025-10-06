@@ -23,6 +23,8 @@ import {
   initializeFirestore,
   doc,
   getDoc,
+  getDocFromCache,
+  getDocFromServer,
   setDoc,
   updateDoc,
   deleteDoc,
@@ -31,6 +33,8 @@ import {
   query,
   where,
   getDocs,
+  persistentLocalCache,
+  persistentMultipleTabManager,
 } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 
 import {
@@ -49,11 +53,20 @@ import { firebaseConfig, apiKeys, config } from './config.js';
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = initializeFirestore(app, {
-  experimentalForceLongPolling: true,
-  useFetchStreams: false,
-  // Aumentar límite de tamaño de documentos
-  cacheSizeBytes: 40000000, // 40MB cache
+  // OPTIMIZACIÓN: WebChannel (más rápido que long polling)
+  experimentalForceLongPolling: false,
+
+  // CACHÉ PERSISTENTE MODERNO (Firebase v11+)
+  // Usa IndexedDB para almacenar datos localmente
+  // Permite acceso multi-pestaña simultáneo
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager(),
+    cacheSizeBytes: 40000000 // 40MB
+  })
 });
+
+console.log('✅ Firestore inicializado con caché persistente multi-pestaña');
+
 const storage = getStorage(app);
 
 // ========================================
@@ -83,6 +96,8 @@ window.FB = {
   // Firestore methods
   doc,
   getDoc,
+  getDocFromCache,
+  getDocFromServer,
   setDoc,
   updateDoc,
   deleteDoc,

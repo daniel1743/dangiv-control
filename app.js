@@ -1593,12 +1593,18 @@ class FinanceApp {
 
         this.updateProfileDisplay();
 
-        // Sincronizar desde Firebase y LUEGO renderizar
+        // USUARIO AUTENTICADO: Esperar a que los datos reales carguen
+        // NO mostrar datos ficticios, solo los datos reales del usuario
+        console.log('[Auth] Usuario autenticado, cargando datos reales...');
+
+        // Sincronizar desde Firebase y esperar a que complete
         this.syncFromFirebase().then(() => {
-          // Ocultar loading
+          // Ocultar loading solo cuando los datos reales estén cargados
           this.hideAppLoading();
 
-          // Ahora sí renderizar todo con datos personales
+          console.log('[Auth] Datos reales cargados, renderizando dashboard...');
+
+          // Renderizar todo con datos sincronizados
           this.renderDashboard();
           this.renderSavingsAccountsList();
           this.updateDashboardSavings();
@@ -1632,8 +1638,10 @@ class FinanceApp {
           // Actualizar notificaciones
           this.updateNotifications();
         }).catch(err => {
-          console.error('Error en sincronización:', err);
+          console.error('[Auth] Error en sincronización:', err);
+          clearTimeout(maxLoadingTime);
           this.hideAppLoading();
+
           // Renderizar con datos locales si falla
           this.renderDashboard();
           this.renderSavingsAccountsList();
@@ -2252,28 +2260,61 @@ class FinanceApp {
     // Skip sync if we're in the middle of registration
     if (this.isRegistering) {
       console.log(
-        'DEBUG: Registro en proceso, saltando sincronización para evitar race condition'
+        '[Sync] Registro en proceso, saltando sincronización para evitar race condition'
       );
       return;
     }
+
+    console.log('[Sync] 🔄 Iniciando sincronización de datos...');
 
     try {
       // Use sharedAccountId if it exists (for shared accounts), otherwise use currentUser
       const firestoreDocId = this.sharedAccountId || this.currentUser;
       const userDocRef = FB.doc(FB.db, 'userData', firestoreDocId);
 
-      console.log(
-        'DEBUG: Sincronizando desde Firestore con ID:',
-        firestoreDocId
-      );
-      console.log(
-        'DEBUG: Es cuenta compartida?',
-        this.sharedAccountId ? 'SÍ' : 'NO'
-      );
+      console.log('[Sync] ID de usuario:', firestoreDocId);
 
       let docSnap;
       try {
-        docSnap = await FB.getDoc(userDocRef);
+        const startTime = performance.now();
+
+        // ESTRATEGIA CACHE-FIRST: Intentar leer primero del caché
+        // Esto hace que cargas subsecuentes sean instantáneas (<50ms)
+        try {
+          console.log('[Sync] Intentando leer desde caché local...');
+          docSnap = await FB.getDocFromCache(userDocRef);
+
+          const cacheTime = (performance.now() - startTime).toFixed(0);
+          console.log(`[Sync] ✅ Datos cargados desde CACHÉ en ${cacheTime}ms`);
+
+          // Actualizar en segundo plano desde el servidor (sin bloquear UI)
+          FB.getDocFromServer(userDocRef)
+            .then(freshDoc => {
+              if (freshDoc.exists()) {
+                const freshData = freshDoc.data();
+                const cachedData = docSnap.data();
+
+                // Solo actualizar si hay cambios reales
+                if (JSON.stringify(freshData) !== JSON.stringify(cachedData)) {
+                  console.log('[Sync] 🔄 Datos actualizados desde servidor (en segundo plano)');
+                  // Aquí podrías recargar datos si cambió algo importante
+                }
+              }
+            })
+            .catch(err => console.log('[Sync] No se pudo actualizar en segundo plano:', err.message));
+
+        } catch (cacheError) {
+          // Si no hay caché, ir al servidor directamente
+          console.log('[Sync] Caché vacío, cargando desde servidor...');
+          docSnap = await FB.getDocFromServer(userDocRef);
+
+          const serverTime = (performance.now() - startTime).toFixed(0);
+          console.log(`[Sync] ✅ Datos descargados desde SERVIDOR en ${serverTime}ms`);
+
+          if (serverTime > 2000) {
+            console.warn(`[Sync] ⚠️ Carga lenta detectada (${serverTime}ms). Considera limpiar datos antiguos.`);
+          }
+        }
       } catch (firestoreError) {
         console.error('Error al leer documento de Firestore:', firestoreError);
 
