@@ -1976,10 +1976,18 @@ class FinanceApp {
     );
 
     // Update avatar images
-    const avatarSrc =
-      this.userProfile.avatarType === 'custom'
-        ? this.userProfile.avatar
-        : this.defaultAvatars[this.userProfile.selectedAvatar];
+    let avatarSrc;
+
+    // Si el usuario no está autenticado, usar avatar genérico
+    if (this.currentUser === 'anonymous' || !this.currentUser) {
+      avatarSrc = 'https://ui-avatars.com/api/?name=Usuario&background=21808D&color=fff&size=128&font-size=0.6';
+    } else {
+      // Usuario autenticado: usar su avatar personalizado o por defecto
+      avatarSrc =
+        this.userProfile.avatarType === 'custom'
+          ? this.userProfile.avatar
+          : this.defaultAvatars[this.userProfile.selectedAvatar];
+    }
 
     if (profileAvatar) profileAvatar.src = avatarSrc;
     if (profileHeaderImg) profileHeaderImg.src = avatarSrc;
@@ -3634,6 +3642,11 @@ class FinanceApp {
       case 'report-problem':
         // Mostrar información de soporte
         this.showToast('Envía un email a soporte@dangivcontrol.com', 'info');
+        break;
+
+      case 'logout':
+        // Cerrar sesión del usuario
+        this.showLogoutConfirmModal();
         break;
 
       default:
@@ -14329,18 +14342,11 @@ FinanceApp.prototype.renderBudgetSummary = function (monthKey) {
 
   document.getElementById(
     'totalBudgetLimit'
-  ).textContent = `$${budget.totalLimit.toLocaleString('es-ES', {
-    minimumFractionDigits: 2,
-  })}`;
+  ).textContent = `$${this.formatNumber(budget.totalLimit)}`;
   document.getElementById(
     'totalBudgetSpent'
-  ).textContent = `$${budget.totalSpent.toLocaleString('es-ES', {
-    minimumFractionDigits: 2,
-  })}`;
-  document.getElementById('totalBudgetAvailable').textContent = `$${Math.max(
-    available,
-    0
-  ).toLocaleString('es-ES', { minimumFractionDigits: 2 })}`;
+  ).textContent = `$${this.formatNumber(budget.totalSpent)}`;
+  document.getElementById('totalBudgetAvailable').textContent = `$${this.formatNumber(Math.max(available, 0))}`;
   document.getElementById(
     'overallBudgetPercentage'
   ).textContent = `${percentage.toFixed(0)}%`;
@@ -14812,14 +14818,20 @@ FinanceApp.prototype.setupInstagramQuickActions = function () {
   }
 
   // Mobile avatar customization
-  // DESHABILITADO: Ahora el avatar móvil abre el menú del avatar (mobile-menu.js)
-  // const mobileAvatar = document.getElementById('mobileAvatar');
-  // if (mobileAvatar) {
-  //   mobileAvatar.addEventListener('click', (e) => {
-  //     e.stopPropagation(); // Prevent banner click event
-  //     this.openAvatarUploader();
-  //   });
-  // }
+  // Click en avatar móvil: si no está autenticado, abre modal de login
+  const mobileAvatarContainer = document.getElementById('mobileAvatarContainer');
+  if (mobileAvatarContainer) {
+    mobileAvatarContainer.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent banner click event
+
+      // Si el usuario no está autenticado, abrir modal de login
+      if (this.currentUser === 'anonymous' || !this.currentUser) {
+        console.log('[Avatar] Usuario no autenticado, abriendo modal de login');
+        this.openAuthModal();
+      }
+      // Si está autenticado, el avatar-sidebar.js maneja el click para abrir el menú
+    });
+  }
 };
 
 FinanceApp.prototype.changeBannerCover = async function () {

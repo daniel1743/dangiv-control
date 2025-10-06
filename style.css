@@ -2241,6 +2241,7 @@ body {
   height: 80px;
   position: relative;
   margin: 0 auto; /* Centrado */
+  cursor: pointer;
 }
 
 /* Icono de cámara deshabilitado - ahora se usa el menú del avatar */
