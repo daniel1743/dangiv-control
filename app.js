@@ -1807,11 +1807,23 @@ class FinanceApp {
       closeModal();
       try {
         const FB = window.FB;
+
+        // Cerrar sesión en Firebase
         await FB.signOut(FB.auth);
+
+        // Limpiar datos del usuario
         this.clearUserData();
+
+        // Mostrar mensaje de éxito
         this.showToast('Sesión cerrada correctamente 👋', 'success');
-        this.showSection('dashboard');
+
+        // Esperar un momento para que se vea el mensaje y luego recargar
+        setTimeout(() => {
+          // Recargar la página para limpiar completamente la caché visual
+          window.location.reload();
+        }, 1000);
       } catch (e) {
+        console.error('Error al cerrar sesión:', e);
         this.showToast('Error al cerrar sesión', 'error');
       }
     };
@@ -1904,6 +1916,8 @@ class FinanceApp {
   }
 
   clearUserData() {
+    console.log('[Logout] Limpiando datos del usuario...');
+
     // Clear all user-specific data from memory
     this.expenses = [];
     this.goals = [];
@@ -1912,12 +1926,18 @@ class FinanceApp {
     this.additionalIncomes = [];
     this.budgets = {};
     this.expenseTemplates = [];
+    this.savingsAccounts = [];
+    this.recurringPayments = [];
     this.currentUser = 'anonymous';
     this.userPlan = 'free';
     this.userProfile = {
       name: 'Usuario',
       email: '',
       avatar: '',
+      bannerCover: '',
+      quote: '',
+      avatarType: 'default',
+      selectedAvatar: 0
     };
     this.userCoins = 0;
     this.ownedStyles = ['default'];
@@ -1929,24 +1949,41 @@ class FinanceApp {
     this.inviteCodes = {};
     this.currentInviteLink = null;
     this.activityLog = [];
+    this.auditLog = [];
     this.motivationalMessages = [];
     this.lastMessageUpdate = null;
+    this.firebaseUser = null;
 
-    // Clear localStorage except tour completion flag
+    // Clear localStorage except tour completion and theme
     const tourCompleted = localStorage.getItem('financia_tour_completed');
     const themePreference = localStorage.getItem('financia_theme');
+    const cookieConsent = localStorage.getItem('cookieConsent');
+
+    console.log('[Logout] Limpiando localStorage...');
     localStorage.clear();
+
+    // Restaurar preferencias que queremos mantener
     if (tourCompleted) {
       localStorage.setItem('financia_tour_completed', tourCompleted);
     }
     if (themePreference) {
       localStorage.setItem('financia_theme', themePreference);
     }
+    if (cookieConsent) {
+      localStorage.setItem('cookieConsent', cookieConsent);
+    }
 
-    // Re-render UI
-    this.renderDashboard();
-    this.renderExpenses();
-    this.renderGoals();
+    // Clear sessionStorage
+    console.log('[Logout] Limpiando sessionStorage...');
+    sessionStorage.clear();
+
+    // Limpiar imágenes del banner y avatar del DOM
+    const mobileBannerCover = document.getElementById('mobileBannerCover');
+    if (mobileBannerCover) {
+      mobileBannerCover.style.backgroundImage = '';
+    }
+
+    console.log('[Logout] Datos limpiados correctamente');
   }
 
   setupLogoRedirect() {
