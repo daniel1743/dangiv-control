@@ -25,6 +25,7 @@ import {
   getDoc,
   getDocFromCache,
   getDocFromServer,
+  onSnapshot, // <-- CAMBIO 1
   setDoc,
   updateDoc,
   deleteDoc,
@@ -53,16 +54,11 @@ import { firebaseConfig, apiKeys, config } from './config.js';
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = initializeFirestore(app, {
-  // OPTIMIZACIÓN: WebChannel (más rápido que long polling)
   experimentalForceLongPolling: false,
-
-  // CACHÉ PERSISTENTE MODERNO (Firebase v11+)
-  // Usa IndexedDB para almacenar datos localmente
-  // Permite acceso multi-pestaña simultáneo
   localCache: persistentLocalCache({
     tabManager: persistentMultipleTabManager(),
-    cacheSizeBytes: 40000000 // 40MB
-  })
+    cacheSizeBytes: 40000000,
+  }),
 });
 
 console.log('✅ Firestore inicializado con caché persistente multi-pestaña');
@@ -98,6 +94,7 @@ window.FB = {
   getDoc,
   getDocFromCache,
   getDocFromServer,
+  onSnapshot, // <-- CAMBIO 2
   setDoc,
   updateDoc,
   deleteDoc,
@@ -127,5 +124,4 @@ if (config.isDevelopment && (!apiKeys.gemini || !apiKeys.unsplash)) {
   console.warn('⚠️ API Keys de Gemini/Unsplash no configuradas');
   console.warn('📝 Para usarlas, configura las keys en config.js');
 }
-
 // === FIN DE SECCIÓN: CONFIGURACIÓN DE FIREBASE ===

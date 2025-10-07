@@ -89,13 +89,14 @@ class FinanceApp {
       principales: [],
       explicacion: [],
       cierre: [],
-      accion: []
+      accion: [],
     };
     this.allMessages = null; // Se cargará del JSON
     this.lastMorningMessage = savedData.lastMorningMessage || null; // Timestamp del último mensaje de mañana
     this.lastNightMessage = savedData.lastNightMessage || null; // Timestamp del último mensaje de noche
     this.dailyMessageScheduled = false;
-    this.activeMessageNotifications = savedData.activeMessageNotifications || []; // Notificaciones activas de mensajes
+    this.activeMessageNotifications =
+      savedData.activeMessageNotifications || []; // Notificaciones activas de mensajes
 
     // Notification States (Map to track read/unread status)
     // Convert from object or array to Map
@@ -105,7 +106,9 @@ class FinanceApp {
         this.notificationStates = new Map(savedData.notificationStates);
       } else {
         // New format: object with key-value pairs
-        this.notificationStates = new Map(Object.entries(savedData.notificationStates));
+        this.notificationStates = new Map(
+          Object.entries(savedData.notificationStates)
+        );
       }
     } else {
       this.notificationStates = new Map();
@@ -653,6 +656,7 @@ class FinanceApp {
   }
 
   // Método para guardar todo el estado relevante en LocalStorageÃ©todo para guardar todo el estado relevante en LocalStorage
+  // REEMPLAZA TODA TU FUNCIÓN saveData CON ESTA
   async saveData() {
     const dataToSave = {
       accountType: this.accountType,
@@ -690,100 +694,41 @@ class FinanceApp {
       lastMorningMessage: this.lastMorningMessage,
       lastNightMessage: this.lastNightMessage,
       activeMessageNotifications: this.activeMessageNotifications,
-      notificationStates: this.notificationStates ? Object.fromEntries(this.notificationStates) : {},
-      lastUpdate: Date.now(),
+      notificationStates: this.notificationStates
+        ? Object.fromEntries(this.notificationStates)
+        : {},
+      // lastUpdate: Date.now(), // <--- LÍNEA CRÍTICA ELIMINADA
     };
 
+    // ... (el resto de tu función saveData sigue igual desde aquí) ...
     const { cleaned: normalizedData } = this.normalizePersistedData(dataToSave);
 
     let localSaveOk = false;
-
     try {
       const dataString = JSON.stringify(normalizedData);
-      const dataSize = new Blob([dataString]).size;
-
-      // Detectar si los datos son demasiado grandes (>5MB)
-      if (dataSize > 5 * 1024 * 1024) {
-        console.warn(`⚠️ Datos muy grandes (${(dataSize / 1024 / 1024).toFixed(2)} MB). Limpiando imágenes base64...`);
-
-        // Limpiar imágenes base64 del userProfile
-        if (normalizedData.userProfile) {
-          if (normalizedData.userProfile.avatar?.startsWith('data:image')) {
-            normalizedData.userProfile.avatar = '';
-          }
-          if (normalizedData.userProfile.bannerCover?.startsWith('data:image')) {
-            normalizedData.userProfile.bannerCover = '';
-          }
-        }
-
-        // Reintentar con datos limpios
-        const cleanedString = JSON.stringify(normalizedData);
-        localStorage.setItem('financiaProData', cleanedString);
-        console.log('✅ Datos limpiados y guardados correctamente');
-      } else {
-        localStorage.setItem('financiaProData', dataString);
-      }
-
+      localStorage.setItem('financiaProData', dataString);
       localSaveOk = true;
     } catch (error) {
       console.error('Error al guardar en localStorage:', error);
-
-      // Si falla, intentar limpiar imágenes y reintentar
-      try {
-        if (normalizedData.userProfile) {
-          normalizedData.userProfile.avatar = '';
-          normalizedData.userProfile.bannerCover = '';
-        }
-        localStorage.setItem('financiaProData', JSON.stringify(normalizedData));
-        localSaveOk = true;
-        console.log('✅ Guardado exitoso después de limpiar imágenes');
-      } catch (retryError) {
-        console.error('❌ Error crítico al guardar:', retryError);
-      }
     }
 
     if (!this.currentUser || this.currentUser === 'anonymous') {
-      // Guardado silencioso para usuarios anónimos
-      // Solo mostrar error si falla
-      if (!localSaveOk) {
+      if (!localSaveOk)
         this.showToast(
           'No se pudieron guardar los datos en este dispositivo.',
           'error'
         );
-      }
       return;
     }
 
     try {
-      // Use sharedAccountId if it exists (for shared accounts), otherwise use currentUser
       const firestoreDocId = this.sharedAccountId || this.currentUser;
-      const userDocRef = FB.doc(FB.db, 'userData', firestoreDocId);
-
-      // DEBUG: Guardando en Firestore
-
-      // Limpiar userProfile para Firebase - solo guardar datos serializables
-      const cleanedData = {
-        ...normalizedData,
-        userProfile: normalizedData.userProfile
-          ? {
-              name: normalizedData.userProfile.name || 'Usuario',
-              email: normalizedData.userProfile.email || '',
-              avatar: normalizedData.userProfile.avatar || '',
-              avatarType: normalizedData.userProfile.avatarType || 'default',
-              selectedAvatar: normalizedData.userProfile.selectedAvatar || 0,
-              bannerCover: normalizedData.userProfile.bannerCover || '',
-            }
-          : undefined,
-      };
-
-      await FB.setDoc(userDocRef, cleanedData);
-
-      // Guardado silencioso - Solo mostrar errores, no éxitos
-      // Los usuarios no necesitan saber que cada acción se guarda
+      const userDocRef = FB.doc(FB.db, 'usuarios', firestoreDocId);
+      await FB.setDoc(userDocRef, normalizedData);
     } catch (error) {
       console.error('Error al guardar en Firestore:', error);
       const message = localSaveOk
-        ? 'Los datos se guardaron en este dispositivo, pero falló la sincronización en la nube.'
+        ? 'Datos guardados localmente, pero falló la sincronización con la nube.'
         : 'No se pudieron guardar los datos.';
       this.showToast(message, 'error');
     }
@@ -799,7 +744,10 @@ class FinanceApp {
       const response = await fetch('mensaje-bienvenida.json');
       const data = await response.json();
       this.allMessages = data.mensajes;
-      console.log('✅ Mensajes cargados desde JSON:', data.metadata.total_mensajes);
+      console.log(
+        '✅ Mensajes cargados desde JSON:',
+        data.metadata.total_mensajes
+      );
     } catch (error) {
       console.error('Error cargando mensajes:', error);
     }
@@ -829,7 +777,8 @@ class FinanceApp {
     }
 
     // Seleccionar índice aleatorio de los disponibles
-    const randomIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+    const randomIndex =
+      availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
 
     // Guardar en historial
     this.messageHistory[categoryName].push(randomIndex);
@@ -849,11 +798,26 @@ class FinanceApp {
 
     const userName = this.userProfile.name || 'Usuario';
 
-    const saludo = this.getRandomMessage(this.allMessages.saludos_iniciales, 'saludos');
-    const principal = this.getRandomMessage(this.allMessages.mensajes_principales, 'principales');
-    const explicacion = this.getRandomMessage(this.allMessages.explicacion_servicio, 'explicacion');
-    const cierre = this.getRandomMessage(this.allMessages.cierre_motivacional, 'cierre');
-    const accion = this.getRandomMessage(this.allMessages.llamado_accion, 'accion');
+    const saludo = this.getRandomMessage(
+      this.allMessages.saludos_iniciales,
+      'saludos'
+    );
+    const principal = this.getRandomMessage(
+      this.allMessages.mensajes_principales,
+      'principales'
+    );
+    const explicacion = this.getRandomMessage(
+      this.allMessages.explicacion_servicio,
+      'explicacion'
+    );
+    const cierre = this.getRandomMessage(
+      this.allMessages.cierre_motivacional,
+      'cierre'
+    );
+    const accion = this.getRandomMessage(
+      this.allMessages.llamado_accion,
+      'accion'
+    );
 
     // Construir mensaje completo
     const mensajeCompleto = `${saludo}\n\n${principal}\n\n${explicacion}\n\n${cierre}\n\n${accion}`;
@@ -873,25 +837,25 @@ class FinanceApp {
       morning: '☀️ Buenos Días',
       night: '🌙 Buenas Noches',
       welcome: '🎉 Bienvenido',
-      general: '💡 Mensaje'
+      general: '💡 Mensaje',
     };
 
     const icons = {
       morning: 'fa-sun',
       night: 'fa-moon',
       welcome: 'fa-hand-sparkles',
-      general: 'fa-lightbulb'
+      general: 'fa-lightbulb',
     };
 
     const colors = {
       morning: '#f59e0b',
       night: '#6366f1',
       welcome: '#10b981',
-      general: '#8b5cf6'
+      general: '#8b5cf6',
     };
 
     const notificationId = `msg-${Date.now()}`;
-    const expiresAt = Date.now() + (8 * 60 * 60 * 1000); // 8 horas
+    const expiresAt = Date.now() + 8 * 60 * 60 * 1000; // 8 horas
 
     // Guardar en array de notificaciones activas
     this.activeMessageNotifications.push({
@@ -899,7 +863,7 @@ class FinanceApp {
       type: messageType,
       message: message,
       createdAt: Date.now(),
-      expiresAt: expiresAt
+      expiresAt: expiresAt,
     });
     this.saveData();
 
@@ -987,7 +951,9 @@ class FinanceApp {
     }
 
     // Eliminar del array de notificaciones activas
-    this.activeMessageNotifications = this.activeMessageNotifications.filter(n => n.id !== notificationId);
+    this.activeMessageNotifications = this.activeMessageNotifications.filter(
+      (n) => n.id !== notificationId
+    );
     this.saveData();
   }
 
@@ -998,16 +964,18 @@ class FinanceApp {
     const now = Date.now();
     const expiredIds = [];
 
-    this.activeMessageNotifications = this.activeMessageNotifications.filter(notification => {
-      if (notification.expiresAt < now) {
-        expiredIds.push(notification.id);
-        return false;
+    this.activeMessageNotifications = this.activeMessageNotifications.filter(
+      (notification) => {
+        if (notification.expiresAt < now) {
+          expiredIds.push(notification.id);
+          return false;
+        }
+        return true;
       }
-      return true;
-    });
+    );
 
     // Eliminar del DOM
-    expiredIds.forEach(id => {
+    expiredIds.forEach((id) => {
       const element = document.getElementById(id);
       if (element) element.remove();
     });
@@ -1023,26 +991,26 @@ class FinanceApp {
   restoreActiveNotifications() {
     this.cleanExpiredNotifications();
 
-    this.activeMessageNotifications.forEach(notification => {
+    this.activeMessageNotifications.forEach((notification) => {
       const titles = {
         morning: '☀️ Buenos Días',
         night: '🌙 Buenas Noches',
         welcome: '🎉 Bienvenido',
-        general: '💡 Mensaje'
+        general: '💡 Mensaje',
       };
 
       const icons = {
         morning: 'fa-sun',
         night: 'fa-moon',
         welcome: 'fa-hand-sparkles',
-        general: 'fa-lightbulb'
+        general: 'fa-lightbulb',
       };
 
       const colors = {
         morning: '#f59e0b',
         night: '#6366f1',
         welcome: '#10b981',
-        general: '#8b5cf6'
+        general: '#8b5cf6',
       };
 
       // Crear elemento de notificación
@@ -1074,9 +1042,13 @@ class FinanceApp {
                 ">
                   <i class="fas ${icons[notification.type]}"></i>
                 </div>
-                <h4 style="margin: 0; font-size: 15px; font-weight: 600; color: #1e293b;">${titles[notification.type]}</h4>
+                <h4 style="margin: 0; font-size: 15px; font-weight: 600; color: #1e293b;">${
+                  titles[notification.type]
+                }</h4>
               </div>
-              <button onclick="window.app.closeMessageNotification('${notification.id}')" style="
+              <button onclick="window.app.closeMessageNotification('${
+                notification.id
+              }')" style="
                 background: none;
                 border: none;
                 cursor: pointer;
@@ -1124,10 +1096,17 @@ class FinanceApp {
   checkMorningMessage() {
     const now = new Date();
     const hour = now.getHours();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const today = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    ).getTime();
 
     // Si es las 8 AM (entre 8:00 y 8:59) y no se ha mostrado hoy
-    if (hour === 8 && (!this.lastMorningMessage || this.lastMorningMessage < today)) {
+    if (
+      hour === 8 &&
+      (!this.lastMorningMessage || this.lastMorningMessage < today)
+    ) {
       this.lastMorningMessage = Date.now();
       this.saveData();
       this.createMessageNotification('morning');
@@ -1140,10 +1119,17 @@ class FinanceApp {
   checkNightMessage() {
     const now = new Date();
     const hour = now.getHours();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const today = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    ).getTime();
 
     // Si es las 8 PM (entre 20:00 y 20:59) y no se ha mostrado hoy
-    if (hour === 20 && (!this.lastNightMessage || this.lastNightMessage < today)) {
+    if (
+      hour === 20 &&
+      (!this.lastNightMessage || this.lastNightMessage < today)
+    ) {
       this.lastNightMessage = Date.now();
       this.saveData();
       this.createMessageNotification('night');
@@ -1287,7 +1273,9 @@ class FinanceApp {
       }
     } catch (error) {
       if (error.name === 'AbortError') {
-        console.warn('⏱️ Timeout al obtener mensajes de Gemini (8s) - usando mensajes guardados');
+        console.warn(
+          '⏱️ Timeout al obtener mensajes de Gemini (8s) - usando mensajes guardados'
+        );
       } else {
         console.error('Error al obtener mensajes de Gemini:', error);
       }
@@ -1332,12 +1320,12 @@ class FinanceApp {
   /**
    * NUEVO: Carga mensajes desde JSON local
    */
-   async loadMessagesFromJSON() {
+  async loadMessagesFromJSON() {
     try {
       // Cargar mensajes de mañana y noche
       const [morningResponse, nightResponse] = await Promise.all([
         fetch('mensajes-manana.json'),
-        fetch('mensajes-noche.json')
+        fetch('mensajes-noche.json'),
       ]);
 
       if (!morningResponse.ok || !nightResponse.ok) {
@@ -1353,13 +1341,20 @@ class FinanceApp {
       this.nightMessages = nightData;
 
       console.log('✅ Mensajes JSON cargados correctamente');
-      console.log(`📅 Mañana (${morningData.libro.horario}):`, morningData.saludos_intro?.length || 0, 'saludos');
-      console.log(`🌙 Noche (${nightData.libro.horario}):`, nightData.saludos_intro?.length || 0, 'saludos');
+      console.log(
+        `📅 Mañana (${morningData.libro.horario}):`,
+        morningData.saludos_intro?.length || 0,
+        'saludos'
+      );
+      console.log(
+        `🌙 Noche (${nightData.libro.horario}):`,
+        nightData.saludos_intro?.length || 0,
+        'saludos'
+      );
 
       // Inicializar contadores si no existen
       if (!this.currentMorningIndex) this.currentMorningIndex = 0;
       if (!this.currentNightIndex) this.currentNightIndex = 0;
-
     } catch (error) {
       console.error('Error al cargar mensajes JSON:', error);
     }
@@ -1376,12 +1371,13 @@ class FinanceApp {
         saludo: 'Hola',
         mensaje: 'Ten un excelente día',
         reflexion: 'La constancia es la clave del éxito',
-        despedida: '¡Adelante!'
+        despedida: '¡Adelante!',
       };
     }
 
     // Seleccionar índice actual
-    const currentIndex = type === 'morning' ? this.currentMorningIndex : this.currentNightIndex;
+    const currentIndex =
+      type === 'morning' ? this.currentMorningIndex : this.currentNightIndex;
     const mensaje = data.mensajes[currentIndex % data.mensajes.length];
 
     // Incrementar índice para la próxima vez
@@ -1393,13 +1389,18 @@ class FinanceApp {
 
     // Personalizar con nombre del usuario
     const userName = this.userProfile?.name || 'Usuario';
-    const saludoIndex = Math.floor(Math.random() * (data.saludos_intro?.length || 1));
-    const saludo = (data.saludos_intro?.[saludoIndex] || 'Hola').replace('{nombre}', userName);
+    const saludoIndex = Math.floor(
+      Math.random() * (data.saludos_intro?.length || 1)
+    );
+    const saludo = (data.saludos_intro?.[saludoIndex] || 'Hola').replace(
+      '{nombre}',
+      userName
+    );
 
     return {
       saludo,
       ...mensaje,
-      userName
+      userName,
     };
   }
 
@@ -1422,12 +1423,20 @@ class FinanceApp {
       const timeUntil = next.getTime() - now.getTime();
 
       setTimeout(() => {
-        console.log(`⏰ ${type === 'morning' ? '🌅' : '🌙'} Activando notificación de ${type === 'morning' ? 'mañana' : 'noche'}`);
+        console.log(
+          `⏰ ${type === 'morning' ? '🌅' : '🌙'} Activando notificación de ${
+            type === 'morning' ? 'mañana' : 'noche'
+          }`
+        );
         this.createDailyMessageNotification(type);
         scheduleNotification(hour, type); // Reprogramar para el día siguiente
       }, timeUntil);
 
-      console.log(`📅 Notificación de ${type} programada para: ${next.toLocaleString('es-ES')}`);
+      console.log(
+        `📅 Notificación de ${type} programada para: ${next.toLocaleString(
+          'es-ES'
+        )}`
+      );
     };
 
     // Programar 8 AM (mañana)
@@ -1454,13 +1463,15 @@ class FinanceApp {
       type: 'daily_message',
       category,
       icon,
-      title: `${type === 'morning' ? '🌅' : '🌙'} Mensaje ${type === 'morning' ? 'Matutino' : 'Nocturno'}`,
+      title: `${type === 'morning' ? '🌅' : '🌙'} Mensaje ${
+        type === 'morning' ? 'Matutino' : 'Nocturno'
+      }`,
       subtitle: mensaje.saludo,
       message: mensaje.mensaje,
       time: 'Ahora',
       priority: 'high',
       isRead: false,
-      data: { ...mensaje, type }
+      data: { ...mensaje, type },
     };
 
     // Mostrar notificación
@@ -1493,8 +1504,16 @@ class FinanceApp {
           <div class="daily-message-body">
             <p class="daily-message-greeting">${mensaje.saludo}</p>
             <p class="daily-message-text">${mensaje.mensaje}</p>
-            ${mensaje.reflexion ? `<p class="daily-message-reflection"><em>"${mensaje.reflexion}"</em></p>` : ''}
-            ${mensaje.despedida ? `<p class="daily-message-farewell">${mensaje.despedida}</p>` : ''}
+            ${
+              mensaje.reflexion
+                ? `<p class="daily-message-reflection"><em>"${mensaje.reflexion}"</em></p>`
+                : ''
+            }
+            ${
+              mensaje.despedida
+                ? `<p class="daily-message-farewell">${mensaje.despedida}</p>`
+                : ''
+            }
           </div>
         </div>
       </div>
@@ -1598,67 +1617,70 @@ class FinanceApp {
         console.log('[Auth] Usuario autenticado, cargando datos reales...');
 
         // Sincronizar desde Firebase y esperar a que complete
-        this.syncFromFirebase().then(() => {
-          // Ocultar loading solo cuando los datos reales estén cargados
-          this.hideAppLoading();
+        this.syncFromFirebase()
+          .then(() => {
+            // Ocultar loading solo cuando los datos reales estén cargados
+            this.hideAppLoading();
 
-          console.log('[Auth] Datos reales cargados, renderizando dashboard...');
+            console.log(
+              '[Auth] Datos reales cargados, renderizando dashboard...'
+            );
 
-          // Renderizar todo con datos sincronizados
-          this.renderDashboard();
-          this.renderSavingsAccountsList();
-          this.updateDashboardSavings();
-          this.renderRecurringPaymentsList();
-          this.updateDashboardPayments();
-          this.initTrendChart();
-          this.updateDashboardWelcome();
-          this.initAchievements();
-          this.updateMenuRestrictions();
+            // Renderizar todo con datos sincronizados
+            this.renderDashboard();
+            this.renderSavingsAccountsList();
+            this.updateDashboardSavings();
+            this.renderRecurringPaymentsList();
+            this.initTrendChart();
+            this.updateDashboardWelcome();
+            this.initAchievements();
+            this.updateMenuRestrictions();
 
-          // Inicializar menú móvil DESPUÉS de que todo esté listo
-          setTimeout(() => {
-            if (typeof this.initMobileMenu === 'function') {
-              this.initMobileMenu();
-            }
-          }, 100);
+            // Inicializar menú móvil DESPUÉS de que todo esté listo
+            setTimeout(() => {
+              if (typeof this.initMobileMenu === 'function') {
+                this.initMobileMenu();
+              }
+            }, 100);
 
-          // Iniciar sistema de mensajes motivadores
-          this.updateCarouselWithMessages();
-          setTimeout(() => {
-            // DESACTIVADO: Sistema Gemini
-            // this.fetchMotivationalMessages();
+            // Iniciar sistema de mensajes motivadores
+            this.updateCarouselWithMessages();
+            setTimeout(() => {
+              // DESACTIVADO: Sistema Gemini
+              // this.fetchMotivationalMessages();
 
-            // NUEVO: Sistema JSON de mensajes personalizados
-            this.loadMessagesFromJSON();
-          }, 100);
+              // NUEVO: Sistema JSON de mensajes personalizados
+              this.loadMessagesFromJSON();
+            }, 100);
 
-          // NUEVO: Programar mensajes a las 8 AM y 8 PM
-          this.scheduleDailyMessages();
+            // NUEVO: Programar mensajes a las 8 AM y 8 PM
+            this.scheduleDailyMessages();
 
-          // Actualizar notificaciones
-          this.updateNotifications();
-        }).catch(err => {
-          console.error('[Auth] Error en sincronización:', err);
-          clearTimeout(maxLoadingTime);
-          this.hideAppLoading();
+            // Actualizar notificaciones
+            this.updateNotifications();
+          })
+          .catch((err) => {
+            console.error('[Auth] Error en sincronización:', err);
+            clearTimeout(maxLoadingTime);
+            this.hideAppLoading();
 
-          // Renderizar con datos locales si falla
-          this.renderDashboard();
-          this.renderSavingsAccountsList();
-          this.updateDashboardSavings();
-          this.renderRecurringPaymentsList();
-          this.updateDashboardPayments();
-          this.initTrendChart();
-          this.updateDashboardWelcome();
-          this.initAchievements();
+            // Renderizar con datos locales si falla
+            this.renderDashboard();
+            this.renderSavingsAccountsList();
+            this.updateDashboardSavings();
+            this.renderRecurringPaymentsList();
+            //this.updateDashboardPayments();
+            this.initTrendChart();
+            this.updateDashboardWelcome();
+            this.initAchievements();
 
-          // Inicializar menú móvil aunque falle
-          setTimeout(() => {
-            if (typeof this.initMobileMenu === 'function') {
-              this.initMobileMenu();
-            }
-          }, 100);
-        });
+            // Inicializar menú móvil aunque falle
+            setTimeout(() => {
+              if (typeof this.initMobileMenu === 'function') {
+                this.initMobileMenu();
+              }
+            }, 100);
+          });
       } else {
         this.currentUser = 'anonymous';
         this.firebaseUser = null;
@@ -1737,7 +1759,9 @@ class FinanceApp {
       viewProfileBtn.addEventListener('click', () => {
         this.showSection('config');
         // Activar la pestaña de perfil en configuración
-        const profileTab = document.querySelector('[data-settings-tab="profile"]');
+        const profileTab = document.querySelector(
+          '[data-settings-tab="profile"]'
+        );
         if (profileTab) {
           profileTab.click();
         }
@@ -1775,7 +1799,9 @@ class FinanceApp {
       mobileProfileBtn.addEventListener('click', () => {
         this.showSection('config');
         // Activar la pestaña de perfil en configuración
-        const profileTab = document.querySelector('[data-settings-tab="profile"]');
+        const profileTab = document.querySelector(
+          '[data-settings-tab="profile"]'
+        );
         if (profileTab) {
           profileTab.click();
         }
@@ -1868,7 +1894,9 @@ class FinanceApp {
       this.openAuthModal();
       // Switch to register tab
       setTimeout(() => {
-        const registerTab = document.querySelector('[data-auth-tab="register"]');
+        const registerTab = document.querySelector(
+          '[data-auth-tab="register"]'
+        );
         if (registerTab) registerTab.click();
       }, 100);
     };
@@ -1893,7 +1921,9 @@ class FinanceApp {
   }
 
   updateMenuRestrictions() {
-    const requiresAuthItems = document.querySelectorAll('.nav-item.requires-auth');
+    const requiresAuthItems = document.querySelectorAll(
+      '.nav-item.requires-auth'
+    );
     const isAnonymous = this.currentUser === 'anonymous';
 
     requiresAuthItems.forEach((item) => {
@@ -1945,7 +1975,7 @@ class FinanceApp {
       bannerCover: '',
       quote: '',
       avatarType: 'default',
-      selectedAvatar: 0
+      selectedAvatar: 0,
     };
     this.userCoins = 0;
     this.ownedStyles = ['default'];
@@ -2025,7 +2055,8 @@ class FinanceApp {
 
     // Si el usuario no está autenticado, usar avatar genérico
     if (this.currentUser === 'anonymous' || !this.currentUser) {
-      avatarSrc = 'https://ui-avatars.com/api/?name=Usuario&background=21808D&color=fff&size=128&font-size=0.6';
+      avatarSrc =
+        'https://ui-avatars.com/api/?name=Usuario&background=21808D&color=fff&size=128&font-size=0.6';
     } else {
       // Usuario autenticado: usar su avatar personalizado o por defecto
       avatarSrc =
@@ -2129,12 +2160,16 @@ class FinanceApp {
 
     // Actualizar email
     if (avatarSidebarEmail) {
-      avatarSidebarEmail.textContent = this.userProfile.email || 'email@ejemplo.com';
+      avatarSidebarEmail.textContent =
+        this.userProfile.email || 'email@ejemplo.com';
     }
 
     // Notificar al avatar-sidebar.js si existe
     // NOTA: Usamos avatarSidebarManager porque avatarSidebar es el elemento HTML
-    if (window.avatarSidebarManager && typeof window.avatarSidebarManager.updateUserInfo === 'function') {
+    if (
+      window.avatarSidebarManager &&
+      typeof window.avatarSidebarManager.updateUserInfo === 'function'
+    ) {
       window.avatarSidebarManager.updateUserInfo();
     }
   }
@@ -2251,209 +2286,109 @@ class FinanceApp {
     return;
   }
 
+  //
+  // COPIA Y PEGA ESTA NUEVA FUNCIÓN SOBRE LA ANTIGUA
+  //
+  // REEMPLAZA TODA TU FUNCIÓN syncFromFirebase CON ESTA
   async syncFromFirebase() {
     if (!this.currentUser || this.currentUser === 'anonymous') {
-      // Si no hay usuario, no hay nada que sincronizar.
       return;
     }
-
-    // Skip sync if we're in the middle of registration
     if (this.isRegistering) {
-      console.log(
-        '[Sync] Registro en proceso, saltando sincronización para evitar race condition'
-      );
+      console.log('[Sync] Registro en proceso, saltando sincronización.');
       return;
     }
-
-    console.log('[Sync] 🔄 Iniciando sincronización de datos...');
-
+    console.log('[Sync-RT] 🔄 Suscribiéndose a cambios en tiempo real...');
     try {
-      // Use sharedAccountId if it exists (for shared accounts), otherwise use currentUser
       const firestoreDocId = this.sharedAccountId || this.currentUser;
-      const userDocRef = FB.doc(FB.db, 'userData', firestoreDocId);
+      const userDocRef = FB.doc(FB.db, 'usuarios', firestoreDocId);
 
-      console.log('[Sync] ID de usuario:', firestoreDocId);
+      FB.onSnapshot(
+        userDocRef,
+        (docSnap) => {
+          if (docSnap.exists()) {
+            const cloudData = docSnap.data() || {};
+            console.log(
+              '[Sync-RT] ✅ Datos recibidos de Firestore en tiempo real.'
+            );
 
-      let docSnap;
-      try {
-        const startTime = performance.now();
+            this.expenses = cloudData.expenses || [];
+            this.goals = cloudData.goals || [];
+            this.shoppingItems = cloudData.shoppingItems || [];
+            this.monthlyIncome = cloudData.monthlyIncome || 2500;
+            this.additionalIncomes = cloudData.additionalIncomes || [];
+            this.extraIncome = cloudData.extraIncome || 0;
+            if (cloudData.userProfile) this.userProfile = cloudData.userProfile;
+            if (cloudData.savingsAccounts)
+              this.savingsAccounts = cloudData.savingsAccounts;
+            if (cloudData.recurringPayments)
+              this.recurringPayments = cloudData.recurringPayments;
+            this.budgets = cloudData.budgets || {};
+            this.userCoins = cloudData.userCoins || 100;
+            this.ownedStyles = cloudData.ownedStyles || ['classic'];
+            this.currentStyle = cloudData.currentStyle || 'classic';
+            this.customUsers = cloudData.customUsers || [];
 
-        // ESTRATEGIA CACHE-FIRST: Intentar leer primero del caché
-        // Esto hace que cargas subsecuentes sean instantáneas (<50ms)
-        try {
-          console.log('[Sync] Intentando leer desde caché local...');
-          docSnap = await FB.getDocFromCache(userDocRef);
-
-          const cacheTime = (performance.now() - startTime).toFixed(0);
-          console.log(`[Sync] ✅ Datos cargados desde CACHÉ en ${cacheTime}ms`);
-
-          // Actualizar en segundo plano desde el servidor (sin bloquear UI)
-          FB.getDocFromServer(userDocRef)
-            .then(freshDoc => {
-              if (freshDoc.exists()) {
-                const freshData = freshDoc.data();
-                const cachedData = docSnap.data();
-
-                // Solo actualizar si hay cambios reales
-                if (JSON.stringify(freshData) !== JSON.stringify(cachedData)) {
-                  console.log('[Sync] 🔄 Datos actualizados desde servidor (en segundo plano)');
-                  // Aquí podrías recargar datos si cambió algo importante
-                }
+            // --- CORRECCIÓN IMPORTANTE PARA notificationStates ---
+            if (cloudData.notificationStates) {
+              if (Array.isArray(cloudData.notificationStates)) {
+                this.notificationStates = new Map(cloudData.notificationStates);
+              } else {
+                this.notificationStates = new Map(
+                  Object.entries(cloudData.notificationStates)
+                );
               }
-            })
-            .catch(err => console.log('[Sync] No se pudo actualizar en segundo plano:', err.message));
+            } else {
+              this.notificationStates = new Map();
+            }
 
-        } catch (cacheError) {
-          // Si no hay caché, ir al servidor directamente
-          console.log('[Sync] Caché vacío, cargando desde servidor...');
-          docSnap = await FB.getDocFromServer(userDocRef);
+            try {
+              localStorage.setItem(
+                'financiaProData',
+                JSON.stringify(cloudData)
+              );
+            } catch (error) {
+              console.warn(
+                'No se pudo actualizar el almacenamiento local.',
+                error
+              );
+            }
 
-          const serverTime = (performance.now() - startTime).toFixed(0);
-          console.log(`[Sync] ✅ Datos descargados desde SERVIDOR en ${serverTime}ms`);
-
-          if (serverTime > 2000) {
-            console.warn(`[Sync] ⚠️ Carga lenta detectada (${serverTime}ms). Considera limpiar datos antiguos.`);
+            console.log(
+              '[Sync-RT] 🎨 Re-renderizando la interfaz con datos actualizados...'
+            );
+            if (this.currentSection === 'dashboard') {
+              this.renderDashboard();
+            }
+            this.renderExpenses();
+            this.renderGoals();
+            this.renderShoppingList();
+            this.renderConfig();
+            this.updateProfileDisplay();
+            this.updateUserSelectionDropdown();
+            this.updateDashboardWelcome();
+            this.renderSavingsAccountsList();
+            this.updateDashboardSavings();
+            this.renderRecurringPaymentsList();
+            // this.updateDashboardPayments(); // <--- LÍNEA ELIMINADA
+          } else {
+            console.log(
+              '[Sync-RT] Creando espacio en la nube para usuario nuevo.'
+            );
+            this.saveData();
           }
-        }
-      } catch (firestoreError) {
-        console.error('Error al leer documento de Firestore:', firestoreError);
-
-        // Si falla la lectura, probablemente hay datos corruptos (imágenes base64 grandes)
-        // Intentar limpiar el documento
-        console.log('Intentando limpiar datos corruptos...');
-
-        try {
-          // Actualizar solo con campos básicos para limpiar el documento
-          await FB.updateDoc(userDocRef, {
-            'userProfile.avatar': '',
-            'userProfile.bannerCover': '',
-            updatedAt: Date.now(),
-          });
-
-          this.showToast('Datos de perfil limpiados. Por favor, recarga la página.', 'warning');
-        } catch (cleanError) {
-          console.error('Error al limpiar datos:', cleanError);
-          this.showToast('Error de sincronización. Usando datos locales.', 'error');
-        }
-
-        return; // Salir de la función
-      }
-
-      if (docSnap.exists()) {
-        const cloudRaw = docSnap.data() || {};
-        const { cleaned: cloudData, changed: cloudNormalized } =
-          this.normalizePersistedData(cloudRaw);
-
-        // Sincronizar todos los datos desde la nube
-        this.expenses = cloudData.expenses || [];
-        this.goals = cloudData.goals || [];
-        this.shoppingItems = cloudData.shoppingItems || [];
-        this.monthlyIncome = cloudData.monthlyIncome || 2500;
-        this.securityPasswords = cloudData.securityPasswords || {};
-
-        // Account data
-        if (cloudData.accountType) this.accountType = cloudData.accountType;
-        if (cloudData.sharedAccountId) this.sharedAccountId = cloudData.sharedAccountId;
-        if (cloudData.accountOwner) this.accountOwner = cloudData.accountOwner;
-        if (cloudData.accountUsers) this.accountUsers = cloudData.accountUsers;
-
-        // User profile and settings
-        if (cloudData.userProfile) {
-          this.userProfile = cloudData.userProfile;
-        }
-
-        // Activity and audit logs
-        if (cloudData.activityLog) {
-          this.activityLog = cloudData.activityLog;
-        }
-        if (cloudData.auditLog) {
-          this.auditLog = cloudData.auditLog;
-        }
-
-        // Custom users
-        if (cloudData.customUsers) {
-          this.customUsers = cloudData.customUsers;
-        }
-
-        // Financial data
-        if (cloudData.savingsAccounts) {
-          this.savingsAccounts = cloudData.savingsAccounts;
-        }
-        if (cloudData.recurringPayments) {
-          this.recurringPayments = cloudData.recurringPayments;
-        }
-        if (cloudData.budgets) {
-          this.budgets = cloudData.budgets;
-        }
-        if (cloudData.expenseTemplates) {
-          this.expenseTemplates = cloudData.expenseTemplates;
-        }
-
-        // Store data
-        if (cloudData.userCoins !== undefined) {
-          this.userCoins = cloudData.userCoins;
-        }
-        if (cloudData.ownedStyles) {
-          this.ownedStyles = cloudData.ownedStyles;
-        }
-        if (cloudData.currentStyle) {
-          this.currentStyle = cloudData.currentStyle;
-        }
-
-        // Invite system
-        if (cloudData.inviteCodes) {
-          this.inviteCodes = cloudData.inviteCodes;
-        }
-        if (cloudData.currentInviteLink) {
-          this.currentInviteLink = cloudData.currentInviteLink;
-        }
-
-        // Motivational messages
-        if (cloudData.motivationalMessages) {
-          this.motivationalMessages = cloudData.motivationalMessages;
-        }
-        if (cloudData.lastMessageUpdate) {
-          this.lastMessageUpdate = cloudData.lastMessageUpdate;
-        }
-
-        try {
-          localStorage.setItem('financiaProData', JSON.stringify(cloudData));
-        } catch (error) {
-          console.warn(
-            'No se pudo actualizar el almacenamiento local con los datos de la nube.',
-            error
+        },
+        (error) => {
+          console.error('Error en el listener de Firestore:', error);
+          this.showToast(
+            'Se perdió la conexión en tiempo real con la nube.',
+            'error'
           );
         }
-
-        if (cloudNormalized) {
-          console.info(
-            'Se normalizaron textos con codificación incorrecta provenientes de la nube.'
-          );
-        }
-
-        // Sincronización silenciosa - No molestar al usuario
-        console.log('Datos sincronizados desde la nube');
-      } else {
-        // Primera vez - Crear espacio silenciosamente
-        console.log('Creando espacio en la nube para usuario nuevo');
-        await this.saveData();
-      }
-
-      this.renderDashboard();
-      this.renderExpenses();
-      this.renderGoals();
-      this.renderShoppingList();
-      this.renderConfig();
-      this.updateProfileDisplay();
-      this.updateUserSelectionDropdown();
-      this.updateDashboardWelcome();
-      this.renderSavingsAccountsList();
-      this.updateDashboardSavings();
-      this.renderRecurringPaymentsList();
-      this.updateDashboardPayments();
+      );
     } catch (error) {
-      console.error('Error al sincronizar desde Firestore:', error);
-      this.showToast('No se pudieron cargar tus datos desde la nube.', 'error');
+      console.error('Error al configurar el listener de Firestore:', error);
+      this.showToast('No se pudo conectar a la nube en tiempo real.', 'error');
     }
   }
   // === VALIDACIÓN DE CONTRASEÑA ===
@@ -2471,14 +2406,15 @@ class FinanceApp {
       return { isValid: true };
     }
 
-    const errorMsg = errors.length === 1
-      ? `Tu contraseña necesita ${errors[0]}`
-      : `Tu contraseña necesita: ${errors.join(', ')}`;
+    const errorMsg =
+      errors.length === 1
+        ? `Tu contraseña necesita ${errors[0]}`
+        : `Tu contraseña necesita: ${errors.join(', ')}`;
 
     return {
       isValid: false,
       message: errorMsg,
-      errors: errors
+      errors: errors,
     };
   }
 
@@ -2539,15 +2475,22 @@ class FinanceApp {
 
       // Mensajes amigables según el error
       const errorMessages = {
-        'auth/weak-password': 'La contraseña debe tener al menos 8 caracteres con mayúsculas, números y símbolos.',
-        'auth/email-already-in-use': 'Este correo ya está registrado. ¿Quieres iniciar sesión?',
+        'auth/weak-password':
+          'La contraseña debe tener al menos 8 caracteres con mayúsculas, números y símbolos.',
+        'auth/email-already-in-use':
+          'Este correo ya está registrado. ¿Quieres iniciar sesión?',
         'auth/invalid-email': 'El formato del correo no es válido.',
-        'auth/network-request-failed': 'Error de conexión. Verifica tu internet e intenta de nuevo.',
-        'auth/too-many-requests': 'Demasiados intentos. Por favor espera un momento.',
-        'auth/operation-not-allowed': 'El registro está temporalmente deshabilitado.'
+        'auth/network-request-failed':
+          'Error de conexión. Verifica tu internet e intenta de nuevo.',
+        'auth/too-many-requests':
+          'Demasiados intentos. Por favor espera un momento.',
+        'auth/operation-not-allowed':
+          'El registro está temporalmente deshabilitado.',
       };
 
-      const message = errorMessages[error.code] || 'No pudimos crear tu cuenta. Por favor, intenta de nuevo en unos momentos.';
+      const message =
+        errorMessages[error.code] ||
+        'No pudimos crear tu cuenta. Por favor, intenta de nuevo en unos momentos.';
       this.showToast(message, 'error');
       return false;
     }
@@ -2632,22 +2575,29 @@ class FinanceApp {
         code: error.code,
         message: error.message,
         email: cleanEmail,
-        passwordLength: cleanPassword.length
+        passwordLength: cleanPassword.length,
       });
 
       // Mensajes de error más específicos
       const errorMessages = {
-        'auth/wrong-password': 'Contraseña incorrecta. Verifica e intenta nuevamente.',
-        'auth/user-not-found': 'No existe una cuenta con este correo. Verifica el correo o regístrate.',
-        'auth/invalid-credential': 'Credenciales inválidas. Verifica tu correo y contraseña.',
+        'auth/wrong-password':
+          'Contraseña incorrecta. Verifica e intenta nuevamente.',
+        'auth/user-not-found':
+          'No existe una cuenta con este correo. Verifica el correo o regístrate.',
+        'auth/invalid-credential':
+          'Credenciales inválidas. Verifica tu correo y contraseña.',
         'auth/invalid-email': 'El formato del correo no es válido.',
         'auth/user-disabled': 'Esta cuenta ha sido deshabilitada.',
-        'auth/too-many-requests': 'Demasiados intentos fallidos. Espera unos minutos e intenta de nuevo.',
-        'auth/network-request-failed': 'Error de conexión. Verifica tu internet e intenta de nuevo.',
-        'auth/operation-not-allowed': 'El inicio de sesión con email/password no está habilitado.',
+        'auth/too-many-requests':
+          'Demasiados intentos fallidos. Espera unos minutos e intenta de nuevo.',
+        'auth/network-request-failed':
+          'Error de conexión. Verifica tu internet e intenta de nuevo.',
+        'auth/operation-not-allowed':
+          'El inicio de sesión con email/password no está habilitado.',
       };
 
-      const message = errorMessages[error.code] || `Error al iniciar sesión: ${error.code}`;
+      const message =
+        errorMessages[error.code] || `Error al iniciar sesión: ${error.code}`;
       this.showToast(message, 'error');
 
       return false;
@@ -2673,7 +2623,7 @@ class FinanceApp {
     this.setupQuickExpenseListeners(); // Entrada rápida de gastos
     this.setupInstagramQuickActions(); // Instagram-style quick actions (mobile)
     this.setupPremiumSettings(); // Premium Settings Navigation
-
+    this.checkMonthlyReset();
     // Forzar normalización de datos existentes al inicio
     this.forceDataNormalization();
 
@@ -2879,7 +2829,9 @@ class FinanceApp {
     }
 
     // === INGRESOS ADICIONALES ===
-    const addAdditionalIncomeBtn = document.getElementById('addAdditionalIncomeBtn');
+    const addAdditionalIncomeBtn = document.getElementById(
+      'addAdditionalIncomeBtn'
+    );
     if (addAdditionalIncomeBtn) {
       addAdditionalIncomeBtn.addEventListener('click', () => {
         this.addAdditionalIncome();
@@ -3692,7 +3644,10 @@ class FinanceApp {
           if (changeAvatarBtn) {
             changeAvatarBtn.click();
           } else {
-            this.showToast('Abrir la sección de Configuración para cambiar foto', 'info');
+            this.showToast(
+              'Abrir la sección de Configuración para cambiar foto',
+              'info'
+            );
           }
         }, 300);
         break;
@@ -4789,14 +4744,18 @@ class FinanceApp {
     }
 
     const totalBalanceEl = document.getElementById('totalBalance');
-    const assignedToGoals = this.goals.reduce((sum, g) => sum + (g.current || 0), 0);
+    const assignedToGoals = this.goals.reduce(
+      (sum, g) => sum + (g.current || 0),
+      0
+    );
     // Permitir balance negativo - NO usar Math.max(0, ...)
     const trueAvailable = stats.availableBalance - assignedToGoals;
 
     // Formatear con signo negativo si corresponde
-    const formattedBalance = trueAvailable < 0
-      ? `-$${Math.abs(trueAvailable).toLocaleString()}`
-      : `$${trueAvailable.toLocaleString()}`;
+    const formattedBalance =
+      trueAvailable < 0
+        ? `-$${Math.abs(trueAvailable).toLocaleString()}`
+        : `$${trueAvailable.toLocaleString()}`;
 
     totalBalanceEl.textContent = formattedBalance;
 
@@ -4830,11 +4789,19 @@ class FinanceApp {
 
     // Progreso mensual
     const totalIncome = this.getTotalIncome();
-    const usedPercent = totalIncome > 0 ? ((stats.totalExpenses / totalIncome) * 100).toFixed(0) : 0;
-    const remaining = Math.max(0, totalIncome - stats.totalExpenses - assignedToGoals);
+    const usedPercent =
+      totalIncome > 0
+        ? ((stats.totalExpenses / totalIncome) * 100).toFixed(0)
+        : 0;
+    const remaining = Math.max(
+      0,
+      totalIncome - stats.totalExpenses - assignedToGoals
+    );
 
     const monthlyProgressEl = document.getElementById('monthlyProgress');
-    const monthlyProgressTextEl = document.getElementById('monthlyProgressText');
+    const monthlyProgressTextEl = document.getElementById(
+      'monthlyProgressText'
+    );
 
     if (monthlyProgressEl) {
       monthlyProgressEl.textContent = `${usedPercent}%`;
@@ -4842,23 +4809,29 @@ class FinanceApp {
 
     if (monthlyProgressTextEl) {
       monthlyProgressTextEl.textContent = `Comenzaste con $${totalIncome.toLocaleString()} • Te queda $${remaining.toLocaleString()}`;
-      monthlyProgressTextEl.className = usedPercent > 80 ? 'stat-change negative' : 'stat-change positive';
+      monthlyProgressTextEl.className =
+        usedPercent > 80 ? 'stat-change negative' : 'stat-change positive';
     }
 
     // Tarjeta de Presupuesto (Solo gastos extras/no esenciales)
     const currentMonth = this.getCurrentMonthKey();
-    const currentBudget = this.budgets[currentMonth] || { totalLimit: 0, totalSpent: 0 };
+    const currentBudget = this.budgets[currentMonth] || {
+      totalLimit: 0,
+      totalSpent: 0,
+    };
     const budgetLimit = currentBudget.totalLimit || 0;
 
     // Calcular solo gastos no esenciales (Poco Necesario, No Necesario, Compra por Impulso)
-    const extraExpenses = this.expenses.filter(e =>
-      e.necessity === 'Poco Necesario' ||
-      e.necessity === 'No Necesario' ||
-      e.necessity === 'Compra por Impulso'
+    const extraExpenses = this.expenses.filter(
+      (e) =>
+        e.necessity === 'Poco Necesario' ||
+        e.necessity === 'No Necesario' ||
+        e.necessity === 'Compra por Impulso'
     );
     const budgetSpent = extraExpenses.reduce((sum, e) => sum + e.amount, 0);
     const budgetRemaining = Math.max(0, budgetLimit - budgetSpent);
-    const budgetUsedPercent = budgetLimit > 0 ? ((budgetSpent / budgetLimit) * 100).toFixed(0) : 0;
+    const budgetUsedPercent =
+      budgetLimit > 0 ? ((budgetSpent / budgetLimit) * 100).toFixed(0) : 0;
 
     console.log('💰 Debug Presupuesto de Extras:', {
       currentMonth,
@@ -4866,14 +4839,17 @@ class FinanceApp {
       extraExpensesCount: extraExpenses.length,
       budgetSpent,
       budgetRemaining,
-      budgetUsedPercent: budgetUsedPercent + '%'
+      budgetUsedPercent: budgetUsedPercent + '%',
     });
 
     const budgetValueEl = document.getElementById('budgetValue');
     const budgetRemainingEl = document.getElementById('budgetRemaining');
 
     if (budgetValueEl) {
-      budgetValueEl.textContent = budgetLimit > 0 ? `$${this.formatNumber(budgetLimit)}` : 'No configurado';
+      budgetValueEl.textContent =
+        budgetLimit > 0
+          ? `$${this.formatNumber(budgetLimit)}`
+          : 'No configurado';
       console.log('✅ Budget Value actualizado:', budgetValueEl.textContent);
     } else {
       console.error('❌ No se encontró elemento budgetValue');
@@ -4881,13 +4857,23 @@ class FinanceApp {
 
     if (budgetRemainingEl) {
       if (budgetLimit > 0) {
-        budgetRemainingEl.textContent = `Para gustos: $${this.formatNumber(budgetRemaining)}`;
-        budgetRemainingEl.className = budgetUsedPercent > 90 ? 'stat-change negative' : budgetUsedPercent > 70 ? 'stat-change warning' : 'stat-change positive';
+        budgetRemainingEl.textContent = `Para gustos: $${this.formatNumber(
+          budgetRemaining
+        )}`;
+        budgetRemainingEl.className =
+          budgetUsedPercent > 90
+            ? 'stat-change negative'
+            : budgetUsedPercent > 70
+            ? 'stat-change warning'
+            : 'stat-change positive';
       } else {
         budgetRemainingEl.textContent = 'Configura extras';
         budgetRemainingEl.className = 'stat-change';
       }
-      console.log('✅ Budget Remaining actualizado:', budgetRemainingEl.textContent);
+      console.log(
+        '✅ Budget Remaining actualizado:',
+        budgetRemainingEl.textContent
+      );
     } else {
       console.error('❌ No se encontró elemento budgetRemaining');
     }
@@ -5985,22 +5971,30 @@ class FinanceApp {
 
     // Calcular gastos por necesidad
     const necessityData = {};
-    const necessityTypes = ['Muy Necesario', 'Necesario', 'Poco Necesario', 'No Necesario', 'Compra por Impulso'];
-    necessityTypes.forEach(type => {
+    const necessityTypes = [
+      'Muy Necesario',
+      'Necesario',
+      'Poco Necesario',
+      'No Necesario',
+      'Compra por Impulso',
+    ];
+    necessityTypes.forEach((type) => {
       necessityData[type] = this.expenses
-        .filter(e => e.necessity === type)
+        .filter((e) => e.necessity === type)
         .reduce((sum, e) => sum + e.amount, 0);
     });
 
     // Calcular porcentaje de innecesario (Poco Necesario + No Necesario + Compra por Impulso)
-    const unnecessaryExpenses = (necessityData['Poco Necesario'] || 0) +
-                                  (necessityData['No Necesario'] || 0) +
-                                  (necessityData['Compra por Impulso'] || 0);
-    const unnecessaryPercentage = totalExpenses > 0 ? (unnecessaryExpenses / totalExpenses * 100) : 0;
+    const unnecessaryExpenses =
+      (necessityData['Poco Necesario'] || 0) +
+      (necessityData['No Necesario'] || 0) +
+      (necessityData['Compra por Impulso'] || 0);
+    const unnecessaryPercentage =
+      totalExpenses > 0 ? (unnecessaryExpenses / totalExpenses) * 100 : 0;
 
     // Calcular gastos por usuario
     const userExpenses = {};
-    this.expenses.forEach(e => {
+    this.expenses.forEach((e) => {
       const user = e.user || 'Otro';
       userExpenses[user] = (userExpenses[user] || 0) + e.amount;
     });
@@ -6018,7 +6012,9 @@ class FinanceApp {
           <i class="fas fa-exclamation-triangle"></i>
           <div>
             <strong>⚠️ Cuidado!</strong>
-            <p>Has malgastado <strong>${unnecessaryPercentage.toFixed(1)}%</strong> de tu presupuesto en gastos innecesarios.</p>
+            <p>Has malgastado <strong>${unnecessaryPercentage.toFixed(
+              1
+            )}%</strong> de tu presupuesto en gastos innecesarios.</p>
           </div>
         </div>
       `;
@@ -6026,9 +6022,9 @@ class FinanceApp {
 
     // Generar HTML de categorías
     const categoriesHtml = Object.entries(categoryData)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .map(([category, amount]) => {
-        const percentage = (amount / totalExpenses * 100).toFixed(1);
+        const percentage = ((amount / totalExpenses) * 100).toFixed(1);
         const color = this.getCategoryColor(category);
         return `
           <div class="stat-card">
@@ -6044,14 +6040,15 @@ class FinanceApp {
             </div>
           </div>
         `;
-      }).join('');
+      })
+      .join('');
 
     // Generar HTML de necesidades
     const necessityHtml = Object.entries(necessityData)
-      .filter(([,amount]) => amount > 0)
-      .sort(([,a], [,b]) => b - a)
+      .filter(([, amount]) => amount > 0)
+      .sort(([, a], [, b]) => b - a)
       .map(([necessity, amount]) => {
-        const percentage = (amount / totalExpenses * 100).toFixed(1);
+        const percentage = ((amount / totalExpenses) * 100).toFixed(1);
         const color = this.getNecessityColor(necessity);
         return `
           <div class="stat-card stat-card-compact">
@@ -6064,13 +6061,14 @@ class FinanceApp {
             <div class="stat-card-amount-sm">$${amount.toLocaleString()}</div>
           </div>
         `;
-      }).join('');
+      })
+      .join('');
 
     // Generar HTML de usuarios
     const usersHtml = Object.entries(userExpenses)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .map(([user, amount]) => {
-        const percentage = (amount / totalExpenses * 100).toFixed(1);
+        const percentage = ((amount / totalExpenses) * 100).toFixed(1);
         const color = this.getUserColor(user);
         return `
           <div class="stat-card stat-card-compact">
@@ -6083,7 +6081,8 @@ class FinanceApp {
             <div class="stat-card-amount-sm">$${amount.toLocaleString()}</div>
           </div>
         `;
-      }).join('');
+      })
+      .join('');
 
     modalBody.innerHTML = `
       ${alertHtml}
@@ -6107,7 +6106,9 @@ class FinanceApp {
           <div class="summary-icon"><i class="fas fa-piggy-bank"></i></div>
           <div class="summary-content">
             <div class="summary-label">Balance</div>
-            <div class="summary-value">$${(totalIncome - totalExpenses).toLocaleString()}</div>
+            <div class="summary-value">$${(
+              totalIncome - totalExpenses
+            ).toLocaleString()}</div>
           </div>
         </div>
         <div class="summary-item summary-item-info">
@@ -6159,13 +6160,13 @@ class FinanceApp {
 
   getCategoryColor(category) {
     const colors = {
-      'Alimentación': '#10b981',
-      'Transporte': '#3b82f6',
-      'Entretenimiento': '#8b5cf6',
-      'Salud': '#ec4899',
-      'Servicios': '#f59e0b',
-      'Compras': '#06b6d4',
-      'Otros': '#6b7280'
+      Alimentación: '#10b981',
+      Transporte: '#3b82f6',
+      Entretenimiento: '#8b5cf6',
+      Salud: '#ec4899',
+      Servicios: '#f59e0b',
+      Compras: '#06b6d4',
+      Otros: '#6b7280',
     };
     return colors[category] || '#6b7280';
   }
@@ -6173,19 +6174,19 @@ class FinanceApp {
   getNecessityColor(necessity) {
     const colors = {
       'Muy Necesario': '#10b981',
-      'Necesario': '#3b82f6',
+      Necesario: '#3b82f6',
       'Poco Necesario': '#f59e0b',
       'No Necesario': '#ef4444',
-      'Compra por Impulso': '#dc2626'
+      'Compra por Impulso': '#dc2626',
     };
     return colors[necessity] || '#6b7280';
   }
 
   getUserColor(user) {
     const colors = {
-      'Daniel': '#3b82f6',
-      'Givonik': '#8b5cf6',
-      'Otro': '#6b7280'
+      Daniel: '#3b82f6',
+      Givonik: '#8b5cf6',
+      Otro: '#6b7280',
     };
     return colors[user] || '#6b7280';
   }
@@ -6812,7 +6813,8 @@ class FinanceApp {
     // Llenar información del gasto
     if (amountEl) amountEl.textContent = this.formatCurrency(expense.amount);
     if (categoryEl) categoryEl.textContent = expense.category;
-    if (descriptionEl) descriptionEl.textContent = expense.description || 'Sin descripción';
+    if (descriptionEl)
+      descriptionEl.textContent = expense.description || 'Sin descripción';
     if (reasonInput) reasonInput.value = '';
 
     // Mostrar modal
@@ -6824,7 +6826,9 @@ class FinanceApp {
   }
 
   confirmDeleteExpense() {
-    const idx = this.expenses.findIndex((exp) => exp.id === this.pendingDeleteExpenseId);
+    const idx = this.expenses.findIndex(
+      (exp) => exp.id === this.pendingDeleteExpenseId
+    );
     if (idx === -1) return;
 
     const expense = this.expenses[idx];
@@ -7037,10 +7041,16 @@ class FinanceApp {
 
     // Remover listeners anteriores si existen
     if (this._forgotPasswordHandler && forgotPasswordLink) {
-      forgotPasswordLink.removeEventListener('click', this._forgotPasswordHandler);
+      forgotPasswordLink.removeEventListener(
+        'click',
+        this._forgotPasswordHandler
+      );
     }
     if (this._resetPasswordHandler && resetPasswordForm) {
-      resetPasswordForm.removeEventListener('submit', this._resetPasswordHandler);
+      resetPasswordForm.removeEventListener(
+        'submit',
+        this._resetPasswordHandler
+      );
     }
     if (this._backdropClickHandler) {
       modal.removeEventListener('click', this._backdropClickHandler);
@@ -7113,7 +7123,7 @@ class FinanceApp {
         await FB.updatePassword(this.firebaseUser, newPassword);
 
         // Actualizar en Firestore
-        const userDocRef = FB.doc(FB.db, 'userData', this.firebaseUser.uid);
+        const userDocRef = FB.doc(FB.db, 'usuarios', this.firebaseUser.uid);
         await FB.updateDoc(userDocRef, {
           passwordUpdatedAt: Date.now(),
         });
@@ -7307,7 +7317,14 @@ class FinanceApp {
           {
             label: 'Gastos por Usuario',
             data: Object.values(userData),
-            backgroundColor: ['#21808D', '#E68161', '#C0152F', '#2DA6B2', '#A84B2F', '#32B8C6'],
+            backgroundColor: [
+              '#21808D',
+              '#E68161',
+              '#C0152F',
+              '#2DA6B2',
+              '#A84B2F',
+              '#32B8C6',
+            ],
             borderRadius: 8,
           },
         ],
@@ -7348,7 +7365,10 @@ class FinanceApp {
     const totalIncome = this.getTotalIncome();
     const totalExpenses = this.expenses.reduce((sum, e) => sum + e.amount, 0);
     const currentBalance = totalIncome - totalExpenses;
-    const assignedToGoals = this.goals.reduce((sum, g) => sum + (g.current || 0), 0);
+    const assignedToGoals = this.goals.reduce(
+      (sum, g) => sum + (g.current || 0),
+      0
+    );
     return Math.max(0, currentBalance - assignedToGoals);
   }
 
@@ -7361,11 +7381,14 @@ class FinanceApp {
     }
 
     if (amount > availableBalance) {
-      this.showToast(`Solo tienes $${availableBalance.toLocaleString()} disponibles`, 'error');
+      this.showToast(
+        `Solo tienes $${availableBalance.toLocaleString()} disponibles`,
+        'error'
+      );
       return false;
     }
 
-    const goal = this.goals.find(g => g.id === goalId);
+    const goal = this.goals.find((g) => g.id === goalId);
     if (!goal) {
       this.showToast('Meta no encontrada', 'error');
       return false;
@@ -7389,7 +7412,10 @@ class FinanceApp {
     this.renderGoalsProgress();
     this.renderDashboard();
 
-    this.showToast(`$${transferAmount.toLocaleString()} transferidos a "${goal.name}"`, 'success');
+    this.showToast(
+      `$${transferAmount.toLocaleString()} transferidos a "${goal.name}"`,
+      'success'
+    );
     return true;
   }
 
@@ -7401,22 +7427,26 @@ class FinanceApp {
       return;
     }
 
-    const activeGoals = this.goals.filter(g => g.current < g.target);
+    const activeGoals = this.goals.filter((g) => g.current < g.target);
 
     if (activeGoals.length === 0) {
       this.showToast('No hay metas activas', 'info');
       return;
     }
 
-    const totalRemaining = activeGoals.reduce((sum, g) => sum + (g.target - g.current), 0);
+    const totalRemaining = activeGoals.reduce(
+      (sum, g) => sum + (g.target - g.current),
+      0
+    );
     let distributed = 0;
 
     activeGoals.forEach((goal, index) => {
       const remaining = goal.target - goal.current;
       const proportion = remaining / totalRemaining;
-      const amount = (index === activeGoals.length - 1)
-        ? (availableBalance - distributed)
-        : Math.floor(availableBalance * proportion);
+      const amount =
+        index === activeGoals.length - 1
+          ? availableBalance - distributed
+          : Math.floor(availableBalance * proportion);
 
       goal.current += amount;
       distributed += amount;
@@ -7435,11 +7465,16 @@ class FinanceApp {
     this.renderGoalsProgress();
     this.renderDashboard();
 
-    this.showToast(`$${availableBalance.toLocaleString()} distribuidos entre ${activeGoals.length} metas`, 'success');
+    this.showToast(
+      `$${availableBalance.toLocaleString()} distribuidos entre ${
+        activeGoals.length
+      } metas`,
+      'success'
+    );
   }
 
   withdrawFromGoal(goalId, amount) {
-    const goal = this.goals.find(g => g.id === goalId);
+    const goal = this.goals.find((g) => g.id === goalId);
 
     if (!goal) {
       this.showToast('Meta no encontrada', 'error');
@@ -7453,7 +7488,7 @@ class FinanceApp {
 
     const confirmed = confirm(
       `¿Retirar $${amount.toLocaleString()} de "${goal.name}"?\n\n` +
-      `Esto reducirá tu progreso en esta meta.`
+        `Esto reducirá tu progreso en esta meta.`
     );
 
     if (!confirmed) return false;
@@ -7473,12 +7508,18 @@ class FinanceApp {
     this.renderGoalsProgress();
     this.renderDashboard();
 
-    this.showToast(`$${amount.toLocaleString()} retirados de "${goal.name}"`, 'info');
+    this.showToast(
+      `$${amount.toLocaleString()} retirados de "${goal.name}"`,
+      'info'
+    );
     return true;
   }
 
   showTransactionsModal() {
-    console.log('showTransactionsModal called, expenses:', this.expenses.length);
+    console.log(
+      'showTransactionsModal called, expenses:',
+      this.expenses.length
+    );
     if (this.expenses.length === 0) {
       this.showToast('No hay transacciones registradas', 'info');
       return;
@@ -7489,7 +7530,7 @@ class FinanceApp {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    this.expenses.forEach(expense => {
+    this.expenses.forEach((expense) => {
       const expenseDate = new Date(expense.date);
       expenseDate.setHours(0, 0, 0, 0);
       const dateKey = expenseDate.getTime();
@@ -7500,7 +7541,7 @@ class FinanceApp {
           expenses: [],
           total: 0,
           necessary: 0,
-          unnecessary: 0
+          unnecessary: 0,
         };
       }
 
@@ -7508,7 +7549,10 @@ class FinanceApp {
       groupedByDate[dateKey].total += expense.amount;
 
       // Clasificar necesidad
-      if (expense.necessity === 'Muy Necesario' || expense.necessity === 'Necesario') {
+      if (
+        expense.necessity === 'Muy Necesario' ||
+        expense.necessity === 'Necesario'
+      ) {
         groupedByDate[dateKey].necessary += expense.amount;
       } else {
         groupedByDate[dateKey].unnecessary += expense.amount;
@@ -7519,34 +7563,51 @@ class FinanceApp {
     const sortedDates = Object.keys(groupedByDate).sort((a, b) => b - a);
 
     // Generar HTML de días
-    const daysHtml = sortedDates.map(dateKey => {
-      const dayData = groupedByDate[dateKey];
-      const date = dayData.date;
-      const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+    const daysHtml = sortedDates
+      .map((dateKey) => {
+        const dayData = groupedByDate[dateKey];
+        const date = dayData.date;
+        const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
 
-      let dayLabel;
-      if (diffDays === 0) dayLabel = 'Hoy';
-      else if (diffDays === 1) dayLabel = 'Ayer';
-      else if (diffDays < 7) {
-        const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-        dayLabel = dayNames[date.getDay()];
-      } else {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        dayLabel = `${day}/${month}`;
-      }
+        let dayLabel;
+        if (diffDays === 0) dayLabel = 'Hoy';
+        else if (diffDays === 1) dayLabel = 'Ayer';
+        else if (diffDays < 7) {
+          const dayNames = [
+            'Domingo',
+            'Lunes',
+            'Martes',
+            'Miércoles',
+            'Jueves',
+            'Viernes',
+            'Sábado',
+          ];
+          dayLabel = dayNames[date.getDay()];
+        } else {
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          dayLabel = `${day}/${month}`;
+        }
 
-      const necessaryPercent = dayData.total > 0 ? ((dayData.necessary / dayData.total) * 100).toFixed(0) : 0;
-      const unnecessaryPercent = dayData.total > 0 ? ((dayData.unnecessary / dayData.total) * 100).toFixed(0) : 0;
+        const necessaryPercent =
+          dayData.total > 0
+            ? ((dayData.necessary / dayData.total) * 100).toFixed(0)
+            : 0;
+        const unnecessaryPercent =
+          dayData.total > 0
+            ? ((dayData.unnecessary / dayData.total) * 100).toFixed(0)
+            : 0;
 
-      return `
+        return `
         <div class="day-group" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s;"
              onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'"
              onclick="document.getElementById('dayDetails_${dateKey}').style.display = document.getElementById('dayDetails_${dateKey}').style.display === 'none' ? 'block' : 'none'">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
               <strong style="font-size: 1rem;">${dayLabel}</strong>
-              <span style="color: #6b7280; font-size: 0.875rem; margin-left: 8px;">${dayData.expenses.length} transacciones</span>
+              <span style="color: #6b7280; font-size: 0.875rem; margin-left: 8px;">${
+                dayData.expenses.length
+              } transacciones</span>
             </div>
             <strong style="color: var(--color-primary);">$${dayData.total.toLocaleString()}</strong>
           </div>
@@ -7564,15 +7625,21 @@ class FinanceApp {
             </div>
 
             <div style="max-height: 300px; overflow-y: auto;">
-              ${dayData.expenses.map(exp => `
+              ${dayData.expenses
+                .map(
+                  (exp) => `
                 <div style="display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #f3f4f6;">
                   <div>
                     <div style="font-weight: 500;">${exp.description}</div>
-                    <div style="font-size: 0.75rem; color: #6b7280;">${exp.category} • ${exp.necessity}</div>
+                    <div style="font-size: 0.75rem; color: #6b7280;">${
+                      exp.category
+                    } • ${exp.necessity}</div>
                   </div>
                   <div style="font-weight: 600; color: #dc2626;">$${exp.amount.toLocaleString()}</div>
                 </div>
-              `).join('')}
+              `
+                )
+                .join('')}
             </div>
 
             <div style="margin-top: 12px; padding: 8px; background: #f9fafb; border-radius: 6px; text-align: center;">
@@ -7581,7 +7648,8 @@ class FinanceApp {
           </div>
         </div>
       `;
-    }).join('');
+      })
+      .join('');
 
     const modalHtml = `
       <div style="padding: 20px;">
@@ -7599,7 +7667,8 @@ class FinanceApp {
 
     const overlay = document.createElement('div');
     overlay.id = 'transactionsModalOverlay';
-    overlay.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+    overlay.style.cssText =
+      'position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
     overlay.innerHTML = `<div style="background: white; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">${modalHtml}</div>`;
 
     overlay.addEventListener('click', (e) => {
@@ -7611,7 +7680,11 @@ class FinanceApp {
 
   showBudgetModal() {
     const currentMonth = this.getCurrentMonthKey();
-    const currentBudget = this.budgets[currentMonth] || { totalLimit: 0, totalSpent: 0, leisureItems: [] };
+    const currentBudget = this.budgets[currentMonth] || {
+      totalLimit: 0,
+      totalSpent: 0,
+      leisureItems: [],
+    };
     const budgetLimit = currentBudget.totalLimit || 0;
     const leisureItems = currentBudget.leisureItems || [];
 
@@ -7619,18 +7692,20 @@ class FinanceApp {
       currentMonth,
       budgetLimit,
       leisureItemsCount: leisureItems.length,
-      leisureItems
+      leisureItems,
     });
 
     // Calcular solo gastos extras/no esenciales
-    const extraExpenses = this.expenses.filter(e =>
-      e.necessity === 'Poco Necesario' ||
-      e.necessity === 'No Necesario' ||
-      e.necessity === 'Compra por Impulso'
+    const extraExpenses = this.expenses.filter(
+      (e) =>
+        e.necessity === 'Poco Necesario' ||
+        e.necessity === 'No Necesario' ||
+        e.necessity === 'Compra por Impulso'
     );
     const budgetSpent = extraExpenses.reduce((sum, e) => sum + e.amount, 0);
     const budgetRemaining = Math.max(0, budgetLimit - budgetSpent);
-    const budgetUsedPercent = budgetLimit > 0 ? ((budgetSpent / budgetLimit) * 100).toFixed(0) : 0;
+    const budgetUsedPercent =
+      budgetLimit > 0 ? ((budgetSpent / budgetLimit) * 100).toFixed(0) : 0;
 
     const modalHtml = `
       <div style="padding: 24px;">
@@ -7638,13 +7713,16 @@ class FinanceApp {
           🎉 Presupuesto de Ocio
         </h3>
 
-        ${budgetLimit === 0 ? `
+        ${
+          budgetLimit === 0
+            ? `
           <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
             <p style="margin: 0; color: #92400e;">
               ⚠️ No has configurado un presupuesto de ocio. Ve a <strong>Configuración → Presupuesto de Ocio</strong> para apartar dinero para tus gustos y caprichos.
             </p>
           </div>
-        ` : `
+        `
+            : `
           <div style="background: var(--color-surface); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
               <div>
@@ -7653,12 +7731,27 @@ class FinanceApp {
               </div>
               <div style="text-align: right;">
                 <div style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 4px;">Usado</div>
-                <div style="font-size: 1.5rem; font-weight: 600; color: ${budgetUsedPercent > 90 ? '#dc2626' : budgetUsedPercent > 70 ? '#f59e0b' : '#10b981'};">${budgetUsedPercent}%</div>
+                <div style="font-size: 1.5rem; font-weight: 600; color: ${
+                  budgetUsedPercent > 90
+                    ? '#dc2626'
+                    : budgetUsedPercent > 70
+                    ? '#f59e0b'
+                    : '#10b981'
+                };">${budgetUsedPercent}%</div>
               </div>
             </div>
 
             <div style="background: var(--color-background); border-radius: 8px; height: 12px; overflow: hidden; margin-bottom: 16px;">
-              <div style="background: ${budgetUsedPercent > 90 ? '#dc2626' : budgetUsedPercent > 70 ? '#f59e0b' : '#10b981'}; height: 100%; width: ${Math.min(budgetUsedPercent, 100)}%; transition: width 0.3s;"></div>
+              <div style="background: ${
+                budgetUsedPercent > 90
+                  ? '#dc2626'
+                  : budgetUsedPercent > 70
+                  ? '#f59e0b'
+                  : '#10b981'
+              }; height: 100%; width: ${Math.min(
+                budgetUsedPercent,
+                100
+              )}%; transition: width 0.3s;"></div>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -7673,30 +7766,47 @@ class FinanceApp {
             </div>
           </div>
 
-          ${leisureItems.length > 0 ? `
+          ${
+            leisureItems.length > 0
+              ? `
             <div style="background: var(--color-surface); border-radius: 12px; padding: 20px;">
               <h4 style="margin: 0 0 16px 0; font-size: 1rem; color: var(--color-text);">🎊 Gastos de Ocio Planeados</h4>
               <div style="max-height: 400px; overflow-y: auto;">
-                ${leisureItems.map((item, index) => {
-                  const isUsed = item.used || false;
+                ${leisureItems
+                  .map((item, index) => {
+                    const isUsed = item.used || false;
 
-                  return `
-                    <div style="padding: 16px; border: 2px solid var(--color-border); border-radius: 8px; margin-bottom: 12px; background: ${isUsed ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(220, 38, 38, 0.05))' : 'linear-gradient(135deg, rgba(20, 184, 166, 0.03), rgba(168, 85, 247, 0.03))'}; opacity: ${isUsed ? '0.6' : '1'};">
+                    return `
+                    <div style="padding: 16px; border: 2px solid var(--color-border); border-radius: 8px; margin-bottom: 12px; background: ${
+                      isUsed
+                        ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(220, 38, 38, 0.05))'
+                        : 'linear-gradient(135deg, rgba(20, 184, 166, 0.03), rgba(168, 85, 247, 0.03))'
+                    }; opacity: ${isUsed ? '0.6' : '1'};">
                       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                         <div style="flex: 1;">
                           <div style="font-weight: 600; font-size: 1rem; color: var(--color-text); margin-bottom: 4px;">
-                            <i class="fas ${isUsed ? 'fa-check-circle' : 'fa-star'}" style="color: ${isUsed ? '#10b981' : 'var(--color-primary)'}; margin-right: 8px;"></i>${item.description}
+                            <i class="fas ${
+                              isUsed ? 'fa-check-circle' : 'fa-star'
+                            }" style="color: ${
+                      isUsed ? '#10b981' : 'var(--color-primary)'
+                    }; margin-right: 8px;"></i>${item.description}
                           </div>
                           <div style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 8px;">
                             Monto apartado: <strong>$${item.amount.toLocaleString()}</strong>
                           </div>
-                          ${isUsed ? `
+                          ${
+                            isUsed
+                              ? `
                             <div style="display: inline-block; padding: 4px 12px; background: #10b981; color: white; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
                               ✓ Ya se usó este presupuesto
                             </div>
-                          ` : ''}
+                          `
+                              : ''
+                          }
                         </div>
-                        ${!isUsed ? `
+                        ${
+                          !isUsed
+                            ? `
                           <button
                             onclick="window.app.markLeisureItemAsUsed('${currentMonth}', ${index})"
                             style="padding: 8px 16px; background: linear-gradient(135deg, var(--color-primary), var(--color-teal-700)); color: white; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(var(--color-teal-500-rgb), 0.3);"
@@ -7704,15 +7814,21 @@ class FinanceApp {
                             onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(var(--color-teal-500-rgb), 0.3)';">
                             ¿Usado? ✓
                           </button>
-                        ` : ''}
+                        `
+                            : ''
+                        }
                       </div>
                     </div>
                   `;
-                }).join('')}
+                  })
+                  .join('')}
               </div>
             </div>
-          ` : ''}
-        `}
+          `
+              : ''
+          }
+        `
+        }
 
         <div style="margin-top: 20px; text-align: center;">
           <button onclick="document.getElementById('budgetModalOverlay').remove();"
@@ -7772,7 +7888,7 @@ class FinanceApp {
       return;
     }
 
-    const activeGoals = this.goals.filter(g => g.current < g.target);
+    const activeGoals = this.goals.filter((g) => g.current < g.target);
 
     if (activeGoals.length === 0) {
       this.showToast('Crea metas primero para poder ahorrar', 'info');
@@ -7780,9 +7896,15 @@ class FinanceApp {
       return;
     }
 
-    const goalsOptions = activeGoals.map(g =>
-      `<option value="${g.id}">${g.name} (${((g.current/g.target)*100).toFixed(0)}%)</option>`
-    ).join('');
+    const goalsOptions = activeGoals
+      .map(
+        (g) =>
+          `<option value="${g.id}">${g.name} (${(
+            (g.current / g.target) *
+            100
+          ).toFixed(0)}%)</option>`
+      )
+      .join('');
 
     const modalHtml = `
       <div style="padding: 20px;">
@@ -7827,7 +7949,8 @@ class FinanceApp {
 
     const overlay = document.createElement('div');
     overlay.id = 'savingsModalOverlay';
-    overlay.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+    overlay.style.cssText =
+      'position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
     overlay.innerHTML = `<div style="background: white; border-radius: 12px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">${modalHtml}</div>`;
 
     overlay.addEventListener('click', (e) => {
@@ -8094,7 +8217,9 @@ class FinanceApp {
 
   // Additional Incomes Methods
   addAdditionalIncome() {
-    const descriptionInput = document.getElementById('additionalIncomeDescription');
+    const descriptionInput = document.getElementById(
+      'additionalIncomeDescription'
+    );
     const amountInput = document.getElementById('additionalIncomeAmount');
 
     const description = descriptionInput.value.trim();
@@ -8108,7 +8233,7 @@ class FinanceApp {
     const newIncome = {
       id: Date.now(),
       description: description,
-      amount: amount
+      amount: amount,
     };
 
     this.additionalIncomes.push(newIncome);
@@ -8125,7 +8250,9 @@ class FinanceApp {
   }
 
   deleteAdditionalIncome(id) {
-    this.additionalIncomes = this.additionalIncomes.filter(income => income.id !== id);
+    this.additionalIncomes = this.additionalIncomes.filter(
+      (income) => income.id !== id
+    );
     this.saveData();
     this.renderAdditionalIncomes();
     this.updateStats();
@@ -8133,7 +8260,10 @@ class FinanceApp {
   }
 
   getTotalAdditionalIncome() {
-    return this.additionalIncomes.reduce((sum, income) => sum + income.amount, 0);
+    return this.additionalIncomes.reduce(
+      (sum, income) => sum + income.amount,
+      0
+    );
   }
 
   getTotalIncome() {
@@ -8150,23 +8280,34 @@ class FinanceApp {
 
     // Renderizar lista
     if (this.additionalIncomes.length === 0) {
-      listContainer.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); padding: var(--space-12);">No hay ingresos adicionales</p>';
+      listContainer.innerHTML =
+        '<p style="text-align: center; color: var(--color-text-secondary); padding: var(--space-12);">No hay ingresos adicionales</p>';
     } else {
-      listContainer.innerHTML = this.additionalIncomes.map(income => `
+      listContainer.innerHTML = this.additionalIncomes
+        .map(
+          (income) => `
         <div class="additional-income-item">
           <div class="additional-income-info">
-            <span class="additional-income-description">${income.description}</span>
+            <span class="additional-income-description">${
+              income.description
+            }</span>
             <span class="additional-income-amount">$${income.amount.toLocaleString()}</span>
           </div>
-          <button class="additional-income-delete" onclick="app.deleteAdditionalIncome(${income.id})" title="Eliminar">
+          <button class="additional-income-delete" onclick="app.deleteAdditionalIncome(${
+            income.id
+          })" title="Eliminar">
             <i class="fas fa-trash"></i>
           </button>
         </div>
-      `).join('');
+      `
+        )
+        .join('');
     }
 
     // Actualizar total
-    totalContainer.querySelector('.amount').textContent = `$${totalAdditional.toLocaleString()}`;
+    totalContainer.querySelector(
+      '.amount'
+    ).textContent = `$${totalAdditional.toLocaleString()}`;
   }
 
   renderConfig() {
@@ -8200,7 +8341,11 @@ class FinanceApp {
           <div class="stat-content">
             <h3>Ingresos Totales</h3>
             <p class="stat-value">$${totalIncome.toLocaleString()}</p>
-            ${additionalTotal > 0 ? `<span class="form-hint" style="margin-top: 4px;">Base: $${this.monthlyIncome.toLocaleString()} + Adicionales: $${additionalTotal.toLocaleString()}</span>` : ''}
+            ${
+              additionalTotal > 0
+                ? `<span class="form-hint" style="margin-top: 4px;">Base: $${this.monthlyIncome.toLocaleString()} + Adicionales: $${additionalTotal.toLocaleString()}</span>`
+                : ''
+            }
           </div>
         </div>
         <div class="stat-card">
@@ -8481,7 +8626,7 @@ class CookieConsent {
       essential: true, // Siempre true
       analytics: false,
       functional: false,
-      timestamp: null
+      timestamp: null,
     };
   }
 
@@ -8499,7 +8644,8 @@ class CookieConsent {
     const modal = document.getElementById('cookieModal');
 
     // Verificar si el usuario está autenticado
-    const isAuthenticated = localStorage.getItem('financia_auth_status') === 'authenticated';
+    const isAuthenticated =
+      localStorage.getItem('financia_auth_status') === 'authenticated';
 
     // SOLUCIÓN: Ocultar banner por defecto y solo mostrar si corresponde
     if (banner) {
@@ -8526,22 +8672,30 @@ class CookieConsent {
     });
 
     // Modal
-    document.getElementById('cookieModalClose')?.addEventListener('click', () => {
-      this.closeModal();
-    });
+    document
+      .getElementById('cookieModalClose')
+      ?.addEventListener('click', () => {
+        this.closeModal();
+      });
 
-    document.getElementById('cookieModalOverlay')?.addEventListener('click', () => {
-      this.closeModal();
-    });
+    document
+      .getElementById('cookieModalOverlay')
+      ?.addEventListener('click', () => {
+        this.closeModal();
+      });
 
-    document.getElementById('cookieRejectAll')?.addEventListener('click', () => {
-      this.rejectAll();
-      this.closeModal();
-    });
+    document
+      .getElementById('cookieRejectAll')
+      ?.addEventListener('click', () => {
+        this.rejectAll();
+        this.closeModal();
+      });
 
-    document.getElementById('cookieSavePreferences')?.addEventListener('click', () => {
-      this.saveCustomPreferences();
-    });
+    document
+      .getElementById('cookieSavePreferences')
+      ?.addEventListener('click', () => {
+        this.saveCustomPreferences();
+      });
 
     // Cargar preferencias actuales en el modal
     this.loadModalState();
@@ -8552,7 +8706,7 @@ class CookieConsent {
       essential: true,
       analytics: true,
       functional: true,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
     this.savePreferences();
     this.hideBanner();
@@ -8569,7 +8723,7 @@ class CookieConsent {
       essential: true,
       analytics: false,
       functional: false,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
     this.savePreferences();
     this.hideBanner();
@@ -8586,7 +8740,7 @@ class CookieConsent {
       essential: true,
       analytics: document.getElementById('cookieAnalytics')?.checked || false,
       functional: document.getElementById('cookieFunctional')?.checked || false,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
     this.savePreferences();
     this.hideBanner();
@@ -8664,7 +8818,7 @@ class CookieConsent {
     // Google Analytics (si está disponible)
     if (window.gtag) {
       window.gtag('consent', 'update', {
-        'analytics_storage': 'granted'
+        analytics_storage: 'granted',
       });
     }
   }
@@ -8702,7 +8856,7 @@ if (document.readyState === 'loading') {
 
 // === FUNCIÓN GLOBAL DE LIMPIEZA DE FIRESTORE ===
 // Usar desde consola: window.cleanFirestoreData()
-window.cleanFirestoreData = async function() {
+window.cleanFirestoreData = async function () {
   const FB = window.FB;
   const app = window.app;
 
@@ -8713,7 +8867,7 @@ window.cleanFirestoreData = async function() {
 
   try {
     const firestoreDocId = app.sharedAccountId || app.currentUser;
-    const userDocRef = FB.doc(FB.db, 'userData', firestoreDocId);
+    const userDocRef = FB.doc(FB.db, 'usuarios', firestoreDocId);
 
     console.log('🧹 Limpiando datos de Firestore para:', firestoreDocId);
 
@@ -8809,7 +8963,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Agregar estado inicial al historial
   history.pushState({ page: 'current' }, '', '');
 
-  window.addEventListener('popstate', function(event) {
+  window.addEventListener('popstate', function (event) {
     backPressCount++;
 
     // Si es la primera vez que presiona atrás
@@ -9011,7 +9165,9 @@ FinanceApp.prototype.loadInspirationImage = async function () {
     try {
       // Opción 1: Usar backend proxy (más seguro)
       response = await fetch(
-        `${backendUrl}/api/unsplash/random?query=${encodeURIComponent(category)}&orientation=landscape`
+        `${backendUrl}/api/unsplash/random?query=${encodeURIComponent(
+          category
+        )}&orientation=landscape`
       );
 
       if (!response.ok) {
@@ -9020,7 +9176,10 @@ FinanceApp.prototype.loadInspirationImage = async function () {
 
       data = await response.json();
     } catch (backendError) {
-      console.warn('⚠️ Backend no disponible, intentando directo a Unsplash...', backendError.message);
+      console.warn(
+        '⚠️ Backend no disponible, intentando directo a Unsplash...',
+        backendError.message
+      );
 
       // Opción 2: Fallback directo a Unsplash (solo si hay API key)
       if (!UNSPLASH_ACCESS_KEY) {
@@ -9111,12 +9270,15 @@ FinanceApp.prototype.loginWithGoogle = async function () {
   try {
     const provider = new FB.GoogleAuthProvider();
     provider.setCustomParameters({
-      prompt: 'select_account'
+      prompt: 'select_account',
     });
 
     const result = await FB.signInWithPopup(FB.auth, provider);
 
-    this.showToast(`¡Bienvenido, ${result.user.displayName || 'Usuario'}! 🎉`, 'success');
+    this.showToast(
+      `¡Bienvenido, ${result.user.displayName || 'Usuario'}! 🎉`,
+      'success'
+    );
     this.closeAuthModal();
 
     // Iniciar tour para nuevos usuarios
@@ -9130,13 +9292,17 @@ FinanceApp.prototype.loginWithGoogle = async function () {
 
     const errorMessages = {
       'auth/popup-closed-by-user': 'Cancelaste el inicio de sesión',
-      'auth/popup-blocked': 'El navegador bloqueó la ventana emergente. Permite ventanas emergentes para este sitio.',
-      'auth/account-exists-with-different-credential': 'Ya existe una cuenta con este correo usando otro método de inicio de sesión.',
+      'auth/popup-blocked':
+        'El navegador bloqueó la ventana emergente. Permite ventanas emergentes para este sitio.',
+      'auth/account-exists-with-different-credential':
+        'Ya existe una cuenta con este correo usando otro método de inicio de sesión.',
       'auth/cancelled-popup-request': 'Se canceló la solicitud anterior',
       'auth/network-request-failed': 'Error de conexión. Verifica tu internet.',
     };
 
-    const message = errorMessages[error.code] || 'No pudimos iniciar sesión con Google. Intenta de nuevo.';
+    const message =
+      errorMessages[error.code] ||
+      'No pudimos iniciar sesión con Google. Intenta de nuevo.';
     this.showToast(message, 'error');
   }
 };
@@ -9151,7 +9317,7 @@ FinanceApp.prototype.loginWithFacebook = async function () {
   try {
     const provider = new FB.FacebookAuthProvider();
     provider.setCustomParameters({
-      display: 'popup'
+      display: 'popup',
     });
 
     const result = await FB.signInWithPopup(FB.auth, provider);
@@ -9178,8 +9344,7 @@ FinanceApp.prototype.loginWithFacebook = async function () {
       'auth/account-exists-with-different-credential':
         'Ya existe una cuenta con este correo usando otro método de inicio de sesión.',
       'auth/cancelled-popup-request': 'Se canceló la solicitud anterior',
-      'auth/network-request-failed':
-        'Error de conexión. Verifica tu internet.',
+      'auth/network-request-failed': 'Error de conexión. Verifica tu internet.',
       'auth/auth-domain-config-required':
         'La configuración de Facebook no está completa en Firebase Console.',
     };
@@ -11133,7 +11298,9 @@ FinanceApp.prototype.setupTourEventListeners = function () {
   // Tour navigation buttons
   const nextBtn = this.tourOverlay.querySelector('.tour-next');
   const prevBtn = this.tourOverlay.querySelector('.tour-prev');
-  const skipBtns = this.tourOverlay.querySelectorAll('.tour-skip, .tour-skip-prominent');
+  const skipBtns = this.tourOverlay.querySelectorAll(
+    '.tour-skip, .tour-skip-prominent'
+  );
   const finishBtn = this.tourOverlay.querySelector('.tour-finish');
   const closeBtn = this.tourOverlay.querySelector('.tour-close');
 
@@ -11669,21 +11836,26 @@ FinanceApp.prototype.saveProfileSettings = async function () {
 
     // VALIDACIÓN 1: No permitir valores vacíos o cero (protección contra eliminación)
     if (!newIncome || newIncome <= 0) {
-      this.showToast('⚠️ El ingreso mensual no puede estar vacío o ser cero. Solo puedes modificarlo.', 'error');
+      this.showToast(
+        '⚠️ El ingreso mensual no puede estar vacío o ser cero. Solo puedes modificarlo.',
+        'error'
+      );
       monthlyIncomeInput.value = this.monthlyIncome;
       return;
     }
 
     // VALIDACIÓN 2: Confirmar cambios importantes (si cambia más del 50%)
-    const changePercent = Math.abs((newIncome - this.monthlyIncome) / this.monthlyIncome * 100);
+    const changePercent = Math.abs(
+      ((newIncome - this.monthlyIncome) / this.monthlyIncome) * 100
+    );
     if (newIncome !== this.monthlyIncome) {
       if (changePercent > 50) {
         const confirmed = confirm(
           `⚠️ CONFIRMAR CAMBIO IMPORTANTE\n\n` +
-          `Ingreso actual: $${this.monthlyIncome.toLocaleString()}\n` +
-          `Nuevo ingreso: $${newIncome.toLocaleString()}\n` +
-          `Cambio: ${changePercent.toFixed(0)}%\n\n` +
-          `¿Estás seguro de realizar este cambio?`
+            `Ingreso actual: $${this.monthlyIncome.toLocaleString()}\n` +
+            `Nuevo ingreso: $${newIncome.toLocaleString()}\n` +
+            `Cambio: ${changePercent.toFixed(0)}%\n\n` +
+            `¿Estás seguro de realizar este cambio?`
         );
         if (!confirmed) {
           monthlyIncomeInput.value = this.monthlyIncome;
@@ -11708,7 +11880,7 @@ FinanceApp.prototype.saveProfileSettings = async function () {
     const FB = window.FB;
     if (FB?.auth && this.firebaseUser) {
       try {
-        const userDocRef = FB.doc(FB.db, 'userData', this.firebaseUser.uid);
+        const userDocRef = FB.doc(FB.db, 'usuarios', this.firebaseUser.uid);
         await FB.updateDoc(userDocRef, {
           userName: this.userProfile.name,
           monthlyIncome: this.monthlyIncome,
@@ -11772,7 +11944,10 @@ FinanceApp.prototype.openAvatarUploader = function () {
         const isPro = this.userPlan === 'pro';
         const FB = window.FB;
         const currentFirebaseUser = this.firebaseUser || FB.auth?.currentUser;
-        const isLoggedIn = currentFirebaseUser && this.currentUser && this.currentUser !== 'anonymous';
+        const isLoggedIn =
+          currentFirebaseUser &&
+          this.currentUser &&
+          this.currentUser !== 'anonymous';
 
         // Plan PRO: Subir a Firebase Storage (nube)
         if (isPro && FB?.auth && isLoggedIn) {
@@ -11793,7 +11968,11 @@ FinanceApp.prototype.openAvatarUploader = function () {
             this.saveData();
 
             // Update Firestore with image URL
-            const userDocRef = FB.doc(FB.db, 'userData', currentFirebaseUser.uid);
+            const userDocRef = FB.doc(
+              FB.db,
+              'usuarios',
+              currentFirebaseUser.uid
+            );
             await FB.updateDoc(userDocRef, {
               'userProfile.avatar': downloadURL,
               'userProfile.avatarType': 'custom',
@@ -11838,7 +12017,10 @@ FinanceApp.prototype.openAvatarUploader = function () {
             this.updateConfigurationDisplay();
             this.updateProfileDisplay();
 
-            this.showToast('Avatar guardado localmente. Actualiza a PRO para sincronizar en la nube.', 'info');
+            this.showToast(
+              'Avatar guardado localmente. Actualiza a PRO para sincronizar en la nube.',
+              'info'
+            );
           };
           img.src = imageData;
         }
@@ -12765,7 +12947,7 @@ FinanceApp.prototype.renderAuditLog = function () {
   // Filtrar por últimos días
   if (daysFilter !== 'all') {
     const daysAgo = parseInt(daysFilter);
-    const cutoffDate = Date.now() - (daysAgo * 24 * 60 * 60 * 1000);
+    const cutoffDate = Date.now() - daysAgo * 24 * 60 * 60 * 1000;
     filteredLog = filteredLog.filter((entry) => entry.timestamp >= cutoffDate);
   }
 
@@ -13061,7 +13243,12 @@ FinanceApp.prototype.showSavingsDetailModal = function () {
   const breakdownList = document.getElementById('savingsBreakdownList');
 
   const total = this.savingsAccounts.reduce((sum, acc) => sum + acc.amount, 0);
-  console.log('Total savings:', total, 'Accounts:', this.savingsAccounts.length);
+  console.log(
+    'Total savings:',
+    total,
+    'Accounts:',
+    this.savingsAccounts.length
+  );
 
   if (modalTotal) modalTotal.textContent = `$${total.toLocaleString()}`;
   if (modalSources) modalSources.textContent = this.savingsAccounts.length;
@@ -13838,7 +14025,12 @@ FinanceApp.prototype.initializeStatsScroll = function () {
 
 FinanceApp.prototype.analyzeNecessity = function (expenses, total) {
   const necessary = ['Muy Necesario', 'Necesario'];
-  const unnecessary = ['Poco Necesario', 'No Necesario', 'Compra por Impulso', 'Malgasto'];
+  const unnecessary = [
+    'Poco Necesario',
+    'No Necesario',
+    'Compra por Impulso',
+    'Malgasto',
+  ];
 
   const necessaryExpenses = expenses.filter((e) =>
     necessary.includes(e.necessity)
@@ -14203,7 +14395,12 @@ FinanceApp.prototype.updateBudgetSpending = function (monthKey) {
 // ========================================
 
 FinanceApp.prototype.addLeisureItem = function (monthKey, description, amount) {
-  console.log('🎉 addLeisureItem called with:', { monthKey, description, amount, amountType: typeof amount });
+  console.log('🎉 addLeisureItem called with:', {
+    monthKey,
+    description,
+    amount,
+    amountType: typeof amount,
+  });
 
   // Limpiar estructura antigua si existe
   if (!this.budgets[monthKey]) {
@@ -14215,7 +14412,9 @@ FinanceApp.prototype.addLeisureItem = function (monthKey, description, amount) {
     };
   } else if (this.budgets[monthKey].categories) {
     // Migrar de estructura antigua a nueva
-    console.log('⚠️ Migrando de estructura antigua (categories) a nueva (leisureItems)');
+    console.log(
+      '⚠️ Migrando de estructura antigua (categories) a nueva (leisureItems)'
+    );
     this.budgets[monthKey] = {
       leisureItems: [],
       totalLimit: 0,
@@ -14233,17 +14432,18 @@ FinanceApp.prototype.addLeisureItem = function (monthKey, description, amount) {
   this.budgets[monthKey].leisureItems.push({
     description: description,
     amount: numericAmount,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   });
 
   console.log('📋 Current leisureItems:', this.budgets[monthKey].leisureItems);
 
   // Recalcular total
-  this.budgets[monthKey].totalLimit = this.budgets[monthKey].leisureItems
-    .reduce((sum, item) => {
-      console.log('  Adding:', item.amount, 'to sum:', sum);
-      return sum + item.amount;
-    }, 0);
+  this.budgets[monthKey].totalLimit = this.budgets[
+    monthKey
+  ].leisureItems.reduce((sum, item) => {
+    console.log('  Adding:', item.amount, 'to sum:', sum);
+    return sum + item.amount;
+  }, 0);
 
   console.log('💰 Total budget calculated:', this.budgets[monthKey].totalLimit);
 
@@ -14260,8 +14460,9 @@ FinanceApp.prototype.removeLeisureItem = function (monthKey, index) {
   this.budgets[monthKey].leisureItems.splice(index, 1);
 
   // Recalcular total
-  this.budgets[monthKey].totalLimit = this.budgets[monthKey].leisureItems
-    .reduce((sum, item) => sum + item.amount, 0);
+  this.budgets[monthKey].totalLimit = this.budgets[
+    monthKey
+  ].leisureItems.reduce((sum, item) => sum + item.amount, 0);
 
   this.updateLeisureBudgetSpending(monthKey);
   this.saveData();
@@ -14296,7 +14497,7 @@ FinanceApp.prototype.markLeisureItemAsUsed = function (monthKey, index) {
     date: new Date().toISOString(),
     user: this.currentUser || 'Daniel',
     necessity: 'No Necesario', // Marcado como gasto de ocio
-    isProtected: false
+    isProtected: false,
   };
 
   this.expenses.push(newExpense);
@@ -14325,7 +14526,12 @@ FinanceApp.prototype.markLeisureItemAsUsed = function (monthKey, index) {
   }
 
   this.showBudgetModal();
-  this.showToast(`💰 Gasto registrado: ${item.description} por $${item.amount.toLocaleString()}`, 'success');
+  this.showToast(
+    `💰 Gasto registrado: ${
+      item.description
+    } por $${item.amount.toLocaleString()}`,
+    'success'
+  );
 
   console.log('💰 Expense created from leisure item:', newExpense);
 };
@@ -14424,7 +14630,9 @@ FinanceApp.prototype.renderBudgetSummary = function (monthKey) {
   document.getElementById(
     'totalBudgetSpent'
   ).textContent = `$${this.formatNumber(budget.totalSpent)}`;
-  document.getElementById('totalBudgetAvailable').textContent = `$${this.formatNumber(Math.max(available, 0))}`;
+  document.getElementById(
+    'totalBudgetAvailable'
+  ).textContent = `$${this.formatNumber(Math.max(available, 0))}`;
   document.getElementById(
     'overallBudgetPercentage'
   ).textContent = `${percentage.toFixed(0)}%`;
@@ -14458,7 +14666,9 @@ FinanceApp.prototype.renderLeisureItemsList = function (monthKey) {
     return;
   }
 
-  container.innerHTML = budget.leisureItems.map((item, index) => `
+  container.innerHTML = budget.leisureItems
+    .map(
+      (item, index) => `
     <div class="leisure-item" data-index="${index}">
       <div class="leisure-item-icon">
         <i class="fas fa-star"></i>
@@ -14471,10 +14681,12 @@ FinanceApp.prototype.renderLeisureItemsList = function (monthKey) {
         <i class="fas fa-trash"></i>
       </button>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 
   // Agregar event listeners para eliminar items
-  container.querySelectorAll('.leisure-item-delete').forEach(btn => {
+  container.querySelectorAll('.leisure-item-delete').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       const index = parseInt(e.currentTarget.getAttribute('data-index'));
       this.removeLeisureItem(monthKey, index);
@@ -14498,15 +14710,16 @@ FinanceApp.prototype.renderBudgetProgress = function (monthKey) {
     return;
   }
 
-  container.innerHTML = budget.leisureItems.map((item, index) => {
-    // Por lógica: no podemos saber específicamente qué se gastó en cada item
-    // Solo mostramos el límite configurado
-    const itemLimit = item.amount;
-    const itemSpent = 0; // Siempre 0 porque no hay tracking específico
-    const itemRemaining = itemLimit;
-    const itemExceeded = 0; // Solo si manualmente se marca
+  container.innerHTML = budget.leisureItems
+    .map((item, index) => {
+      // Por lógica: no podemos saber específicamente qué se gastó en cada item
+      // Solo mostramos el límite configurado
+      const itemLimit = item.amount;
+      const itemSpent = 0; // Siempre 0 porque no hay tracking específico
+      const itemRemaining = itemLimit;
+      const itemExceeded = 0; // Solo si manualmente se marca
 
-    return `
+      return `
       <div class="budget-category-progress">
         <div class="budget-category-progress-header">
           <div class="budget-category-info">
@@ -14534,7 +14747,8 @@ FinanceApp.prototype.renderBudgetProgress = function (monthKey) {
         </div>
       </div>
     `;
-  }).join('');
+    })
+    .join('');
 };
 
 FinanceApp.prototype.setupBudgetListeners = function () {
@@ -14569,7 +14783,7 @@ FinanceApp.prototype.setupBudgetListeners = function () {
         amountRaw,
         amountCleaned,
         amount,
-        type: typeof amount
+        type: typeof amount,
       });
 
       if (!description) {
@@ -14601,14 +14815,17 @@ FinanceApp.prototype.setupBudgetListeners = function () {
       const budget = this.budgets[monthKey];
 
       if (!budget || !budget.leisureItems || budget.leisureItems.length === 0) {
-        this.showToast('Agrega al menos un gasto de ocio antes de guardar', 'error');
+        this.showToast(
+          'Agrega al menos un gasto de ocio antes de guardar',
+          'error'
+        );
         return;
       }
 
       console.log('💾 Guardando presupuesto de ocio:', {
         month: monthKey,
         leisureItems: budget.leisureItems,
-        totalBudget: budget.totalLimit
+        totalBudget: budget.totalLimit,
       });
 
       this.saveData();
@@ -14751,8 +14968,12 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
       quickModeBtn?.classList.remove('active');
       normalModeFields?.classList.remove('hidden');
       // Make fields required in normal mode
-      document.getElementById('quickNecessity')?.setAttribute('required', 'required');
-      document.getElementById('quickDate')?.setAttribute('required', 'required');
+      document
+        .getElementById('quickNecessity')
+        ?.setAttribute('required', 'required');
+      document
+        .getElementById('quickDate')
+        ?.setAttribute('required', 'required');
     });
   }
 
@@ -14872,7 +15093,10 @@ FinanceApp.prototype.setupInstagramQuickActions = function () {
               // Scroll to income section
               const incomeSection = document.getElementById('incomeForm');
               if (incomeSection) {
-                incomeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                incomeSection.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start',
+                });
               }
             }, 300);
             break;
@@ -14886,9 +15110,11 @@ FinanceApp.prototype.setupInstagramQuickActions = function () {
   if (mobileBannerCover) {
     mobileBannerCover.addEventListener('click', (e) => {
       // Evitar que se abra si se hace click en botones
-      if (e.target.closest('.banner-hamburger-btn') ||
-          e.target.closest('.banner-notification-btn') ||
-          e.target.closest('#mobileAvatar')) {
+      if (
+        e.target.closest('.banner-hamburger-btn') ||
+        e.target.closest('.banner-notification-btn') ||
+        e.target.closest('#mobileAvatar')
+      ) {
         return;
       }
       this.changeBannerCover();
@@ -14897,7 +15123,9 @@ FinanceApp.prototype.setupInstagramQuickActions = function () {
 
   // Mobile avatar customization
   // Click en avatar móvil: si no está autenticado, abre modal de login
-  const mobileAvatarContainer = document.getElementById('mobileAvatarContainer');
+  const mobileAvatarContainer = document.getElementById(
+    'mobileAvatarContainer'
+  );
   if (mobileAvatarContainer) {
     mobileAvatarContainer.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent banner click event
@@ -14960,7 +15188,10 @@ FinanceApp.prototype.changeBannerCover = async function () {
         const isPro = this.userPlan === 'pro';
         const FB = window.FB;
         const currentFirebaseUser = this.firebaseUser || FB.auth?.currentUser;
-        const isLoggedIn = currentFirebaseUser && this.currentUser && this.currentUser !== 'anonymous';
+        const isLoggedIn =
+          currentFirebaseUser &&
+          this.currentUser &&
+          this.currentUser !== 'anonymous';
 
         // Plan PRO: Subir a Firebase Storage (nube)
         if (isPro && FB?.auth && isLoggedIn) {
@@ -14980,7 +15211,11 @@ FinanceApp.prototype.changeBannerCover = async function () {
             this.saveData();
 
             // Update Firestore
-            const userDocRef = FB.doc(FB.db, 'userData', currentFirebaseUser.uid);
+            const userDocRef = FB.doc(
+              FB.db,
+              'usuarios',
+              currentFirebaseUser.uid
+            );
             await FB.updateDoc(userDocRef, {
               'userProfile.bannerCover': downloadURL,
               updatedAt: Date.now(),
@@ -15021,7 +15256,10 @@ FinanceApp.prototype.changeBannerCover = async function () {
               mobileBannerCover.style.backgroundImage = `url(${compressedData})`;
             }
 
-            this.showToast('Portada guardada localmente. Actualiza a PRO para sincronizar en la nube.', 'info');
+            this.showToast(
+              'Portada guardada localmente. Actualiza a PRO para sincronizar en la nube.',
+              'info'
+            );
           };
           img.src = imageData;
         }
@@ -15097,14 +15335,18 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function () {
     document.getElementById('quickDescription').value || 'Gasto rápido';
 
   // Get values from normal mode fields if they exist
-  const necessity = document.getElementById('quickNecessity')?.value || 'Necesario';
-  const date = document.getElementById('quickDate')?.value || new Date().toISOString().split('T')[0];
+  const necessity =
+    document.getElementById('quickNecessity')?.value || 'Necesario';
+  const date =
+    document.getElementById('quickDate')?.value ||
+    new Date().toISOString().split('T')[0];
   const userValue = document.getElementById('quickUser')?.value;
 
   // Use defined user or current user
-  const user = userValue && userValue !== '__add_new__'
-    ? userValue
-    : (this.currentUser || this.defaultUser || 'Sin usuario');
+  const user =
+    userValue && userValue !== '__add_new__'
+      ? userValue
+      : this.currentUser || this.defaultUser || 'Sin usuario';
 
   if (!amount || !category) {
     this.showToast('Por favor completa los campos requeridos', 'error');
@@ -15279,7 +15521,12 @@ FinanceApp.prototype.initializeExpensePatterns = function () {
   }
 };
 
-FinanceApp.prototype.saveExpensePattern = function (description, category, necessity, user) {
+FinanceApp.prototype.saveExpensePattern = function (
+  description,
+  category,
+  necessity,
+  user
+) {
   if (!description) return;
 
   const key = description.toLowerCase().trim();
@@ -15329,13 +15576,21 @@ FinanceApp.prototype.handleQuickAutocomplete = function (searchText) {
     .slice(0, 5) // Show max 5 suggestions
     .map(
       (pattern) => `
-    <div class="autocomplete-suggestion" data-pattern='${JSON.stringify(pattern)}'>
+    <div class="autocomplete-suggestion" data-pattern='${JSON.stringify(
+      pattern
+    )}'>
       <span class="autocomplete-suggestion-text">${pattern.description}</span>
       <div class="autocomplete-suggestion-meta">
         <span class="autocomplete-suggestion-badge">${pattern.category}</span>
         <span class="autocomplete-suggestion-badge">${pattern.necessity}</span>
-        ${pattern.user ? `<span class="autocomplete-suggestion-badge">${pattern.user}</span>` : ''}
-        <span class="autocomplete-suggestion-badge">Usado ${pattern.count}x</span>
+        ${
+          pattern.user
+            ? `<span class="autocomplete-suggestion-badge">${pattern.user}</span>`
+            : ''
+        }
+        <span class="autocomplete-suggestion-badge">Usado ${
+          pattern.count
+        }x</span>
       </div>
     </div>
   `
@@ -15479,7 +15734,10 @@ FinanceApp.prototype.setupQuickUserHandler = function () {
   // Setup input handler
   if (quickNewUserNameInput) {
     const newInput = quickNewUserNameInput.cloneNode(true);
-    quickNewUserNameInput.parentNode.replaceChild(newInput, quickNewUserNameInput);
+    quickNewUserNameInput.parentNode.replaceChild(
+      newInput,
+      quickNewUserNameInput
+    );
 
     newInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
@@ -15514,12 +15772,16 @@ FinanceApp.prototype.setupPremiumSettings = function () {
   const switchTab = (targetTab) => {
     // Update active state for desktop nav
     settingsNavItems.forEach((item) => item.classList.remove('active'));
-    const desktopNav = document.querySelector(`.settings-nav-item[data-settings-tab="${targetTab}"]`);
+    const desktopNav = document.querySelector(
+      `.settings-nav-item[data-settings-tab="${targetTab}"]`
+    );
     if (desktopNav) desktopNav.classList.add('active');
 
     // Update active state for mobile nav
     bottomNavItems.forEach((item) => item.classList.remove('active'));
-    const mobileNav = document.querySelector(`.bottom-nav-item[data-settings-tab="${targetTab}"]`);
+    const mobileNav = document.querySelector(
+      `.bottom-nav-item[data-settings-tab="${targetTab}"]`
+    );
     if (mobileNav) mobileNav.classList.add('active');
 
     // Update active tab content
@@ -15532,7 +15794,7 @@ FinanceApp.prototype.setupPremiumSettings = function () {
     // Scroll to top of page when switching tabs
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
 
     // Update statistics if on profile tab
@@ -16023,8 +16285,10 @@ FinanceApp.prototype.setupAllNumberInputs = function () {
 };
 
 // === FUNCIONES PARA INGRESOS EXTRAS ===
-FinanceApp.prototype.promptAddExtraIncome = function() {
-  const amount = prompt('💰 Ingresa el monto del ingreso extra:\n\n(Este monto se sumará a tu ingreso base)');
+FinanceApp.prototype.promptAddExtraIncome = function () {
+  const amount = prompt(
+    '💰 Ingresa el monto del ingreso extra:\n\n(Este monto se sumará a tu ingreso base)'
+  );
 
   if (amount === null) return; // Canceló
 
@@ -16047,14 +16311,17 @@ FinanceApp.prototype.promptAddExtraIncome = function() {
   this.updateConfigurationDisplay();
   this.renderDashboard();
 
-  this.showToast(`✅ Ingreso extra de $${extraAmount.toLocaleString()} agregado`, 'success');
+  this.showToast(
+    `✅ Ingreso extra de $${extraAmount.toLocaleString()} agregado`,
+    'success'
+  );
 };
 
-FinanceApp.prototype.resetExtraIncome = function() {
+FinanceApp.prototype.resetExtraIncome = function () {
   const confirmed = confirm(
     '⚠️ ¿Resetear ingresos extras?\n\n' +
-    `Extras actuales: $${this.extraIncome.toLocaleString()}\n\n` +
-    'Esto NO afectará tu ingreso base, solo eliminará los extras acumulados.'
+      `Extras actuales: $${this.extraIncome.toLocaleString()}\n\n` +
+      'Esto NO afectará tu ingreso base, solo eliminará los extras acumulados.'
   );
 
   if (!confirmed) return;
@@ -16068,7 +16335,7 @@ FinanceApp.prototype.resetExtraIncome = function() {
   this.showToast('Ingresos extras reseteados', 'success');
 };
 
-FinanceApp.prototype.updateExtraIncomeDisplay = function() {
+FinanceApp.prototype.updateExtraIncomeDisplay = function () {
   const extraDisplay = document.getElementById('extraIncomeDisplay');
   const extraAmount = document.getElementById('extraIncomeAmount');
   const totalDisplay = document.getElementById('totalIncomeDisplay');
@@ -16088,14 +16355,14 @@ FinanceApp.prototype.updateExtraIncomeDisplay = function() {
   }
 };
 
-FinanceApp.prototype.getTotalIncome = function() {
+FinanceApp.prototype.getTotalIncome = function () {
   return this.monthlyIncome + this.extraIncome;
 };
 
 // ========================================
 // LOADING SPINNER METHODS
 // ========================================
-FinanceApp.prototype.hideAppLoading = function() {
+FinanceApp.prototype.hideAppLoading = function () {
   const loader = document.getElementById('loader-wrapper');
   if (loader) {
     loader.classList.add('hidden');
