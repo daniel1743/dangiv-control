@@ -107,7 +107,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=3.0" />
     <link rel="stylesheet" href="user-system.css" />
     <link rel="stylesheet" href="store.css" />
     <link rel="stylesheet" href="config.css" />
@@ -4690,146 +4690,40 @@
       <i class="fas fa-plus"></i>
     </button>
 
-    <!-- Quick Actions Menu -->
-    <div class="quick-actions-menu hidden" id="quickActionsMenu">
-      <div class="quick-actions-backdrop" id="quickActionsBackdrop"></div>
-      <div class="quick-actions-content">
-        <div class="quick-actions-header">
-          <h3>Crear nuevo</h3>
-          <button class="quick-actions-close" id="closeQuickActions">
-            <i class="fas fa-times"></i>
-          </button>
+
+    <!-- Quick Actions Menu Desplegable -->
+    <div class="fab-quick-menu hidden" id="quickExpenseModal">
+      <!-- Opción 1: Registrar Gasto (Principal) -->
+      <button class="fab-menu-item fab-menu-primary" id="quickActionFullExpense">
+        <div class="fab-menu-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+          <i class="fas fa-receipt"></i>
         </div>
-        <div class="quick-actions-list">
-          <button class="quick-action-item" data-action="expense">
-            <div
-              class="quick-action-icon"
-              style="background: linear-gradient(135deg, #ef4444, #dc2626)"
-            >
-              <i class="fas fa-wallet"></i>
-            </div>
-            <div class="quick-action-text">
-              <span class="quick-action-title">Registrar Gasto</span>
-              <span class="quick-action-desc">Añade un nuevo gasto</span>
-            </div>
-          </button>
+        <span class="fab-menu-label">Registrar Gasto</span>
+      </button>
 
-          <button class="quick-action-item" data-action="goal">
-            <div
-              class="quick-action-icon"
-              style="background: linear-gradient(135deg, #8b5cf6, #7c3aed)"
-            >
-              <i class="fas fa-bullseye"></i>
-            </div>
-            <div class="quick-action-text">
-              <span class="quick-action-title">Meta Financiera</span>
-              <span class="quick-action-desc">Crea una nueva meta</span>
-            </div>
-          </button>
-
-          <button class="quick-action-item" data-action="leisure">
-            <div
-              class="quick-action-icon"
-              style="background: linear-gradient(135deg, #14b8a6, #0d9488)"
-            >
-              <i class="fas fa-gift"></i>
-            </div>
-            <div class="quick-action-text">
-              <span class="quick-action-title">Presupuesto de Ocio</span>
-              <span class="quick-action-desc">Aparta dinero para gustos</span>
-            </div>
-          </button>
-
-          <button class="quick-action-item" data-action="shopping">
-            <div
-              class="quick-action-icon"
-              style="background: linear-gradient(135deg, #f59e0b, #d97706)"
-            >
-              <i class="fas fa-shopping-cart"></i>
-            </div>
-            <div class="quick-action-text">
-              <span class="quick-action-title">Lista de Compras</span>
-              <span class="quick-action-desc">Añade productos</span>
-            </div>
-          </button>
-
-          <button class="quick-action-item" data-action="income">
-            <div
-              class="quick-action-icon"
-              style="background: linear-gradient(135deg, #10b981, #059669)"
-            >
-              <i class="fas fa-hand-holding-usd"></i>
-            </div>
-            <div class="quick-action-text">
-              <span class="quick-action-title">Ingreso Mensual</span>
-              <span class="quick-action-desc">Actualiza tu ingreso</span>
-            </div>
-          </button>
+      <!-- Opción 2: Modo Rápido -->
+      <button class="fab-menu-item" id="quickActionFastMode">
+        <div class="fab-menu-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+          <i class="fas fa-bolt"></i>
         </div>
-      </div>
-    </div>
+        <span class="fab-menu-label">Modo Rápido</span>
+      </button>
 
-    <!-- Quick Actions Modal -->
-    <div class="modal" id="quickExpenseModal">
-      <div class="modal__content modal--sm">
-        <div class="modal__header">
-          <h2><i class="fas fa-plus-circle"></i> Acciones Rápidas</h2>
-          <button class="modal__close" id="closeQuickExpenseModal">
-            <i class="fas fa-times"></i>
-          </button>
+      <!-- Opción 3: Registrar Sueldo -->
+      <button class="fab-menu-item" id="quickActionSalary">
+        <div class="fab-menu-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+          <i class="fas fa-wallet"></i>
         </div>
-        <div class="modal__body">
-          <div class="quick-action-menu">
-            <!-- Opción 1: Registrar Gasto (Principal) -->
-            <button class="quick-action-option quick-action-primary" id="quickActionFullExpense">
-              <div class="quick-action-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-                <i class="fas fa-receipt"></i>
-              </div>
-              <div class="quick-action-content">
-                <h3>Registrar Gasto</h3>
-                <p>Formulario completo con todos los detalles</p>
-              </div>
-              <i class="fas fa-chevron-right quick-action-arrow"></i>
-            </button>
+        <span class="fab-menu-label">Registrar Sueldo</span>
+      </button>
 
-            <!-- Opción 2: Modo Rápido -->
-            <button class="quick-action-option" id="quickActionFastMode">
-              <div class="quick-action-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                <i class="fas fa-bolt"></i>
-              </div>
-              <div class="quick-action-content">
-                <h3>Modo Rápido</h3>
-                <p>Solo monto y descripción (editar después)</p>
-              </div>
-              <i class="fas fa-chevron-right quick-action-arrow"></i>
-            </button>
-
-            <!-- Opción 3: Registrar Sueldo -->
-            <button class="quick-action-option" id="quickActionSalary">
-              <div class="quick-action-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                <i class="fas fa-wallet"></i>
-              </div>
-              <div class="quick-action-content">
-                <h3>Registrar Sueldo</h3>
-                <p>Ingreso mensual principal</p>
-              </div>
-              <i class="fas fa-chevron-right quick-action-arrow"></i>
-            </button>
-
-            <!-- Opción 4: Entrada Extra -->
-            <button class="quick-action-option" id="quickActionExtraIncome">
-              <div class="quick-action-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                <i class="fas fa-coins"></i>
-              </div>
-              <div class="quick-action-content">
-                <h3>Entrada Extra</h3>
-                <p>Ingreso adicional que suma al sueldo</p>
-              </div>
-              <i class="fas fa-chevron-right quick-action-arrow"></i>
-            </button>
-          </div>
+      <!-- Opción 4: Entrada Extra -->
+      <button class="fab-menu-item" id="quickActionExtraIncome">
+        <div class="fab-menu-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+          <i class="fas fa-coins"></i>
         </div>
-      </div>
+        <span class="fab-menu-label">Entrada Extra</span>
+      </button>
     </div>
 
     <!-- Modal Modo Rápido (solo monto y descripción) -->
@@ -4901,12 +4795,10 @@
                 <i class="fas fa-dollar-sign"></i> Monto del Sueldo
               </label>
               <input
-                type="number"
+                type="text"
                 id="salaryAmount"
                 class="form-control form-control--lg"
-                placeholder="0.00"
-                step="0.01"
-                min="0"
+                placeholder="Ej: 1500000"
                 required
                 autofocus
               />
@@ -4953,12 +4845,10 @@
                 <i class="fas fa-dollar-sign"></i> Monto
               </label>
               <input
-                type="number"
+                type="text"
                 id="extraAmount"
                 class="form-control form-control--lg"
-                placeholder="0.00"
-                step="0.01"
-                min="0"
+                placeholder="Ej: 500000"
                 required
                 autofocus
               />
@@ -5392,7 +5282,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app.js?v=3.5"></script>
     <script type="module" src="avatar-sidebar.js"></script>
     <script src="smart-forms.js"></script>
   </body>

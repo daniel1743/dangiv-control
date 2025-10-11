@@ -55,8 +55,10 @@ class FinanceApp {
     this.goals = savedData.goals || [];
     this.shoppingItems = savedData.shoppingItems || [];
     this.monthlyIncome = savedData.monthlyIncome || 2500;
+    this.lastSalaryDate = savedData.lastSalaryDate || null; // Fecha del último sueldo registrado
     this.additionalIncomes = savedData.additionalIncomes || []; // Nuevos ingresos adicionales
     this.extraIncome = savedData.extraIncome || 0; // Ingresos extras acumulados (sin descripción)
+    this.extraIncomeHistory = savedData.extraIncomeHistory || []; // Historial de entradas extras
 
     // Sistema de ahorro para metas
     this.availableBalance = savedData.availableBalance || 0; // Balance acumulado disponible
@@ -676,8 +678,10 @@ class FinanceApp {
       goals: this.goals,
       shoppingItems: this.shoppingItems,
       monthlyIncome: this.monthlyIncome,
+      lastSalaryDate: this.lastSalaryDate,
       additionalIncomes: this.additionalIncomes,
       extraIncome: this.extraIncome,
+      extraIncomeHistory: this.extraIncomeHistory,
       availableBalance: this.availableBalance,
       freeBalance: this.freeBalance,
       lastBalanceUpdate: this.lastBalanceUpdate,
@@ -2622,6 +2626,7 @@ class FinanceApp {
     this.setupBudgetListeners(); // Sistema de presupuesto
     this.setupQuickExpenseListeners(); // Entrada rápida de gastos
     this.setupInstagramQuickActions(); // Instagram-style quick actions (mobile)
+    this.setupMobileBannerListeners(); // Mobile banner and avatar listeners
     this.setupPremiumSettings(); // Premium Settings Navigation
     this.checkMonthlyReset();
     // Forzar normalización de datos existentes al inicio
@@ -4748,6 +4753,16 @@ class FinanceApp {
       (sum, g) => sum + (g.current || 0),
       0
     );
+
+    console.log('📊 Renderizando Dashboard Balance:', {
+      monthlyIncome: this.monthlyIncome,
+      extraIncome: this.extraIncome,
+      getTotalIncome: this.getTotalIncome(),
+      totalExpenses: stats.totalExpenses,
+      availableBalance: stats.availableBalance,
+      assignedToGoals: assignedToGoals
+    });
+
     // Permitir balance negativo - NO usar Math.max(0, ...)
     const trueAvailable = stats.availableBalance - assignedToGoals;
 
@@ -11865,26 +11880,40 @@ FinanceApp.prototype.saveProfileSettings = async function () {
       return;
     }
 
-    // VALIDACIÓN 2: Confirmar cambios importantes (si cambia más del 50%)
-    const changePercent = Math.abs(
-      ((newIncome - this.monthlyIncome) / this.monthlyIncome) * 100
-    );
+    // VALIDACIÓN 2: Confirmar cambios (mostrar información del sueldo actual)
     if (newIncome !== this.monthlyIncome) {
-      if (changePercent > 50) {
-        const confirmed = confirm(
-          `⚠️ CONFIRMAR CAMBIO IMPORTANTE\n\n` +
-            `Ingreso actual: $${this.monthlyIncome.toLocaleString()}\n` +
-            `Nuevo ingreso: $${newIncome.toLocaleString()}\n` +
-            `Cambio: ${changePercent.toFixed(0)}%\n\n` +
-            `¿Estás seguro de realizar este cambio?`
-        );
-        if (!confirmed) {
-          monthlyIncomeInput.value = this.monthlyIncome;
-          this.showToast('Cambio cancelado', 'info');
-          return;
-        }
+      // Preparar información de días desde último cambio
+      let daysAgo = '';
+      if (this.lastSalaryDate) {
+        const lastDate = new Date(this.lastSalaryDate);
+        const today = new Date();
+        const diffTime = Math.abs(today - lastDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        daysAgo = diffDays === 1 ? '\n📅 Registrado: hace 1 día' : `\n📅 Registrado: hace ${diffDays} días`;
       }
+
+      const changePercent = Math.abs(
+        ((newIncome - this.monthlyIncome) / this.monthlyIncome) * 100
+      );
+
+      const confirmed = confirm(
+        `⚠️ CAMBIO DE SUELDO\n\n` +
+          `Ya tienes un sueldo establecido:\n` +
+          `💰 Sueldo actual: $${this.monthlyIncome.toLocaleString()}${daysAgo}\n\n` +
+          `Nuevo sueldo: $${newIncome.toLocaleString()}\n` +
+          `Cambio: ${changePercent.toFixed(0)}%\n\n` +
+          `¿Estás seguro de cambiar el sueldo?\n` +
+          `Esto actualizará tu balance total.`
+      );
+
+      if (!confirmed) {
+        monthlyIncomeInput.value = this.monthlyIncome;
+        this.showToast('Cambio cancelado', 'info');
+        return;
+      }
+
       this.monthlyIncome = newIncome;
+      this.lastSalaryDate = new Date().toISOString().split('T')[0]; // Actualizar fecha del último sueldo
       localStorage.setItem(
         'financia_monthly_income',
         this.monthlyIncome.toString()
@@ -14905,42 +14934,32 @@ FinanceApp.prototype.setupBudgetListeners = function () {
 // ========================================
 
 FinanceApp.prototype.setupQuickExpenseListeners = function () {
-  // FAB button - Opens main quick actions menu
+  // FAB button - Toggles quick actions menu
   const fab = document.getElementById('fabQuickExpense');
-  const modal = document.getElementById('quickExpenseModal');
-  const closeBtn = document.getElementById('closeQuickExpenseModal');
+  const menu = document.getElementById('quickExpenseModal');
 
-  if (fab) {
-    fab.addEventListener('click', () => {
-      modal.classList.add('show');
-      document.body.style.overflow = 'hidden';
+  if (fab && menu) {
+    fab.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menu.classList.toggle('hidden');
     });
   }
 
-  if (closeBtn) {
-    closeBtn.addEventListener('click', () => {
-      modal.classList.remove('show');
-      document.body.style.overflow = '';
-    });
-  }
-
-  // Close on backdrop click
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.classList.remove('show');
-        document.body.style.overflow = '';
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (menu && !menu.classList.contains('hidden')) {
+      if (!e.target.closest('.fab-quick-menu') && !e.target.closest('.fab')) {
+        menu.classList.add('hidden');
       }
-    });
-  }
+    }
+  });
 
   // === OPTION 1: REGISTRAR GASTO (Full Form) ===
   const fullExpenseBtn = document.getElementById('quickActionFullExpense');
   if (fullExpenseBtn) {
     fullExpenseBtn.addEventListener('click', () => {
-      // Close modal
-      modal.classList.remove('show');
-      document.body.style.overflow = '';
+      // Close menu
+      menu.classList.add('hidden');
 
       // Open expenses section
       this.showSection('expenses');
@@ -14965,8 +14984,9 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
 
   if (fastModeBtn) {
     fastModeBtn.addEventListener('click', () => {
-      modal.classList.remove('show');
+      menu.classList.add('hidden');
       fastModeModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
       setTimeout(() => document.getElementById('fastAmount')?.focus(), 100);
     });
   }
@@ -15001,8 +15021,9 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
 
   if (salaryBtn) {
     salaryBtn.addEventListener('click', () => {
-      modal.classList.remove('show');
+      menu.classList.add('hidden');
       salaryModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
 
       // Set current date
       const dateInput = document.getElementById('salaryDate');
@@ -15010,7 +15031,39 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
         dateInput.value = new Date().toISOString().split('T')[0];
       }
 
+      // Pre-llenar con el sueldo actual si existe
+      const salaryInput = document.getElementById('salaryAmount');
+      if (salaryInput && this.monthlyIncome) {
+        salaryInput.value = this.monthlyIncome;
+      }
+
       setTimeout(() => document.getElementById('salaryAmount')?.focus(), 100);
+    });
+  }
+
+  // Agregar formateo en tiempo real al input de sueldo
+  const salaryInput = document.getElementById('salaryAmount');
+  if (salaryInput && !salaryInput.dataset.listenerAdded) {
+    salaryInput.dataset.listenerAdded = 'true';
+
+    salaryInput.addEventListener('input', (e) => {
+      // Remover cualquier caracter que no sea número
+      let value = e.target.value.replace(/[^\d]/g, '');
+
+      // Formatear con separadores de miles (puntos)
+      if (value) {
+        value = parseInt(value, 10).toLocaleString('es-CO');
+      }
+
+      e.target.value = value;
+    });
+
+    salaryInput.addEventListener('blur', (e) => {
+      // Al salir del campo, asegurar formato correcto
+      let value = e.target.value.replace(/[^\d]/g, '');
+      if (value) {
+        e.target.value = parseInt(value, 10).toLocaleString('es-CO');
+      }
     });
   }
 
@@ -15044,8 +15097,9 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
 
   if (extraBtn) {
     extraBtn.addEventListener('click', () => {
-      modal.classList.remove('show');
+      menu.classList.add('hidden');
       extraModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
 
       // Set current date
       const dateInput = document.getElementById('extraDate');
@@ -15054,6 +15108,32 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
       }
 
       setTimeout(() => document.getElementById('extraAmount')?.focus(), 100);
+    });
+  }
+
+  // Agregar formateo en tiempo real al input de entrada extra
+  const extraInput = document.getElementById('extraAmount');
+  if (extraInput && !extraInput.dataset.listenerAdded) {
+    extraInput.dataset.listenerAdded = 'true';
+
+    extraInput.addEventListener('input', (e) => {
+      // Remover cualquier caracter que no sea número
+      let value = e.target.value.replace(/[^\d]/g, '');
+
+      // Formatear con separadores de miles (puntos)
+      if (value) {
+        value = parseInt(value, 10).toLocaleString('es-CO');
+      }
+
+      e.target.value = value;
+    });
+
+    extraInput.addEventListener('blur', (e) => {
+      // Al salir del campo, asegurar formato correcto
+      let value = e.target.value.replace(/[^\d]/g, '');
+      if (value) {
+        e.target.value = parseInt(value, 10).toLocaleString('es-CO');
+      }
     });
   }
 
@@ -15111,44 +15191,6 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
     });
   }
 
-  // Mode Toggle Buttons
-  // Mode selector removed - only quick mode available now
-
-  // Autocomplete setup for quick description
-  const quickDescInput = document.getElementById('quickDescription');
-  if (quickDescInput) {
-    quickDescInput.addEventListener('input', (e) => {
-      this.handleQuickAutocomplete(e.target.value);
-    });
-
-    // Hide autocomplete when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.input-with-autocomplete')) {
-        document.getElementById('quickAutocomplete')?.classList.add('hidden');
-      }
-    });
-  }
-
-  // Quick expense form - Solo agregar listener si no existe
-  const form = document.getElementById('quickExpenseForm');
-  if (form && !form.dataset.listenerAdded) {
-    form.dataset.listenerAdded = 'true';
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      this.handleQuickExpenseSubmit();
-    });
-  }
-
-  // Save as template button - Solo agregar listener si no existe
-  const saveTemplateBtn = document.getElementById('saveAsTemplateBtn');
-  if (saveTemplateBtn && !saveTemplateBtn.dataset.listenerAdded) {
-    saveTemplateBtn.dataset.listenerAdded = 'true';
-
-    saveTemplateBtn.addEventListener('click', () => {
-      this.saveExpenseTemplate();
-    });
-  }
 };
 
 // ========================================
@@ -15157,92 +15199,21 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
 
 FinanceApp.prototype.setupInstagramQuickActions = function () {
   const fabInstagram = document.getElementById('fabInstagram');
-  const quickActionsMenu = document.getElementById('quickActionsMenu');
-  const closeBtn = document.getElementById('closeQuickActions');
-  const backdrop = document.getElementById('quickActionsBackdrop');
 
-  // Open menu
+  // Ahora el botón fabInstagram toggle el menú de 4 opciones
   if (fabInstagram) {
-    fabInstagram.addEventListener('click', () => {
-      if (quickActionsMenu) {
-        quickActionsMenu.classList.remove('hidden');
+    fabInstagram.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const menu = document.getElementById('quickExpenseModal');
+      if (menu) {
+        menu.classList.toggle('hidden');
       }
     });
   }
+};
 
-  // Close menu
-  const closeMenu = () => {
-    if (quickActionsMenu) {
-      quickActionsMenu.classList.add('hidden');
-    }
-  };
-
-  if (closeBtn) {
-    closeBtn.addEventListener('click', closeMenu);
-  }
-
-  if (backdrop) {
-    backdrop.addEventListener('click', closeMenu);
-  }
-
-  // Action items
-  const actionItems = document.querySelectorAll('.quick-action-item');
-  actionItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      const action = item.getAttribute('data-action');
-      closeMenu();
-
-      setTimeout(() => {
-        switch (action) {
-          case 'expense':
-            // Open quick expense modal directly
-            this.openQuickExpenseModal();
-            break;
-
-          case 'goal':
-            // Navigate to goals section
-            this.showSection('goals');
-            setTimeout(() => {
-              document.getElementById('goalName')?.focus();
-            }, 300);
-            break;
-
-          case 'leisure':
-            // Navigate to budget section and focus on leisure form
-            this.showSection('budget');
-            setTimeout(() => {
-              document.getElementById('leisureItemDescription')?.focus();
-            }, 300);
-            break;
-
-          case 'shopping':
-            // Navigate to shopping section
-            this.showSection('shopping');
-            setTimeout(() => {
-              document.getElementById('shoppingItem')?.focus();
-            }, 300);
-            break;
-
-          case 'income':
-            // Navigate to config section for income
-            this.showSection('config');
-            setTimeout(() => {
-              // Scroll to income section
-              const incomeSection = document.getElementById('incomeForm');
-              if (incomeSection) {
-                incomeSection.scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'start',
-                });
-              }
-            }, 300);
-            break;
-        }
-      }, 200); // Small delay to let menu close animation finish
-    });
-  });
-
-  // Banner cover customization
+// Banner cover and mobile avatar setup
+FinanceApp.prototype.setupMobileBannerListeners = function () {
   const mobileBannerCover = document.getElementById('mobileBannerCover');
   if (mobileBannerCover) {
     mobileBannerCover.addEventListener('click', (e) => {
@@ -15579,16 +15550,74 @@ FinanceApp.prototype.handleFastModeSubmit = function () {
 
 // === NUEVA FUNCIÓN: REGISTRAR SUELDO ===
 FinanceApp.prototype.handleSalarySubmit = function () {
-  const amount = parseFloat(document.getElementById('salaryAmount').value);
+  const amountInput = document.getElementById('salaryAmount').value;
+  // Limpiar separadores de miles (puntos, comas, espacios) antes de parsear
+  const cleanValue = amountInput.replace(/[^\d]/g, '');
+  const amount = parseInt(cleanValue, 10);
   const date = document.getElementById('salaryDate').value;
 
-  if (!amount || !date) {
+  console.log('🔍 Procesando sueldo:', {
+    inputValue: amountInput,
+    cleanValue: cleanValue,
+    parsedAmount: amount,
+    date: date
+  });
+
+  if (!amountInput || !date) {
     this.showToast('Por favor completa todos los campos', 'error');
     return;
   }
 
-  // Actualizar ingreso mensual
+  if (isNaN(amount) || amount <= 0) {
+    this.showToast('⚠️ Por favor ingresa un monto válido mayor a 0', 'error');
+    return;
+  }
+
+  if (amount < 100) {
+    this.showToast('⚠️ El sueldo parece muy bajo. ¿Estás seguro? Mínimo recomendado: $100', 'error');
+    return;
+  }
+
+  // Verificar si ya existe un sueldo registrado
+  if (this.monthlyIncome && this.monthlyIncome > 0) {
+    // Calcular días desde el último cambio (si tenemos la fecha guardada)
+    const lastSalaryDate = this.lastSalaryDate || 'fecha desconocida';
+    let daysAgo = '';
+
+    if (this.lastSalaryDate) {
+      const lastDate = new Date(this.lastSalaryDate);
+      const today = new Date();
+      const diffTime = Math.abs(today - lastDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      daysAgo = diffDays === 1 ? 'hace 1 día' : `hace ${diffDays} días`;
+    }
+
+    // Mostrar confirmación
+    const confirmed = confirm(
+      `⚠️ CAMBIO DE SUELDO\n\n` +
+      `Ya tienes un sueldo establecido:\n` +
+      `💰 Sueldo actual: $${this.monthlyIncome.toLocaleString()}\n` +
+      `📅 Registrado: ${daysAgo}\n\n` +
+      `Nuevo sueldo: $${amount.toLocaleString()}\n\n` +
+      `¿Estás seguro de cambiar el sueldo?\n` +
+      `Esto actualizará tu balance total.`
+    );
+
+    if (!confirmed) {
+      return; // Usuario canceló el cambio
+    }
+  }
+
+  // Actualizar ingreso mensual (balance total)
   this.monthlyIncome = amount;
+  this.lastSalaryDate = date; // Guardar la fecha del último sueldo
+
+  console.log('✅ Sueldo actualizado:', {
+    monthlyIncome: this.monthlyIncome,
+    lastSalaryDate: this.lastSalaryDate,
+    getTotalIncome: this.getTotalIncome()
+  });
+
   this.saveData();
 
   // Cerrar modal
@@ -15597,9 +15626,13 @@ FinanceApp.prototype.handleSalarySubmit = function () {
   document.body.style.overflow = '';
   document.getElementById('salaryForm').reset();
 
-  // Actualizar vistas
-  if (document.getElementById('dashboard').classList.contains('active')) {
-    this.renderDashboard();
+  // Actualizar vistas - SIEMPRE actualizar el dashboard
+  this.renderDashboard();
+
+  // Si estamos en otra sección, también actualizar
+  const activeSection = document.querySelector('.content-section.active');
+  if (activeSection && activeSection.id === 'config') {
+    this.renderConfigSection();
   }
 
   this.showToast(`💰 Sueldo de $${amount.toLocaleString()} registrado correctamente`, 'success');
@@ -15607,17 +15640,63 @@ FinanceApp.prototype.handleSalarySubmit = function () {
 
 // === NUEVA FUNCIÓN: ENTRADA EXTRA ===
 FinanceApp.prototype.handleExtraIncomeSubmit = function () {
-  const amount = parseFloat(document.getElementById('extraAmount').value);
+  const amountInput = document.getElementById('extraAmount').value;
+  // Limpiar separadores de miles (puntos, comas, espacios) antes de parsear
+  const cleanValue = amountInput.replace(/[^\d]/g, '');
+  const amount = parseInt(cleanValue, 10);
   const description = document.getElementById('extraDescription').value.trim();
   const date = document.getElementById('extraDate').value;
 
-  if (!amount || !description || !date) {
+  console.log('🔍 Procesando entrada extra:', {
+    inputValue: amountInput,
+    cleanValue: cleanValue,
+    parsedAmount: amount,
+    description: description,
+    date: date
+  });
+
+  if (!amountInput || !description || !date) {
     this.showToast('Por favor completa todos los campos', 'error');
     return;
   }
 
-  // Sumar al ingreso mensual
-  this.monthlyIncome = (this.monthlyIncome || 0) + amount;
+  if (isNaN(amount) || amount <= 0) {
+    this.showToast('⚠️ Por favor ingresa un monto válido mayor a 0', 'error');
+    return;
+  }
+
+  // Guardar el balance anterior para mostrar el cambio
+  const previousBalance = this.monthlyIncome || 0;
+
+  // Sumar al ingreso mensual (balance total)
+  this.monthlyIncome = previousBalance + amount;
+
+  // Guardar en historial de entradas extras (para futuras referencias)
+  if (!this.extraIncomeHistory) {
+    this.extraIncomeHistory = [];
+  }
+
+  this.extraIncomeHistory.push({
+    id: Date.now(),
+    amount: amount,
+    description: description,
+    date: date,
+    timestamp: Date.now()
+  });
+
+  // Limitar historial a últimas 50 entradas
+  if (this.extraIncomeHistory.length > 50) {
+    this.extraIncomeHistory = this.extraIncomeHistory.slice(-50);
+  }
+
+  console.log('✅ Entrada extra agregada:', {
+    amount: amount,
+    description: description,
+    previousBalance: previousBalance,
+    newBalance: this.monthlyIncome,
+    getTotalIncome: this.getTotalIncome()
+  });
+
   this.saveData();
 
   // Cerrar modal
@@ -15626,12 +15705,21 @@ FinanceApp.prototype.handleExtraIncomeSubmit = function () {
   document.body.style.overflow = '';
   document.getElementById('extraIncomeForm').reset();
 
-  // Actualizar vistas
-  if (document.getElementById('dashboard').classList.contains('active')) {
-    this.renderDashboard();
+  // Actualizar vistas - SIEMPRE actualizar el dashboard
+  this.renderDashboard();
+
+  // Si estamos en otra sección, también actualizar
+  const activeSection = document.querySelector('.content-section.active');
+  if (activeSection && activeSection.id === 'config') {
+    this.renderConfigSection();
   }
 
-  this.showToast(`✨ Entrada extra de $${amount.toLocaleString()} (${description}) agregada al sueldo`, 'success');
+  // Mostrar toast con información detallada
+  this.showToast(
+    `✨ Entrada extra agregada: $${amount.toLocaleString()} (${description})\n` +
+    `Balance: $${previousBalance.toLocaleString()} → $${this.monthlyIncome.toLocaleString()}`,
+    'success'
+  );
 };
 
 FinanceApp.prototype.saveExpenseTemplate = function () {
