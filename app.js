@@ -6710,6 +6710,7 @@ class FinanceApp {
       '',
       { amount, category, description, user }
     );
+    this.updateSpecificField('expenses', this.expenses);
 
     this.saveData();
 
@@ -6731,7 +6732,9 @@ class FinanceApp {
     this.updateLastTransaction();
     this.checkAchievements();
     this.updateExpenseStats(); // Update expense form stats
-    this.showToast('Gasto registrado exitosamente', 'success');
+
+    // Toast personalizado con el monto
+    this.showToast(`💰 Gasto de $${amount.toLocaleString()} registrado correctamente`, 'success');
 
     document.getElementById('expenseForm').reset();
     this.setupCurrentDate();
@@ -8605,6 +8608,24 @@ class FinanceApp {
         content: 'Lo siento, tuve un problema para procesar tu respuesta.',
       });
       this.renderChatHistory();
+    }
+  }
+  async updateSpecificField(fieldName, data) {
+    if (!this.currentUser || this.currentUser === 'anonymous') return;
+
+    const firestoreDocId = this.sharedAccountId || this.currentUser;
+    const userDocRef = FB.doc(FB.db, 'usuarios', firestoreDocId);
+
+    try {
+      // updateDoc solo envía el campo especificado. ¡Mucho más eficiente!
+      await FB.updateDoc(userDocRef, {
+        [fieldName]: data,
+      });
+      console.log(`✅ Campo '${fieldName}' actualizado eficientemente.`);
+    } catch (error) {
+      console.error(`Error al actualizar el campo '${fieldName}':`, error);
+      // Si falla, puedes intentar un guardado completo como respaldo
+      await this.saveData();
     }
   }
 } // <-- FIN DE LA CLASE FINANCEAPP
@@ -14884,14 +14905,15 @@ FinanceApp.prototype.setupBudgetListeners = function () {
 // ========================================
 
 FinanceApp.prototype.setupQuickExpenseListeners = function () {
-  // FAB button
+  // FAB button - Opens main quick actions menu
   const fab = document.getElementById('fabQuickExpense');
   const modal = document.getElementById('quickExpenseModal');
   const closeBtn = document.getElementById('closeQuickExpenseModal');
 
   if (fab) {
     fab.addEventListener('click', () => {
-      this.openQuickExpenseModal();
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
     });
   }
 
@@ -14909,6 +14931,150 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
         modal.classList.remove('show');
         document.body.style.overflow = '';
       }
+    });
+  }
+
+  // === OPTION 1: REGISTRAR GASTO (Full Form) ===
+  const fullExpenseBtn = document.getElementById('quickActionFullExpense');
+  if (fullExpenseBtn) {
+    fullExpenseBtn.addEventListener('click', () => {
+      // Close modal
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+
+      // Open expenses section
+      this.showSection('expenses');
+
+      // Scroll to form and focus
+      setTimeout(() => {
+        const mainForm = document.getElementById('expenseForm');
+        if (mainForm) {
+          mainForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          document.getElementById('amount')?.focus();
+        }
+      }, 300);
+    });
+  }
+
+  // === OPTION 2: MODO RÁPIDO ===
+  const fastModeBtn = document.getElementById('quickActionFastMode');
+  const fastModeModal = document.getElementById('fastModeModal');
+  const closeFastMode = document.getElementById('closeFastModeModal');
+  const cancelFastMode = document.getElementById('cancelFastMode');
+  const fastModeForm = document.getElementById('fastModeForm');
+
+  if (fastModeBtn) {
+    fastModeBtn.addEventListener('click', () => {
+      modal.classList.remove('show');
+      fastModeModal.classList.add('show');
+      setTimeout(() => document.getElementById('fastAmount')?.focus(), 100);
+    });
+  }
+
+  if (closeFastMode) {
+    closeFastMode.addEventListener('click', () => {
+      fastModeModal.classList.remove('show');
+      document.body.style.overflow = '';
+    });
+  }
+
+  if (cancelFastMode) {
+    cancelFastMode.addEventListener('click', () => {
+      fastModeModal.classList.remove('show');
+      document.body.style.overflow = '';
+    });
+  }
+
+  if (fastModeForm) {
+    fastModeForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.handleFastModeSubmit();
+    });
+  }
+
+  // === OPTION 3: REGISTRAR SUELDO ===
+  const salaryBtn = document.getElementById('quickActionSalary');
+  const salaryModal = document.getElementById('salaryModal');
+  const closeSalary = document.getElementById('closeSalaryModal');
+  const cancelSalary = document.getElementById('cancelSalary');
+  const salaryForm = document.getElementById('salaryForm');
+
+  if (salaryBtn) {
+    salaryBtn.addEventListener('click', () => {
+      modal.classList.remove('show');
+      salaryModal.classList.add('show');
+
+      // Set current date
+      const dateInput = document.getElementById('salaryDate');
+      if (dateInput) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+      }
+
+      setTimeout(() => document.getElementById('salaryAmount')?.focus(), 100);
+    });
+  }
+
+  if (closeSalary) {
+    closeSalary.addEventListener('click', () => {
+      salaryModal.classList.remove('show');
+      document.body.style.overflow = '';
+    });
+  }
+
+  if (cancelSalary) {
+    cancelSalary.addEventListener('click', () => {
+      salaryModal.classList.remove('show');
+      document.body.style.overflow = '';
+    });
+  }
+
+  if (salaryForm) {
+    salaryForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.handleSalarySubmit();
+    });
+  }
+
+  // === OPTION 4: ENTRADA EXTRA ===
+  const extraBtn = document.getElementById('quickActionExtraIncome');
+  const extraModal = document.getElementById('extraIncomeModal');
+  const closeExtra = document.getElementById('closeExtraIncomeModal');
+  const cancelExtra = document.getElementById('cancelExtra');
+  const extraForm = document.getElementById('extraIncomeForm');
+
+  if (extraBtn) {
+    extraBtn.addEventListener('click', () => {
+      modal.classList.remove('show');
+      extraModal.classList.add('show');
+
+      // Set current date
+      const dateInput = document.getElementById('extraDate');
+      if (dateInput) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+      }
+
+      setTimeout(() => document.getElementById('extraAmount')?.focus(), 100);
+    });
+  }
+
+  if (closeExtra) {
+    closeExtra.addEventListener('click', () => {
+      extraModal.classList.remove('show');
+      document.body.style.overflow = '';
+    });
+  }
+
+  if (cancelExtra) {
+    cancelExtra.addEventListener('click', () => {
+      extraModal.classList.remove('show');
+      document.body.style.overflow = '';
+    });
+  }
+
+  if (extraForm) {
+    extraForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.handleExtraIncomeSubmit();
     });
   }
 
@@ -14946,36 +15112,7 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
   }
 
   // Mode Toggle Buttons
-  const quickModeBtn = document.getElementById('quickModeBtn');
-  const normalModeBtn = document.getElementById('normalModeBtn');
-  const normalModeFields = document.querySelector('.normal-mode-fields');
-
-  if (quickModeBtn) {
-    quickModeBtn.addEventListener('click', () => {
-      quickModeBtn.classList.add('active');
-      normalModeBtn?.classList.remove('active');
-      normalModeFields?.classList.add('hidden');
-      // Make necessity not required in quick mode
-      document.getElementById('quickNecessity')?.removeAttribute('required');
-      document.getElementById('quickDate')?.removeAttribute('required');
-      document.getElementById('quickUser')?.removeAttribute('required');
-    });
-  }
-
-  if (normalModeBtn) {
-    normalModeBtn.addEventListener('click', () => {
-      normalModeBtn.classList.add('active');
-      quickModeBtn?.classList.remove('active');
-      normalModeFields?.classList.remove('hidden');
-      // Make fields required in normal mode
-      document
-        .getElementById('quickNecessity')
-        ?.setAttribute('required', 'required');
-      document
-        .getElementById('quickDate')
-        ?.setAttribute('required', 'required');
-    });
-  }
+  // Mode selector removed - only quick mode available now
 
   // Autocomplete setup for quick description
   const quickDescInput = document.getElementById('quickDescription');
@@ -15302,24 +15439,6 @@ FinanceApp.prototype.openQuickExpenseModal = function () {
     // Setup quick user selection handler
     this.setupQuickUserHandler();
 
-    // Set default mode to NORMAL (gasto completo)
-    const quickModeBtn = document.getElementById('quickModeBtn');
-    const normalModeBtn = document.getElementById('normalModeBtn');
-    const normalModeFields = document.querySelector('.normal-mode-fields');
-
-    if (normalModeBtn && quickModeBtn && normalModeFields) {
-      // Activate normal mode
-      normalModeBtn.classList.add('active');
-      quickModeBtn.classList.remove('active');
-      normalModeFields.classList.remove('hidden');
-
-      // No marcar como required - la validación se hace en JavaScript
-      // Esto evita que el navegador bloquee el submit
-      document.getElementById('quickNecessity')?.removeAttribute('required');
-      document.getElementById('quickDate')?.removeAttribute('required');
-      document.getElementById('quickUser')?.removeAttribute('required');
-    }
-
     // Focus on amount input
     setTimeout(() => {
       document.getElementById('quickAmount')?.focus();
@@ -15414,6 +15533,105 @@ FinanceApp.prototype.handleQuickExpenseSubmit = function () {
   this.updateExpenseStats(); // Update expense form stats
   this.showToast('Gasto registrado exitosamente', 'success');
   console.log('✅ Gasto registrado completamente');
+};
+
+// === NUEVA FUNCIÓN: MODO RÁPIDO (solo monto y descripción) ===
+FinanceApp.prototype.handleFastModeSubmit = function () {
+  const amount = parseFloat(document.getElementById('fastAmount').value);
+  const description = document.getElementById('fastDescription').value.trim();
+
+  if (!amount || !description) {
+    this.showToast('Por favor completa todos los campos', 'error');
+    return;
+  }
+
+  // Crear gasto con valores mínimos (para editar después)
+  const expense = {
+    id: Date.now(),
+    amount: amount,
+    description: description,
+    category: 'Otros', // Categoría por defecto
+    necessity: 'Necesario', // Necesidad por defecto
+    date: new Date().toISOString().split('T')[0],
+    user: this.currentUser || this.defaultUser || 'Sin usuario',
+    timestamp: Date.now(),
+    quickMode: true // Marcador para saber que fue creado en modo rápido
+  };
+
+  this.expenses.push(expense);
+  this.saveData();
+
+  // Cerrar modal
+  const modal = document.getElementById('fastModeModal');
+  modal.classList.remove('show');
+  document.body.style.overflow = '';
+  document.getElementById('fastModeForm').reset();
+
+  // Actualizar vistas
+  this.renderExpenses();
+  this.updateExpenseStats();
+  if (document.getElementById('dashboard').classList.contains('active')) {
+    this.renderDashboard();
+  }
+
+  this.showToast(`Gasto rápido de $${amount.toLocaleString()} registrado. Recuerda editarlo después.`, 'success');
+};
+
+// === NUEVA FUNCIÓN: REGISTRAR SUELDO ===
+FinanceApp.prototype.handleSalarySubmit = function () {
+  const amount = parseFloat(document.getElementById('salaryAmount').value);
+  const date = document.getElementById('salaryDate').value;
+
+  if (!amount || !date) {
+    this.showToast('Por favor completa todos los campos', 'error');
+    return;
+  }
+
+  // Actualizar ingreso mensual
+  this.monthlyIncome = amount;
+  this.saveData();
+
+  // Cerrar modal
+  const modal = document.getElementById('salaryModal');
+  modal.classList.remove('show');
+  document.body.style.overflow = '';
+  document.getElementById('salaryForm').reset();
+
+  // Actualizar vistas
+  if (document.getElementById('dashboard').classList.contains('active')) {
+    this.renderDashboard();
+  }
+
+  this.showToast(`💰 Sueldo de $${amount.toLocaleString()} registrado correctamente`, 'success');
+};
+
+// === NUEVA FUNCIÓN: ENTRADA EXTRA ===
+FinanceApp.prototype.handleExtraIncomeSubmit = function () {
+  const amount = parseFloat(document.getElementById('extraAmount').value);
+  const description = document.getElementById('extraDescription').value.trim();
+  const date = document.getElementById('extraDate').value;
+
+  if (!amount || !description || !date) {
+    this.showToast('Por favor completa todos los campos', 'error');
+    return;
+  }
+
+  // Sumar al ingreso mensual
+  this.monthlyIncome = (this.monthlyIncome || 0) + amount;
+  this.saveData();
+
+  // Cerrar modal
+  const modal = document.getElementById('extraIncomeModal');
+  modal.classList.remove('show');
+  document.body.style.overflow = '';
+  document.getElementById('extraIncomeForm').reset();
+
+  // Actualizar vistas
+  if (document.getElementById('dashboard').classList.contains('active')) {
+    this.renderDashboard();
+  }
+
+  this.showToast(`✨ Entrada extra de $${amount.toLocaleString()} (${description}) agregada al sueldo`, 'success');
 };
 
 FinanceApp.prototype.saveExpenseTemplate = function () {

@@ -4769,54 +4769,87 @@
       </div>
     </div>
 
-    <!-- Quick Expense Modal -->
+    <!-- Quick Actions Modal -->
     <div class="modal" id="quickExpenseModal">
       <div class="modal__content modal--sm">
         <div class="modal__header">
-          <h2><i class="fas fa-bolt"></i> Agregar Gasto</h2>
+          <h2><i class="fas fa-plus-circle"></i> Acciones Rápidas</h2>
           <button class="modal__close" id="closeQuickExpenseModal">
             <i class="fas fa-times"></i>
           </button>
         </div>
         <div class="modal__body">
-          <!-- Mode Selector -->
-          <div class="expense-mode-selector">
-            <button
-              type="button"
-              class="mode-btn active"
-              data-mode="quick"
-              id="quickModeBtn"
-            >
-              <i class="fas fa-bolt"></i>
-              <span>Modo Rápido</span>
-              <small>Para personas sin tiempo</small>
+          <div class="quick-action-menu">
+            <!-- Opción 1: Registrar Gasto (Principal) -->
+            <button class="quick-action-option quick-action-primary" id="quickActionFullExpense">
+              <div class="quick-action-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <i class="fas fa-receipt"></i>
+              </div>
+              <div class="quick-action-content">
+                <h3>Registrar Gasto</h3>
+                <p>Formulario completo con todos los detalles</p>
+              </div>
+              <i class="fas fa-chevron-right quick-action-arrow"></i>
             </button>
-            <button
-              type="button"
-              class="mode-btn"
-              data-mode="normal"
-              id="normalModeBtn"
-            >
-              <i class="fas fa-list-ul"></i>
-              <span>Registrar Gasto</span>
-              <small>Formulario completo</small>
+
+            <!-- Opción 2: Modo Rápido -->
+            <button class="quick-action-option" id="quickActionFastMode">
+              <div class="quick-action-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <i class="fas fa-bolt"></i>
+              </div>
+              <div class="quick-action-content">
+                <h3>Modo Rápido</h3>
+                <p>Solo monto y descripción (editar después)</p>
+              </div>
+              <i class="fas fa-chevron-right quick-action-arrow"></i>
+            </button>
+
+            <!-- Opción 3: Registrar Sueldo -->
+            <button class="quick-action-option" id="quickActionSalary">
+              <div class="quick-action-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <i class="fas fa-wallet"></i>
+              </div>
+              <div class="quick-action-content">
+                <h3>Registrar Sueldo</h3>
+                <p>Ingreso mensual principal</p>
+              </div>
+              <i class="fas fa-chevron-right quick-action-arrow"></i>
+            </button>
+
+            <!-- Opción 4: Entrada Extra -->
+            <button class="quick-action-option" id="quickActionExtraIncome">
+              <div class="quick-action-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <i class="fas fa-coins"></i>
+              </div>
+              <div class="quick-action-content">
+                <h3>Entrada Extra</h3>
+                <p>Ingreso adicional que suma al sueldo</p>
+              </div>
+              <i class="fas fa-chevron-right quick-action-arrow"></i>
             </button>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <!-- Expense Templates (Quick Mode) -->
-          <div class="quick-templates" id="quickTemplates">
-            <!-- Se llenará dinámicamente con plantillas -->
-          </div>
-
-          <!-- Quick Expense Form -->
-          <form id="quickExpenseForm">
+    <!-- Modal Modo Rápido (solo monto y descripción) -->
+    <div class="modal" id="fastModeModal">
+      <div class="modal__content modal--sm">
+        <div class="modal__header">
+          <h2><i class="fas fa-bolt"></i> Modo Rápido</h2>
+          <button class="modal__close" id="closeFastModeModal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal__body">
+          <form id="fastModeForm">
             <div class="form-group">
-              <label class="form-label" for="quickAmount">
+              <label class="form-label" for="fastAmount">
                 <i class="fas fa-dollar-sign"></i> Monto
               </label>
               <input
                 type="number"
-                id="quickAmount"
+                id="fastAmount"
                 class="form-control form-control--lg"
                 placeholder="0.00"
                 step="0.01"
@@ -4827,113 +4860,141 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="quickDescription">
+              <label class="form-label" for="fastDescription">
                 <i class="fas fa-pencil-alt"></i> Descripción
               </label>
-              <div class="input-with-autocomplete">
-                <input
-                  type="text"
-                  id="quickDescription"
-                  class="form-control"
-                  placeholder="Ej. Mayonesa, Café, Uber..."
-                  autocomplete="off"
-                  required
-                />
-                <div
-                  class="autocomplete-suggestions hidden"
-                  id="quickAutocomplete"
-                ></div>
-              </div>
+              <input
+                type="text"
+                id="fastDescription"
+                class="form-control"
+                placeholder="Ej. Café, Uber, Compras..."
+                required
+              />
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+              <button type="button" class="btn btn--secondary" id="cancelFastMode" style="flex: 1;">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn--primary" style="flex: 1;">
+                <i class="fas fa-check"></i> Guardar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Registrar Sueldo -->
+    <div class="modal" id="salaryModal">
+      <div class="modal__content modal--sm">
+        <div class="modal__header">
+          <h2><i class="fas fa-wallet"></i> Registrar Sueldo</h2>
+          <button class="modal__close" id="closeSalaryModal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal__body">
+          <form id="salaryForm">
+            <div class="form-group">
+              <label class="form-label" for="salaryAmount">
+                <i class="fas fa-dollar-sign"></i> Monto del Sueldo
+              </label>
+              <input
+                type="number"
+                id="salaryAmount"
+                class="form-control form-control--lg"
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                required
+                autofocus
+              />
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="quickCategory">
-                <i class="fas fa-tag"></i> Categoría
+              <label class="form-label" for="salaryDate">
+                <i class="fas fa-calendar"></i> Fecha
               </label>
-              <select id="quickCategory" class="form-control" required>
-                <option value="">Selecciona una categoría</option>
-                <option value="Alimentación">🍽️ Alimentación</option>
-                <option value="Transporte">🚌 Transporte</option>
-                <option value="Entretenimiento">🎬 Entretenimiento</option>
-                <option value="Salud">❤️ Salud</option>
-                <option value="Servicios">🔧 Servicios</option>
-                <option value="Compras">🛍️ Compras</option>
-                <option value="Otros">📦 Otros</option>
-              </select>
+              <input
+                type="date"
+                id="salaryDate"
+                class="form-control"
+                required
+              />
             </div>
 
-            <!-- Additional Fields (Normal Mode Only) -->
-            <div class="normal-mode-fields hidden">
-              <div class="form-group">
-                <label class="form-label" for="quickNecessity">
-                  <i class="fas fa-chart-line"></i> Prioridad
-                </label>
-                <select id="quickNecessity" class="form-control">
-                  <option value="">Nivel de necesidad</option>
-                  <option value="Muy Necesario">
-                    ⭐⭐⭐⭐⭐ Muy Indispensable
-                  </option>
-                  <option value="Necesario">⭐⭐⭐⭐ Muy Necesario</option>
-                  <option value="Poco Necesario">⭐⭐⭐ Necesario</option>
-                  <option value="No Necesario">⭐⭐ Poco Necesario</option>
-                  <option value="Compra por Impulso">⭐ Nada Necesario</option>
-                  <option value="Malgasto">❌ Malgasto/Arrepentimiento</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="quickDate">
-                  <i class="fas fa-calendar-alt"></i> Fecha
-                </label>
-                <input type="date" id="quickDate" class="form-control" />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="quickUser">
-                  <i class="fas fa-user"></i> Usuario
-                </label>
-                <select id="quickUser" class="form-control">
-                  <option value="">Sin asignar</option>
-                  <option value="__add_new__">+ Añadir usuario</option>
-                </select>
-              </div>
-
-              <!-- New User Input for Quick Mode (Hidden by default) -->
-              <div class="form-group hidden" id="quickNewUserGroup">
-                <label class="form-label">
-                  <i class="fas fa-user-plus"></i>
-                  Nombre del nuevo usuario
-                </label>
-                <div style="display: flex; gap: 8px; align-items: center">
-                  <input
-                    type="text"
-                    id="quickNewUserName"
-                    class="form-control"
-                    placeholder="Nombre del usuario"
-                    style="flex: 1"
-                  />
-                  <button
-                    type="button"
-                    class="btn btn--icon btn--primary"
-                    id="quickSaveNewUserBtn"
-                    title="Guardar usuario"
-                  >
-                    <i class="fas fa-check"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div class="quick-actions">
-              <button
-                type="button"
-                class="btn btn--secondary"
-                id="saveAsTemplateBtn"
-              >
-                <i class="fas fa-bookmark"></i> Guardar Plantilla
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+              <button type="button" class="btn btn--secondary" id="cancelSalary" style="flex: 1;">
+                Cancelar
               </button>
-              <button type="submit" class="btn btn--primary">
-                <i class="fas fa-check"></i> Guardar Gasto
+              <button type="submit" class="btn btn--primary" style="flex: 1;">
+                <i class="fas fa-check"></i> Guardar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Entrada Extra -->
+    <div class="modal" id="extraIncomeModal">
+      <div class="modal__content modal--sm">
+        <div class="modal__header">
+          <h2><i class="fas fa-coins"></i> Entrada Extra</h2>
+          <button class="modal__close" id="closeExtraIncomeModal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal__body">
+          <form id="extraIncomeForm">
+            <div class="form-group">
+              <label class="form-label" for="extraAmount">
+                <i class="fas fa-dollar-sign"></i> Monto
+              </label>
+              <input
+                type="number"
+                id="extraAmount"
+                class="form-control form-control--lg"
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                required
+                autofocus
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="extraDescription">
+                <i class="fas fa-pencil-alt"></i> Descripción
+              </label>
+              <input
+                type="text"
+                id="extraDescription"
+                class="form-control"
+                placeholder="Ej. Bono, Freelance, Venta..."
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="extraDate">
+                <i class="fas fa-calendar"></i> Fecha
+              </label>
+              <input
+                type="date"
+                id="extraDate"
+                class="form-control"
+                required
+              />
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+              <button type="button" class="btn btn--secondary" id="cancelExtra" style="flex: 1;">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn--primary" style="flex: 1;">
+                <i class="fas fa-check"></i> Guardar
               </button>
             </div>
           </form>
@@ -5333,5 +5394,6 @@
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="app.js"></script>
     <script type="module" src="avatar-sidebar.js"></script>
+    <script src="smart-forms.js"></script>
   </body>
 </html>
