@@ -225,6 +225,14 @@ class SmartDropdown {
       setTimeout(() => this.searchInput.focus(), 100);
     }
 
+    // BLOQUEAR SCROLL DEL BODY (Fix para móviles)
+    // Guardar el scroll actual para restaurarlo después
+    this.savedScrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${this.savedScrollY}px`;
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+
     // Cerrar otros dropdowns
     document.querySelectorAll('.custom-dropdown-menu.open').forEach(menu => {
       if (menu !== this.menu) {
@@ -244,6 +252,18 @@ class SmartDropdown {
     this.isOpen = false;
     this.trigger.classList.remove('open');
     this.menu.classList.remove('open');
+
+    // DESBLOQUEAR SCROLL DEL BODY
+    // Restaurar el scroll a la posición guardada
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+
+    // Restaurar la posición del scroll
+    if (typeof this.savedScrollY !== 'undefined') {
+      window.scrollTo(0, this.savedScrollY);
+    }
 
     if (this.searchInput) {
       this.searchInput.value = '';

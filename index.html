@@ -943,6 +943,10 @@
           <i class="fas fa-chart-pie"></i>
           <span>Análisis</span>
         </button>
+        <button class="nav-item requires-auth" data-section="history">
+          <i class="fas fa-history"></i>
+          <span>Historial</span>
+        </button>
         <button class="nav-item requires-auth" data-section="achievements">
           <i class="fas fa-trophy"></i>
           <span>Logros</span>
@@ -959,10 +963,12 @@
           <i class="fas fa-store"></i>
           <span>Tienda</span>
         </button>
-        <button class="nav-item requires-auth" data-section="audit">
+        <!-- COMENTADO: Historial de Auditoría antiguo (registra modificaciones/ediciones)
+             Puede ser útil en el futuro para un historial de cambios más técnico -->
+        <!-- <button class="nav-item requires-auth" data-section="audit">
           <i class="fas fa-history"></i>
           <span>Historial</span>
-        </button>
+        </button> -->
         <button class="nav-item requires-auth" data-section="config">
           <i class="fas fa-cog"></i>
           <span>Config</span>
@@ -1983,6 +1989,160 @@
         </div>
       </section>
 
+      <!-- History Section -->
+      <section id="history" class="section">
+        <div class="section-header">
+          <h1>📜 Historial de Transacciones</h1>
+          <p>Registro completo de todos tus movimientos financieros</p>
+        </div>
+
+        <!-- Filtros y Buscador -->
+        <div class="card">
+          <div class="card__header">
+            <h3><i class="fas fa-filter"></i> Filtros y Búsqueda</h3>
+          </div>
+          <div class="card__body">
+            <div class="history-filters">
+              <!-- Buscador -->
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fas fa-search"></i> Buscar
+                </label>
+                <input
+                  type="text"
+                  id="historySearch"
+                  class="form-control"
+                  placeholder="Buscar por descripción..."
+                />
+              </div>
+
+              <!-- Filtro por Tipo -->
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fas fa-tag"></i> Tipo
+                </label>
+                <select id="historyFilterType" class="form-control">
+                  <option value="todos">Todos</option>
+                  <option value="gasto">💸 Gastos</option>
+                  <option value="sueldo">💰 Sueldos</option>
+                  <option value="entrada_extra">✨ Entradas Extra</option>
+                  <option value="abono_meta">🎯 Abonos a Metas</option>
+                  <option value="retiro_meta">↩️ Retiros de Metas</option>
+                </select>
+              </div>
+
+              <!-- Filtro por Categoría (solo gastos) -->
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fas fa-list"></i> Categoría
+                </label>
+                <select id="historyFilterCategory" class="form-control">
+                  <option value="todas">Todas</option>
+                  <option value="Alimentación">Alimentación</option>
+                  <option value="Transporte">Transporte</option>
+                  <option value="Entretenimiento">Entretenimiento</option>
+                  <option value="Salud">Salud</option>
+                  <option value="Servicios">Servicios</option>
+                  <option value="Compras">Compras</option>
+                  <option value="Otros">Otros</option>
+                </select>
+              </div>
+
+              <!-- Ordenar -->
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fas fa-sort"></i> Ordenar por
+                </label>
+                <select id="historySort" class="form-control">
+                  <option value="date-desc">Fecha (más reciente)</option>
+                  <option value="date-asc">Fecha (más antiguo)</option>
+                  <option value="amount-desc">Monto (mayor a menor)</option>
+                  <option value="amount-asc">Monto (menor a mayor)</option>
+                  <option value="type">Tipo</option>
+                </select>
+              </div>
+
+              <!-- Rango de fechas -->
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fas fa-calendar"></i> Desde
+                </label>
+                <input
+                  type="date"
+                  id="historyDateFrom"
+                  class="form-control"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fas fa-calendar"></i> Hasta
+                </label>
+                <input
+                  type="date"
+                  id="historyDateTo"
+                  class="form-control"
+                />
+              </div>
+
+              <!-- Botones de acción -->
+              <div class="form-group" style="display: flex; gap: 10px;">
+                <button class="btn btn-primary" id="btnApplyHistoryFilters">
+                  <i class="fas fa-check"></i> Aplicar
+                </button>
+                <button class="btn btn-secondary" id="btnClearHistoryFilters">
+                  <i class="fas fa-times"></i> Limpiar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estadísticas Rápidas -->
+        <div class="stats-grid" style="margin-top: 20px;">
+          <div class="stat-card">
+            <div class="stat-icon-wrapper">
+              <i class="fas fa-list stat-icon"></i>
+            </div>
+            <div class="stat-details">
+              <h3>Total Transacciones</h3>
+              <p class="stat-value" id="historyTotalCount">0</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background: var(--color-success);">
+              <i class="fas fa-arrow-up stat-icon"></i>
+            </div>
+            <div class="stat-details">
+              <h3>Total Ingresos</h3>
+              <p class="stat-value" id="historyTotalIncome">$0</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background: var(--color-danger);">
+              <i class="fas fa-arrow-down stat-icon"></i>
+            </div>
+            <div class="stat-details">
+              <h3>Total Gastos</h3>
+              <p class="stat-value" id="historyTotalExpenses">$0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de Transacciones -->
+        <div class="card" style="margin-top: 20px;">
+          <div class="card__header">
+            <h3><i class="fas fa-history"></i> Transacciones</h3>
+            <span id="historyResultCount" class="badge">0 resultados</span>
+          </div>
+          <div class="card__body">
+            <div id="historyList"></div>
+          </div>
+        </div>
+      </section>
+
       <!-- Shopping List Section -->
       <section id="shopping" class="section">
         <div class="section-header">
@@ -2332,15 +2492,21 @@
         </div>
       </section>
 
-      <!-- Audit History Section -->
-      <section id="audit" class="section">
+      <!-- ========================================
+           COMENTADO: Audit History Section (Historial de Auditoría antiguo)
+           Este historial registra modificaciones/ediciones específicas a nivel técnico.
+           Se mantiene comentado para posible uso futuro como:
+           - Historial de cambios administrativos
+           - Log de ediciones por usuario
+           - Auditoría de modificaciones críticas
+           ======================================== -->
+      <!-- <section id="audit" class="section">
         <div class="section-header">
           <h1>Historial</h1>
           <p>Registro completo de todas las modificaciones realizadas</p>
         </div>
 
         <div class="audit-container">
-          <!-- Filtros de auditoría -->
           <div class="audit-filters">
             <div class="filter-group">
               <label for="auditTypeFilter">Tipo de cambio</label>
@@ -2382,7 +2548,6 @@
             </button>
           </div>
 
-          <!-- Lista de cambios -->
           <div class="audit-list" id="auditList">
             <div class="audit-empty">
               <i class="fas fa-history"></i>
@@ -2390,7 +2555,7 @@
             </div>
           </div>
         </div>
-      </section>
+      </section> -->
 
       <!-- Configuration Section -->
       <section id="config" class="section">
@@ -5282,8 +5447,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="app.js?v=3.5"></script>
+    <script type="module" src="app.js?v=3.8"></script>
     <script type="module" src="avatar-sidebar.js"></script>
-    <script src="smart-forms.js"></script>
+    <script src="smart-forms.js?v=1.1"></script>
   </body>
 </html>

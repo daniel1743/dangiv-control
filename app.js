@@ -60,6 +60,10 @@ class FinanceApp {
     this.extraIncome = savedData.extraIncome || 0; // Ingresos extras acumulados (sin descripción)
     this.extraIncomeHistory = savedData.extraIncomeHistory || []; // Historial de entradas extras
 
+    // Historial Unificado de Transacciones
+    this.transactionHistory = savedData.transactionHistory || []; // Array unificado de todos los movimientos
+    this.auditLogMigrated = savedData.auditLogMigrated || false; // Flag para saber si ya se migró
+
     // Sistema de ahorro para metas
     this.availableBalance = savedData.availableBalance || 0; // Balance acumulado disponible
     this.freeBalance = savedData.freeBalance || 0; // Balance libre (no asignado a metas)
@@ -682,6 +686,8 @@ class FinanceApp {
       additionalIncomes: this.additionalIncomes,
       extraIncome: this.extraIncome,
       extraIncomeHistory: this.extraIncomeHistory,
+      transactionHistory: this.transactionHistory,
+      auditLogMigrated: this.auditLogMigrated,
       availableBalance: this.availableBalance,
       freeBalance: this.freeBalance,
       lastBalanceUpdate: this.lastBalanceUpdate,
@@ -2627,10 +2633,14 @@ class FinanceApp {
     this.setupQuickExpenseListeners(); // Entrada rápida de gastos
     this.setupInstagramQuickActions(); // Instagram-style quick actions (mobile)
     this.setupMobileBannerListeners(); // Mobile banner and avatar listeners
+    this.setupHistoryFilters(); // Filtros del historial
     this.setupPremiumSettings(); // Premium Settings Navigation
     this.checkMonthlyReset();
     // Forzar normalización de datos existentes al inicio
     this.forceDataNormalization();
+
+    // Migrar datos del auditLog antiguo al nuevo historial (solo una vez)
+    this.migrateAuditLogToHistory();
 
     // El loading spinner ya está visible desde el HTML
     // Solo se ocultará cuando Firebase termine de sincronizar
@@ -3625,10 +3635,13 @@ class FinanceApp {
         this.renderDashboard();
       } else if (sectionId === 'achievements') {
         this.renderAchievements();
-      } else if (sectionId === 'audit') {
-        this.renderAuditLog();
+      // COMENTADO: Audit log antiguo (para uso futuro como log técnico de modificaciones)
+      // } else if (sectionId === 'audit') {
+      //   this.renderAuditLog();
       } else if (sectionId === 'budget') {
         this.renderBudgetSection();
+      } else if (sectionId === 'history') {
+        this.renderHistory();
       }
     }, 100);
   }
@@ -6716,6 +6729,17 @@ class FinanceApp {
     };
 
     this.expenses.push(expense);
+
+    // Registrar en historial unificado
+    this.addToHistory({
+      type: 'gasto',
+      amount: amount,
+      description: description,
+      date: date,
+      category: category,
+      necessity: necessity,
+      user: user || 'Sin usuario',
+    });
 
     // Registrar en auditoría
     this.logAudit(
@@ -12980,6 +13004,14 @@ FinanceApp.prototype.logAudit = function (
   this.updateNotifications();
 };
 
+// ========================================
+// COMENTADO: AUDIT LOG (Historial de Auditoría Antiguo)
+// Este sistema registra modificaciones técnicas específicas (ediciones, eliminaciones).
+// Se mantiene para posible uso futuro como:
+// - Log administrativo de cambios
+// - Auditoría de modificaciones críticas
+// - Historial de ediciones por usuario
+// ========================================
 FinanceApp.prototype.renderAuditLog = function () {
   const auditList = document.getElementById('auditList');
   if (!auditList) return;
@@ -15548,6 +15580,135 @@ FinanceApp.prototype.handleFastModeSubmit = function () {
   this.showToast(`Gasto rápido de $${amount.toLocaleString()} registrado. Recuerda editarlo después.`, 'success');
 };
 
+// ========================================
+// TRANSACTION HISTORY SYSTEM
+// ========================================
+
+/**
+ * Agregar una transacción al historial unificado
+ * @param {Object} transaction - Objeto con los datos de la transacción
+ * @param {string} transaction.type - Tipo: 'gasto', 'sueldo', 'entrada_extra', 'abono_meta', 'retiro_meta'
+ * @param {number} transaction.amount - Monto de la transacción
+ * @param {string} transaction.description - Descripción
+ * @param {string} transaction.date - Fecha en formato YYYY-MM-DD
+ * @param {string} transaction.category - Categoría (para gastos)
+ * @param {string} transaction.user - Usuario que realizó la transacción
+ */
+FinanceApp.prototype.addToHistory = function (transaction) {
+  const historyEntry = {
+    id: Date.now() + Math.random(), // ID único
+    type: transaction.type, // 'gasto', 'sueldo', 'entrada_extra', 'abono_meta', 'retiro_meta'
+    amount: transaction.amount,
+    description: transaction.description || '',
+    date: transaction.date,
+    category: transaction.category || '', // Para gastos
+    user: transaction.user || this.currentUser || 'Sistema',
+    timestamp: Date.now(),
+    // Datos adicionales según el tipo
+    necessity: transaction.necessity || '', // Para gastos
+    goalName: transaction.goalName || '', // Para abonos/retiros de metas
+    previousBalance: transaction.previousBalance || null, // Balance anterior
+    newBalance: transaction.newBalance || null, // Nuevo balance
+  };
+
+  // Agregar al inicio del array (más recientes primero)
+  this.transactionHistory.unshift(historyEntry);
+
+  // Limitar a últimas 1000 transacciones para no saturar memoria
+  if (this.transactionHistory.length > 1000) {
+    this.transactionHistory = this.transactionHistory.slice(0, 1000);
+  }
+
+  console.log('📝 Transacción agregada al historial:', historyEntry);
+};
+
+/**
+ * Migrar datos del auditLog antiguo al nuevo transactionHistory
+ * Esta función se ejecuta una sola vez al cargar la aplicación
+ */
+FinanceApp.prototype.migrateAuditLogToHistory = function () {
+  // Verificar si ya se migró antes
+  if (this.auditLogMigrated || !this.auditLog || this.auditLog.length === 0) {
+    return;
+  }
+
+  console.log('🔄 Iniciando migración de auditLog a transactionHistory...');
+
+  let migratedCount = 0;
+
+  // Mapeo de tipos de auditLog a tipos de transactionHistory
+  const typeMapping = {
+    'expense_added': 'gasto',
+    'expense_edited': 'gasto', // Se considera como gasto también
+    'expense_deleted': 'gasto', // Se marca pero se mantiene en historial
+    'goal_added': 'abono_meta',
+    'goal_edited': 'abono_meta',
+    'goal_deleted': 'retiro_meta',
+    'payment_added': 'gasto',
+    'payment_deleted': 'gasto',
+    'shopping_added': 'gasto',
+    'shopping_deleted': 'gasto',
+  };
+
+  // Recorrer el auditLog y convertir cada entrada
+  this.auditLog.forEach(auditEntry => {
+    // Solo migrar si tiene un tipo mapeado
+    const mappedType = typeMapping[auditEntry.type];
+    if (!mappedType) return;
+
+    // Extraer información del auditEntry
+    const details = auditEntry.details || {};
+
+    // Crear entrada en el nuevo formato
+    const historyEntry = {
+      id: auditEntry.id || Date.now() + Math.random(),
+      type: mappedType,
+      amount: details.amount || 0,
+      description: auditEntry.description || details.description || 'Registro migrado',
+      date: auditEntry.date ? auditEntry.date.split('T')[0] : new Date(auditEntry.timestamp).toISOString().split('T')[0],
+      category: details.category || '',
+      user: auditEntry.user || 'Sistema',
+      timestamp: auditEntry.timestamp || Date.now(),
+      necessity: details.necessity || '',
+      goalName: details.goalName || '',
+      // Marcar como migrado para referencia
+      migrated: true,
+      originalType: auditEntry.type,
+      originalAction: auditEntry.action,
+    };
+
+    // Evitar duplicados: verificar si ya existe en transactionHistory
+    const exists = this.transactionHistory.some(t =>
+      t.id === historyEntry.id ||
+      (t.timestamp === historyEntry.timestamp && t.description === historyEntry.description)
+    );
+
+    if (!exists) {
+      this.transactionHistory.push(historyEntry);
+      migratedCount++;
+    }
+  });
+
+  // Ordenar por timestamp (más recientes primero)
+  this.transactionHistory.sort((a, b) => b.timestamp - a.timestamp);
+
+  // Marcar que la migración se completó
+  this.auditLogMigrated = true;
+
+  // Guardar todo
+  this.saveData();
+
+  console.log(`✅ Migración completada: ${migratedCount} registros migrados de auditLog a transactionHistory`);
+
+  // Mostrar notificación al usuario
+  if (migratedCount > 0) {
+    this.showToast(
+      `✅ Se migraron ${migratedCount} registros históricos al nuevo historial`,
+      'success'
+    );
+  }
+};
+
 // === NUEVA FUNCIÓN: REGISTRAR SUELDO ===
 FinanceApp.prototype.handleSalarySubmit = function () {
   const amountInput = document.getElementById('salaryAmount').value;
@@ -15608,6 +15769,9 @@ FinanceApp.prototype.handleSalarySubmit = function () {
     }
   }
 
+  // Guardar balance anterior para el historial
+  const previousBalance = this.monthlyIncome;
+
   // Actualizar ingreso mensual (balance total)
   this.monthlyIncome = amount;
   this.lastSalaryDate = date; // Guardar la fecha del último sueldo
@@ -15616,6 +15780,16 @@ FinanceApp.prototype.handleSalarySubmit = function () {
     monthlyIncome: this.monthlyIncome,
     lastSalaryDate: this.lastSalaryDate,
     getTotalIncome: this.getTotalIncome()
+  });
+
+  // Registrar en historial
+  this.addToHistory({
+    type: 'sueldo',
+    amount: amount,
+    description: `Sueldo mensual registrado`,
+    date: date,
+    previousBalance: previousBalance,
+    newBalance: this.monthlyIncome,
   });
 
   this.saveData();
@@ -15695,6 +15869,16 @@ FinanceApp.prototype.handleExtraIncomeSubmit = function () {
     previousBalance: previousBalance,
     newBalance: this.monthlyIncome,
     getTotalIncome: this.getTotalIncome()
+  });
+
+  // Registrar en historial unificado
+  this.addToHistory({
+    type: 'entrada_extra',
+    amount: amount,
+    description: description,
+    date: date,
+    previousBalance: previousBalance,
+    newBalance: this.monthlyIncome,
   });
 
   this.saveData();
@@ -16673,6 +16857,182 @@ FinanceApp.prototype.hideAppLoading = function () {
   if (loader) {
     loader.classList.add('hidden');
   }
+};
+
+// ========================================
+// HISTORY RENDERING AND FILTERING
+// ========================================
+
+/**
+ * Renderizar historial de transacciones con filtros
+ */
+FinanceApp.prototype.renderHistory = function (filters = {}) {
+  const historyList = document.getElementById('historyList');
+  if (!historyList) return;
+
+  // Aplicar filtros
+  let filtered = [...this.transactionHistory];
+
+  // Filtro por búsqueda
+  if (filters.search) {
+    const searchLower = filters.search.toLowerCase();
+    filtered = filtered.filter(t =>
+      t.description.toLowerCase().includes(searchLower) ||
+      t.category?.toLowerCase().includes(searchLower) ||
+      t.user?.toLowerCase().includes(searchLower)
+    );
+  }
+
+  // Filtro por tipo
+  if (filters.type && filters.type !== 'todos') {
+    filtered = filtered.filter(t => t.type === filters.type);
+  }
+
+  // Filtro por categoría
+  if (filters.category && filters.category !== 'todas') {
+    filtered = filtered.filter(t => t.category === filters.category);
+  }
+
+  // Filtro por rango de fechas
+  if (filters.dateFrom) {
+    filtered = filtered.filter(t => t.date >= filters.dateFrom);
+  }
+  if (filters.dateTo) {
+    filtered = filtered.filter(t => t.date <= filters.dateTo);
+  }
+
+  // Ordenar
+  const sort = filters.sort || 'date-desc';
+  filtered.sort((a, b) => {
+    switch (sort) {
+      case 'date-desc': return new Date(b.date) - new Date(a.date);
+      case 'date-asc': return new Date(a.date) - new Date(b.date);
+      case 'amount-desc': return b.amount - a.amount;
+      case 'amount-asc': return a.amount - b.amount;
+      case 'type': return a.type.localeCompare(b.type);
+      default: return 0;
+    }
+  });
+
+  // Calcular estadísticas
+  const stats = {
+    totalCount: filtered.length,
+    totalIncome: filtered.filter(t => ['sueldo', 'entrada_extra'].includes(t.type)).reduce((sum, t) => sum + t.amount, 0),
+    totalExpenses: filtered.filter(t => t.type === 'gasto').reduce((sum, t) => sum + t.amount, 0),
+  };
+
+  // Actualizar estadísticas
+  document.getElementById('historyTotalCount').textContent = stats.totalCount;
+  document.getElementById('historyTotalIncome').textContent = `$${stats.totalIncome.toLocaleString()}`;
+  document.getElementById('historyTotalExpenses').textContent = `$${stats.totalExpenses.toLocaleString()}`;
+  document.getElementById('historyResultCount').textContent = `${filtered.length} resultados`;
+
+  // Renderizar transacciones
+  if (filtered.length === 0) {
+    historyList.innerHTML = `
+      <div class="history-empty-state">
+        <i class="fas fa-inbox"></i>
+        <h3>No hay transacciones</h3>
+        <p>No se encontraron transacciones con los filtros aplicados</p>
+      </div>
+    `;
+    return;
+  }
+
+  const typeIcons = {
+    gasto: 'fa-shopping-cart',
+    sueldo: 'fa-money-bill-wave',
+    entrada_extra: 'fa-coins',
+    abono_meta: 'fa-piggy-bank',
+    retiro_meta: 'fa-hand-holding-usd',
+  };
+
+  const typeLabels = {
+    gasto: '💸 Gasto',
+    sueldo: '💰 Sueldo',
+    entrada_extra: '✨ Entrada Extra',
+    abono_meta: '🎯 Abono a Meta',
+    retiro_meta: '↩️ Retiro de Meta',
+  };
+
+  historyList.innerHTML = filtered.map(transaction => {
+    const isIncome = ['sueldo', 'entrada_extra'].includes(transaction.type);
+    const amountClass = isIncome ? 'positive' : 'negative';
+    const amountSign = isIncome ? '+' : '-';
+
+    return `
+      <div class="history-transaction-item">
+        <div class="history-transaction-icon ${transaction.type}">
+          <i class="fas ${typeIcons[transaction.type] || 'fa-circle'}"></i>
+        </div>
+        <div class="history-transaction-info">
+          <h4 class="history-transaction-title">${transaction.description}</h4>
+          <div class="history-transaction-meta">
+            <span class="history-transaction-badge ${transaction.type}">
+              ${typeLabels[transaction.type] || transaction.type}
+            </span>
+            ${transaction.category ? `<span><i class="fas fa-tag"></i> ${transaction.category}</span>` : ''}
+            ${transaction.user ? `<span><i class="fas fa-user"></i> ${transaction.user}</span>` : ''}
+            <span><i class="fas fa-calendar"></i> ${new Date(transaction.date).toLocaleDateString('es-CO')}</span>
+          </div>
+        </div>
+        <div class="history-transaction-amount ${amountClass}">
+          ${amountSign}$${transaction.amount.toLocaleString()}
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+/**
+ * Configurar listeners para filtros de historial
+ */
+FinanceApp.prototype.setupHistoryFilters = function () {
+  const applyBtn = document.getElementById('btnApplyHistoryFilters');
+  const clearBtn = document.getElementById('btnClearHistoryFilters');
+  const searchInput = document.getElementById('historySearch');
+
+  if (applyBtn) {
+    applyBtn.addEventListener('click', () => {
+      this.applyHistoryFilters();
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      document.getElementById('historySearch').value = '';
+      document.getElementById('historyFilterType').value = 'todos';
+      document.getElementById('historyFilterCategory').value = 'todas';
+      document.getElementById('historySort').value = 'date-desc';
+      document.getElementById('historyDateFrom').value = '';
+      document.getElementById('historyDateTo').value = '';
+      this.renderHistory();
+    });
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        this.applyHistoryFilters();
+      }
+    });
+  }
+};
+
+/**
+ * Aplicar filtros del historial
+ */
+FinanceApp.prototype.applyHistoryFilters = function () {
+  const filters = {
+    search: document.getElementById('historySearch')?.value || '',
+    type: document.getElementById('historyFilterType')?.value || 'todos',
+    category: document.getElementById('historyFilterCategory')?.value || 'todas',
+    sort: document.getElementById('historySort')?.value || 'date-desc',
+    dateFrom: document.getElementById('historyDateFrom')?.value || '',
+    dateTo: document.getElementById('historyDateTo')?.value || '',
+  };
+
+  this.renderHistory(filters);
 };
 
 if (typeof window !== 'undefined') {
