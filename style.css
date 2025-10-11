@@ -13557,3 +13557,110 @@ body.dark-theme .spinner {
   font-weight: 600;
 }
 
+
+/* ========================================
+   HISTORY SECTION - RESPONSIVE MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+  /* Filtros en columna en móvil */
+  .history-filters {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-12);
+    padding: var(--space-12);
+  }
+
+  /* Items de transacción apilados en móvil */
+  .history-transaction-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--space-12);
+    gap: var(--space-12);
+  }
+
+  /* Icono más pequeño en móvil */
+  .history-transaction-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    margin-right: 0;
+    margin-bottom: var(--space-8);
+  }
+
+  /* Info ocupa todo el ancho */
+  .history-transaction-info {
+    width: 100%;
+  }
+
+  /* Título más pequeño en móvil */
+  .history-transaction-title {
+    font-size: 14px;
+    word-break: break-word;
+  }
+
+  /* Meta en columna si es necesario */
+  .history-transaction-meta {
+    flex-wrap: wrap;
+    gap: var(--space-8);
+    font-size: 12px;
+  }
+
+  /* Monto grande y destacado en móvil */
+  .history-transaction-amount {
+    font-size: 18px;
+    width: 100%;
+    text-align: right;
+    margin-top: var(--space-8);
+  }
+
+  /* Badge más pequeño */
+  .history-transaction-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  /* Stats grid en columna en móvil */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Empty state más compacto */
+  .history-empty-state {
+    padding: var(--space-24);
+  }
+
+  .history-empty-state i {
+    font-size: 48px;
+  }
+}
+
+/* Para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .history-transaction-item {
+    padding: var(--space-10);
+  }
+
+  .history-transaction-title {
+    font-size: 13px;
+  }
+
+  .history-transaction-meta {
+    font-size: 11px;
+  }
+
+  .history-transaction-amount {
+    font-size: 16px;
+  }
+
+  .history-filters {
+    padding: var(--space-8);
+    gap: var(--space-10);
+  }
+
+  /* Botones de filtros más pequeños */
+  .history-filters .btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
