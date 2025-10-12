@@ -107,7 +107,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="style.css?v=3.1" />
+    <link rel="stylesheet" href="style.css?v=3.2" />
     <link rel="stylesheet" href="user-system.css" />
     <link rel="stylesheet" href="store.css" />
     <link rel="stylesheet" href="config.css" />
@@ -939,10 +939,11 @@
           <i class="fas fa-wallet"></i>
           <span>Presupuesto</span>
         </button>
-        <button class="nav-item requires-auth" data-section="analysis">
+        <!-- COMENTADO: Análisis - Funcionalidad duplicada con Dashboard -->
+        <!-- <button class="nav-item requires-auth" data-section="analysis">
           <i class="fas fa-chart-pie"></i>
           <span>Análisis</span>
-        </button>
+        </button> -->
         <button class="nav-item requires-auth" data-section="history">
           <i class="fas fa-history"></i>
           <span>Historial</span>
@@ -2561,922 +2562,182 @@
       <section id="config" class="section">
         <div class="section-header">
           <h1>⚙️ Configuración</h1>
-          <p>Gestiona tu cuenta y personaliza tu experiencia financiera</p>
+          <p>Personaliza tu experiencia y ajusta tus preferencias</p>
         </div>
 
-        <!-- Premium Settings Layout -->
-        <div class="settings-layout">
-          <!-- Settings Sidebar Navigation -->
-          <aside class="settings-sidebar">
-            <nav class="settings-nav">
-              <button
-                class="settings-nav-item active"
-                data-settings-tab="profile"
-              >
-                <div class="settings-nav-icon">
-                  <i class="fas fa-user-circle"></i>
-                </div>
-                <div class="settings-nav-content">
-                  <span class="settings-nav-title">Perfil</span>
-                  <span class="settings-nav-subtitle"
-                    >Información personal</span
-                  >
-                </div>
-                <i class="fas fa-chevron-right settings-nav-arrow"></i>
-              </button>
+        <!-- Configuración Simplificada -->
+        <div class="settings-simple-container">
 
-              <button class="settings-nav-item" data-settings-tab="account">
-                <div class="settings-nav-icon">
-                  <i class="fas fa-shield-alt"></i>
-                </div>
-                <div class="settings-nav-content">
-                  <span class="settings-nav-title">Cuenta y seguridad</span>
-                  <span class="settings-nav-subtitle"
-                    >Contraseñas y acceso</span
-                  >
-                </div>
-                <i class="fas fa-chevron-right settings-nav-arrow"></i>
-              </button>
-
-              <button class="settings-nav-item" data-settings-tab="financial">
-                <div class="settings-nav-icon">
-                  <i class="fas fa-wallet"></i>
-                </div>
-                <div class="settings-nav-content">
-                  <span class="settings-nav-title">Gestión financiera</span>
-                  <span class="settings-nav-subtitle">Ahorros y pagos</span>
-                </div>
-                <i class="fas fa-chevron-right settings-nav-arrow"></i>
-              </button>
-
-              <button class="settings-nav-item" data-settings-tab="appearance">
-                <div class="settings-nav-icon">
-                  <i class="fas fa-palette"></i>
-                </div>
-                <div class="settings-nav-content">
-                  <span class="settings-nav-title">Apariencia</span>
-                  <span class="settings-nav-subtitle"
-                    >Tema y preferencias visuales</span
-                  >
-                </div>
-                <i class="fas fa-chevron-right settings-nav-arrow"></i>
-              </button>
-
-              <button class="settings-nav-item" data-settings-tab="data">
-                <div class="settings-nav-icon">
-                  <i class="fas fa-database"></i>
-                </div>
-                <div class="settings-nav-content">
-                  <span class="settings-nav-title">Datos y privacidad</span>
-                  <span class="settings-nav-subtitle"
-                    >Exportar, importar, backup</span
-                  >
-                </div>
-                <i class="fas fa-chevron-right settings-nav-arrow"></i>
-              </button>
-
-              <button class="settings-nav-item" data-settings-tab="advanced">
-                <div class="settings-nav-icon">
-                  <i class="fas fa-cogs"></i>
-                </div>
-                <div class="settings-nav-content">
-                  <span class="settings-nav-title">Avanzado</span>
-                  <span class="settings-nav-subtitle"
-                    >Desarrollador y debug</span
-                  >
-                </div>
-                <i class="fas fa-chevron-right settings-nav-arrow"></i>
-              </button>
-            </nav>
-          </aside>
-
-          <!-- Settings Content Area -->
-          <div class="settings-content">
-            <!-- Profile Tab -->
-            <div class="settings-tab active" id="settings-profile">
-              <div class="settings-section">
-                <div class="settings-section-header">
-                  <h2>Información personal</h2>
-                  <p>Actualiza tu perfil y preferencias de cuenta</p>
-                </div>
-
-                <div class="settings-card">
-                  <div class="profile-avatar-section">
-                    <div class="current-avatar" id="currentProfileAvatar">
-                      <div class="avatar-preview">
-                        <i class="fas fa-user"></i>
-                      </div>
-                      <button class="avatar-edit-badge" id="changeAvatarBtn">
-                        <i class="fas fa-camera"></i>
-                      </button>
-                    </div>
-                    <div class="profile-info">
-                      <h4 id="profileUserName">Usuario</h4>
-                      <p class="profile-email">usuario@financiapro.com</p>
-                      <span class="profile-badge">
-                        <i class="fas fa-crown"></i> Usuario activo
-                      </span>
-                    </div>
+          <!-- 1. Tema / Modo Claro-Oscuro -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3><i class="fas fa-palette"></i> Tema de la aplicación</h3>
+              <p>Cambia entre modo claro, oscuro o automático</p>
+            </div>
+            <div class="settings-card-body">
+              <div class="theme-options">
+                <button class="theme-option active" data-theme="light">
+                  <div class="theme-preview theme-light">
+                    <div class="theme-circle"></div>
+                    <div class="theme-circle"></div>
+                    <div class="theme-circle"></div>
                   </div>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Detalles de la cuenta</h3>
+                  <span>Claro</span>
+                </button>
+                <button class="theme-option" data-theme="dark">
+                  <div class="theme-preview theme-dark">
+                    <div class="theme-circle"></div>
+                    <div class="theme-circle"></div>
+                    <div class="theme-circle"></div>
                   </div>
-                  <div class="settings-card-body">
-                    <div class="form-group-premium">
-                      <label class="form-label-premium"
-                        >Nombre de usuario</label
-                      >
-                      <input
-                        type="text"
-                        class="form-input-premium"
-                        id="profileNameInput"
-                        placeholder="Ingresa tu nombre"
-                      />
-                      <span class="form-hint"
-                        >Este nombre aparecerá en tus reportes y resúmenes</span
-                      >
-                    </div>
-
-                    <div class="form-group-premium">
-                      <label class="form-label-premium"
-                        >Ingreso mensual base</label
-                      >
-                      <div class="input-with-icon">
-                        <i class="fas fa-dollar-sign input-icon-left"></i>
-                        <input
-                          type="number"
-                          class="form-input-premium input-with-padding-left"
-                          id="monthlyIncomeInput"
-                          placeholder="0.00"
-                          step="0.01"
-                        />
-                      </div>
-                      <span class="form-hint">Tu ingreso extra aqui abajo</span>
-                    </div>
-
-                    <!-- Botón para agregar extras -->
-                    <button
-                      type="button"
-                      class="btn-add-extra-income"
-                      id="btnAddExtraIncome"
-                    >
-                      <i class="fas fa-plus-circle"></i>
-                      <span>Agregar Ingreso Extra</span>
-                    </button>
-
-                    <!-- Mostrar extras acumulados -->
-                    <div
-                      id="extraIncomeDisplay"
-                      class="extra-income-display"
-                      style="display: none"
-                    >
-                      <div class="extra-income-info">
-                        <span>Ingresos extras acumulados:</span>
-                        <span class="extra-amount" id="extraIncomeAmount"
-                          >$0</span
-                        >
-                      </div>
-                      <button
-                        type="button"
-                        class="btn-reset-extras"
-                        id="btnResetExtras"
-                        title="Resetear extras"
-                      >
-                        <i class="fas fa-undo"></i>
-                      </button>
-                    </div>
-
-                    <!-- Total consolidado -->
-                    <div class="total-income-display">
-                      <strong>Total de Ingresos:</strong>
-                      <strong class="total-amount" id="totalIncomeDisplay"
-                        >$0</strong
-                      >
-                    </div>
-
-                    <div class="form-actions-premium">
-                      <button class="btn-premium btn-premium-secondary">
-                        <i class="fas fa-times"></i> Cancelar
-                      </button>
-                      <button
-                        class="btn-premium btn-premium-primary"
-                        id="saveProfileBtn"
-                      >
-                        <i class="fas fa-check"></i> Guardar cambios
-                      </button>
-                    </div>
+                  <span>Oscuro</span>
+                </button>
+                <button class="theme-option" data-theme="auto">
+                  <div class="theme-preview theme-auto">
+                    <div class="theme-circle"></div>
+                    <div class="theme-circle"></div>
+                    <div class="theme-circle"></div>
                   </div>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Estadísticas de uso</h3>
-                  </div>
-                  <div class="settings-card-body">
-                    <div class="stats-grid-premium">
-                      <div class="stat-item-premium">
-                        <i class="fas fa-receipt stat-icon"></i>
-                        <div class="stat-content">
-                          <span class="stat-value" id="totalExpensesCount"
-                            >0</span
-                          >
-                          <span class="stat-label">Gastos registrados</span>
-                        </div>
-                      </div>
-                      <div class="stat-item-premium">
-                        <i class="fas fa-bullseye stat-icon"></i>
-                        <div class="stat-content">
-                          <span class="stat-value" id="totalGoalsCount">0</span>
-                          <span class="stat-label">Metas creadas</span>
-                        </div>
-                      </div>
-                      <div class="stat-item-premium">
-                        <i class="fas fa-calendar stat-icon"></i>
-                        <div class="stat-content">
-                          <span class="stat-value" id="accountAge">0</span>
-                          <span class="stat-label">Días activo</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  <span>Automático</span>
+                </button>
               </div>
             </div>
+          </div>
 
-            <!-- Account Tab -->
-            <div class="settings-tab" id="settings-account">
-              <div class="settings-section">
-                <div class="settings-section-header">
-                  <h2>Cuenta y seguridad</h2>
-                  <p>Gestiona tu acceso y configuración de seguridad</p>
+          <!-- 2. Cambiar Foto de Perfil -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3><i class="fas fa-user-circle"></i> Foto de perfil</h3>
+              <p>Personaliza tu imagen de usuario</p>
+            </div>
+            <div class="settings-card-body">
+              <div class="profile-avatar-section">
+                <div class="current-avatar" id="currentProfileAvatar">
+                  <div class="avatar-preview">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <button class="avatar-edit-badge" id="changeAvatarBtn">
+                    <i class="fas fa-camera"></i>
+                  </button>
                 </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Tipo de cuenta</h3>
-                  </div>
-                  <div class="settings-card-body">
-                    <div class="account-badge" id="configAccountBadge">
-                      <i class="fas fa-user"></i>
-                      <span id="configAccountTypeText">Cuenta Personal</span>
-                    </div>
-                    <p
-                      class="account-description"
-                      id="configAccountDescription"
-                    >
-                      Tu cuenta personal para el control de finanzas
-                      individuales.
-                    </p>
-                    <button
-                      class="btn-premium btn-premium-outline"
-                      id="configSwitchAccountBtn"
-                    >
-                      <i class="fas fa-exchange-alt"></i> Cambiar tipo de cuenta
-                    </button>
-                  </div>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Seguridad</h3>
-                  </div>
-                  <div class="settings-card-body">
-                    <div class="settings-list">
-                      <div class="settings-list-item">
-                        <div class="settings-list-icon">
-                          <i class="fas fa-key"></i>
-                        </div>
-                        <div class="settings-list-content">
-                          <span class="settings-list-title">Contraseña</span>
-                          <span class="settings-list-subtitle">••••••••</span>
-                        </div>
-                        <button
-                          class="btn-premium btn-premium-sm"
-                          id="configChangePasswordBtn"
-                        >
-                          Cambiar
-                        </button>
-                      </div>
-
-                      <div class="settings-list-item">
-                        <div class="settings-list-icon">
-                          <i class="fas fa-lock"></i>
-                        </div>
-                        <div class="settings-list-content">
-                          <span class="settings-list-title"
-                            >Autenticación de dos factores</span
-                          >
-                          <span class="settings-list-subtitle"
-                            >Seguridad adicional para tu cuenta</span
-                          >
-                        </div>
-                        <label class="toggle-switch-premium">
-                          <input type="checkbox" id="twoFactorToggle" />
-                          <span class="toggle-slider-premium"></span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  class="settings-card config-invite-card"
-                  id="configInviteSection"
-                >
-                  <div class="settings-card-header">
-                    <h3>Compartir cuenta</h3>
-                  </div>
-                  <div class="settings-card-body">
-                    <div class="invite-card-premium">
-                      <div class="invite-icon-premium">
-                        <i class="fas fa-user-plus"></i>
-                      </div>
-                      <div class="invite-content-premium">
-                        <h5>Invitar a un socio</h5>
-                        <p>
-                          Comparte el control financiero con otra persona de
-                          confianza
-                        </p>
-                      </div>
-                      <button
-                        class="btn-premium btn-premium-primary"
-                        id="configInvitePartnerBtn"
-                      >
-                        <i class="fas fa-share"></i> Generar invitación
-                      </button>
-                    </div>
-                  </div>
+                <div class="profile-info">
+                  <h4 id="profileUserName">Usuario</h4>
+                  <p class="profile-email">usuario@financiapro.com</p>
+                  <span class="profile-badge">
+                    <i class="fas fa-crown"></i> Usuario activo
+                  </span>
                 </div>
               </div>
-            </div>
-
-            <!-- Financial Management Tab -->
-            <div class="settings-tab" id="settings-financial">
-              <div class="settings-section">
-                <div class="settings-section-header">
-                  <h2>Gestión financiera</h2>
-                  <p>Administra tus ahorros y pagos recurrentes</p>
-                </div>
-
-                <!-- Default User Configuration Card -->
-                <div class="settings-card user-config-card">
-                  <div class="settings-card-header">
-                    <div class="card-header-content">
-                      <div>
-                        <h3>Usuario Predefinido</h3>
-                        <p>Configura el usuario por defecto para los gastos</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="settings-card-body">
-                    <div class="form-group">
-                      <label class="form-label" for="defaultUserSelect">
-                        <i class="fas fa-user-check"></i> Usuario predefinido
-                        para gastos rápidos
-                      </label>
-                      <select id="defaultUserSelect" class="form-control">
-                        <option value="">Sin usuario predefinido</option>
-                      </select>
-                      <small class="form-text"
-                        >Este usuario se seleccionará automáticamente al
-                        registrar gastos rápidos</small
-                      >
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Savings Management Card -->
-                <div class="settings-card savings-config-card">
-                  <div class="settings-card-header">
-                    <div class="card-header-content">
-                      <div>
-                        <h3>Gestión de Ahorros</h3>
-                        <p>Organiza tus ahorros por fuente y propósito</p>
-                      </div>
-                      <button
-                        class="btn-premium btn-premium-primary"
-                        id="addSavingsBtn"
-                      >
-                        <i class="fas fa-plus"></i> Añadir fuente de ahorro
-                      </button>
-                    </div>
-                  </div>
-                  <div class="settings-card-body">
-                    <!-- Summary First -->
-                    <div class="savings-summary">
-                      <div class="summary-item">
-                        <i class="fas fa-piggy-bank summary-icon"></i>
-                        <div>
-                          <span class="summary-label">Total ahorrado</span>
-                          <span class="summary-value" id="totalSavingsAmount"
-                            >$0</span
-                          >
-                        </div>
-                      </div>
-                      <div class="summary-item">
-                        <i class="fas fa-wallet summary-icon"></i>
-                        <div>
-                          <span class="summary-label">Fuentes activas</span>
-                          <span class="summary-value" id="totalSavingsSources"
-                            >0</span
-                          >
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- List of Savings -->
-                    <div id="savingsAccountsList" class="savings-accounts-list">
-                      <div class="empty-state-small">
-                        <i class="fas fa-wallet"></i>
-                        <p>No hay fuentes de ahorro registradas</p>
-                        <button
-                          class="btn-premium btn-premium-outline"
-                          id="addSavingsBtnEmpty"
-                        >
-                          <i class="fas fa-plus"></i> Añadir tu primera fuente
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Recurring Payments Management Card -->
-                <div class="settings-card payments-config-card">
-                  <div class="settings-card-header">
-                    <div class="card-header-content">
-                      <div>
-                        <h3>Próximos Pagos</h3>
-                        <p>Gestiona tus pagos recurrentes mensuales</p>
-                      </div>
-                      <button
-                        class="btn-premium btn-premium-primary"
-                        id="addPaymentBtn"
-                      >
-                        <i class="fas fa-plus"></i> Añadir pago recurrente
-                      </button>
-                    </div>
-                  </div>
-                  <div class="settings-card-body">
-                    <!-- Summary First -->
-                    <div class="payments-summary">
-                      <div class="summary-item">
-                        <i class="fas fa-file-invoice-dollar summary-icon"></i>
-                        <div>
-                          <span class="summary-label"
-                            >Total mensual estimado</span
-                          >
-                          <span class="summary-value" id="totalMonthlyPayments"
-                            >$0</span
-                          >
-                        </div>
-                      </div>
-                      <div class="summary-item">
-                        <i class="fas fa-list-check summary-icon"></i>
-                        <div>
-                          <span class="summary-label"
-                            >Servicios registrados</span
-                          >
-                          <span class="summary-value" id="totalPaymentServices"
-                            >0</span
-                          >
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- List of Payments -->
-                    <div id="recurringPaymentsList" class="payments-list">
-                      <div class="empty-state-small">
-                        <i class="fas fa-money-bill-wave"></i>
-                        <p>No hay pagos recurrentes registrados</p>
-                        <button
-                          class="btn-premium btn-premium-outline"
-                          id="addPaymentBtnEmpty"
-                        >
-                          <i class="fas fa-plus"></i> Añadir tu primer pago
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div style="margin-top: var(--space-16);">
+                <button class="btn-premium btn-premium-primary" id="uploadAvatarBtn">
+                  <i class="fas fa-upload"></i> Subir nueva foto
+                </button>
+                <button class="btn-premium btn-premium-outline" id="removeAvatarBtn" style="margin-left: var(--space-8);">
+                  <i class="fas fa-trash"></i> Eliminar foto
+                </button>
               </div>
             </div>
+          </div>
 
-            <!-- Appearance Tab -->
-            <div class="settings-tab" id="settings-appearance">
-              <div class="settings-section">
-                <div class="settings-section-header">
-                  <h2>Apariencia</h2>
-                  <p>Personaliza la interfaz y estilos visuales</p>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Tema de la aplicación</h3>
-                  </div>
-                  <div class="settings-card-body">
-                    <div class="theme-options">
-                      <button class="theme-option active" data-theme="light">
-                        <div class="theme-preview theme-light">
-                          <div class="theme-circle"></div>
-                          <div class="theme-circle"></div>
-                          <div class="theme-circle"></div>
-                        </div>
-                        <span>Claro</span>
-                      </button>
-                      <button class="theme-option" data-theme="dark">
-                        <div class="theme-preview theme-dark">
-                          <div class="theme-circle"></div>
-                          <div class="theme-circle"></div>
-                          <div class="theme-circle"></div>
-                        </div>
-                        <span>Oscuro</span>
-                      </button>
-                      <button class="theme-option" data-theme="auto">
-                        <div class="theme-preview theme-auto">
-                          <div class="theme-circle"></div>
-                          <div class="theme-circle"></div>
-                          <div class="theme-circle"></div>
-                        </div>
-                        <span>Automático</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Estilo de gráficos</h3>
-                  </div>
-                  <div class="settings-card-body">
-                    <div
-                      class="current-chart-style"
-                      id="configCurrentChartStyle"
-                    >
-                      <div class="chart-style-preview">
-                        <div class="mini-chart-dots">
-                          <div
-                            class="chart-dot"
-                            style="background: var(--color-primary)"
-                          ></div>
-                          <div
-                            class="chart-dot"
-                            style="background: var(--color-secondary)"
-                          ></div>
-                          <div
-                            class="chart-dot"
-                            style="background: var(--color-accent)"
-                          ></div>
-                        </div>
-                      </div>
-                      <div class="chart-style-info">
-                        <span class="chart-style-name" id="configChartStyleName"
-                          >Clásico</span
-                        >
-                        <p>Colores tradicionales y elegantes</p>
-                      </div>
-                      <button
-                        class="btn-premium btn-premium-outline"
-                        id="configChangeChartStyleBtn"
-                      >
-                        <i class="fas fa-paint-brush"></i> Cambiar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Preferencias de interfaz</h3>
-                  </div>
-                  <div class="settings-card-body">
-                    <div class="settings-list">
-                      <div class="settings-list-item">
-                        <div class="settings-list-icon">
-                          <i class="fas fa-magic"></i>
-                        </div>
-                        <div class="settings-list-content">
-                          <span class="settings-list-title">Animaciones</span>
-                          <span class="settings-list-subtitle"
-                            >Efectos de transición y animaciones</span
-                          >
-                        </div>
-                        <label class="toggle-switch-premium">
-                          <input
-                            type="checkbox"
-                            id="animationsToggle"
-                            checked
-                          />
-                          <span class="toggle-slider-premium"></span>
-                        </label>
-                      </div>
-
-                      <div class="settings-list-item">
-                        <div class="settings-list-icon">
-                          <i class="fas fa-bell"></i>
-                        </div>
-                        <div class="settings-list-content">
-                          <span class="settings-list-title"
-                            >Notificaciones de metas</span
-                          >
-                          <span class="settings-list-subtitle"
-                            >Recordatorios de progreso de objetivos</span
-                          >
-                        </div>
-                        <label class="toggle-switch-premium">
-                          <input
-                            type="checkbox"
-                            id="goalNotificationsToggle"
-                            checked
-                          />
-                          <span class="toggle-slider-premium"></span>
-                        </label>
-                      </div>
-
-                      <div class="settings-list-item">
-                        <div class="settings-list-icon">
-                          <i class="fas fa-layer-group"></i>
-                        </div>
-                        <div class="settings-list-content">
-                          <span class="settings-list-title"
-                            >Modo de demostración</span
-                          >
-                          <span class="settings-list-subtitle"
-                            >Datos de ejemplo para nuevos usuarios</span
-                          >
-                        </div>
-                        <label class="toggle-switch-premium">
-                          <input type="checkbox" id="demoModeToggle" />
-                          <span class="toggle-slider-premium"></span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
+          <!-- 3. Cambiar Portada -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3><i class="fas fa-image"></i> Imagen de portada</h3>
+              <p>Cambia la imagen de fondo de tu perfil</p>
+            </div>
+            <div class="settings-card-body">
+              <div class="cover-image-preview" id="coverImagePreview" style="width: 100%; height: 150px; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); border-radius: 12px; margin-bottom: var(--space-16); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                <div style="text-align: center; color: white; font-size: 14px; opacity: 0.9;">
+                  <i class="fas fa-image" style="font-size: 32px; margin-bottom: 8px;"></i>
+                  <p>Vista previa de la portada</p>
                 </div>
               </div>
+              <button class="btn-premium btn-premium-primary" id="changeCoverBtn">
+                <i class="fas fa-upload"></i> Cambiar portada
+              </button>
+              <button class="btn-premium btn-premium-outline" id="removeCoverBtn" style="margin-left: var(--space-8);">
+                <i class="fas fa-trash"></i> Eliminar portada
+              </button>
             </div>
+          </div>
 
-            <!-- Data & Privacy Tab -->
-            <div class="settings-tab" id="settings-data">
-              <div class="settings-section">
-                <div class="settings-section-header">
-                  <h2>Datos y privacidad</h2>
-                  <p>Gestiona tus datos, respaldos y privacidad</p>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Exportar datos</h3>
-                    <p>Descarga una copia de tu información</p>
-                  </div>
-                  <div class="settings-card-body">
-                    <div class="export-actions">
-                      <button
-                        class="btn-premium btn-premium-outline"
-                        id="exportJSONBtn"
-                      >
-                        <i class="fas fa-file-code"></i> Exportar como JSON
-                      </button>
-                      <button
-                        class="btn-premium btn-premium-outline"
-                        id="exportCSVBtn"
-                      >
-                        <i class="fas fa-file-csv"></i> Exportar como CSV
-                      </button>
-                    </div>
-                    <p class="form-hint" style="margin-top: var(--space-12)">
-                      Los archivos incluyen gastos, metas, presupuestos y
-                      configuraciones
-                    </p>
-                  </div>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Importar datos</h3>
-                    <p>Restaura o migra información desde un archivo</p>
-                  </div>
-                  <div class="settings-card-body">
-                    <input
-                      type="file"
-                      id="importFileInput"
-                      accept=".json"
-                      style="display: none"
-                    />
-                    <button
-                      class="btn-premium btn-premium-outline"
-                      id="importJSONBtn"
-                    >
-                      <i class="fas fa-file-upload"></i> Importar desde JSON
-                    </button>
-                    <p class="form-hint" style="margin-top: var(--space-12)">
-                      Solo archivos JSON exportados desde esta aplicación
-                    </p>
-                  </div>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Sincronización en la nube</h3>
-                  </div>
-                  <div class="settings-card-body">
-                    <div class="settings-list">
-                      <div class="settings-list-item">
-                        <div class="settings-list-icon">
-                          <i class="fas fa-cloud"></i>
-                        </div>
-                        <div class="settings-list-content">
-                          <span class="settings-list-title"
-                            >Auto-sincronización</span
-                          >
-                          <span class="settings-list-subtitle"
-                            >Respaldar automáticamente en Firebase</span
-                          >
-                        </div>
-                        <label class="toggle-switch-premium">
-                          <input type="checkbox" id="autoSyncToggle" checked />
-                          <span class="toggle-slider-premium"></span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>🍪 Cookies y privacidad</h3>
-                    <p>Gestiona tus preferencias de cookies</p>
-                  </div>
-                  <div class="settings-card-body">
-                    <div class="settings-list">
-                      <div class="settings-list-item">
-                        <div class="settings-list-icon">
-                          <i class="fas fa-cookie-bite"></i>
-                        </div>
-                        <div class="settings-list-content">
-                          <span class="settings-list-title"
-                            >Configuración de cookies</span
-                          >
-                          <span class="settings-list-subtitle"
-                            >Controla qué cookies acepta tu navegador</span
-                          >
-                        </div>
-                        <button
-                          class="btn-premium btn-premium-outline"
-                          id="openCookieSettings"
-                        >
-                          <i class="fas fa-cog"></i> Configurar
-                        </button>
-                      </div>
-                    </div>
-                    <p class="form-hint" style="margin-top: var(--space-12)">
-                      <i class="fas fa-shield-alt"></i> Cumplimiento GDPR, CCPA
-                      y LGPD. Puedes cambiar tus preferencias en cualquier
-                      momento.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="settings-card settings-card-danger">
-                  <div class="settings-card-header">
-                    <h3>Zona de peligro</h3>
-                  </div>
-                  <div class="settings-card-body">
-                    <div class="settings-list">
-                      <div class="settings-list-item">
-                        <div class="settings-list-content">
-                          <span class="settings-list-title"
-                            >Borrar todos los datos</span
-                          >
-                          <span class="settings-list-subtitle"
-                            >Esta acción no se puede deshacer</span
-                          >
-                        </div>
-                        <button
-                          class="btn-premium btn-premium-danger"
-                          id="deleteAllDataBtn"
-                        >
-                          <i class="fas fa-trash"></i> Borrar todo
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          <!-- 4. Cambiar Nombre de Usuario -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3><i class="fas fa-signature"></i> Nombre de usuario</h3>
+              <p>Actualiza cómo te llamas en la aplicación</p>
+            </div>
+            <div class="settings-card-body">
+              <div class="form-group-premium">
+                <label class="form-label-premium">Nombre completo</label>
+                <input
+                  type="text"
+                  class="form-input-premium"
+                  id="profileNameInput"
+                  placeholder="Ingresa tu nombre"
+                />
+                <span class="form-hint">Este nombre aparecerá en tus reportes y resúmenes</span>
+              </div>
+              <div class="form-actions-premium">
+                <button class="btn-premium btn-premium-primary" id="saveProfileBtn">
+                  <i class="fas fa-check"></i> Guardar nombre
+                </button>
               </div>
             </div>
+          </div>
 
-            <!-- Advanced Tab -->
-            <div class="settings-tab" id="settings-advanced">
-              <div class="settings-section">
-                <div class="settings-section-header">
-                  <h2>Configuración avanzada</h2>
-                  <p>Opciones para usuarios avanzados</p>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Modo desarrollador</h3>
+          <!-- 5. Cambiar Contraseña -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3><i class="fas fa-key"></i> Seguridad</h3>
+              <p>Gestiona tu contraseña y configuración de acceso</p>
+            </div>
+            <div class="settings-card-body">
+              <div class="settings-list">
+                <div class="settings-list-item">
+                  <div class="settings-list-icon">
+                    <i class="fas fa-lock"></i>
                   </div>
-                  <div class="settings-card-body">
-                    <div class="settings-list">
-                      <div class="settings-list-item">
-                        <div class="settings-list-icon">
-                          <i class="fas fa-code"></i>
-                        </div>
-                        <div class="settings-list-content">
-                          <span class="settings-list-title">Modo debug</span>
-                          <span class="settings-list-subtitle"
-                            >Mostrar logs en consola del navegador</span
-                          >
-                        </div>
-                        <label class="toggle-switch-premium">
-                          <input type="checkbox" id="debugModeToggle" />
-                          <span class="toggle-slider-premium"></span>
-                        </label>
-                      </div>
-                    </div>
+                  <div class="settings-list-content">
+                    <span class="settings-list-title">Contraseña</span>
+                    <span class="settings-list-subtitle">••••••••</span>
                   </div>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Información del sistema</h3>
-                  </div>
-                  <div class="settings-card-body">
-                    <div class="info-grid">
-                      <div class="info-item">
-                        <span class="info-label">Versión de la app</span>
-                        <span class="info-value">2.1.0</span>
-                      </div>
-                      <div class="info-item">
-                        <span class="info-label">Última actualización</span>
-                        <span class="info-value" id="lastUpdateDate">-</span>
-                      </div>
-                      <div class="info-item">
-                        <span class="info-label">Tamaño de datos</span>
-                        <span class="info-value" id="dataSize">-</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="settings-card">
-                  <div class="settings-card-header">
-                    <h3>Acerca de Dan&Giv Control</h3>
-                  </div>
-                  <div class="settings-card-body">
-                    <p
-                      style="
-                        color: var(--color-text-secondary);
-                        line-height: 1.6;
-                      "
-                    >
-                      Dan&Giv Control es una aplicación de gestión financiera
-                      personal desarrollada para ayudarte a controlar tus
-                      gastos, establecer metas y tomar decisiones financieras
-                      inteligentes.
-                    </p>
-                    <div style="margin-top: var(--space-16)">
-                      <button class="btn-premium btn-premium-outline">
-                        <i class="fas fa-book"></i> Ver documentación
-                      </button>
-                    </div>
-                  </div>
+                  <button class="btn-premium btn-premium-sm" id="configChangePasswordBtn">
+                    Cambiar
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Mobile Bottom Navigation (Only visible on mobile/tablet) -->
-        <nav class="settings-bottom-nav" id="settingsBottomNav">
-          <button class="bottom-nav-item active" data-settings-tab="profile">
-            <i class="fas fa-user-circle"></i>
-            <span>Perfil</span>
-          </button>
-          <button class="bottom-nav-item" data-settings-tab="account">
-            <i class="fas fa-shield-alt"></i>
-            <span>Cuenta</span>
-          </button>
-          <button class="bottom-nav-item" data-settings-tab="financial">
-            <i class="fas fa-wallet"></i>
-            <span>Finanzas</span>
-          </button>
-          <button class="bottom-nav-item" data-settings-tab="appearance">
-            <i class="fas fa-palette"></i>
-            <span>Apariencia</span>
-          </button>
-          <button class="bottom-nav-item" data-settings-tab="data">
-            <i class="fas fa-database"></i>
-            <span>Datos</span>
-          </button>
-          <button class="bottom-nav-item" data-settings-tab="advanced">
-            <i class="fas fa-cogs"></i>
-            <span>Avanzado</span>
-          </button>
-        </nav>
+          <!-- 6. Notificar un Problema -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3><i class="fas fa-bug"></i> Soporte y ayuda</h3>
+              <p>Reporta problemas o solicita asistencia</p>
+            </div>
+            <div class="settings-card-body">
+              <div class="settings-list">
+                <div class="settings-list-item">
+                  <div class="settings-list-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                  </div>
+                  <div class="settings-list-content">
+                    <span class="settings-list-title">Reportar un problema</span>
+                    <span class="settings-list-subtitle">Envía un reporte sobre errores o sugerencias</span>
+                  </div>
+                  <button class="btn-premium btn-premium-outline" id="reportProblemBtn">
+                    <i class="fas fa-paper-plane"></i> Notificar
+                  </button>
+                </div>
+              </div>
+              <p class="form-hint" style="margin-top: var(--space-16);">
+                <i class="fas fa-info-circle"></i> Esta función estará disponible próximamente. Mientras tanto, contacta al soporte directamente.
+              </p>
+            </div>
+          </div>
+
+        </div>
       </section>
     </main>
 
@@ -5447,7 +4708,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="app.js?v=3.8"></script>
+    <script type="module" src="app.js?v=3.9"></script>
     <script type="module" src="avatar-sidebar.js"></script>
     <script src="smart-forms.js?v=1.1"></script>
   </body>
