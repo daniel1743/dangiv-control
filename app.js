@@ -16991,6 +16991,25 @@ FinanceApp.prototype.setupHistoryFilters = function () {
   const applyBtn = document.getElementById('btnApplyHistoryFilters');
   const clearBtn = document.getElementById('btnClearHistoryFilters');
   const searchInput = document.getElementById('historySearch');
+  const toggleBtn = document.getElementById('toggleHistoryFilters');
+  const filtersContainer = document.getElementById('historyFiltersContainer');
+
+  // Toggle de mostrar/ocultar filtros
+  if (toggleBtn && filtersContainer) {
+    toggleBtn.addEventListener('click', () => {
+      const isVisible = filtersContainer.classList.contains('show');
+
+      if (isVisible) {
+        filtersContainer.classList.remove('show');
+        toggleBtn.classList.remove('active');
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> Mostrar Filtros';
+      } else {
+        filtersContainer.classList.add('show');
+        toggleBtn.classList.add('active');
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> Ocultar Filtros';
+      }
+    });
+  }
 
   if (applyBtn) {
     applyBtn.addEventListener('click', () => {

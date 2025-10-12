@@ -1,4 +1,4 @@
-# Dan&Giv Control - Robots.txt
+# Financia Suite - Robots.txt
 # Control de Finanzas Personales con IA
 
 # Allow all bots to access the site
@@ -7,7 +7,7 @@ Allow: /
 Crawl-delay: 1
 
 # Sitemap
-Sitemap: https://dangivcontrol.com/sitemap.xml
+Sitemap: https://financiasuite.com/sitemap.xml
 
 # Disallow private/sensitive areas
 Disallow: /admin/

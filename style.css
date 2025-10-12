@@ -3615,7 +3615,7 @@ select.form-control {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: rgb(0, 0, 0);
   font-size: 18px;
   flex-shrink: 0;
 }
@@ -13662,5 +13662,124 @@ body.dark-theme .spinner {
     padding: 8px 12px;
     font-size: 13px;
   }
+}
+
+/* === FIX PARA DASHBOARD CARDS OVERFLOW === */
+@media (max-width: 768px) {
+  .premium-dashboard {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .chart-column,
+  .cards-column {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .chart-container-premium {
+    max-width: 100%;
+    overflow-x: hidden;
+    padding: var(--space-12);
+  }
+
+  .burger-chart-wrapper,
+  .trend-chart-wrapper {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .burger-chart-wrapper canvas,
+  .trend-chart-wrapper canvas {
+    max-width: 100% !important;
+    height: auto !important;
+    width: 100% !important;
+  }
+
+  .card {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+}
+
+/* === ESTILOS PARA ICONO DE IA === */
+.ai-icon {
+  margin-left: 8px;
+  color: var(--color-primary);
+  animation: sparkle-pulse 2s ease-in-out infinite;
+  display: inline-block;
+  filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.4));
+}
+
+@keyframes sparkle-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+/* Asegurar que sea visible en modo claro */
+[data-theme="light"] .ai-icon,
+body:not([data-theme="dark"]) .ai-icon {
+  color: var(--color-primary);
+  filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.3));
+}
+
+/* En modo oscuro un poco más brillante */
+[data-theme="dark"] .ai-icon {
+  color: #818cf8;
+  filter: drop-shadow(0 0 10px rgba(129, 140, 248, 0.5));
+}
+
+/* === FILTROS DEL HISTORIAL COLAPSABLES === */
+#historyFiltersContainer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 0;
+}
+
+#historyFiltersContainer.show {
+  max-height: 1000px;
+  opacity: 1;
+  display: grid !important;
+}
+
+#toggleHistoryFilters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+#toggleHistoryFilters:hover {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+#toggleHistoryFilters i {
+  transition: transform 0.3s ease;
+}
+
+#toggleHistoryFilters.active i {
+  transform: rotate(180deg);
 }
 
