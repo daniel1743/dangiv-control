@@ -2791,7 +2791,7 @@ class FinanceApp {
     }
 
     // Setup onboarding tour system
-    this.setupOnboardingTour();
+    //this.setupOnboardingTour();
 
     // Setup new configuration handlers
     this.setupConfigurationHandlers();
@@ -3635,9 +3635,9 @@ class FinanceApp {
         this.renderDashboard();
       } else if (sectionId === 'achievements') {
         this.renderAchievements();
-      // COMENTADO: Audit log antiguo (para uso futuro como log técnico de modificaciones)
-      // } else if (sectionId === 'audit') {
-      //   this.renderAuditLog();
+        // COMENTADO: Audit log antiguo (para uso futuro como log técnico de modificaciones)
+        // } else if (sectionId === 'audit') {
+        //   this.renderAuditLog();
       } else if (sectionId === 'budget') {
         this.renderBudgetSection();
       } else if (sectionId === 'history') {
@@ -4773,7 +4773,7 @@ class FinanceApp {
       getTotalIncome: this.getTotalIncome(),
       totalExpenses: stats.totalExpenses,
       availableBalance: stats.availableBalance,
-      assignedToGoals: assignedToGoals
+      assignedToGoals: assignedToGoals,
     });
 
     // Permitir balance negativo - NO usar Math.max(0, ...)
@@ -6773,7 +6773,10 @@ class FinanceApp {
     this.updateExpenseStats(); // Update expense form stats
 
     // Toast personalizado con el monto
-    this.showToast(`💰 Gasto de $${amount.toLocaleString()} registrado correctamente`, 'success');
+    this.showToast(
+      `💰 Gasto de $${amount.toLocaleString()} registrado correctamente`,
+      'success'
+    );
 
     document.getElementById('expenseForm').reset();
     this.setupCurrentDate();
@@ -11913,7 +11916,10 @@ FinanceApp.prototype.saveProfileSettings = async function () {
         const today = new Date();
         const diffTime = Math.abs(today - lastDate);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        daysAgo = diffDays === 1 ? '\n📅 Registrado: hace 1 día' : `\n📅 Registrado: hace ${diffDays} días`;
+        daysAgo =
+          diffDays === 1
+            ? '\n📅 Registrado: hace 1 día'
+            : `\n📅 Registrado: hace ${diffDays} días`;
       }
 
       const changePercent = Math.abs(
@@ -15222,7 +15228,6 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
       }
     });
   }
-
 };
 
 // ========================================
@@ -15558,7 +15563,7 @@ FinanceApp.prototype.handleFastModeSubmit = function () {
     date: new Date().toISOString().split('T')[0],
     user: this.currentUser || this.defaultUser || 'Sin usuario',
     timestamp: Date.now(),
-    quickMode: true // Marcador para saber que fue creado en modo rápido
+    quickMode: true, // Marcador para saber que fue creado en modo rápido
   };
 
   this.expenses.push(expense);
@@ -15577,7 +15582,10 @@ FinanceApp.prototype.handleFastModeSubmit = function () {
     this.renderDashboard();
   }
 
-  this.showToast(`Gasto rápido de $${amount.toLocaleString()} registrado. Recuerda editarlo después.`, 'success');
+  this.showToast(
+    `Gasto rápido de $${amount.toLocaleString()} registrado. Recuerda editarlo después.`,
+    'success'
+  );
 };
 
 // ========================================
@@ -15638,20 +15646,20 @@ FinanceApp.prototype.migrateAuditLogToHistory = function () {
 
   // Mapeo de tipos de auditLog a tipos de transactionHistory
   const typeMapping = {
-    'expense_added': 'gasto',
-    'expense_edited': 'gasto', // Se considera como gasto también
-    'expense_deleted': 'gasto', // Se marca pero se mantiene en historial
-    'goal_added': 'abono_meta',
-    'goal_edited': 'abono_meta',
-    'goal_deleted': 'retiro_meta',
-    'payment_added': 'gasto',
-    'payment_deleted': 'gasto',
-    'shopping_added': 'gasto',
-    'shopping_deleted': 'gasto',
+    expense_added: 'gasto',
+    expense_edited: 'gasto', // Se considera como gasto también
+    expense_deleted: 'gasto', // Se marca pero se mantiene en historial
+    goal_added: 'abono_meta',
+    goal_edited: 'abono_meta',
+    goal_deleted: 'retiro_meta',
+    payment_added: 'gasto',
+    payment_deleted: 'gasto',
+    shopping_added: 'gasto',
+    shopping_deleted: 'gasto',
   };
 
   // Recorrer el auditLog y convertir cada entrada
-  this.auditLog.forEach(auditEntry => {
+  this.auditLog.forEach((auditEntry) => {
     // Solo migrar si tiene un tipo mapeado
     const mappedType = typeMapping[auditEntry.type];
     if (!mappedType) return;
@@ -15664,8 +15672,11 @@ FinanceApp.prototype.migrateAuditLogToHistory = function () {
       id: auditEntry.id || Date.now() + Math.random(),
       type: mappedType,
       amount: details.amount || 0,
-      description: auditEntry.description || details.description || 'Registro migrado',
-      date: auditEntry.date ? auditEntry.date.split('T')[0] : new Date(auditEntry.timestamp).toISOString().split('T')[0],
+      description:
+        auditEntry.description || details.description || 'Registro migrado',
+      date: auditEntry.date
+        ? auditEntry.date.split('T')[0]
+        : new Date(auditEntry.timestamp).toISOString().split('T')[0],
       category: details.category || '',
       user: auditEntry.user || 'Sistema',
       timestamp: auditEntry.timestamp || Date.now(),
@@ -15678,9 +15689,11 @@ FinanceApp.prototype.migrateAuditLogToHistory = function () {
     };
 
     // Evitar duplicados: verificar si ya existe en transactionHistory
-    const exists = this.transactionHistory.some(t =>
-      t.id === historyEntry.id ||
-      (t.timestamp === historyEntry.timestamp && t.description === historyEntry.description)
+    const exists = this.transactionHistory.some(
+      (t) =>
+        t.id === historyEntry.id ||
+        (t.timestamp === historyEntry.timestamp &&
+          t.description === historyEntry.description)
     );
 
     if (!exists) {
@@ -15698,7 +15711,9 @@ FinanceApp.prototype.migrateAuditLogToHistory = function () {
   // Guardar todo
   this.saveData();
 
-  console.log(`✅ Migración completada: ${migratedCount} registros migrados de auditLog a transactionHistory`);
+  console.log(
+    `✅ Migración completada: ${migratedCount} registros migrados de auditLog a transactionHistory`
+  );
 
   // Mostrar notificación al usuario
   if (migratedCount > 0) {
@@ -15721,7 +15736,7 @@ FinanceApp.prototype.handleSalarySubmit = function () {
     inputValue: amountInput,
     cleanValue: cleanValue,
     parsedAmount: amount,
-    date: date
+    date: date,
   });
 
   if (!amountInput || !date) {
@@ -15735,7 +15750,10 @@ FinanceApp.prototype.handleSalarySubmit = function () {
   }
 
   if (amount < 100) {
-    this.showToast('⚠️ El sueldo parece muy bajo. ¿Estás seguro? Mínimo recomendado: $100', 'error');
+    this.showToast(
+      '⚠️ El sueldo parece muy bajo. ¿Estás seguro? Mínimo recomendado: $100',
+      'error'
+    );
     return;
   }
 
@@ -15756,12 +15774,12 @@ FinanceApp.prototype.handleSalarySubmit = function () {
     // Mostrar confirmación
     const confirmed = confirm(
       `⚠️ CAMBIO DE SUELDO\n\n` +
-      `Ya tienes un sueldo establecido:\n` +
-      `💰 Sueldo actual: $${this.monthlyIncome.toLocaleString()}\n` +
-      `📅 Registrado: ${daysAgo}\n\n` +
-      `Nuevo sueldo: $${amount.toLocaleString()}\n\n` +
-      `¿Estás seguro de cambiar el sueldo?\n` +
-      `Esto actualizará tu balance total.`
+        `Ya tienes un sueldo establecido:\n` +
+        `💰 Sueldo actual: $${this.monthlyIncome.toLocaleString()}\n` +
+        `📅 Registrado: ${daysAgo}\n\n` +
+        `Nuevo sueldo: $${amount.toLocaleString()}\n\n` +
+        `¿Estás seguro de cambiar el sueldo?\n` +
+        `Esto actualizará tu balance total.`
     );
 
     if (!confirmed) {
@@ -15779,7 +15797,7 @@ FinanceApp.prototype.handleSalarySubmit = function () {
   console.log('✅ Sueldo actualizado:', {
     monthlyIncome: this.monthlyIncome,
     lastSalaryDate: this.lastSalaryDate,
-    getTotalIncome: this.getTotalIncome()
+    getTotalIncome: this.getTotalIncome(),
   });
 
   // Registrar en historial
@@ -15809,7 +15827,10 @@ FinanceApp.prototype.handleSalarySubmit = function () {
     this.renderConfigSection();
   }
 
-  this.showToast(`💰 Sueldo de $${amount.toLocaleString()} registrado correctamente`, 'success');
+  this.showToast(
+    `💰 Sueldo de $${amount.toLocaleString()} registrado correctamente`,
+    'success'
+  );
 };
 
 // === NUEVA FUNCIÓN: ENTRADA EXTRA ===
@@ -15826,7 +15847,7 @@ FinanceApp.prototype.handleExtraIncomeSubmit = function () {
     cleanValue: cleanValue,
     parsedAmount: amount,
     description: description,
-    date: date
+    date: date,
   });
 
   if (!amountInput || !description || !date) {
@@ -15855,7 +15876,7 @@ FinanceApp.prototype.handleExtraIncomeSubmit = function () {
     amount: amount,
     description: description,
     date: date,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   });
 
   // Limitar historial a últimas 50 entradas
@@ -15868,7 +15889,7 @@ FinanceApp.prototype.handleExtraIncomeSubmit = function () {
     description: description,
     previousBalance: previousBalance,
     newBalance: this.monthlyIncome,
-    getTotalIncome: this.getTotalIncome()
+    getTotalIncome: this.getTotalIncome(),
   });
 
   // Registrar en historial unificado
@@ -15901,7 +15922,7 @@ FinanceApp.prototype.handleExtraIncomeSubmit = function () {
   // Mostrar toast con información detallada
   this.showToast(
     `✨ Entrada extra agregada: $${amount.toLocaleString()} (${description})\n` +
-    `Balance: $${previousBalance.toLocaleString()} → $${this.monthlyIncome.toLocaleString()}`,
+      `Balance: $${previousBalance.toLocaleString()} → $${this.monthlyIncome.toLocaleString()}`,
     'success'
   );
 };
@@ -16876,56 +16897,73 @@ FinanceApp.prototype.renderHistory = function (filters = {}) {
   // Filtro por búsqueda
   if (filters.search) {
     const searchLower = filters.search.toLowerCase();
-    filtered = filtered.filter(t =>
-      t.description.toLowerCase().includes(searchLower) ||
-      t.category?.toLowerCase().includes(searchLower) ||
-      t.user?.toLowerCase().includes(searchLower)
+    filtered = filtered.filter(
+      (t) =>
+        t.description.toLowerCase().includes(searchLower) ||
+        t.category?.toLowerCase().includes(searchLower) ||
+        t.user?.toLowerCase().includes(searchLower)
     );
   }
 
   // Filtro por tipo
   if (filters.type && filters.type !== 'todos') {
-    filtered = filtered.filter(t => t.type === filters.type);
+    filtered = filtered.filter((t) => t.type === filters.type);
   }
 
   // Filtro por categoría
   if (filters.category && filters.category !== 'todas') {
-    filtered = filtered.filter(t => t.category === filters.category);
+    filtered = filtered.filter((t) => t.category === filters.category);
   }
 
   // Filtro por rango de fechas
   if (filters.dateFrom) {
-    filtered = filtered.filter(t => t.date >= filters.dateFrom);
+    filtered = filtered.filter((t) => t.date >= filters.dateFrom);
   }
   if (filters.dateTo) {
-    filtered = filtered.filter(t => t.date <= filters.dateTo);
+    filtered = filtered.filter((t) => t.date <= filters.dateTo);
   }
 
   // Ordenar
   const sort = filters.sort || 'date-desc';
   filtered.sort((a, b) => {
     switch (sort) {
-      case 'date-desc': return new Date(b.date) - new Date(a.date);
-      case 'date-asc': return new Date(a.date) - new Date(b.date);
-      case 'amount-desc': return b.amount - a.amount;
-      case 'amount-asc': return a.amount - b.amount;
-      case 'type': return a.type.localeCompare(b.type);
-      default: return 0;
+      case 'date-desc':
+        return new Date(b.date) - new Date(a.date);
+      case 'date-asc':
+        return new Date(a.date) - new Date(b.date);
+      case 'amount-desc':
+        return b.amount - a.amount;
+      case 'amount-asc':
+        return a.amount - b.amount;
+      case 'type':
+        return a.type.localeCompare(b.type);
+      default:
+        return 0;
     }
   });
 
   // Calcular estadísticas
   const stats = {
     totalCount: filtered.length,
-    totalIncome: filtered.filter(t => ['sueldo', 'entrada_extra'].includes(t.type)).reduce((sum, t) => sum + t.amount, 0),
-    totalExpenses: filtered.filter(t => t.type === 'gasto').reduce((sum, t) => sum + t.amount, 0),
+    totalIncome: filtered
+      .filter((t) => ['sueldo', 'entrada_extra'].includes(t.type))
+      .reduce((sum, t) => sum + t.amount, 0),
+    totalExpenses: filtered
+      .filter((t) => t.type === 'gasto')
+      .reduce((sum, t) => sum + t.amount, 0),
   };
 
   // Actualizar estadísticas
   document.getElementById('historyTotalCount').textContent = stats.totalCount;
-  document.getElementById('historyTotalIncome').textContent = `$${stats.totalIncome.toLocaleString()}`;
-  document.getElementById('historyTotalExpenses').textContent = `$${stats.totalExpenses.toLocaleString()}`;
-  document.getElementById('historyResultCount').textContent = `${filtered.length} resultados`;
+  document.getElementById(
+    'historyTotalIncome'
+  ).textContent = `$${stats.totalIncome.toLocaleString()}`;
+  document.getElementById(
+    'historyTotalExpenses'
+  ).textContent = `$${stats.totalExpenses.toLocaleString()}`;
+  document.getElementById(
+    'historyResultCount'
+  ).textContent = `${filtered.length} resultados`;
 
   // Renderizar transacciones
   if (filtered.length === 0) {
@@ -16955,12 +16993,13 @@ FinanceApp.prototype.renderHistory = function (filters = {}) {
     retiro_meta: '↩️ Retiro de Meta',
   };
 
-  historyList.innerHTML = filtered.map(transaction => {
-    const isIncome = ['sueldo', 'entrada_extra'].includes(transaction.type);
-    const amountClass = isIncome ? 'positive' : 'negative';
-    const amountSign = isIncome ? '+' : '-';
+  historyList.innerHTML = filtered
+    .map((transaction) => {
+      const isIncome = ['sueldo', 'entrada_extra'].includes(transaction.type);
+      const amountClass = isIncome ? 'positive' : 'negative';
+      const amountSign = isIncome ? '+' : '-';
 
-    return `
+      return `
       <div class="history-transaction-item">
         <div class="history-transaction-icon ${transaction.type}">
           <i class="fas ${typeIcons[transaction.type] || 'fa-circle'}"></i>
@@ -16971,9 +17010,19 @@ FinanceApp.prototype.renderHistory = function (filters = {}) {
             <span class="history-transaction-badge ${transaction.type}">
               ${typeLabels[transaction.type] || transaction.type}
             </span>
-            ${transaction.category ? `<span><i class="fas fa-tag"></i> ${transaction.category}</span>` : ''}
-            ${transaction.user ? `<span><i class="fas fa-user"></i> ${transaction.user}</span>` : ''}
-            <span><i class="fas fa-calendar"></i> ${new Date(transaction.date).toLocaleDateString('es-CO')}</span>
+            ${
+              transaction.category
+                ? `<span><i class="fas fa-tag"></i> ${transaction.category}</span>`
+                : ''
+            }
+            ${
+              transaction.user
+                ? `<span><i class="fas fa-user"></i> ${transaction.user}</span>`
+                : ''
+            }
+            <span><i class="fas fa-calendar"></i> ${new Date(
+              transaction.date
+            ).toLocaleDateString('es-CO')}</span>
           </div>
         </div>
         <div class="history-transaction-amount ${amountClass}">
@@ -16981,7 +17030,8 @@ FinanceApp.prototype.renderHistory = function (filters = {}) {
         </div>
       </div>
     `;
-  }).join('');
+    })
+    .join('');
 };
 
 /**
@@ -17002,11 +17052,13 @@ FinanceApp.prototype.setupHistoryFilters = function () {
       if (isVisible) {
         filtersContainer.classList.remove('show');
         toggleBtn.classList.remove('active');
-        toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> Mostrar Filtros';
+        toggleBtn.innerHTML =
+          '<i class="fas fa-chevron-down"></i> Mostrar Filtros';
       } else {
         filtersContainer.classList.add('show');
         toggleBtn.classList.add('active');
-        toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> Ocultar Filtros';
+        toggleBtn.innerHTML =
+          '<i class="fas fa-chevron-up"></i> Ocultar Filtros';
       }
     });
   }
@@ -17045,7 +17097,8 @@ FinanceApp.prototype.applyHistoryFilters = function () {
   const filters = {
     search: document.getElementById('historySearch')?.value || '',
     type: document.getElementById('historyFilterType')?.value || 'todos',
-    category: document.getElementById('historyFilterCategory')?.value || 'todas',
+    category:
+      document.getElementById('historyFilterCategory')?.value || 'todas',
     sort: document.getElementById('historySort')?.value || 'date-desc',
     dateFrom: document.getElementById('historyDateFrom')?.value || '',
     dateTo: document.getElementById('historyDateTo')?.value || '',

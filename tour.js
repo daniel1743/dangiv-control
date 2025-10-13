@@ -3,7 +3,7 @@
  * Tour interactivo para nuevos usuarios
  */
 
-class GuidedTour {
+/*class GuidedTour {
   constructor() {
     this.currentStep = 0;
     this.isActive = false;
@@ -22,88 +22,87 @@ class GuidedTour {
       {
         title: '📊 Dashboard - Tu Centro de Control',
         subtitle: 'Visión completa de tus finanzas',
-        content: 'Aquí ves el resumen de tu situación financiera actual: balance disponible, gastos totales, ahorros y más.',
+        content:
+          'Aquí ves el resumen de tu situación financiera actual: balance disponible, gastos totales, ahorros y más.',
         target: '.stat-card--primary',
         position: 'bottom',
         features: [
           'Balance en tiempo real',
           'Gráficos interactivos',
-          'Estadísticas detalladas'
-        ]
+          'Estadísticas detalladas',
+        ],
       },
       {
         title: '💳 Registro de Gastos',
         subtitle: 'Control total de tus gastos',
-        content: 'Registra cada gasto de forma rápida y sencilla. Categoriza, asigna usuarios y marca el nivel de necesidad.',
+        content:
+          'Registra cada gasto de forma rápida y sencilla. Categoriza, asigna usuarios y marca el nivel de necesidad.',
         target: '[data-section="expenses"]',
         position: 'right',
         features: [
           'Categorías personalizables',
           'Multi-usuario (Daniel/Givonik)',
-          'Nivel de necesidad'
-        ]
+          'Nivel de necesidad',
+        ],
       },
       {
         title: '🎯 Metas Financieras',
         subtitle: 'Alcanza tus objetivos',
-        content: 'Define metas de ahorro con plazos y montos. Visualiza tu progreso y recibe notificaciones motivacionales.',
+        content:
+          'Define metas de ahorro con plazos y montos. Visualiza tu progreso y recibe notificaciones motivacionales.',
         target: '[data-section="goals"]',
         position: 'right',
         features: [
           'Metas con plazos',
           'Seguimiento visual',
-          'Notificaciones de progreso'
-        ]
+          'Notificaciones de progreso',
+        ],
       },
       {
         title: '💰 Presupuesto Mensual',
         subtitle: 'Planifica y controla',
-        content: 'Establece presupuestos por categoría y mes. Recibe alertas cuando te acerques al límite.',
+        content:
+          'Establece presupuestos por categoría y mes. Recibe alertas cuando te acerques al límite.',
         target: '[data-section="budget"]',
         position: 'right',
         features: [
           'Presupuesto por categoría',
           'Alertas inteligentes',
-          'Comparativas mensuales'
-        ]
+          'Comparativas mensuales',
+        ],
       },
       {
         title: '📜 Historial Completo',
         subtitle: 'Toda tu actividad financiera',
-        content: 'Accede al registro completo de todas tus transacciones con filtros avanzados y búsqueda.',
+        content:
+          'Accede al registro completo de todas tus transacciones con filtros avanzados y búsqueda.',
         target: '[data-section="history"]',
         position: 'right',
-        features: [
-          'Filtros avanzados',
-          'Búsqueda rápida',
-          'Exportar datos'
-        ]
+        features: ['Filtros avanzados', 'Búsqueda rápida', 'Exportar datos'],
       },
       {
         title: '⚙️ Configuración',
         subtitle: 'Personaliza tu experiencia',
-        content: 'Ajusta el tema, cambia tu foto de perfil, configura usuarios y personaliza la aplicación a tu gusto.',
+        content:
+          'Ajusta el tema, cambia tu foto de perfil, configura usuarios y personaliza la aplicación a tu gusto.',
         target: '[data-section="config"]',
         position: 'right',
-        features: [
-          'Tema claro/oscuro',
-          'Foto de perfil',
-          'Multi-usuario'
-        ]
+        features: ['Tema claro/oscuro', 'Foto de perfil', 'Multi-usuario'],
       },
       {
         title: '🚀 ¡Listo para Comenzar!',
         subtitle: 'Crea tu cuenta o inicia sesión',
-        content: 'Registra una cuenta para guardar tus datos en la nube y acceder desde cualquier dispositivo.',
+        content:
+          'Registra una cuenta para guardar tus datos en la nube y acceder desde cualquier dispositivo.',
         target: '.login-icon-btn',
         position: 'bottom',
         features: [
           'Sincronización en la nube',
           'Acceso multi-dispositivo',
-          'Datos seguros con Firebase'
+          'Datos seguros con Firebase',
         ],
-        isLast: true
-      }
+        isLast: true,
+      },
     ];
 
     this.createElements();
@@ -298,7 +297,10 @@ class GuidedTour {
 
     // Verificar si se desborda y ajustar posición automáticamente
     // Si se desborda abajo, intentar arriba
-    if (position === 'bottom' && top + tooltipRect.height > viewportHeight - margin) {
+    if (
+      position === 'bottom' &&
+      top + tooltipRect.height > viewportHeight - margin
+    ) {
       position = 'top';
       top = targetRect.top - tooltipRect.height - gap;
     }
@@ -310,7 +312,10 @@ class GuidedTour {
     }
 
     // Si se desborda a la derecha, intentar izquierda
-    if (position === 'right' && left + tooltipRect.width > viewportWidth - margin) {
+    if (
+      position === 'right' &&
+      left + tooltipRect.width > viewportWidth - margin
+    ) {
       position = 'left';
       left = targetRect.left - tooltipRect.width - gap;
       top = targetRect.top + (targetRect.height - tooltipRect.height) / 2;
@@ -379,7 +384,7 @@ class GuidedTour {
     if (step.features && step.features.length > 0) {
       featuresHTML = `
         <ul class="tour-features">
-          ${step.features.map(feature => `<li>${feature}</li>`).join('')}
+          ${step.features.map((feature) => `<li>${feature}</li>`).join('')}
         </ul>
       `;
     }
@@ -387,7 +392,9 @@ class GuidedTour {
     this.tooltip.innerHTML = `
       <div class="tour-tooltip-header">
         <div class="tour-tooltip-icon">${step.title.split(' ')[0]}</div>
-        <h3 class="tour-tooltip-title">${step.title.substring(step.title.indexOf(' ') + 1)}</h3>
+        <h3 class="tour-tooltip-title">${step.title.substring(
+          step.title.indexOf(' ') + 1
+        )}</h3>
         <p class="tour-tooltip-subtitle">${step.subtitle}</p>
       </div>
       <div class="tour-tooltip-body">
@@ -400,29 +407,43 @@ class GuidedTour {
         <div class="tour-progress">
           <span>${index + 1}/${this.steps.length}</span>
           <div class="tour-progress-dots">
-            ${this.steps.map((_, i) => `
-              <div class="tour-progress-dot ${i === index ? 'active' : ''}"></div>
-            `).join('')}
+            ${this.steps
+              .map(
+                (_, i) => `
+              <div class="tour-progress-dot ${
+                i === index ? 'active' : ''
+              }"></div>
+            `
+              )
+              .join('')}
           </div>
         </div>
         <div class="tour-buttons">
           <button class="tour-btn tour-btn-skip" id="tourSkipBtn">
             Saltar
           </button>
-          ${!isFirst ? `
+          ${
+            !isFirst
+              ? `
             <button class="tour-btn tour-btn-prev" id="tourPrevBtn">
               <i class="fas fa-arrow-left"></i> Anterior
             </button>
-          ` : ''}
-          ${!isLast ? `
+          `
+              : ''
+          }
+          ${
+            !isLast
+              ? `
             <button class="tour-btn tour-btn-next" id="tourNextBtn">
               Siguiente <i class="fas fa-arrow-right"></i>
             </button>
-          ` : `
+          `
+              : `
             <button class="tour-btn tour-btn-finish" id="tourFinishBtn">
               <i class="fas fa-check"></i> Finalizar
             </button>
-          `}
+          `
+          }
         </div>
       </div>
     `;
@@ -465,7 +486,10 @@ class GuidedTour {
 
     // Mostrar mensaje de éxito
     if (window.app && typeof window.app.showToast === 'function') {
-      window.app.showToast('¡Tour completado! 🎉 Ahora puedes empezar a usar Financia Suite.', 'success');
+      window.app.showToast(
+        '¡Tour completado! 🎉 Ahora puedes empezar a usar Financia Suite.',
+        'success'
+      );
     }
   }
 
@@ -525,4 +549,4 @@ if (typeof window !== 'undefined') {
 // Exportar para uso global
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = GuidedTour;
-}
+}*/

@@ -7323,9 +7323,13 @@ select.form-control {
   width: 100vw;
   height: 100vh;
   z-index: 10000;
-  pointer-events: all;
+  opacity: 0;
+  /* <-- AÑADIDO: Oculto por defecto */
+  pointer-events: none;
+  /* <-- AÑADIDO: No interactivo por defecto */
+  transition: opacity 0.3s ease;
+  /* Transición suave */
 }
-
 .tour-overlay.hidden {
   display: none;
 }
@@ -7597,6 +7601,15 @@ select.form-control {
     max-width: 90vw;
     min-width: 280px;
     margin: var(--space-16);
+
+    /* --- LÍNEAS AÑADIDAS --- */
+    max-height: 85vh;
+    /* 1. Limita la altura máxima al 85% de la pantalla */
+    display: flex;
+    /* 2. Usa Flexbox para controlar el layout interno */
+    flex-direction: column;
+    /* 3. Apila el header, body y footer verticalmente */
+    /* --- FIN DE LÍNEAS AÑADIDAS --- */
   }
 
   .tour-header,
@@ -7604,6 +7617,17 @@ select.form-control {
   .tour-footer {
     padding: var(--space-16);
   }
+
+  /* --- SELECTOR AÑADIDO --- */
+  .tour-body {
+    overflow-y: auto;
+    /* 4. Habilita el scroll SOLO en el cuerpo del modal */
+    flex-shrink: 1;
+    /* 5. Permite que el cuerpo se encoja para dar espacio al footer */
+  }
+
+  /* --- FIN DE SELECTOR AÑADIDO --- */
+
 
   .tour-actions {
     flex-wrap: wrap;
@@ -7614,13 +7638,22 @@ select.form-control {
     flex: 1;
     min-width: 80px;
   }
+}
 
-  .tour-start-btn {
-    bottom: var(--space-16);
-    right: var(--space-16);
-    width: 50px;
-    height: 50px;
-    font-size: var(--font-size-lg);
+@media (max-width: 480px) {
+  .tour-tooltip {
+    max-width: 95vw;
+    min-width: 260px;
+  }
+
+  .tour-progress {
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .tour-progress-bar {
+    margin-left: 0;
+    width: 100%;
   }
 }
 
@@ -13783,3 +13816,6 @@ body:not([data-theme="dark"]) .ai-icon {
   transform: rotate(180deg);
 }
 
+#tourOverlay {
+  display: none !important;
+}
