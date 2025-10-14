@@ -1,4 +1,4 @@
-﻿// Dan&Giv Control - Personal Finance Application
+﻿// Financia Suite - Personal Finance Application
 // Main JavaScript file with all functionality
 
 class FinanceApp {
@@ -1205,7 +1205,8 @@ class FinanceApp {
     }
 
     try {
-      const geminiApiKey = window.geminiApiKey || 'TU_API_KEY_DE_GEMINI';
+      // LÍNEA CORRECTA
+      const geminiApiKey = window.FB.geminiApiKey || 'TU_API_KEY_DE_GEMINI';
 
       if (!geminiApiKey || geminiApiKey === 'TU_API_KEY_DE_GEMINI') {
         console.warn('API Key de Gemini no configurada');
@@ -1238,7 +1239,7 @@ class FinanceApp {
       const timeoutId = setTimeout(() => controller.abort(), 8000);
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${geminiApiKey}`,
         {
           method: 'POST',
           headers: {
@@ -1595,16 +1596,24 @@ class FinanceApp {
       const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
       const mobileProfileBtn = document.getElementById('mobileProfileBtn');
       const navbarLoginBtn = document.getElementById('navbarLoginBtn');
-
-      // FOOTER Y HAMBURGUESA
       const footerLoginLink = document.getElementById('footerLoginLink');
 
       if (user) {
         this.currentUser = user.uid;
         this.firebaseUser = user; // Guardar usuario de Firebase
         this.userProfile.email = user.email || '';
+
+        // Asignamos el nombre aquí para tenerlo listo para el chat del nuevo usuario
+        const potentialName =
+          user.displayName ||
+          user.email?.split('@')[0] ||
+          this.userProfile.name ||
+          'Usuario';
+        // Si el usuario ya tiene un nombre en el perfil, lo respetamos, si no, usamos el del registro
         this.userProfile.name =
-          user.displayName || user.email?.split('@')[0] || 'Usuario';
+          this.userProfile.name && this.userProfile.name !== 'Usuario'
+            ? this.userProfile.name
+            : potentialName;
 
         // Marcar como autenticado
         localStorage.setItem('financia_auth_status', 'authenticated');
@@ -1622,9 +1631,38 @@ class FinanceApp {
 
         this.updateProfileDisplay();
 
-        // USUARIO AUTENTICADO: Esperar a que los datos reales carguen
-        // NO mostrar datos ficticios, solo los datos reales del usuario
-        console.log('[Auth] Usuario autenticado, cargando datos reales...');
+        // =====================================================================
+        // === INICIO DE LA LÓGICA CORREGIDA: Leer la "Bandera" de Sesión    ===
+        // =====================================================================
+
+        const isNewUser = sessionStorage.getItem('isNewUser') === 'true';
+
+        if (isNewUser) {
+          // ¡Importante! Borramos la bandera inmediatamente para que no se active en la siguiente recarga
+          sessionStorage.removeItem('isNewUser');
+
+          console.log(
+            '✅ Bandera de usuario nuevo detectada. ¡Iniciando chat de onboarding!'
+          );
+
+          // Ocultamos el spinner de carga general para dar paso al chat
+          this.hideAppLoading();
+
+          // Esperamos un instante antes de lanzar el chat para que la UI se estabilice
+          setTimeout(() => {
+            this.startOnboardingChat();
+          }, 300);
+          return; // Detenemos la ejecución aquí para no cargar el dashboard
+        }
+
+        // ===================================================================
+        // === FIN DE LA LÓGICA CORREGIDA                                  ===
+        // ===================================================================
+
+        // Este código ahora solo se ejecutará para usuarios existentes que regresan
+        console.log(
+          '[Auth] Usuario existente autenticado, cargando datos reales...'
+        );
 
         // Sincronizar desde Firebase y esperar a que complete
         this.syncFromFirebase()
@@ -1656,9 +1694,6 @@ class FinanceApp {
             // Iniciar sistema de mensajes motivadores
             this.updateCarouselWithMessages();
             setTimeout(() => {
-              // DESACTIVADO: Sistema Gemini
-              // this.fetchMotivationalMessages();
-
               // NUEVO: Sistema JSON de mensajes personalizados
               this.loadMessagesFromJSON();
             }, 100);
@@ -1671,7 +1706,7 @@ class FinanceApp {
           })
           .catch((err) => {
             console.error('[Auth] Error en sincronización:', err);
-            clearTimeout(maxLoadingTime);
+            // clearTimeout(maxLoadingTime); // maxLoadingTime no está definido, lo comento para evitar errores
             this.hideAppLoading();
 
             // Renderizar con datos locales si falla
@@ -1679,7 +1714,6 @@ class FinanceApp {
             this.renderSavingsAccountsList();
             this.updateDashboardSavings();
             this.renderRecurringPaymentsList();
-            //this.updateDashboardPayments();
             this.initTrendChart();
             this.updateDashboardWelcome();
             this.initAchievements();
@@ -2462,7 +2496,7 @@ class FinanceApp {
         );
       } catch (emailError) {
         console.warn('No se pudo enviar email de verificación:', emailError);
-        this.showToast('¡Bienvenido a Dan&Giv Control! 🎉', 'success', 4000);
+        this.showToast('¡Bienvenido a Financia Suite! 🎉', 'success', 4000);
       }
 
       // Cerrar modal y redirigir al dashboard
@@ -2654,6 +2688,38 @@ class FinanceApp {
     this.initScrollAnimations();
     // initMobileMenu() se llama después de Firebase sync
   }
+
+  startOnboardingChat = function () {
+    console.log('🚀 Iniciando chat de onboarding para usuario personal...');
+
+    const userName = this.userProfile.name || 'Usuario';
+
+    // 1. Preparamos el primer mensaje del asistente
+    this.conversationHistory = [
+      {
+        role: 'assistant',
+        content: `¡Hola, ${userName}! Soy Fin, tu asistente financiero. ¡Qué bueno tenerte aquí! Para crear tu plan perfecto, necesito saber, ¿cuál es tu ingreso mensual aproximado? 💰`,
+      },
+    ];
+
+    // 2. Ocultamos todas las secciones
+    document.querySelectorAll('.section').forEach((section) => {
+      section.classList.remove('active');
+    });
+
+    // 3. Mostramos la interfaz del chat
+    const chatInterface = document.getElementById('chatInterface');
+    if (chatInterface) {
+      chatInterface.classList.remove('hidden');
+      chatInterface.classList.add('active'); // La hacemos la sección activa
+      this.renderChatHistory();
+    } else {
+      console.error(
+        "Error: No se encontró el elemento 'chatInterface' en el HTML."
+      );
+      this.showToast('Error al iniciar el asistente de IA.', 'error');
+    }
+  };
   // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
   resetPasswords() {
     // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
@@ -3692,7 +3758,7 @@ class FinanceApp {
 
       case 'report-problem':
         // Mostrar información de soporte
-        this.showToast('Envía un email a soporte@dangivcontrol.com', 'info');
+        this.showToast('Envía un email a soporte@financiasuite.com', 'info');
         break;
 
       case 'logout':
@@ -3735,7 +3801,7 @@ class FinanceApp {
       <div class="daily-message-content">
         <div class="daily-message-header" style="background: linear-gradient(135deg, #667EEA, #764BA2, #F093FB); color: white;">
           <span class="daily-message-icon">👑</span>
-          <h2>Dan&Giv Premium</h2>
+          <h2>Financia Suite</h2>
           <button class="daily-message-close" onclick="this.closest('.daily-message-modal').remove()">
             <i class="fas fa-times"></i>
           </button>
@@ -3743,7 +3809,7 @@ class FinanceApp {
         <div class="daily-message-body">
           <p class="daily-message-greeting">¡Estamos trabajando en algo especial! ✨</p>
           <p class="daily-message-text">
-            Dan&Giv Control Premium está en desarrollo y pronto estará disponible con características increíbles:
+            Financia Suite Premium está en desarrollo y pronto estará disponible con características increíbles:
           </p>
           <div class="daily-message-reflection">
             <strong>🎯 Próximamente:</strong><br><br>
@@ -8216,7 +8282,7 @@ class FinanceApp {
       return;
     }
 
-    let listContent = 'LISTA DE COMPRAS - Dan&Giv Control\n';
+    let listContent = 'LISTA DE COMPRAS - Financia Suite\n';
     listContent += '===================================\n\n';
 
     selectedItems.forEach((item) => {
@@ -8549,38 +8615,101 @@ class FinanceApp {
   // PEGA EL NUEVO CÃƒâ€œDIGO JS AQUÃ
   // REEMPLAZA TU FUNCIÃƒâ€œN handleAIOnboarding CON ESTA:
   async handleAIOnboarding() {
-    const nickname = document.getElementById('userNickname').value;
-    const goal = document.getElementById('mainGoal').value;
-    const amount = document.getElementById('goalAmount').value;
-    const submitButton = document.getElementById('startAIPlanBtn');
+    const nickname = this.tempUserData.nickname;
+    const goal = this.tempUserData.goal;
+    const amount = this.tempUserData.amount;
 
-    if (!nickname || !goal || !amount) {
-      this.showToast('Por favor, completa todos los campos del plan.', 'error');
+    // Historial de la conversación que ya tienes en tu app
+    const conversationHistory = this.conversationHistory;
+
+    const prompt = `
+Eres un asistente financiero amigable y experto llamado Fin. Tu misión es configurar la aplicación Financia Suite para un nuevo usuario llamado "${nickname}" a través de una conversación.
+
+Contexto:
+El usuario acaba de registrarse y le estás haciendo las preguntas iniciales. Ya te ha dicho que su meta principal es "${goal}" por un monto de $${amount}.
+
+Historial de la conversación (lo más reciente al final):
+${JSON.stringify(conversationHistory)}
+
+Tarea:
+1.  Analiza el historial. Si el usuario acaba de dar su ingreso mensual, agradécele y pregúntale por sus gastos fijos más importantes (ej: arriendo, deudas, suscripciones).
+2.  Si el usuario acaba de dar sus gastos fijos, agradécele.
+3.  Una vez que tengas el ingreso Y los gastos fijos, analiza toda la información y genera un objeto JSON con el siguiente formato exacto. No incluyas NADA de texto adicional antes o después, solo el objeto JSON.
+
+{
+  "monthlyIncome": <el ingreso mensual que te dio el usuario como número>,
+  "suggestedBudget": {
+    "Alimentación": <un número estimado por ti basado en el ingreso y gastos fijos>,
+    "Transporte": <un número estimado por ti>,
+    "Entretenimiento": <un número estimado por ti, debe ser menor que los otros>,
+    "Otros": <un número estimado por ti>
+  },
+  "initialGoal": {
+    "name": "${goal}",
+    "target": ${amount},
+    "deadline": "<una fecha estimada por ti en formato YYYY-MM-DD para alcanzar la meta>"
+  },
+  "summaryMessage": "¡Perfecto, ${nickname}! He creado tu plan inicial. Establecí un presupuesto y tu primera meta para '${goal}'. ¡Vamos a empezar!"
+}
+`;
+    const geminiApiKey = window.FB.geminiApiKey;
+    if (!geminiApiKey) {
+      this.showToast('API Key de Gemini no configurada.', 'error');
+      console.error(
+        'API Key de Gemini no encontrada en window.FB.geminiApiKey'
+      );
       return;
     }
 
-    // Guardamos los datos iniciales
-    this.tempUserData = { nickname, goal, amount };
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${geminiApiKey}`;
 
-    // Preparamos la primera pregunta
-    this.conversationState = 'ASKING_INCOME';
-    this.conversationHistory = [
-      {
-        role: 'user',
-        content: `El usuario ${nickname} quiere ahorrar $${amount} para ${goal}.`,
-      },
-      {
+    try {
+      const respuesta = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+        }),
+      });
+
+      if (!respuesta.ok) {
+        const errorData = await respuesta.json();
+        throw new Error(`Error de la API: ${errorData.error.message}`);
+      }
+
+      const datos = await respuesta.json();
+      const aiResponseText = datos.candidates[0].content.parts[0].text;
+
+      try {
+        const plan = JSON.parse(aiResponseText);
+        console.log('🎉 Plan JSON recibido de la IA:', plan);
+        this.monthlyIncome = plan.monthlyIncome;
+        this.goals.push(plan.initialGoal);
+        await this.saveData();
+        this.showToast(plan.summaryMessage, 'success', 5000);
+        document.getElementById('chatInterface').classList.add('hidden');
+        document.getElementById('dashboard').classList.add('active');
+        this.renderDashboard();
+      } catch (e) {
+        this.conversationHistory.push({
+          role: 'assistant',
+          content: aiResponseText,
+        });
+        this.renderChatHistory();
+      }
+    } catch (error) {
+      console.error('❌ Fallo la llamada a la API de Gemini:', error);
+      this.showToast(
+        'Hubo un error al comunicarse con el asistente de IA.',
+        'error'
+      );
+      this.conversationHistory.push({
         role: 'assistant',
-        content: `¡Hola, ${nickname}! ¡Qué excelente meta! Para empezar a crear tu plan, necesito saber, ¿cuál es tu ingreso mensual aproximado? 💰`,
-      },
-    ];
-
-    // Actualizamos la UI
-    document.getElementById('aiOnboardingContainer').classList.add('hidden');
-    document.getElementById('chatInterface').classList.remove('hidden');
-    this.renderChatHistory();
-    submitButton.disabled = false;
-    submitButton.innerHTML = `<i class="fas fa-check"></i> Crear mi Primer Plan`;
+        content:
+          'Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo.',
+      });
+      this.renderChatHistory();
+    }
   }
 
   renderChatHistory() {
@@ -8605,10 +8734,12 @@ class FinanceApp {
     const messageText = input ? input.value.trim() : '';
     if (!messageText) return;
 
+    // Agrega el mensaje del usuario al historial y renderiza
     this.conversationHistory.push({ role: 'user', content: messageText });
     this.renderChatHistory();
     if (input) input.value = '';
 
+    // Muestra el indicador de "escribiendo..."
     const chatHistoryContainer = document.getElementById('chatHistory');
     const typingIndicator = document.createElement('div');
     typingIndicator.className = 'chat-message ai';
@@ -8616,38 +8747,85 @@ class FinanceApp {
     chatHistoryContainer.appendChild(typingIndicator);
     chatHistoryContainer.scrollTop = chatHistoryContainer.scrollHeight;
 
+    // --- AQUÍ EMPIEZA LA LÓGICA DE GEMINI ---
+
+    // Prepara el prompt con la misma lógica que usamos antes
+    const nickname = this.userProfile.name;
+    const goal = 'alcanzar mis metas'; // Placeholder
+    const amount = 0; // Placeholder
+
+    const prompt = `
+Eres un asistente financiero amigable y experto llamado Fin. Tu misión es configurar la aplicación Financia Suite para un nuevo usuario llamado "${nickname}" a través de una conversación.
+
+Historial de la conversación (lo más reciente al final):
+${JSON.stringify(this.conversationHistory)}
+
+Tarea:
+1.  Analiza el historial. Si el usuario acaba de dar su ingreso mensual, agradécele y pregúntale por sus gastos fijos más importantes (ej: arriendo, deudas, suscripciones).
+2.  Si el usuario acaba de dar sus gastos fijos, agradécele.
+3.  Una vez que tengas el ingreso Y los gastos fijos, analiza toda la información y genera un objeto JSON con el siguiente formato exacto. No incluyas NADA de texto adicional antes o después, solo el objeto JSON.
+
+{
+  "monthlyIncome": <el ingreso mensual que te dio el usuario como número>,
+  "suggestedBudget": { "Alimentación": <número>, "Transporte": <número>, "Entretenimiento": <número>, "Otros": <número> },
+  "initialGoal": { "name": "Mi Primera Meta", "target": 500, "deadline": "<fecha estimada por ti en YYYY-MM-DD>" },
+  "summaryMessage": "¡Perfecto, ${nickname}! He creado tu plan inicial. ¡Vamos a empezar!"
+}
+`;
+
+    // Llama a la API de Gemini (igual que en la función que te di antes)
+    const geminiApiKey = window.FB.geminiApiKey;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${geminiApiKey}`;
+
     try {
-      const response = await fetch('http://localhost:3000/api/perplexity', {
+      const respuesta = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'llama-3-sonar-large-32k-online',
-          messages: this.conversationHistory,
-        }),
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Error del servidor: ${response.statusText}`);
+      // Quita el indicador de "escribiendo..."
+      typingIndicator.remove();
+
+      if (!respuesta.ok) {
+        const errorData = await respuesta.json();
+        throw new Error(`Error de la API: ${errorData.error.message}`);
       }
 
-      const data = await response.json();
-      const aiMessage = data.choices?.[0]?.message?.content;
-      if (aiMessage) {
+      const datos = await respuesta.json();
+      const aiResponseText = datos.candidates[0].content.parts[0].text;
+
+      // Intenta procesar la respuesta
+      try {
+        const plan = JSON.parse(aiResponseText);
+
+        // SI ES UN JSON, CONFIGURA LA APP
+        this.monthlyIncome = plan.monthlyIncome;
+        this.goals.push(plan.initialGoal);
+        await this.saveData();
+        this.showToast(plan.summaryMessage, 'success', 5000);
+
+        // Oculta el chat y muestra el dashboard
+        document.getElementById('chatInterface').classList.add('hidden');
+        this.showSection('dashboard'); // Usa tu función para cambiar de sección
+      } catch (e) {
+        // SI NO ES JSON, ES UNA PREGUNTA. LA AÑADE AL CHAT
         this.conversationHistory.push({
           role: 'assistant',
-          content: aiMessage,
+          content: aiResponseText,
         });
-      } else {
-        throw new Error('Respuesta vacía de la IA');
+        this.renderChatHistory();
       }
-
-      this.renderChatHistory();
     } catch (error) {
-      console.error('Error al enviar mensaje de chat:', error);
-      this.showToast('Hubo un error en la conversación con la IA.', 'error');
+      typingIndicator.remove();
+      console.error(
+        '❌ Fallo la llamada a la API de Gemini en sendChatMessage:',
+        error
+      );
+      this.showToast('Error con el asistente de IA.', 'error');
       this.conversationHistory.push({
         role: 'assistant',
-        content: 'Lo siento, tuve un problema para procesar tu respuesta.',
+        content: 'Lo siento, tuve un problema. Intenta de nuevo.',
       });
       this.renderChatHistory();
     }
@@ -10681,6 +10859,7 @@ FinanceApp.prototype.handleRegistration = async function () {
 
   if (!name || !email || !password) {
     this.showToast('Todos los campos son obligatorios', 'error');
+
     return;
   }
 
@@ -10700,6 +10879,8 @@ FinanceApp.prototype.handleRegistration = async function () {
     // Activar bandera para prevenir race condition con syncFromFirebase
     this.isRegistering = true;
     console.log('DEBUG: Bandera isRegistering activada');
+
+    sessionStorage.setItem('isNewUser', 'true');
 
     // Primero registrar en Firebase Auth
     const userCredential = await FB.createUserWithEmailAndPassword(
@@ -11247,7 +11428,7 @@ FinanceApp.prototype.setupOnboardingTour = function () {
   this.tourSteps = [
     {
       element: '.navbar__logo',
-      title: '¡Bienvenido a Dan&Giv Control!',
+      title: '¡Bienvenido a Financia Suite!',
       description:
         'Esta es tu nueva herramienta para el control financiero personal. Te guiaremos paso a paso por todas las funciones.',
       position: 'bottom',
@@ -11652,7 +11833,7 @@ FinanceApp.prototype.endTour = function (showFinalOptions = false) {
     }, 300);
   } else {
     this.showToast(
-      '¡Tour completado! Ya puedes comenzar a usar Dan&Giv Control.',
+      '¡Tour completado! Ya puedes comenzar a usar Financia Suite.',
       'success'
     );
   }
@@ -11668,7 +11849,7 @@ FinanceApp.prototype.showTourCompletionModal = function () {
           </div>
           <div class="modal-body">
             <p style="margin-bottom: var(--space-20); text-align: center; color: var(--color-text-secondary);">
-              Ya conoces todas las funciones de Dan&Giv Control. ¿Qué te gustaría hacer ahora?
+              Ya conoces todas las funciones de Financia Suite. ¿Qué te gustaría hacer ahora?
             </p>
             <div class="tour-final-options">
               <button class="btn btn--primary btn--full-width" id="tourOptionExpense">

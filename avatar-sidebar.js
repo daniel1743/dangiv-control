@@ -4,10 +4,10 @@
  * Menú lateral del avatar con arquitectura moderna
  * ============================================
  * @version 2.0.0
- * @author Dan&Giv Control
+ * @author Financia Suite
  */
 
-(function() {
+(function () {
   'use strict';
 
   /**
@@ -98,7 +98,7 @@
 
       // Acciones de los items del menú
       const actionButtons = this.sidebar.querySelectorAll('[data-action]');
-      actionButtons.forEach(button => {
+      actionButtons.forEach((button) => {
         button.addEventListener('click', (e) => {
           const action = button.dataset.action;
           this.handleAction(action, e);
@@ -273,9 +273,14 @@
   if (typeof window !== 'undefined') {
     const ensureSidebarInstance = () => {
       // SOLUCIÓN: Usar nombre diferente para evitar conflicto con el ID del elemento
-      if (!window.avatarSidebarManager || !(window.avatarSidebarManager instanceof AvatarSidebar)) {
+      if (
+        !window.avatarSidebarManager ||
+        !(window.avatarSidebarManager instanceof AvatarSidebar)
+      ) {
         window.avatarSidebarManager = new AvatarSidebar();
-        console.log('[AvatarSidebar] Instancia creada en window.avatarSidebarManager');
+        console.log(
+          '[AvatarSidebar] Instancia creada en window.avatarSidebarManager'
+        );
       }
     };
 
@@ -290,17 +295,22 @@
         if (window.app) {
           clearInterval(checkApp);
           const sidebarInstance = window.avatarSidebarManager;
-          if (sidebarInstance && typeof sidebarInstance.updateUserInfo === 'function') {
+          if (
+            sidebarInstance &&
+            typeof sidebarInstance.updateUserInfo === 'function'
+          ) {
             sidebarInstance.updateUserInfo();
           }
         }
       }, 200);
     } else {
       const sidebarInstance = window.avatarSidebarManager;
-      if (sidebarInstance && typeof sidebarInstance.updateUserInfo === 'function') {
+      if (
+        sidebarInstance &&
+        typeof sidebarInstance.updateUserInfo === 'function'
+      ) {
         sidebarInstance.updateUserInfo();
       }
     }
   }
-
 })();
