@@ -1,0 +1,431 @@
+/* ========================================
+   FIN WIDGET - BOTÓN FLOTANTE Y MODAL
+   ======================================== */
+
+/* Botón flotante de Fin */
+.fin-floating-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 30px;
+    width: 65px;
+    height: 65px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    cursor: pointer;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    overflow: hidden;
+    animation: finPulse 2s ease-in-out infinite;
+}
+
+.fin-floating-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+}
+
+.fin-floating-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.fin-floating-btn.hidden {
+    display: none;
+}
+
+/* Animación de pulso */
+@keyframes finPulse {
+    0%, 100% {
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    50% {
+        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.7), 0 0 0 10px rgba(102, 126, 234, 0.1);
+    }
+}
+
+/* Badge de notificación (opcional) */
+.fin-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    border: 2px solid white;
+    animation: badgePulse 1s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Modal del chat de Fin */
+.fin-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.fin-modal.active {
+    display: flex;
+}
+
+.fin-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fin-modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 900px;
+    height: 85vh;
+    max-height: 800px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Botón de cerrar del modal */
+.fin-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.2s ease;
+}
+
+.fin-modal-close:hover {
+    background: rgba(0, 0, 0, 0.5);
+    transform: rotate(90deg);
+}
+
+.fin-modal-close i {
+    font-size: 20px;
+}
+
+/* Iframe del chat */
+.fin-chat-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 24px;
+}
+
+/* ========================================
+   MODAL DE BIENVENIDA
+   ======================================== */
+.fin-welcome-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.fin-welcome-modal.active {
+    display: flex;
+}
+
+.fin-welcome-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.5s ease;
+}
+
+.fin-welcome-content {
+    position: relative;
+    width: 90%;
+    max-width: 600px;
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+    animation: welcomeSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: center;
+}
+
+@keyframes welcomeSlide {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.fin-welcome-avatar {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    padding: 8px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.fin-welcome-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    background: white;
+}
+
+.fin-welcome-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 12px 0;
+}
+
+.fin-welcome-subtitle {
+    font-size: 18px;
+    color: #6b7280;
+    margin: 0 0 24px 0;
+}
+
+.fin-welcome-message {
+    font-size: 16px;
+    color: #4b5563;
+    line-height: 1.6;
+    margin: 0 0 32px 0;
+    padding: 24px;
+    background: #f9fafb;
+    border-radius: 16px;
+    border-left: 4px solid #667eea;
+}
+
+.fin-welcome-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.fin-welcome-btn {
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fin-welcome-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.fin-welcome-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+.fin-welcome-btn.secondary {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.fin-welcome-btn.secondary:hover {
+    background: #e5e7eb;
+}
+
+.fin-welcome-footer {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.fin-welcome-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.fin-welcome-checkbox input {
+    cursor: pointer;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+    .fin-floating-btn {
+        bottom: 70px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+    }
+
+    .fin-modal-content {
+        width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .fin-chat-iframe {
+        border-radius: 0;
+    }
+
+    .fin-welcome-content {
+        width: 95%;
+        padding: 32px 24px;
+    }
+
+    .fin-welcome-avatar {
+        width: 100px;
+        height: 100px;
+    }
+
+    .fin-welcome-title {
+        font-size: 28px;
+    }
+
+    .fin-welcome-subtitle {
+        font-size: 16px;
+    }
+
+    .fin-welcome-actions {
+        flex-direction: column;
+    }
+
+    .fin-welcome-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .fin-floating-btn {
+        bottom: 60px;
+        right: 15px;
+        width: 55px;
+        height: 55px;
+    }
+
+    .fin-welcome-content {
+        padding: 24px 20px;
+    }
+
+    .fin-welcome-title {
+        font-size: 24px;
+    }
+
+    .fin-welcome-message {
+        font-size: 14px;
+        padding: 16px;
+    }
+}
+
+/* ========================================
+   ESTADO DE CARGA
+   ======================================== */
+.fin-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #667eea;
+}
+
+.fin-loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

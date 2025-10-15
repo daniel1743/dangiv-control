@@ -130,6 +130,7 @@
     <link rel="stylesheet" href="avatar-sidebar.css" />
     <link rel="stylesheet" href="daily-messages.css" />
     <link rel="stylesheet" href="tour.css" />
+    <link rel="stylesheet" href="fin-widget.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -2849,7 +2850,74 @@
             </div>
           </div>
 
-          <!-- 7. Notificar un Problema -->
+          <!-- 7. Fin - Coach Financiero -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3><i class="fas fa-robot"></i> Fin - Coach Financiero</h3>
+              <p>Configura tu asistente financiero inteligente</p>
+            </div>
+            <div class="settings-card-body">
+              <div class="settings-list">
+                <div class="settings-list-item">
+                  <div class="settings-list-icon">
+                    <img src="img/FIN.png" alt="Fin" style="width: 36px; height: 36px; border-radius: 50%;">
+                  </div>
+                  <div class="settings-list-content">
+                    <span class="settings-list-title"
+                      >Mostrar botón de Fin</span
+                    >
+                    <span class="settings-list-subtitle"
+                      >Activa o desactiva el botón flotante del coach</span
+                    >
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="finWidgetToggle" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="settings-list-item">
+                  <div class="settings-list-icon">
+                    <i class="fas fa-comments"></i>
+                  </div>
+                  <div class="settings-list-content">
+                    <span class="settings-list-title"
+                      >Abrir chat de Fin</span
+                    >
+                    <span class="settings-list-subtitle"
+                      >Conversa con tu coach financiero personal</span
+                    >
+                  </div>
+                  <button
+                    class="btn-premium btn-premium-sm"
+                    onclick="window.openFinChat()"
+                  >
+                    <i class="fas fa-comment-dots"></i> Abrir chat
+                  </button>
+                </div>
+                <div class="settings-list-item">
+                  <div class="settings-list-icon">
+                    <i class="fas fa-redo"></i>
+                  </div>
+                  <div class="settings-list-content">
+                    <span class="settings-list-title"
+                      >Reiniciar bienvenida</span
+                    >
+                    <span class="settings-list-subtitle"
+                      >Volver a ver el mensaje de bienvenida de Fin</span
+                    >
+                  </div>
+                  <button
+                    class="btn-premium btn-premium-outline"
+                    onclick="window.resetFinWelcome()"
+                  >
+                    <i class="fas fa-undo"></i> Reiniciar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. Notificar un Problema -->
           <div class="settings-card">
             <div class="settings-card-header">
               <h3><i class="fas fa-bug"></i> Soporte y ayuda</h3>
@@ -4887,5 +4955,6 @@
     <script type="module" src="avatar-sidebar.js"></script>
     <script src="smart-forms.js?v=1.1"></script>
     <script src="tour.js?v=1.4"></script>
+    <script src="fin-widget.js"></script>
   </body>
 </html>
