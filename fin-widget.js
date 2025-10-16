@@ -190,11 +190,86 @@ class FinWidget {
     // Verificar si el usuario est� autenticado y tiene datos
     const hasUserData = await this.checkUserData();
 
-    // Generar mensaje personalizado
-    const message = this.generateWelcomeMessage(hasUserData);
+    // DECISI�N: Si es usuario completamente nuevo, mostrar onboarding completo
+    // Si tiene algunos datos, mostrar welcome modal simple
+    const onboardingCompleted = localStorage.getItem('onboardingCompleted') === 'true';
 
-    // Mostrar modal de bienvenida
-    this.showWelcome(message, hasUserData);
+    if (!onboardingCompleted && (!hasUserData || !hasUserData.hasData)) {
+      // Usuario NUEVO sin onboarding → Mostrar onboarding completo
+      this.showOnboarding();
+    } else {
+      // Usuario con datos o que ya complet� onboarding → Welcome modal simple
+      const message = this.generateWelcomeMessage(hasUserData);
+      this.showWelcome(message, hasUserData);
+    }
+  }
+
+  // ========================================
+  // MOSTRAR ONBOARDING COMPLETO
+  // ========================================
+  showOnboarding() {
+    // Crear modal de onboarding con iframe
+    const onboardingModal = document.createElement('div');
+    onboardingModal.className = 'fin-onboarding-modal';
+    onboardingModal.id = 'finOnboardingModal';
+
+    onboardingModal.innerHTML = `
+      <div class="fin-onboarding-backdrop"></div>
+      <div class="fin-onboarding-content">
+        <iframe
+          src="onboarding.html"
+          class="fin-onboarding-iframe"
+          id="finOnboardingIframe"
+        ></iframe>
+      </div>
+    `;
+
+    document.body.appendChild(onboardingModal);
+
+    // Mostrar el modal
+    setTimeout(() => {
+      onboardingModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }, 100);
+
+    // Escuchar cuando el onboarding se complete
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'ONBOARDING_COMPLETED') {
+        console.log('✅ Onboarding completado:', event.data.payload);
+
+        // Cerrar modal de onboarding
+        onboardingModal.classList.remove('active');
+        setTimeout(() => {
+          onboardingModal.remove();
+          document.body.style.overflow = '';
+        }, 300);
+
+        // Marcar que ya vio la bienvenida
+        localStorage.setItem('finWelcomeSeen', 'true');
+        this.hasSeenWelcome = true;
+
+        // Opcional: Abrir el chat para continuar la conversaci�n
+        setTimeout(() => {
+          this.openChat();
+        }, 500);
+      }
+    });
+
+    // Enviar configuraci�n de Firebase al iframe del onboarding
+    const iframe = document.getElementById('finOnboardingIframe');
+    if (iframe) {
+      iframe.onload = () => {
+        if (window.FB && window.FB.geminiApiKey) {
+          iframe.contentWindow.postMessage({
+            type: 'FIREBASE_CONFIG',
+            payload: {
+              geminiApiKey: window.FB.geminiApiKey
+            }
+          }, '*');
+          console.log('✅ Configuraci�n enviada al onboarding');
+        }
+      };
+    }
   }
 
   // ========================================
