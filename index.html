@@ -574,20 +574,19 @@
           <i class="fas fa-bars"></i>
         </button>
         <div class="navbar__actions">
-          <div
+          <button
             id="notificationArea"
-            class="notifications icon-btn"
+            class="notifications icon-btn notification-bell"
             style="position: relative"
+            onclick="window.notificationsSystem?.openNotificationsPanel()"
           >
             <i id="notificationBell" class="fas fa-bell"></i>
             <span
               id="notificationCount"
               class="notification-badge"
               style="display: none"
-            >
-              <i class="fas fa-exclamation"></i>
-            </span>
-          </div>
+            ></span>
+          </button>
 
           <button
             id="mobileProfileBtn"
@@ -751,7 +750,7 @@
               <div class="profile-dropdown-footer">
                 <button class="profile-upgrade-btn" id="profileUpgradeBtn">
                   <i class="fas fa-star"></i>
-                  <span>Actualizar a Pro</span>
+                  <span>Próximamente</span>
                 </button>
               </div>
             </div>
@@ -875,6 +874,7 @@
               <button
                 class="avatar-sidebar__item"
                 data-action="my-achievements"
+                onclick="openAchievementsModal()"
               >
                 <i class="fas fa-trophy"></i>
                 <span>Mis logros</span>
@@ -4972,12 +4972,15 @@
 
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="app.js?v=4.2"></script>
+    <script src="achievements-system.js"></script>
+    <script src="notifications-system.js"></script>
     <script type="module" src="avatar-sidebar.js"></script>
     <script src="smart-forms.js?v=1.1"></script>
     <script src="tour.js?v=1.4"></script>
     <script src="fin-memory.js"></script>
     <script src="fin-response-optimizer.js"></script>
     <script src="fin-conversation-guide.js"></script>
+    <script src="promo-codes-system.js"></script>
     <script src="premium-manager.js"></script>
     <script src="premium-status-widget.js"></script>
     <script src="premium-modal.js"></script>

@@ -66,6 +66,25 @@ function showPremiumUpgradeModal(options = {}) {
           </button>
         </div>
 
+        <div class="promo-code-section">
+          <p class="promo-code-link" onclick="togglePromoCodeInput()">
+            <i class="fas fa-gift"></i> ¿Tienes un código promocional?
+          </p>
+          <div class="promo-code-input-wrapper" id="promoCodeInputWrapper" style="display: none;">
+            <input
+              type="text"
+              id="promoCodeInput"
+              class="promo-code-input"
+              placeholder="Ingresa tu código (ej: FINPRO2025-A1B2)"
+              maxlength="20"
+            />
+            <button class="btn btn-promo-activate" onclick="activatePromoCodeFromModal()">
+              <i class="fas fa-check-circle"></i> Activar código
+            </button>
+            <div id="promoCodeMessage" class="promo-message" style="display: none;"></div>
+          </div>
+        </div>
+
         <p class="premium-footer">
           🔒 Pago seguro • ✅ Cancela cuando quieras • 💯 Garantía de 7 días
         </p>
@@ -164,9 +183,93 @@ function showPremiumActivatedMessage() {
   }, 3000);
 }
 
+// ========================================
+// FUNCIONES DE CÓDIGO PROMOCIONAL
+// ========================================
+
+function togglePromoCodeInput() {
+  const wrapper = document.getElementById('promoCodeInputWrapper');
+  if (wrapper) {
+    const isVisible = wrapper.style.display !== 'none';
+    wrapper.style.display = isVisible ? 'none' : 'block';
+
+    // Limpiar mensaje anterior
+    const message = document.getElementById('promoCodeMessage');
+    if (message) {
+      message.style.display = 'none';
+    }
+
+    // Focus en el input si se muestra
+    if (!isVisible) {
+      setTimeout(() => {
+        const input = document.getElementById('promoCodeInput');
+        if (input) input.focus();
+      }, 100);
+    }
+  }
+}
+
+function activatePromoCodeFromModal() {
+  // Verificar que el sistema de promo codes esté cargado
+  if (!window.promoCodesSystem) {
+    showPromoMessage('❌ Sistema no cargado. Recarga la página.', 'error');
+    return;
+  }
+
+  const input = document.getElementById('promoCodeInput');
+  if (!input) return;
+
+  const code = input.value.trim();
+
+  if (!code) {
+    showPromoMessage('⚠️ Por favor ingresa un código.', 'warning');
+    return;
+  }
+
+  // Validar y activar código
+  const result = window.promoCodesSystem.validateAndActivateCode(code);
+
+  if (result.success) {
+    showPromoMessage(result.message, 'success');
+
+    // Limpiar input
+    input.value = '';
+
+    // Cerrar modal después de 2 segundos
+    setTimeout(() => {
+      closePremiumUpgradeModal();
+
+      // Recargar página para aplicar cambios Pro
+      setTimeout(() => {
+        location.reload();
+      }, 500);
+    }, 2000);
+  } else {
+    showPromoMessage(result.message, 'error');
+  }
+}
+
+function showPromoMessage(message, type = 'info') {
+  const messageEl = document.getElementById('promoCodeMessage');
+  if (!messageEl) return;
+
+  messageEl.textContent = message;
+  messageEl.className = `promo-message promo-message--${type}`;
+  messageEl.style.display = 'block';
+
+  // Ocultar después de 5 segundos si es error o warning
+  if (type === 'error' || type === 'warning') {
+    setTimeout(() => {
+      messageEl.style.display = 'none';
+    }, 5000);
+  }
+}
+
 // Exponer globalmente
 window.showPremiumUpgradeModal = showPremiumUpgradeModal;
 window.closePremiumUpgradeModal = closePremiumUpgradeModal;
 window.handlePremiumPurchase = handlePremiumPurchase;
+window.togglePromoCodeInput = togglePromoCodeInput;
+window.activatePromoCodeFromModal = activatePromoCodeFromModal;
 
 console.log('✅ Premium modal system loaded');

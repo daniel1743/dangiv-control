@@ -70,6 +70,64 @@ FORMATO DE RESPUESTAS:
 - Incluye emojis relevantes (💰, 📊, 📈, 💡, 🎯, 👍, etc.)
 - Termina siempre con una pregunta o llamado a la acción
 
+CONOCIMIENTO DE LA APLICACIÓN FINANCIASUITE:
+Conoces perfectamente la estructura de FinanciaSuite para guiar a los usuarios:
+
+1. 📊 DASHBOARD (Inicio):
+   - Vista general con gráficos de gastos por categoría
+   - Resumen de ingresos vs gastos
+   - Progreso de metas financieras
+   - Estadísticas clave (gastos totales, ahorros, promedios)
+
+2. 💸 GASTOS:
+   - Cómo registrar: Click en "Gastos" → "Agregar Gasto" → llenar formulario
+   - Datos requeridos: Descripción, Monto, Categoría, Nivel de necesidad, Fecha, Usuario
+   - Categorías disponibles: Alimentación, Transporte, Entretenimiento, Salud, Servicios, Compras, Otros
+   - Niveles de necesidad: Muy Necesario, Necesario, Poco Necesario, No Necesario, Compra por Impulso
+   - Beneficios: Control total de egresos, identificar patrones de gasto, encontrar áreas de ahorro
+
+3. 🎯 METAS:
+   - Cómo crear: Click en "Metas" → "Agregar Meta" → definir nombre, monto objetivo y fecha límite
+   - Seguimiento: Barra de progreso visual, notificaciones de proximidad de fecha límite
+   - Beneficios: Motivación para ahorrar, objetivos claros, control de progreso
+
+4. 📈 ANÁLISIS:
+   - Gráficos detallados por categoría de gasto
+   - Comparación de gastos entre usuarios (Daniel vs Givonik)
+   - Análisis de gastos por nivel de necesidad
+   - Identificación de gastos impulsivos
+
+5. 🛒 LISTA DE COMPRAS:
+   - Gestión de productos necesarios
+   - Categorización por necesidad
+   - Generación y descarga de listas
+
+6. ⚙️ CONFIGURACIÓN:
+   - Editar perfil (nombre, ingresos mensuales)
+   - Gestión de cuenta Firebase
+   - Sincronización de datos en la nube
+
+7. 🏆 LOGROS:
+   - Sistema de gamificación con 12 logros
+   - 6 logros disponibles: Primer Paso, Consistente, Soñador, Maestro del Presupuesto, Asesorado por IA, Héroe del Ahorro
+   - 6 logros premium (próximamente): Apariencias especiales de Fin, gráficos personalizados
+   - Sistema de puntos (1,655 puntos totales)
+
+FLUJO RECOMENDADO PARA NUEVOS USUARIOS:
+1. Configurar perfil: Nombre e ingreso mensual
+2. Registrar primeros gastos (activar logro "Primer Paso")
+3. Crear primera meta financiera (activar logro "Soñador")
+4. Ver análisis en Dashboard para identificar patrones
+5. Solicitar recomendaciones personalizadas
+
+PREGUNTAS FRECUENTES QUE PUEDES RESPONDER:
+- "¿Cómo registro un gasto?" → Explicar paso a paso
+- "¿Dónde veo mis metas?" → Guiar a sección Metas
+- "¿Para qué sirve el nivel de necesidad?" → Explicar clasificación y análisis
+- "¿Cómo creo una meta?" → Paso a paso con beneficios
+- "¿Qué son los logros?" → Explicar sistema de gamificación
+- "¿Cómo funciona el Dashboard?" → Tour por las estadísticas
+
 Tu objetivo final es que el usuario se sienta en control y optimista sobre su futuro financiero.`;
 
     this.init();
@@ -82,6 +140,11 @@ Tu objetivo final es que el usuario se sienta en control y optimista sobre su fu
     this.loadFinancialData();
     this.attachEventListeners();
     this.adjustTextareaHeight();
+
+    // Mostrar saludo personalizado si ya ha interactuado antes
+    setTimeout(() => {
+      this.showPersonalizedGreeting();
+    }, 500);
 
     // Auto-focus en el input
     if (this.messageInput) {
@@ -164,11 +227,54 @@ Tu objetivo final es que el usuario se sienta en control y optimista sobre su fu
       this.quickSuggestions.style.display = 'none';
     }
 
+    // Verificar si estamos esperando el nombre del usuario
+    if (this.waitingForName) {
+      // El mensaje es el nombre del usuario
+      const userName = message;
+
+      // Guardar el nombre en el perfil
+      this.userProfile.name = userName;
+      localStorage.setItem('finChatProfile', JSON.stringify(this.userProfile));
+
+      // También guardar en el perfil principal si es posible
+      try {
+        const mainProfile = localStorage.getItem('userProfile');
+        if (mainProfile) {
+          const profile = JSON.parse(mainProfile);
+          profile.name = userName;
+          localStorage.setItem('userProfile', JSON.stringify(profile));
+        } else {
+          // Crear perfil principal si no existe
+          const newProfile = { name: userName };
+          localStorage.setItem('userProfile', JSON.stringify(newProfile));
+        }
+      } catch (e) {
+        console.log('No se pudo actualizar perfil principal');
+      }
+
+      // Mostrar typing indicator
+      this.showTypingIndicator();
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // Respuesta de Fin agradeciendo y usando el nombre
+      const thankYouMessage = `¡Encantado de conocerte, ${userName}! 😊\n\nAhora que nos conocemos mejor, puedo ayudarte de forma más personalizada con tus finanzas. ¿En qué puedo ayudarte hoy?`;
+
+      this.hideTypingIndicator();
+      this.addBotMessage(thankYouMessage);
+
+      // Desmarcar que estamos esperando nombre
+      this.waitingForName = false;
+      return;
+    }
+
     // Agregar a historial de conversaciï¿½n
     this.conversationHistory.push({
       role: 'user',
       content: message,
     });
+
+    // Marcar que ya ha interactuado (para mostrar saludo personalizado la próxima vez)
+    localStorage.setItem('finChatInteracted', 'true');
 
     // Mostrar indicador de escritura
     this.showTypingIndicator();
@@ -428,6 +534,185 @@ Tu objetivo final es que el usuario se sienta en control y optimista sobre su fu
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
+  }
+
+  // ========================================
+  // SALUDO PERSONALIZADO AL ABRIR
+  // ========================================
+  async showPersonalizedGreeting() {
+    // Verificar si ya tiene interacciones previas
+    const hasInteracted = localStorage.getItem('finChatInteracted') === 'true';
+
+    if (!hasInteracted) {
+      // Primera vez - No mostrar saludo aún, dejar que las sugerencias hablen
+      return;
+    }
+
+    // Ya tuvo interacción previa - Mostrar saludo personalizado
+    // Intentar obtener nombre del sistema principal primero
+    let userName = this.userProfile.name;
+
+    // Si no hay nombre en el perfil del chat, buscar en el perfil principal de la app
+    if (!userName || userName === '') {
+      try {
+        // Intentar obtener del perfil de Firebase si está disponible
+        if (window.FB && window.FB.auth && window.FB.auth.currentUser) {
+          userName = window.FB.auth.currentUser.displayName;
+        }
+
+        // Si no, intentar del localStorage del app principal
+        if (!userName || userName === '') {
+          const userProfileMain = localStorage.getItem('userProfile');
+          if (userProfileMain) {
+            const profile = JSON.parse(userProfileMain);
+            userName = profile.name;
+          }
+        }
+      } catch (e) {
+        console.log('No se pudo obtener nombre del perfil principal');
+      }
+    }
+
+    // Si no hay nombre, pedir que se presente
+    if (!userName || userName === '' || userName === 'Usuario') {
+      // Ocultar sugerencias
+      if (this.quickSuggestions) {
+        this.quickSuggestions.style.display = 'none';
+      }
+
+      // Mostrar typing indicator
+      this.showTypingIndicator();
+
+      // Esperar 1 segundo
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Mensaje pidiendo nombre
+      const greetingWithoutName = `¡Hola! 👋 Me alegra verte de nuevo. Ya hemos hablado antes, pero me doy cuenta de que no me has dicho tu nombre. 😊
+
+Me gustaría conocerte mejor y entrar en confianza contigo. ¿Cómo te llamas?`;
+
+      this.hideTypingIndicator();
+      this.addBotMessage(greetingWithoutName);
+
+      // Marcar que estamos esperando el nombre
+      this.waitingForName = true;
+      return;
+    }
+
+    // Tiene nombre - saludo normal
+    // Ocultar sugerencias porque ya ha interactuado antes
+    if (this.quickSuggestions) {
+      this.quickSuggestions.style.display = 'none';
+    }
+
+    // Mostrar typing indicator
+    this.showTypingIndicator();
+
+    // Esperar 1 segundo para parecer más natural
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    let greeting;
+
+    // Si tiene API key, generar con IA
+    if (this.geminiApiKey) {
+      try {
+        greeting = await this.generateAIGreeting(userName);
+      } catch (error) {
+        console.error('Error generando saludo con IA:', error);
+        greeting = this.getRandomGreeting(userName);
+      }
+    } else {
+      // Sin API, usar mensajes predefinidos
+      greeting = this.getRandomGreeting(userName);
+    }
+
+    this.hideTypingIndicator();
+    this.addBotMessage(greeting);
+  }
+
+  // Generar saludo con IA Gemini
+  async generateAIGreeting(userName) {
+    const totalExpenses = this.expenses.reduce((sum, e) => sum + e.amount, 0);
+    const goalsCount = this.goals.length;
+    const expensesCount = this.expenses.length;
+
+    const prompt = `Eres Fin, el coach financiero de ${userName}.
+
+${userName} acaba de abrir el chat nuevamente. Ya han tenido conversaciones previas.
+
+DATOS ACTUALES:
+- Gastos registrados: ${expensesCount}
+- Total gastado: $${totalExpenses.toLocaleString('es-CO')}
+- Metas financieras: ${goalsCount}
+
+TAREA:
+Genera UN saludo de bienvenida corto y motivador para ${userName}.
+
+OPCIONES DE SALUDO (elige 1):
+1. "¡Hola ${userName}! 😊 ¿Cómo estás hoy? ¿En qué te puedo ayudar?"
+2. "¡${userName}! 👋 Me alegra verte de nuevo. ¿Qué quieres que abordemos hoy?"
+3. "¡Hola de nuevo, ${userName}! 💰 ¿Listo para mejorar tus finanzas hoy?"
+4. "${userName}, ¡hola! 🎯 ¿Tienes alguna pregunta o quieres analizar algo?"
+5. "¡Hola ${userName}! ✨ [frase motivadora corta según sus datos]"
+
+REGLAS:
+- Usa SIEMPRE el nombre ${userName}
+- Máximo 2 líneas (25 palabras)
+- 1-2 emojis relevantes
+- Tono: amigable, motivador, cercano
+- Termina con pregunta o llamado a acción
+- Si tiene datos interesantes, menciónalos sutilmente
+
+RESPONDE SOLO CON EL SALUDO (sin comillas ni formato extra):`;
+
+    try {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${this.geminiApiKey}`;
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.9,
+            maxOutputTokens: 100
+          }
+        })
+      });
+
+      if (!response.ok) throw new Error('API error');
+
+      const data = await response.json();
+      let message = data.candidates[0].content.parts[0].text.trim();
+
+      // Limpiar mensaje
+      message = message.replace(/^["']|["']$/g, '');
+      message = message.replace(/\n/g, ' ');
+
+      return message;
+
+    } catch (error) {
+      console.error('Error generando saludo con IA:', error);
+      throw error;
+    }
+  }
+
+  // Saludos predefinidos (fallback sin IA)
+  getRandomGreeting(userName) {
+    const greetings = [
+      `¡Hola ${userName}! 😊 ¿Cómo estás hoy? ¿En qué te puedo ayudar?`,
+      `¡${userName}! 👋 Me alegra verte de nuevo. ¿Qué quieres que abordemos hoy?`,
+      `¡Hola de nuevo, ${userName}! 💰 ¿Listo para mejorar tus finanzas hoy?`,
+      `${userName}, ¡hola! 🎯 ¿Tienes alguna pregunta o quieres analizar algo?`,
+      `¡Hola ${userName}! ✨ Cada día es una oportunidad para mejorar. ¿Qué necesitas?`,
+      `¡${userName}! 💪 Me encanta verte por aquí. ¿Qué revisamos hoy?`,
+      `¡Buen día ${userName}! 🌟 ¿Quieres que analicemos tus gastos o hablamos de metas?`,
+      `${userName}, ¡hola! 📊 ¿Cómo van tus finanzas? ¿Te ayudo con algo?`,
+      `¡Hola ${userName}! 💡 ¿Qué te trae por aquí hoy? Estoy para ayudarte.`,
+      `${userName}! 🚀 ¿Listo para tomar el control de tu dinero? ¿Por dónde empezamos?`
+    ];
+
+    return greetings[Math.floor(Math.random() * greetings.length)];
   }
 
   // ========================================
