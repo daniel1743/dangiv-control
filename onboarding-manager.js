@@ -313,6 +313,8 @@ Ingreso mensual: $${this.userData.monthlyIncome.toLocaleString('es-CO')}
 Preocupaciones: ${this.userData.concerns.join(', ')}
 Meta principal: ${this.userData.mainGoal}
 
+IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido, sin texto adicional antes o después.
+
 Genera un plan financiero personalizado que incluya:
 
 1. Presupuesto recomendado (porcentajes para gastos esenciales, ocio, ahorro)
@@ -320,7 +322,7 @@ Genera un plan financiero personalizado que incluya:
 3. 3 consejos prácticos y accionables
 4. Mensaje motivacional personalizado (máximo 2 líneas)
 
-Formato de respuesta:
+Responde SOLO con este JSON (sin markdown, sin \`\`\`json, solo el objeto):
 {
   "presupuesto": {
     "esenciales": 60,
@@ -332,8 +334,21 @@ Formato de respuesta:
   "mensaje": "mensaje motivacional"
 }`;
 
-    const planData = await this.callGeminiAPI(prompt);
-    this.userData.generatedPlan = planData;
+    try {
+      const planData = await this.callGeminiAPI(prompt);
+
+      // Verificar que el plan tenga la estructura correcta
+      if (planData && planData.presupuesto && planData.presupuesto.esenciales) {
+        this.userData.generatedPlan = planData;
+      } else {
+        // Si la IA no devolvió el formato correcto, usar plan básico
+        console.warn('⚠️ Plan de IA con formato incorrecto, usando plan básico');
+        await this.generateBasicPlan();
+      }
+    } catch (error) {
+      console.error('❌ Error generando plan con IA, usando plan básico:', error);
+      await this.generateBasicPlan();
+    }
   }
 
   async generateBasicPlan() {
@@ -359,6 +374,27 @@ Formato de respuesta:
   displayGeneratedPlan() {
     const planContainer = document.getElementById('generatedPlanContent');
     if (!planContainer) return;
+
+    // Validación crítica: verificar que el plan existe y tiene la estructura correcta
+    if (!this.userData.generatedPlan || !this.userData.generatedPlan.presupuesto || !this.userData.generatedPlan.presupuesto.esenciales) {
+      console.error('❌ Plan no válido, generando plan básico de emergencia');
+      // Generar plan básico inmediatamente
+      const suggestedSavings = Math.round(this.userData.monthlyIncome * 0.20);
+      this.userData.generatedPlan = {
+        presupuesto: {
+          esenciales: 50,
+          ocio: 30,
+          ahorro: 20
+        },
+        ahorroMensual: suggestedSavings,
+        consejos: [
+          'Registra todos tus gastos diarios para tener control total',
+          'Revisa tu presupuesto semanalmente',
+          'Celebra cada pequeño logro en tu camino financiero'
+        ],
+        mensaje: `${this.userData.name}, este es tu punto de partida. ¡Vamos a construir juntos tu futuro financiero!`
+      };
+    }
 
     const plan = this.userData.generatedPlan;
 
@@ -622,18 +658,33 @@ Formato de respuesta:
       }
 
       const data = await response.json();
-      const text = data.candidates[0].content.parts[0].text;
+      let text = data.candidates[0].content.parts[0].text;
+
+      // Limpiar la respuesta de markdown y texto extra
+      text = text.trim();
+
+      // Remover bloques de código markdown si existen
+      text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+
+      // Buscar el JSON en el texto (puede tener texto antes/después)
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+
+      if (jsonMatch) {
+        text = jsonMatch[0];
+      }
 
       // Intentar parsear como JSON
       try {
-        return JSON.parse(text);
+        const parsed = JSON.parse(text);
+        console.log('✅ Plan generado por IA:', parsed);
+        return parsed;
       } catch (e) {
-        console.warn('La respuesta no es JSON válido, usando texto plano');
-        return { rawText: text };
+        console.warn('⚠️ La respuesta no es JSON válido después de limpiar:', text);
+        return null;
       }
 
     } catch (error) {
-      console.error('Error llamando a Gemini API:', error);
+      console.error('❌ Error llamando a Gemini API:', error);
       throw error;
     }
   }

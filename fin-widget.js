@@ -79,7 +79,6 @@ class FinWidget {
           src="chat-fin.html"
           class="fin-chat-iframe"
           id="finChatIframe"
-          allow="microphone"
         ></iframe>
       </div>
     `;

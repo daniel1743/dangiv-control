@@ -9634,21 +9634,12 @@ FinanceApp.prototype.updateQuickAccessGreeting = function () {
     else if (hour < 18) greeting = '¡Buenas tardes';
     else greeting = '¡Buenas noches';
 
-    console.log('🔍 Debug Quick Access Greeting:');
-    console.log('  currentUser:', this.currentUser);
-    console.log('  userProfile:', this.userProfile);
-    console.log('  userProfile.name:', this.userProfile.name);
+    // Usar nombre del perfil si existe, incluso para usuarios anónimos
+    const userName = this.userProfile.name && this.userProfile.name !== 'Usuario'
+      ? this.userProfile.name
+      : (this.currentUser && this.currentUser !== 'anonymous' ? this.currentUser : 'Usuario');
 
-    if (this.currentUser && this.currentUser !== 'anonymous') {
-      // Usar nombre personalizado del perfil, no el UID
-      const userName = this.userProfile.name || this.currentUser;
-      console.log('  userName usado:', userName);
-      greeting += `, ${userName}!`;
-    } else {
-      greeting += ', Usuario!';
-    }
-
-    console.log('  greeting final:', greeting);
+    greeting += `, ${userName}!`;
     greetingEl.textContent = greeting;
   }
 };

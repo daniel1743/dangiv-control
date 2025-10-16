@@ -5,15 +5,15 @@
 /* Bot�n flotante de Fin */
 .fin-floating-btn {
     position: fixed;
-    bottom: 80px;
-    right: 30px;
-    width: 65px;
-    height: 65px;
+    bottom: 96px; /* 24px (base) + 56px (altura FAB) + 16px (gap) */
+    right: 24px; /* Alineado con FAB principal */
+    width: 56px; /* Mismo tamaño que FAB para consistencia */
+    height: 56px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 50%;
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
     cursor: pointer;
-    z-index: 999;
+    z-index: 998; /* Justo debajo del FAB principal (999) */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -357,11 +357,10 @@
    ======================================== */
 @media (max-width: 768px) {
     .fin-floating-btn {
-        bottom: 110px;
-        /* Evita superposición con navbar/fab */
-        right: 15px;
-        width: 48px;
-        height: 48px;
+        bottom: 148px; /* 80px (FAB mobile) + 52px (altura FAB mobile) + 16px (gap) */
+        right: 16px; /* Alineado con FAB mobile */
+        width: 52px; /* Mismo tamaño que FAB mobile */
+        height: 52px;
     }
 
     .fin-modal-content {
@@ -410,10 +409,10 @@
 
 @media (max-width: 480px) {
     .fin-floating-btn {
-        bottom: 60px;
-        right: 15px;
-        width: 55px;
-        height: 55px;
+        bottom: 148px; /* Mantener la misma posición que en 768px para consistencia */
+        right: 16px;
+        width: 48px; /* Ligeramente más pequeño en móviles muy pequeños */
+        height: 48px;
     }
 
     .fin-welcome-content {
