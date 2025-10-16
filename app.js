@@ -6586,70 +6586,14 @@ class FinanceApp {
     this.goalsMessageInterval = setInterval(animateMessages, 4000);
   }
 
-  // QuedarÃ¡ asÃ­
+  // Recomendaciones de IA personalizadas
   renderAIRecommendations() {
-    const container = document.getElementById('aiRecommendations');
-    if (!container) return;
-
-    // Find the parent card container
-    const parentCard = container.closest('.card');
-
-    container.innerHTML = ''; // Limpiamos el contenedor
-
-    // Recomendaciones inteligentes basadas en datos reales o consejos útiles
-    let recommendations = [];
-
-    if (this.expenses.length > 0) {
-      // Análisis basado en datos reales
-      const totalExpenses = this.expenses.reduce(
-        (sum, exp) => sum + exp.amount,
-        0
-      );
-      const avgDailySpend = totalExpenses / Math.max(1, this.expenses.length);
-
-      recommendations = [
-        `Tu gasto promedio diario es $${avgDailySpend.toFixed(
-          2
-        )}. Considera establecer un presupuesto diario.`,
-        `Has registrado ${this.expenses.length} transacciones. ¡Mantén el control de tus finanzas!`,
-        'Revisa tus gastos semanalmente para identificar oportunidades de ahorro.',
-      ];
+    // Inicializar el gestor de recomendaciones si no existe
+    if (!this.aiRecommendationsManager) {
+      this.aiRecommendationsManager = new AIRecommendationsManager(this);
     } else {
-      // Consejos útiles para usuarios nuevos
-      recommendations = [
-        '💡 Comienza registrando todos tus gastos, incluso los pequeños. Todo suma.',
-        '🎯 Establece metas financieras específicas y alcanzables para mantenerte motivado.',
-        '📊 Revisa tus gastos semanalmente para identificar patrones y oportunidades.',
-        '💰 Ahorra al menos el 20% de tus ingresos mensuales para emergencias.',
-        '📱 Usa esta app diariamente para desarrollar buenos hábitos financieros.',
-      ];
-    }
-
-    // Mostrar máximo 3 recomendaciones
-    const selectedRecommendations = recommendations.slice(0, 3);
-
-    selectedRecommendations.forEach((recommendation, index) => {
-      const recEl = document.createElement('div');
-      recEl.className = 'ai-recommendation-card';
-      recEl.innerHTML = `
-        <div class="ai-rec-icon">
-          <i class="fas fa-robot"></i>
-        </div>
-        <div class="ai-rec-content">
-          <h5>Consejo ${index + 1}</h5>
-          <p>${recommendation}</p>
-        </div>
-      `;
-      container.appendChild(recEl);
-    });
-
-    // Show or hide the parent card based on content
-    if (parentCard) {
-      if (selectedRecommendations.length > 0) {
-        parentCard.classList.remove('hidden');
-      } else {
-        parentCard.classList.add('hidden');
-      }
+      // Si ya existe, solo renderizar
+      this.aiRecommendationsManager.renderRecommendations();
     }
   }
 
