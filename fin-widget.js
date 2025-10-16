@@ -103,10 +103,10 @@ class FinWidget {
         <div class="fin-welcome-avatar">
           <img src="img/FIN.png" alt="Fin">
         </div>
-        <h1 class="fin-welcome-title">�Hola! Soy Fin =K</h1>
+        <h1 class="fin-welcome-title">¡Hola! Soy Fin 😊</h1>
         <p class="fin-welcome-subtitle">Tu Coach Financiero Personal</p>
         <div class="fin-welcome-message" id="finWelcomeMessage">
-          <!-- El mensaje se genera din�micamente -->
+          <!-- El mensaje se genera dinámicamente -->
         </div>
         <div class="fin-welcome-actions">
           <button class="fin-welcome-btn primary" id="finStartChat">
@@ -115,7 +115,7 @@ class FinWidget {
           </button>
           <button class="fin-welcome-btn secondary" id="finCloseLater">
             <i class="fas fa-clock"></i>
-            M�s tarde
+            Más tarde
           </button>
         </div>
         <div class="fin-welcome-footer">
@@ -252,42 +252,41 @@ class FinWidget {
     if (!userData || !userData.hasData) {
       // Usuario nuevo sin datos
       return `
-        <p>�Bienvenido a <strong>FinanciaSuite</strong>! <�</p>
-        <p>Estoy aqu� para ayudarte a tomar el control de tus finanzas. Veo que est�s comenzando tu camino financiero, �eso es genial!</p>
+        <p>¡Bienvenido a <strong>FinanciaSuite</strong>! 💎</p>
+        <p>Estoy aquí para ayudarte a tomar el control de tus finanzas. Veo que estás comenzando tu camino financiero, ¡eso es genial!</p>
         <p><strong>Te recomiendo empezar por:</strong></p>
-        <ul style="text-align: left; margin: 16px 0;">
-          <li>=� Registrar tus ingresos mensuales</li>
-          <li>=� Anotar tus gastos diarios</li>
-          <li><� Definir tus metas financieras</li>
+        <ul>
+          <li>💰 Registrar tus ingresos mensuales</li>
+          <li>📝 Anotar tus gastos diarios</li>
+          <li>🎯 Definir tus metas financieras</li>
         </ul>
-        <p>Cuando tengas algunos datos, podr� darte consejos personalizados y ayudarte a mejorar tus finanzas. �Empezamos?</p>
+        <p>Cuando tengas algunos datos, podré darte consejos personalizados. ¿Empezamos?</p>
       `;
     } else {
       // Usuario con datos existentes
       const { expenseCount, goalCount, hasIncome } = userData;
 
       let message = `
-        <p>�Me alegra verte de nuevo! =
-</p>
-        <p>He revisado tu informaci�n financiera y tengo algunas cosas que contarte:</p>
-        <ul style="text-align: left; margin: 16px 0;">
+        <p>¡Me alegra verte de nuevo! 👋</p>
+        <p>He revisado tu información financiera:</p>
+        <ul>
       `;
 
       if (expenseCount > 0) {
-        message += `<li>=� Tienes <strong>${expenseCount}</strong> gastos registrados</li>`;
+        message += `<li>📊 Tienes <strong>${expenseCount}</strong> gastos registrados</li>`;
       }
 
       if (goalCount > 0) {
-        message += `<li><� Est�s trabajando en <strong>${goalCount}</strong> meta${goalCount > 1 ? 's' : ''} financiera${goalCount > 1 ? 's' : ''}</li>`;
+        message += `<li>🎯 Estás trabajando en <strong>${goalCount}</strong> meta${goalCount > 1 ? 's' : ''} financiera${goalCount > 1 ? 's' : ''}</li>`;
       }
 
       if (hasIncome) {
-        message += `<li>=� Tu ingreso mensual est� configurado</li>`;
+        message += `<li>💰 Tu ingreso mensual está configurado</li>`;
       }
 
       message += `
         </ul>
-        <p>Puedo ayudarte a analizar tus gastos, optimizar tu presupuesto y alcanzar tus metas m�s r�pido. �Quieres que hagamos un an�lisis juntos?</p>
+        <p>¿Quieres que hagamos un análisis juntos?</p>
       `;
 
       return message;
@@ -306,7 +305,7 @@ class FinWidget {
     }
 
     if (startBtnText) {
-      startBtnText.textContent = hasData?.hasData ? '�Analizar mis finanzas!' : '�Comenzar!';
+      startBtnText.textContent = hasData?.hasData ? '¡Analizar mis finanzas!' : '¡Comenzar!';
     }
 
     this.welcomeModal?.classList.add('active');

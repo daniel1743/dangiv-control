@@ -30,16 +30,16 @@
                 <p class="bot-role">Asesor de Finanzas</p>
             </div>
             <div class="header-actions">
-                <button class="icon-btn" id="refreshBtn" title="Nueva conversaci�n">
+                <button class="icon-btn" id="refreshBtn" title="Nueva conversación">
                     <i class="fas fa-redo-alt"></i>
                 </button>
-                <button class="icon-btn" id="settingsBtn" title="Configuraci�n">
+                <button class="icon-btn" id="settingsBtn" title="Configuración">
                     <i class="fas fa-cog"></i>
                 </button>
             </div>
         </div>
 
-        <!-- �rea de mensajes -->
+        <!-- Área de mensajes -->
         <div class="chat-messages" id="chatMessages">
             <div class="date-separator">
                 <span>Hoy</span>
@@ -51,15 +51,15 @@
                 </div>
                 <div class="message-content">
                     <div class="message-bubble">
-                        <p>�Hola! =K Soy <strong>Fin</strong>, tu asesor financiero personal.</p>
-                        <p>Estoy aqu� para ayudarte a alcanzar tus metas financieras y tomar decisiones inteligentes con tu dinero. Puedo ayudarte con:</p>
+                        <p>¡Hola! 😊 Soy <strong>Fin</strong>, tu asesor financiero personal.</p>
+                        <p>Estoy aquí para ayudarte a alcanzar tus metas financieras y tomar decisiones inteligentes con tu dinero. Puedo ayudarte con:</p>
                         <ul class="feature-list">
-                            <li><i class="fas fa-check-circle"></i> An�lisis de gastos y presupuestos</li>
+                            <li><i class="fas fa-check-circle"></i> Análisis de gastos y presupuestos</li>
                             <li><i class="fas fa-check-circle"></i> Estrategias de ahorro personalizadas</li>
-                            <li><i class="fas fa-check-circle"></i> Planificaci�n de metas financieras</li>
+                            <li><i class="fas fa-check-circle"></i> Planificación de metas financieras</li>
                             <li><i class="fas fa-check-circle"></i> Consejos para reducir gastos</li>
                         </ul>
-                        <p>�En qu� puedo ayudarte hoy? =�</p>
+                        <p>¿En qué puedo ayudarte hoy? 👋</p>
                     </div>
                     <div class="message-footer">
                         <span class="message-time">Ahora</span>
@@ -70,21 +70,21 @@
             <!-- Sugerencias de preguntas -->
             <div class="quick-suggestions" id="quickSuggestions">
                 <div class="suggestions-title">Preguntas sugeridas:</div>
-                <button class="suggestion-btn" data-question="�C�mo puedo ahorrar m�s dinero al mes?">
+                <button class="suggestion-btn" data-question="¿Cómo puedo ahorrar más dinero al mes?">
                     <i class="fas fa-piggy-bank"></i>
-                    �C�mo ahorrar m�s?
+                    ¿Cómo ahorrar más?
                 </button>
-                <button class="suggestion-btn" data-question="Analiza mis gastos del �ltimo mes">
+                <button class="suggestion-btn" data-question="Analiza mis gastos del último mes">
                     <i class="fas fa-chart-pie"></i>
                     Analizar mis gastos
                 </button>
-                <button class="suggestion-btn" data-question="�Qu� estrategia me recomiendas para pagar mis deudas?">
+                <button class="suggestion-btn" data-question="¿Qué estrategia me recomiendas para pagar mis deudas?">
                     <i class="fas fa-credit-card"></i>
                     Estrategia para deudas
                 </button>
-                <button class="suggestion-btn" data-question="�Puedo darme un gusto este mes?">
+                <button class="suggestion-btn" data-question="¿Puedo darme un gusto este mes?">
                     <i class="fas fa-gift"></i>
-                    �Puedo darme un gusto?
+                    ¿Puedo darme un gusto?
                 </button>
             </div>
         </div>
@@ -105,7 +105,7 @@
             </div>
         </div>
 
-        <!-- �rea de entrada de mensajes -->
+        <!-- Área de entrada de mensajes -->
         <div class="chat-input-container">
             <div class="input-wrapper">
                 <button class="icon-btn attach-btn" id="attachBtn" title="Adjuntar datos financieros">
@@ -114,7 +114,7 @@
                 <textarea
                     id="messageInput"
                     class="message-input"
-                    placeholder="Preg�ntame sobre tus finanzas..."
+                    placeholder="Pregúntame sobre tus finanzas..."
                     rows="1"
                     autocomplete="off"
                 ></textarea>
@@ -123,12 +123,12 @@
                 </button>
             </div>
             <div class="input-hint">
-                =� Tip: S� espec�fico en tus preguntas para obtener mejores consejos
+                💡 Tip: Sé específico en tus preguntas para obtener mejores consejos
             </div>
         </div>
     </div>
 
-    <!-- Modal de configuraci�n de perfil -->
+    <!-- Modal de configuración de perfil -->
     <div class="modal" id="settingsModal">
         <div class="modal-backdrop" id="modalBackdrop"></div>
         <div class="modal-content">
@@ -140,13 +140,13 @@
             </div>
             <div class="modal-body">
                 <p class="modal-description">
-                    Completa tu perfil para recibir consejos m�s personalizados y precisos.
+                    Completa tu perfil para recibir consejos más personalizados y precisos.
                 </p>
                 <div class="form-group">
                     <label for="userName">
                         <i class="fas fa-user"></i> Tu Nombre
                     </label>
-                    <input type="text" id="userName" placeholder="Ej: Mar�a Garc�a">
+                    <input type="text" id="userName" placeholder="Ej: María García">
                 </div>
                 <div class="form-group">
                     <label for="monthlyIncome">
@@ -160,21 +160,21 @@
                         <i class="fas fa-receipt"></i> Gastos Mensuales Promedio
                     </label>
                     <input type="number" id="monthlyExpenses" placeholder="Ej: 650000" min="0">
-                    <small>Aproximadamente cu�nto gastas al mes</small>
+                    <small>Aproximadamente cuánto gastas al mes</small>
                 </div>
                 <div class="form-group">
                     <label for="financialGoals">
                         <i class="fas fa-bullseye"></i> Metas Financieras
                     </label>
-                    <textarea id="financialGoals" rows="4" placeholder="Ej: Ahorrar para vacaciones en diciembre ($300,000)&#10;Pagar tarjeta de cr�dito&#10;Crear fondo de emergencia"></textarea>
-                    <small>Describe tus metas financieras (una por l�nea)</small>
+                    <textarea id="financialGoals" rows="4" placeholder="Ej: Ahorrar para vacaciones en diciembre ($300,000)&#10;Pagar tarjeta de crédito&#10;Crear fondo de emergencia"></textarea>
+                    <small>Describe tus metas financieras (una por línea)</small>
                 </div>
                 <div class="form-group">
                     <label for="financialConcerns">
-                        <i class="fas fa-exclamation-triangle"></i> �Qu� te preocupa de tus finanzas?
+                        <i class="fas fa-exclamation-triangle"></i> ¿Qué te preocupa de tus finanzas?
                     </label>
                     <textarea id="financialConcerns" rows="3" placeholder="Ej: No logro ahorrar, Tengo muchas deudas, Gasto mucho en cosas innecesarias"></textarea>
-                    <small>Esto me ayudar� a darte mejores consejos</small>
+                    <small>Esto me ayudará a darte mejores consejos</small>
                 </div>
             </div>
             <div class="modal-footer">

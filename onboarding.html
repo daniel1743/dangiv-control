@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a FinanciaSuite - Onboarding</title>
+    <link rel="stylesheet" href="onboarding.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="onboarding-container">
+        <!-- Barra de progreso -->
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="progress-text">Paso 1 de 7</div>
+
+        <!-- PASO 1: BIENVENIDA EMOCIONAL -->
+        <div class="onboarding-step" id="step-welcome">
+            <div class="step-content">
+                <div class="welcome-animation">
+                    <div class="welcome-circle pulse">
+                        <img src="img/FIN.png" alt="Fin" class="welcome-avatar">
+                    </div>
+                </div>
+
+                <h1 class="step-title gradient-text">¡Bienvenido a FinanciaSuite! 🎉</h1>
+                <p class="step-subtitle">Tu viaje hacia la libertad financiera comienza aquí</p>
+
+                <div class="welcome-message">
+                    <p class="lead-text">Hola, soy <strong>Fin</strong>, tu coach financiero personal.</p>
+                    <p>Estoy aquí para ayudarte a tomar el control total de tu dinero, alcanzar tus metas y construir el futuro que deseas.</p>
+                    <div class="feature-highlights">
+                        <div class="highlight-item">
+                            <i class="fas fa-brain"></i>
+                            <span>Análisis inteligente con IA</span>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-rocket"></i>
+                            <span>Planes personalizados</span>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Seguimiento en tiempo real</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-large" id="welcomeContinueBtn">
+                    <span>Comenzar mi transformación</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- PASO 2: SELECCIÓN DE MODO -->
+        <div class="onboarding-step" id="step-mode-selection">
+            <div class="step-content">
+                <div class="step-icon">
+                    <i class="fas fa-route"></i>
+                </div>
+
+                <h2 class="step-title">¿Cómo prefieres empezar?</h2>
+                <p class="step-subtitle">Elige el camino que mejor se adapte a ti</p>
+
+                <div class="mode-options">
+                    <div class="mode-card" id="modeAutoBtn">
+                        <div class="mode-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <h3>Rápido con IA</h3>
+                        <p>Deja que Fin configure todo automáticamente con inteligencia artificial</p>
+                        <div class="mode-badge">Recomendado</div>
+                        <ul class="mode-features">
+                            <li><i class="fas fa-check"></i> Configuración en 2 minutos</li>
+                            <li><i class="fas fa-check"></i> Plan financiero automático</li>
+                            <li><i class="fas fa-check"></i> Consejos personalizados</li>
+                        </ul>
+                    </div>
+
+                    <div class="mode-card" id="modeManualBtn">
+                        <div class="mode-icon">
+                            <i class="fas fa-sliders-h"></i>
+                        </div>
+                        <h3>Guiado paso a paso</h3>
+                        <p>Configura cada detalle con mi ayuda mientras avanzas</p>
+                        <ul class="mode-features">
+                            <li><i class="fas fa-check"></i> Control total</li>
+                            <li><i class="fas fa-check"></i> Personalización completa</li>
+                            <li><i class="fas fa-check"></i> Aprende en el camino</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 3: INFORMACIÓN BÁSICA -->
+        <div class="onboarding-step" id="step-basic-info">
+            <div class="step-content">
+                <div class="step-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+
+                <h2 class="step-title">Primero, conozcámonos mejor</h2>
+                <p class="step-subtitle">Esta información me ayudará a personalizar tu experiencia</p>
+
+                <div class="form-card">
+                    <div class="form-group">
+                        <label for="onboardingName">
+                            <i class="fas fa-user"></i>
+                            ¿Cómo te llamas?
+                        </label>
+                        <input
+                            type="text"
+                            id="onboardingName"
+                            placeholder="Ej: María García"
+                            class="form-input"
+                            autocomplete="name"
+                        >
+                        <small class="form-hint">Usaré tu nombre para personalizar tus mensajes</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="onboardingIncome">
+                            <i class="fas fa-money-bill-wave"></i>
+                            ¿Cuál es tu ingreso mensual?
+                        </label>
+                        <div class="input-with-prefix">
+                            <span class="input-prefix">$</span>
+                            <input
+                                type="number"
+                                id="onboardingIncome"
+                                placeholder="800000"
+                                class="form-input"
+                                min="0"
+                                step="1000"
+                            >
+                        </div>
+                        <small class="form-hint">Esto me permite calcular un presupuesto realista para ti</small>
+                    </div>
+
+                    <div class="info-box">
+                        <i class="fas fa-lock"></i>
+                        <span>Tu información está segura y es completamente privada</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-large" id="basicInfoContinueBtn">
+                    <span>Continuar</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- PASO 4: SITUACIÓN FINANCIERA -->
+        <div class="onboarding-step" id="step-financial-situation">
+            <div class="step-content">
+                <div class="step-icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+
+                <h2 class="step-title">¿Qué te preocupa de tus finanzas?</h2>
+                <p class="step-subtitle">Selecciona todo lo que te identifique (puedes elegir varias)</p>
+
+                <div class="concerns-grid">
+                    <button class="concern-btn" data-concern="no-ahorro">
+                        <i class="fas fa-piggy-bank"></i>
+                        <span>No logro ahorrar</span>
+                    </button>
+
+                    <button class="concern-btn" data-concern="muchas-deudas">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Tengo muchas deudas</span>
+                    </button>
+
+                    <button class="concern-btn" data-concern="gastos-innecesarios">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Gasto en cosas innecesarias</span>
+                    </button>
+
+                    <button class="concern-btn" data-concern="sin-control">
+                        <i class="fas fa-question-circle"></i>
+                        <span>No sé en qué gasto</span>
+                    </button>
+
+                    <button class="concern-btn" data-concern="llegada-mes">
+                        <i class="fas fa-calendar-times"></i>
+                        <span>No me alcanza el mes</span>
+                    </button>
+
+                    <button class="concern-btn" data-concern="sin-metas">
+                        <i class="fas fa-bullseye"></i>
+                        <span>No tengo metas claras</span>
+                    </button>
+
+                    <button class="concern-btn" data-concern="sin-emergencias">
+                        <i class="fas fa-life-ring"></i>
+                        <span>No tengo fondo de emergencia</span>
+                    </button>
+
+                    <button class="concern-btn" data-concern="compras-impulso">
+                        <i class="fas fa-bolt"></i>
+                        <span>Compro por impulso</span>
+                    </button>
+                </div>
+
+                <button class="btn btn-primary btn-large" id="financialContinueBtn">
+                    <span>Continuar</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+
+                <button class="btn btn-text back-step-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver
+                </button>
+            </div>
+        </div>
+
+        <!-- PASO 5: CONFIGURACIÓN DE METAS -->
+        <div class="onboarding-step" id="step-goals-setup">
+            <div class="step-content">
+                <div class="step-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+
+                <h2 class="step-title">¿Cuál es tu meta principal ahora?</h2>
+                <p class="step-subtitle">Empecemos con una meta. Después podrás agregar más</p>
+
+                <div class="goals-grid">
+                    <button class="goal-btn" data-goal="ahorro-vacaciones">
+                        <i class="fas fa-umbrella-beach"></i>
+                        <span>Ahorrar para vacaciones</span>
+                    </button>
+
+                    <button class="goal-btn" data-goal="fondo-emergencia">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Crear fondo de emergencia</span>
+                    </button>
+
+                    <button class="goal-btn" data-goal="pagar-deudas">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <span>Pagar deudas</span>
+                    </button>
+
+                    <button class="goal-btn" data-goal="comprar-algo">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>Comprar algo específico</span>
+                    </button>
+
+                    <button class="goal-btn" data-goal="inversion">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Comenzar a invertir</span>
+                    </button>
+
+                    <button class="goal-btn" data-goal="mejorar-habitos">
+                        <i class="fas fa-heart"></i>
+                        <span>Mejorar mis hábitos</span>
+                    </button>
+                </div>
+
+                <div class="custom-goal-section">
+                    <p class="section-label">O escribe tu propia meta:</p>
+                    <input
+                        type="text"
+                        id="customGoal"
+                        placeholder="Ej: Ahorrar $500.000 para un curso en 3 meses"
+                        class="form-input"
+                    >
+                </div>
+
+                <button class="btn btn-primary btn-large" id="goalsContinueBtn">
+                    <span>Generar mi plan</span>
+                    <i class="fas fa-magic"></i>
+                </button>
+
+                <button class="btn btn-text back-step-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver
+                </button>
+            </div>
+        </div>
+
+        <!-- PASO 6: GENERACIÓN DEL PLAN -->
+        <div class="onboarding-step" id="step-plan-generation">
+            <div class="step-content">
+                <!-- Estado de carga -->
+                <div id="planLoading" class="plan-loading">
+                    <div class="loading-animation">
+                        <div class="loading-circle"></div>
+                        <div class="loading-circle"></div>
+                        <div class="loading-circle"></div>
+                    </div>
+                    <h3 class="loading-title">Creando tu plan financiero personalizado...</h3>
+                    <p class="loading-text">Estoy analizando tu perfil y diseñando la mejor estrategia para ti</p>
+                    <div class="loading-steps">
+                        <div class="loading-step active">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Analizando tu perfil</span>
+                        </div>
+                        <div class="loading-step">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>Calculando presupuesto óptimo</span>
+                        </div>
+                        <div class="loading-step">
+                            <i class="fas fa-circle"></i>
+                            <span>Generando recomendaciones</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan generado (se muestra cuando termina el loading) -->
+                <div id="generatedPlan" style="display: none;">
+                    <div id="generatedPlanContent">
+                        <!-- Se llena dinámicamente desde JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 7: COMPLETADO Y CELEBRACIÓN -->
+        <div class="onboarding-step" id="step-completion">
+            <div class="step-content">
+                <div class="completion-animation">
+                    <div class="success-checkmark">
+                        <div class="check-icon">
+                            <span class="icon-line line-tip"></span>
+                            <span class="icon-line line-long"></span>
+                            <div class="icon-circle"></div>
+                            <div class="icon-fix"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <h1 class="step-title gradient-text">¡Todo listo! 🎉</h1>
+                <p class="step-subtitle">Tu plan financiero está activado y funcionando</p>
+
+                <div class="completion-summary">
+                    <div class="summary-card">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Plan Personalizado Creado</h3>
+                        <p>Diseñado específicamente para tus metas y situación</p>
+                    </div>
+
+                    <div class="summary-card">
+                        <i class="fas fa-robot"></i>
+                        <h3>IA Configurada</h3>
+                        <p>Fin está listo para ayudarte en cada paso</p>
+                    </div>
+
+                    <div class="summary-card">
+                        <i class="fas fa-bell"></i>
+                        <h3>Alertas Activadas</h3>
+                        <p>Te notificaré sobre tu progreso y oportunidades</p>
+                    </div>
+                </div>
+
+                <div class="next-steps">
+                    <h3>Próximos pasos recomendados:</h3>
+                    <ul>
+                        <li><i class="fas fa-arrow-right"></i> Registra tu primer gasto para empezar a trackear</li>
+                        <li><i class="fas fa-arrow-right"></i> Explora tu dashboard personalizado</li>
+                        <li><i class="fas fa-arrow-right"></i> Chatea con Fin si tienes dudas</li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-primary btn-large" id="goToDashboardBtn">
+                    <span>Ir a mi Dashboard</span>
+                    <i class="fas fa-home"></i>
+                </button>
+
+                <p class="completion-footer">
+                    Recuerda: Estoy aquí para ayudarte siempre que lo necesites 💙
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de notificaciones -->
+    <div class="toast" id="onboardingToast"></div>
+
+    <!-- Scripts -->
+    <script src="onboarding-manager.js"></script>
+</body>
+</html>
