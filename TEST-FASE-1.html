@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Fase 1</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      padding: 40px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .test-section {
+      margin-bottom: 40px;
+      padding: 20px;
+      border: 2px solid #667eea;
+      border-radius: 12px;
+    }
+    button {
+      margin: 8px;
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #764ba2;
+    }
+    .result {
+      margin-top: 16px;
+      padding: 16px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Test Fase 1 - Sistemas Premium</h1>
+
+  <!-- Test 1: FinMemory -->
+  <div class="test-section">
+    <h2>1. FinMemory System</h2>
+    <button onclick="testMemory()">Test Memoria</button>
+    <div id="memoryResult" class="result"></div>
+  </div>
+
+  <!-- Test 2: FinResponseOptimizer -->
+  <div class="test-section">
+    <h2>2. FinResponseOptimizer</h2>
+    <button onclick="testOptimizer()">Test Optimizador</button>
+    <div id="optimizerResult" class="result"></div>
+  </div>
+
+  <!-- Test 3: Premium Modal -->
+  <div class="test-section">
+    <h2>3. Premium Modal</h2>
+    <button onclick="showPremiumUpgradeModal()">Mostrar Modal Premium</button>
+  </div>
+
+  <!-- Test 4: Recomendaciones -->
+  <div class="test-section">
+    <h2>4. Recomendaciones (3 Gratis + 7 Bloqueadas)</h2>
+    <div id="aiRecommendations"></div>
+    <button onclick="testRecommendations()">Generar Recomendaciones</button>
+  </div>
+
+  <!-- Scripts -->
+  <script src="fin-memory.js"></script>
+  <script src="fin-response-optimizer.js"></script>
+  <script src="premium-modal.js"></script>
+
+  <script>
+    // Mock de financeApp para testing
+    window.financeApp = {
+      userProfile: { name: 'Luisa' },
+      expenses: [
+        { amount: 50000, category: 'Alimentación' },
+        { amount: 30000, category: 'Transporte' },
+        { amount: 100000, category: 'Entretenimiento' }
+      ],
+      goals: [
+        { name: 'Viaje', targetAmount: 5000000, completed: false }
+      ],
+      monthlyIncome: 3000000
+    };
+
+    // Test 1: FinMemory
+    function testMemory() {
+      const memory = new FinMemory('test-user');
+      memory.setUserName('Luisa');
+
+      // Agregar interacciones
+      memory.addInteraction('¿Cómo puedo ahorrar?', 'Luisa, te recomiendo el método 50/30/20 💡');
+      memory.addInteraction('¿Qué es eso?', 'Luisa, es dividir tu ingreso: 50% esenciales, 30% gustos, 20% ahorro 📊');
+
+      // Obtener contexto
+      const context = memory.getContextPrompt();
+      const stats = memory.getStats();
+
+      const result = `✅ FinMemory Funcionando:
+
+Contexto generado:
+${context}
+
+Estadísticas:
+- Interacciones: ${stats.interactionCount}
+- Temas discutidos: ${stats.topicsCount}
+- Última vez: ${stats.lastSeen}
+
+Métodos disponibles:
+✓ setUserName()
+✓ addInteraction()
+✓ getContextPrompt()
+✓ markTopicDiscussed()
+✓ clearHistory()`;
+
+      document.getElementById('memoryResult').textContent = result;
+    }
+
+    // Test 2: FinResponseOptimizer
+    function testOptimizer() {
+      const longResponse = `Hola! **Te recomiendo** que empieces a ahorrar de manera consistente cada mes, estableciendo una meta clara de ahorro del 20% de tus ingresos mensuales, lo cual te permitirá alcanzar tus objetivos financieros a largo plazo y crear un fondo de emergencia sólido que te de tranquilidad. 😊💰📊🎯✨`;
+
+      const optimized = FinResponseOptimizer.optimize(longResponse, 'Luisa', {
+        maxWords: 40,
+        maxLines: 3,
+        maxEmojis: 2
+      });
+
+      const analysis = FinResponseOptimizer.analyze(optimized);
+
+      const result = `✅ FinResponseOptimizer Funcionando:
+
+ANTES (${longResponse.split(' ').length} palabras):
+${longResponse}
+
+DESPUÉS (${analysis.words} palabras):
+${optimized}
+
+Análisis:
+- Palabras: ${analysis.words} (límite: 40)
+- Líneas: ${analysis.lines} (límite: 3)
+- Emojis: ${analysis.emojis} (límite: 2)
+- Conciso: ${analysis.isConcise ? '✅' : '❌'}
+- Tokens estimados: ${analysis.estimatedTokens}
+
+Métodos disponibles:
+✓ optimize()
+✓ optimizeUltraConcise()
+✓ optimizeStandard()
+✓ analyze()`;
+
+      document.getElementById('optimizerResult').textContent = result;
+    }
+
+    // Test 3: Recomendaciones
+    function testRecommendations() {
+      const container = document.getElementById('aiRecommendations');
+      container.innerHTML = '';
+
+      // Crear scroll container
+      const scrollContainer = document.createElement('div');
+      scrollContainer.className = 'ai-recommendations-scroll';
+
+      // Recomendaciones de ejemplo
+      const recommendations = [
+        'Luisa, gastas $100K en Entretenimiento (33% de ingresos). Reducir a 20% = $390K/mes ahorrados 🎯',
+        'Luisa, tu tasa de ahorro es 90%. ¡Excelente! Invierte $1M en CDT al 12% EA para ganar $120K/año 💰',
+        'Luisa, crea un fondo de emergencia de 6 meses ($180K). Tienes $2.82M disponibles 🛡️',
+        'Tip premium 4...',
+        'Tip premium 5...',
+        'Tip premium 6...',
+        'Tip premium 7...',
+        'Tip premium 8...',
+        'Tip premium 9...',
+        'Tip premium 10...'
+      ];
+
+      // Mostrar 3 gratis
+      for (let i = 0; i < 3; i++) {
+        const card = createRecommendationCard(recommendations[i], i);
+        scrollContainer.appendChild(card);
+        setTimeout(() => card.classList.add('visible'), i * 100);
+      }
+
+      // Mostrar 7 bloqueadas
+      for (let i = 3; i < 10; i++) {
+        const card = createLockedCard(recommendations[i], i);
+        scrollContainer.appendChild(card);
+        setTimeout(() => card.classList.add('visible'), i * 100);
+      }
+
+      container.appendChild(scrollContainer);
+    }
+
+    function createRecommendationCard(recommendation, index) {
+      const card = document.createElement('div');
+      card.className = 'ai-recommendation-card';
+      card.innerHTML = `
+        <div class="ai-rec-icon">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="ai-rec-content">
+          <div class="ai-rec-header">
+            <h5>Consejo Personalizado #${index + 1}</h5>
+            <span class="ai-badge">IA</span>
+          </div>
+          <p>${recommendation}</p>
+        </div>
+      `;
+      return card;
+    }
+
+    function createLockedCard(recommendation, index) {
+      const card = document.createElement('div');
+      card.className = 'ai-recommendation-card locked';
+      card.innerHTML = `
+        <div class="ai-rec-icon locked">
+          <i class="fas fa-lock"></i>
+        </div>
+        <div class="ai-rec-content blurred">
+          <div class="ai-rec-header">
+            <h5>Consejo Premium #${index + 1}</h5>
+            <span class="ai-badge premium">PRO</span>
+          </div>
+          <p>${recommendation.substring(0, 30)}...</p>
+        </div>
+        <button class="unlock-btn" onclick="showPremiumUpgradeModal()">
+          <i class="fas fa-crown"></i> Desbloquear
+        </button>
+      `;
+      return card;
+    }
+
+    // Auto-ejecutar tests al cargar
+    window.addEventListener('load', () => {
+      console.log('✅ Sistemas cargados correctamente');
+      console.log('FinMemory:', typeof window.FinMemory);
+      console.log('FinResponseOptimizer:', typeof window.FinResponseOptimizer);
+      console.log('showPremiumUpgradeModal:', typeof window.showPremiumUpgradeModal);
+    });
+  </script>
+</body>
+</html>

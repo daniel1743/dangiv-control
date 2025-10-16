@@ -171,27 +171,43 @@ class AIRecommendationsManager {
     // Preparar contexto del usuario
     const context = this.prepareUserContext();
 
-    const prompt = `Eres Fin, un coach financiero experto y empático.
+    const prompt = `Eres Fin, coach financiero experto y empático de ${this.app.userProfile.name || 'Usuario'}.
 
-Analiza los datos financieros del usuario y genera 10 recomendaciones personalizadas de ahorro y gestión financiera.
+Analiza los datos y genera 10 recomendaciones de ahorro. Las 3 PRIMERAS deben ser las MÁS VALIOSAS e IMPACTANTES.
 
 DATOS DEL USUARIO:
 ${context}
 
-IMPORTANTE: Responde ÚNICAMENTE con un array JSON, sin texto adicional.
+ORDEN DE PRIORIDAD (CRÍTICO):
 
-Genera 10 recomendaciones que sean:
-1. Personalizadas con el nombre del usuario
-2. Específicas basadas en sus datos reales
-3. Accionables y prácticas
-4. Motivacionales y positivas
-5. Cortas (máximo 2 líneas cada una)
+Recomendaciones 1-3 (GRATIS - Las mejores):
+- ✅ Problemas URGENTES o gastos muy altos
+- ✅ Oportunidades de ahorro GRANDE (>$100,000/mes)
+- ✅ Alertas críticas sobre presupuesto
+- ✅ Metas próximas a vencer
+Ejemplo: "${this.app.userProfile.name}, gastas $850K en Alimentación (40% sobre promedio). Reducir 25% = $212K/mes ahorrados 🎯"
 
-Responde SOLO con este JSON (sin markdown, sin \`\`\`json, solo el array):
+Recomendaciones 4-7 (PREMIUM - Importantes):
+- Optimizaciones significativas
+- Mejoras en categorías medianas
+- Consejos sobre metas a largo plazo
+
+Recomendaciones 8-10 (PREMIUM - Útiles):
+- Tips generales
+- Hábitos financieros
+- Motivación
+
+FORMATO:
+- Máximo 2 líneas por recomendación
+- Usa el nombre: "${this.app.userProfile.name}"
+- Incluye números específicos ($, %, fechas)
+- Un emoji relevante al final
+
+IMPORTANTE: Responde SOLO con el array JSON (sin markdown, sin \`\`\`json):
 [
-  "Recomendación 1",
-  "Recomendación 2",
-  "Recomendación 3",
+  "Recomendación crítica 1...",
+  "Recomendación crítica 2...",
+  "Recomendación crítica 3...",
   ...
 ]`;
 
@@ -348,11 +364,37 @@ Responde SOLO con este JSON (sin markdown, sin \`\`\`json, solo el array):
 
     container.appendChild(scrollContainer);
 
-    // Cargar primeras recomendaciones
-    this.loadMoreRecommendations();
+    // Verificar si es usuario Premium
+    const isPremium = window.premiumManager?.data?.isPremium || false;
+    const freeCount = 3;
 
-    // Configurar scroll infinito
-    this.setupInfiniteScroll(scrollContainer);
+    // Renderizar recomendaciones gratis (primeras 3)
+    const freeRecommendations = this.allRecommendations.slice(0, freeCount);
+    freeRecommendations.forEach((rec, index) => {
+      setTimeout(() => {
+        const card = this.createRecommendationCard(rec, index);
+        scrollContainer.appendChild(card);
+        setTimeout(() => card.classList.add('visible'), 50);
+      }, index * 100);
+    });
+
+    // Si no es premium, mostrar cards bloqueadas
+    if (!isPremium && this.allRecommendations.length > freeCount) {
+      const lockedRecommendations = this.allRecommendations.slice(freeCount);
+      lockedRecommendations.forEach((rec, index) => {
+        setTimeout(() => {
+          const card = this.createLockedCard(rec, freeCount + index);
+          scrollContainer.appendChild(card);
+          setTimeout(() => card.classList.add('visible'), 50);
+        }, (freeCount + index) * 100);
+      });
+    } else if (isPremium) {
+      // Si es premium, mostrar todas normalmente con scroll infinito
+      this.currentIndex = freeCount;
+      if (this.allRecommendations.length > freeCount) {
+        this.setupInfiniteScroll(scrollContainer);
+      }
+    }
 
     // Mostrar tarjeta padre
     const parentCard = container.closest('.card');
@@ -420,6 +462,33 @@ Responde SOLO con este JSON (sin markdown, sin \`\`\`json, solo el array):
         </div>
         <p>${recommendation}</p>
       </div>
+    `;
+
+    return card;
+  }
+
+  createLockedCard(recommendation, index) {
+    const card = document.createElement('div');
+    card.className = 'ai-recommendation-card locked';
+    card.setAttribute('data-index', index);
+
+    // Ofuscar el texto de la recomendación
+    const preview = recommendation.substring(0, 30) + '...';
+
+    card.innerHTML = `
+      <div class="ai-rec-icon locked">
+        <i class="fas fa-lock"></i>
+      </div>
+      <div class="ai-rec-content blurred">
+        <div class="ai-rec-header">
+          <h5>Consejo Premium #${index + 1}</h5>
+          <span class="ai-badge premium">PRO</span>
+        </div>
+        <p>${preview}</p>
+      </div>
+      <button class="unlock-btn" onclick="showPremiumUpgradeModal()">
+        <i class="fas fa-crown"></i> Desbloquear
+      </button>
     `;
 
     return card;
