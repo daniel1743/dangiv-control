@@ -152,12 +152,6 @@ function prepareBalanceHistoryData(expenses, monthlyIncome) {
   }
   monthlyIncome = Number(monthlyIncome) || 0;
 
-  // Si el valor es muy pequeño (menos de 100000), probablemente está en miles, multiplicar por 1000
-  if (monthlyIncome > 0 && monthlyIncome < 100000) {
-    console.log('⚠️ Valor detectado en miles, multiplicando por 1000');
-    monthlyIncome = monthlyIncome * 1000;
-  }
-
   console.log('💵 Monthly Income procesado:', monthlyIncome);
 
   // Agrupar gastos por fecha
@@ -190,11 +184,6 @@ function prepareBalanceHistoryData(expenses, monthlyIncome) {
       amount = parseFloat(amount);
     }
     amount = Number(amount) || 0;
-
-    // Si el valor es muy pequeño (menos de 100000), probablemente está en miles
-    if (amount > 0 && amount < 100000) {
-      amount = amount * 1000;
-    }
 
     expensesByDate[dateKey].expenses.push({
       description: expense.description || 'Sin descripción',
