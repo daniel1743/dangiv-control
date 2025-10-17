@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Auditoría UX/UI - aplica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .category {
+            margin-bottom: 40px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .category-header h2 {
+            color: #2d3748;
+            font-size: 1.8rem;
+        }
+
+        .badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .issue-card {
+            background: #f8f9fa;
+            border-left: 4px solid;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .issue-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .issue-card.high {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .issue-card.medium {
+            border-left-color: #ffc107;
+            background: #fffbf0;
+        }
+
+        .issue-card.low {
+            border-left-color: #0dcaf0;
+            background: #f0f9ff;
+        }
+
+        .issue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .issue-file {
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .severity-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .severity-badge.high {
+            background: #dc3545;
+            color: white;
+        }
+
+        .severity-badge.medium {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .severity-badge.low {
+            background: #0dcaf0;
+            color: #000;
+        }
+
+        .issue-message {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .issue-recommendation {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            color: #4a5568;
+            font-size: 0.9rem;
+            border-left: 3px solid #667eea;
+        }
+
+        .issue-recommendation::before {
+            content: "💡 ";
+            font-size: 1.2rem;
+        }
+
+        .footer {
+            background: #2d3748;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        .no-issues {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+        }
+
+        .no-issues h3 {
+            font-size: 2rem;
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Reporte de Auditoría UX/UI</h1>
+            <p>Proyecto: aplica</p>
+            <p>Fecha: 17/10/2025 09:16:49</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>676</h3>
+                <p>Archivos Analizados</p>
+            </div>
+            <div class="stat-card">
+                <h3>1203</h3>
+                <p>Problemas Encontrados</p>
+            </div>
+            <div class="stat-card">
+                <h3>14</h3>
+                <p>Archivos HTML</p>
+            </div>
+            <div class="stat-card">
+                <h3>21</h3>
+                <p>Archivos CSS</p>
+            </div>
+            <div class="stat-card">
+                <h3>641</h3>
+                <p>Archivos JavaScript</p>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <div class="category" style="border: 3px solid #dc3545; border-radius: 10px; padding: 20px; background: #fff5f5;">
+                <div class="category-header">
+                    <h2>🚨 Problemas Críticos</h2>
+                    <span class="badge" style="background: #dc3545;">45 problemas</span>
+                </div>
+                <p style="margin-bottom: 20px; color: #666;">Problemas de alta prioridad que requieren atención inmediata</p>
+
+                <div class="issue-card high">
+                    <div class="issue-header">
+                        <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\snapshot.html</span>
+                        <span class="severity-badge high">high</span>
+                    </div>
+                    <div class="issue-message">Falta etiqueta <title></div>
+
+                    <div class="issue-recommendation">Añade <title>Título de la página</title> en el <head></div>
+
+                </div>
+
+                <div class="issue-card high">
+                    <div class="issue-header">
+                        <span class="issue-file">chat-fin.css</span>
+                        <span class="severity-badge high">high</span>
+                    </div>
+                    <div class="issue-message">Error al analizar CSS: 'utf-8' codec can't decode byte 0xed in position 1395: invalid continuation byte</div>
+
+                </div>
+
+                <div class="issue-card high">
+                    <div class="issue-header">
+                        <span class="issue-file">backend\node_modules\ipaddr.js</span>
+                        <span class="severity-badge high">high</span>
+                    </div>
+                    <div class="issue-message">Error al analizar JavaScript: [Errno 13] Permission denied: 'C:\\Users\\Lenovo\\Desktop\\aplica\\backend\\node_modules\\ipaddr.js'</div>
+
+                </div>
+
+                <div class="issue-card high">
+                    <div class="issue-header">
+                        <span class="issue-file">node_modules\playwright-core\lib\vite\htmlReport\index.html</span>
+                        <span class="severity-badge high">high</span>
+                    </div>
+                    <div class="issue-message">Falta meta description</div>
+
+                    <div class="issue-recommendation">Añade <meta name="description" content="Descripción de 150-160 caracteres"></div>
+
+                </div>
+
+                <div class="issue-card high">
+                    <div class="issue-header">
+                        <span class="issue-file">node_modules\playwright-core\lib\vite\recorder\index.html</span>
+                        <span class="severity-badge high">high</span>
+                    </div>
+                    <div class="issue-message">Falta meta description</div>
+
+                    <div class="issue-recommendation">Añade <meta name="description" content="Descripción de 150-160 caracteres"></div>
+
+                </div>
+
+                <div class="issue-card high">
+                    <div class="issue-header">
+                        <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\embedded.html</span>
+                        <span class="severity-badge high">high</span>
+                    </div>
+                    <div class="issue-message">Falta meta description</div>
+
+                    <div class="issue-recommendation">Añade <meta name="description" content="Descripción de 150-160 caracteres"></div>
+
+                </div>
+
+                <div class="issue-card high">
+                    <div class="issue-header">
+                        <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\index.html</span>
+                        <span class="severity-badge high">high</span>
+                    </div>
+                    <div class="issue-message">Falta meta description</div>
+
+                    <div class="issue-recommendation">Añade <meta name="description" content="Descripción de 150-160 caracteres"></div>
+
+                </div>
+
+                <div class="issue-card high">
+                    <div class="issue-header">
+                        <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\recorder.html</span>
+                        <span class="severity-badge high">high</span>
+                    </div>
+                    <div class="issue-message">Falta meta description</div>
+
+                    <div class="issue-recommendation">Añade <meta name="description" content="Descripción de 150-160 caracteres"></div>
+
+                </div>
+
+                <div class="issue-card high">
+                    <div class="issue-header">
+                        <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\snapshot.html</span>
+                        <span class="severity-badge high">high</span>
+                    </div>
+                    <div class="issue-message">Falta meta description</div>
+
+                    <div class="issue-recommendation">Añade <meta name="description" content="Descripción de 150-160 caracteres"></div>
+
+                </div>
+
+                <div class="issue-card high">
+                    <div class="issue-header">
+                        <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\uiMode.html</span>
+                        <span class="severity-badge high">high</span>
+                    </div>
+                    <div class="issue-message">Falta meta description</div>
+
+                    <div class="issue-recommendation">Añade <meta name="description" content="Descripción de 150-160 caracteres"></div>
+
+                </div>
+
+            </div>
+
+            <div class="category">
+                <div class="category-header">
+                    <h2>🏷️ Estructura HTML</h2>
+                    <span class="badge">2 problemas</span>
+                </div>
+                <p style="margin-bottom: 20px; color: #666;">Problemas relacionados con la estructura y semántica HTML</p>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Etiquetas Faltantes (1)</h3>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\snapshot.html</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Falta etiqueta <title></div>
+
+                        <div class="issue-recommendation">Añade <title>Título de la página</title> en el <head></div>
+
+                    </div>
+
+                </div>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Jerarquía de Encabezados (1)</h3>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">onboarding.html</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Se encontraron 2 etiquetas H1 (debería ser solo 1)</div>
+
+                        <div class="issue-recommendation">Usa solo un H1 por página y H2-H6 para subsecciones</div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="category">
+                <div class="category-header">
+                    <h2>🔍 SEO y Meta Etiquetas</h2>
+                    <span class="badge">15 problemas</span>
+                </div>
+                <p style="margin-bottom: 20px; color: #666;">Optimización para motores de búsqueda</p>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Meta Tags (8)</h3>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">ux_audit_report.html</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Meta description tiene 33 caracteres (recomendado: 120-160)</div>
+
+                        <div class="issue-recommendation">Ajusta la longitud de la meta description entre 120-160 caracteres</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\htmlReport\index.html</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Falta meta description</div>
+
+                        <div class="issue-recommendation">Añade <meta name="description" content="Descripción de 150-160 caracteres"></div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\recorder\index.html</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Falta meta description</div>
+
+                        <div class="issue-recommendation">Añade <meta name="description" content="Descripción de 150-160 caracteres"></div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\embedded.html</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Falta meta description</div>
+
+                        <div class="issue-recommendation">Añade <meta name="description" content="Descripción de 150-160 caracteres"></div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\index.html</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Falta meta description</div>
+
+                        <div class="issue-recommendation">Añade <meta name="description" content="Descripción de 150-160 caracteres"></div>
+
+                    </div>
+
+                    <p style="text-align: center; color: #666; margin-top: 10px;">... y 3 problemas más en esta subsección</p>
+
+                </div>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Títulos (7)</h3>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">index.html</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Título tiene 103 caracteres (recomendado: 30-60)</div>
+
+                        <div class="issue-recommendation">Ajusta el título entre 30-60 caracteres para mejor SEO</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">TEST-FASE-1.html</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Título tiene 11 caracteres (recomendado: 30-60)</div>
+
+                        <div class="issue-recommendation">Ajusta el título entre 30-60 caracteres para mejor SEO</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\htmlReport\index.html</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Título tiene 22 caracteres (recomendado: 30-60)</div>
+
+                        <div class="issue-recommendation">Ajusta el título entre 30-60 caracteres para mejor SEO</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\recorder\index.html</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Título tiene 20 caracteres (recomendado: 30-60)</div>
+
+                        <div class="issue-recommendation">Ajusta el título entre 30-60 caracteres para mejor SEO</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\index.html</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Título tiene 23 caracteres (recomendado: 30-60)</div>
+
+                        <div class="issue-recommendation">Ajusta el título entre 30-60 caracteres para mejor SEO</div>
+
+                    </div>
+
+                    <p style="text-align: center; color: #666; margin-top: 10px;">... y 2 problemas más en esta subsección</p>
+
+                </div>
+
+            </div>
+
+            <div class="category">
+                <div class="category-header">
+                    <h2>♿ Accesibilidad (WCAG)</h2>
+                    <span class="badge">26 problemas</span>
+                </div>
+                <p style="margin-bottom: 20px; color: #666;">Problemas que afectan la accesibilidad web</p>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Formularios sin Labels (18)</h3>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">index.html</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Input sin label asociado: text</div>
+
+                        <div class="issue-recommendation">Añade <label for='input-id'> o aria-label al input</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">index.html</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Input sin label asociado: text</div>
+
+                        <div class="issue-recommendation">Añade <label for='input-id'> o aria-label al input</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">index.html</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Input sin label asociado: text</div>
+
+                        <div class="issue-recommendation">Añade <label for='input-id'> o aria-label al input</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">index.html</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Input sin label asociado: text</div>
+
+                        <div class="issue-recommendation">Añade <label for='input-id'> o aria-label al input</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">index.html</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Input sin label asociado: text</div>
+
+                        <div class="issue-recommendation">Añade <label for='input-id'> o aria-label al input</div>
+
+                    </div>
+
+                    <p style="text-align: center; color: #666; margin-top: 10px;">... y 13 problemas más en esta subsección</p>
+
+                </div>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Navegación por Teclado (8)</h3>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">achievements-system.js</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Eventos onclick sin soporte para teclado</div>
+
+                        <div class="issue-recommendation">Añade eventos keydown/keyup para accesibilidad de teclado</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">ai-recommendations.js</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Eventos onclick sin soporte para teclado</div>
+
+                        <div class="issue-recommendation">Añade eventos keydown/keyup para accesibilidad de teclado</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">conversational-expense-ui.js</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Eventos onclick sin soporte para teclado</div>
+
+                        <div class="issue-recommendation">Añade eventos keydown/keyup para accesibilidad de teclado</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">fin-conversation-guide.js</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Eventos onclick sin soporte para teclado</div>
+
+                        <div class="issue-recommendation">Añade eventos keydown/keyup para accesibilidad de teclado</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">notifications-system.js</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">Eventos onclick sin soporte para teclado</div>
+
+                        <div class="issue-recommendation">Añade eventos keydown/keyup para accesibilidad de teclado</div>
+
+                    </div>
+
+                    <p style="text-align: center; color: #666; margin-top: 10px;">... y 3 problemas más en esta subsección</p>
+
+                </div>
+
+            </div>
+
+            <div class="category">
+                <div class="category-header">
+                    <h2>⚡ Rendimiento</h2>
+                    <span class="badge">49 problemas</span>
+                </div>
+                <p style="margin-bottom: 20px; color: #666;">Problemas que afectan la velocidad y rendimiento</p>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Optimización DOM (5)</h3>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\generated\injectedScriptSource.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">querySelector dentro de loop detectado</div>
+
+                        <div class="issue-recommendation">Cache la selección DOM fuera del loop</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\server\screenshotter.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">querySelector dentro de loop detectado</div>
+
+                        <div class="issue-recommendation">Cache la selección DOM fuera del loop</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\recorder\assets\index-BOBrf0jA.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">querySelector dentro de loop detectado</div>
+
+                        <div class="issue-recommendation">Cache la selección DOM fuera del loop</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\sw.bundle.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">querySelector dentro de loop detectado</div>
+
+                        <div class="issue-recommendation">Cache la selección DOM fuera del loop</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\assets\inspectorTab-pwne29yQ.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">querySelector dentro de loop detectado</div>
+
+                        <div class="issue-recommendation">Cache la selección DOM fuera del loop</div>
+
+                    </div>
+
+                </div>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Eventos de Scroll/Resize (44)</h3>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">ai-recommendations.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Eventos scroll/resize sin debounce detectados</div>
+
+                        <div class="issue-recommendation">Implementa debounce para eventos scroll/resize para mejor rendimiento</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">chat-fin.backup.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Eventos scroll/resize sin debounce detectados</div>
+
+                        <div class="issue-recommendation">Implementa debounce para eventos scroll/resize para mejor rendimiento</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">chat-fin.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Eventos scroll/resize sin debounce detectados</div>
+
+                        <div class="issue-recommendation">Implementa debounce para eventos scroll/resize para mejor rendimiento</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">conversational-expense-ui.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Eventos scroll/resize sin debounce detectados</div>
+
+                        <div class="issue-recommendation">Implementa debounce para eventos scroll/resize para mejor rendimiento</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">terms-acceptance.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Eventos scroll/resize sin debounce detectados</div>
+
+                        <div class="issue-recommendation">Implementa debounce para eventos scroll/resize para mejor rendimiento</div>
+
+                    </div>
+
+                    <p style="text-align: center; color: #666; margin-top: 10px;">... y 39 problemas más en esta subsección</p>
+
+                </div>
+
+            </div>
+
+            <div class="category">
+                <div class="category-header">
+                    <h2>📱 Diseño Responsive</h2>
+                    <span class="badge">104 problemas</span>
+                </div>
+                <p style="margin-bottom: 20px; color: #666;">Problemas de adaptabilidad a diferentes dispositivos</p>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Media Queries (9)</h3>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">daily-messages.css</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">No se encontraron media queries</div>
+
+                        <div class="issue-recommendation">Añade media queries para diferentes tamaños de pantalla</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\recorder\assets\index-BW-aOBcL.css</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">No se encontraron media queries</div>
+
+                        <div class="issue-recommendation">Añade media queries para diferentes tamaños de pantalla</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\embedded.w7WN2u1R.css</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">No se encontraron media queries</div>
+
+                        <div class="issue-recommendation">Añade media queries para diferentes tamaños de pantalla</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\index.CrbWWHbf.css</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">No se encontraron media queries</div>
+
+                        <div class="issue-recommendation">Añade media queries para diferentes tamaños de pantalla</div>
+
+                    </div>
+
+                    <div class="issue-card high">
+                        <div class="issue-header">
+                            <span class="issue-file">node_modules\playwright-core\lib\vite\traceViewer\inspectorTab.DLjBDrQR.css</span>
+                            <span class="severity-badge high">high</span>
+                        </div>
+                        <div class="issue-message">No se encontraron media queries</div>
+
+                        <div class="issue-recommendation">Añade media queries para diferentes tamaños de pantalla</div>
+
+                    </div>
+
+                    <p style="text-align: center; color: #666; margin-top: 10px;">... y 4 problemas más en esta subsección</p>
+
+                </div>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Anchos Fijos (95)</h3>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">avatar-sidebar.css</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Ancho fijo encontrado: width: 768px</div>
+
+                        <div class="issue-recommendation">Usa unidades relativas (%, vw, rem) o max-width para flexibilidad</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">config.css</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Ancho fijo encontrado: width: 1200px</div>
+
+                        <div class="issue-recommendation">Usa unidades relativas (%, vw, rem) o max-width para flexibilidad</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">config.css</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Ancho fijo encontrado: width: 768px</div>
+
+                        <div class="issue-recommendation">Usa unidades relativas (%, vw, rem) o max-width para flexibilidad</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">config.css</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Ancho fijo encontrado: width: 600px</div>
+
+                        <div class="issue-recommendation">Usa unidades relativas (%, vw, rem) o max-width para flexibilidad</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">config.css</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Ancho fijo encontrado: width: 1400px</div>
+
+                        <div class="issue-recommendation">Usa unidades relativas (%, vw, rem) o max-width para flexibilidad</div>
+
+                    </div>
+
+                    <p style="text-align: center; color: #666; margin-top: 10px;">... y 90 problemas más en esta subsección</p>
+
+                </div>
+
+            </div>
+
+            <div class="category">
+                <div class="category-header">
+                    <h2>🎨 Consistencia de Diseño</h2>
+                    <span class="badge">983 problemas</span>
+                </div>
+                <p style="margin-bottom: 20px; color: #666;">Problemas de coherencia visual y UX</p>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Paleta de Colores (972)</h3>
+
+                    <div class="issue-card low">
+                        <div class="issue-header">
+                            <span class="issue-file">config.css</span>
+                            <span class="severity-badge low">low</span>
+                        </div>
+                        <div class="issue-message">Color #e0e0e0 fuera de la paleta definida</div>
+
+                        <div class="issue-recommendation">Usa colores de la paleta: #e63946, #f1faee, #a8dadc, #457b9d, #1d3557...</div>
+
+                    </div>
+
+                    <div class="issue-card low">
+                        <div class="issue-header">
+                            <span class="issue-file">config.css</span>
+                            <span class="severity-badge low">low</span>
+                        </div>
+                        <div class="issue-message">Color #2d2d2d fuera de la paleta definida</div>
+
+                        <div class="issue-recommendation">Usa colores de la paleta: #e63946, #f1faee, #a8dadc, #457b9d, #1d3557...</div>
+
+                    </div>
+
+                    <div class="issue-card low">
+                        <div class="issue-header">
+                            <span class="issue-file">config.css</span>
+                            <span class="severity-badge low">low</span>
+                        </div>
+                        <div class="issue-message">Color #fffb00 fuera de la paleta definida</div>
+
+                        <div class="issue-recommendation">Usa colores de la paleta: #e63946, #f1faee, #a8dadc, #457b9d, #1d3557...</div>
+
+                    </div>
+
+                    <div class="issue-card low">
+                        <div class="issue-header">
+                            <span class="issue-file">config.css</span>
+                            <span class="severity-badge low">low</span>
+                        </div>
+                        <div class="issue-message">Color #00ffd5 fuera de la paleta definida</div>
+
+                        <div class="issue-recommendation">Usa colores de la paleta: #e63946, #f1faee, #a8dadc, #457b9d, #1d3557...</div>
+
+                    </div>
+
+                    <div class="issue-card low">
+                        <div class="issue-header">
+                            <span class="issue-file">config.css</span>
+                            <span class="severity-badge low">low</span>
+                        </div>
+                        <div class="issue-message">Color #92400e fuera de la paleta definida</div>
+
+                        <div class="issue-recommendation">Usa colores de la paleta: #e63946, #f1faee, #a8dadc, #457b9d, #1d3557...</div>
+
+                    </div>
+
+                    <p style="text-align: center; color: #666; margin-top: 10px;">... y 967 problemas más en esta subsección</p>
+
+                </div>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Tipografía (11)</h3>
+
+                    <div class="issue-card low">
+                        <div class="issue-header">
+                            <span class="issue-file">fin-conversation-styles.css</span>
+                            <span class="severity-badge low">low</span>
+                        </div>
+                        <div class="issue-message">Tamaños de fuente inconsistentes encontrados: {'15px', '13px'}</div>
+
+                        <div class="issue-recommendation">Usa una escala tipográfica consistente (ej: 14px, 16px, 18px, 24px)</div>
+
+                    </div>
+
+                    <div class="issue-card low">
+                        <div class="issue-header">
+                            <span class="issue-file">fin-widget.css</span>
+                            <span class="severity-badge low">low</span>
+                        </div>
+                        <div class="issue-message">Tamaños de fuente inconsistentes encontrados: {'22px', '26px', '13px', '15px'}</div>
+
+                        <div class="issue-recommendation">Usa una escala tipográfica consistente (ej: 14px, 16px, 18px, 24px)</div>
+
+                    </div>
+
+                    <div class="issue-card low">
+                        <div class="issue-header">
+                            <span class="issue-file">onboarding.css</span>
+                            <span class="severity-badge low">low</span>
+                        </div>
+                        <div class="issue-message">Tamaños de fuente inconsistentes encontrados: {'13px', '26px', '11px', '15px', '40px', '22px'}</div>
+
+                        <div class="issue-recommendation">Usa una escala tipográfica consistente (ej: 14px, 16px, 18px, 24px)</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">style.css</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Se usan 5 tipografías diferentes (recomendado: máximo 2-3)</div>
+
+                        <div class="issue-recommendation">Limita el uso de tipografías para mantener consistencia visual</div>
+
+                    </div>
+
+                    <div class="issue-card low">
+                        <div class="issue-header">
+                            <span class="issue-file">style.css</span>
+                            <span class="severity-badge low">low</span>
+                        </div>
+                        <div class="issue-message">Tamaños de fuente inconsistentes encontrados: {'10px', '13px', '64px', '60px', '45px', '11px', '15px', '40px', '22px', '8px'}</div>
+
+                        <div class="issue-recommendation">Usa una escala tipográfica consistente (ej: 14px, 16px, 18px, 24px)</div>
+
+                    </div>
+
+                    <p style="text-align: center; color: #666; margin-top: 10px;">... y 6 problemas más en esta subsección</p>
+
+                </div>
+
+            </div>
+
+            <div class="category">
+                <div class="category-header">
+                    <h2>👥 Patrones UX</h2>
+                    <span class="badge">22 problemas</span>
+                </div>
+                <p style="margin-bottom: 20px; color: #666;">Problemas relacionados con la experiencia de usuario</p>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Enlaces (11)</h3>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">index.html</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Enlace sin destino real: ¿Olvidaste tu contraseña?</div>
+
+                        <div class="issue-recommendation">Define un destino válido o usa button si es una acción</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">index.html</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Enlace sin destino real: Regístrate aquí</div>
+
+                        <div class="issue-recommendation">Define un destino válido o usa button si es una acción</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">index.html</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Enlace sin destino real: Inicio</div>
+
+                        <div class="issue-recommendation">Define un destino válido o usa button si es una acción</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">index.html</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Enlace sin destino real: Análisis</div>
+
+                        <div class="issue-recommendation">Define un destino válido o usa button si es una acción</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">index.html</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Enlace sin destino real: Metas Financieras</div>
+
+                        <div class="issue-recommendation">Define un destino válido o usa button si es una acción</div>
+
+                    </div>
+
+                    <p style="text-align: center; color: #666; margin-top: 10px;">... y 6 problemas más en esta subsección</p>
+
+                </div>
+
+                <div style="margin-left: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">▸ Modales (11)</h3>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">achievements-system.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Modal sin gestión de focus detectado</div>
+
+                        <div class="issue-recommendation">Implementa focus management para modales (focus al abrir, return al cerrar)</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">ai-recommendations.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Modal sin gestión de focus detectado</div>
+
+                        <div class="issue-recommendation">Implementa focus management para modales (focus al abrir, return al cerrar)</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">auth-validation.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Modal sin gestión de focus detectado</div>
+
+                        <div class="issue-recommendation">Implementa focus management para modales (focus al abrir, return al cerrar)</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">balance-history.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Modal sin gestión de focus detectado</div>
+
+                        <div class="issue-recommendation">Implementa focus management para modales (focus al abrir, return al cerrar)</div>
+
+                    </div>
+
+                    <div class="issue-card medium">
+                        <div class="issue-header">
+                            <span class="issue-file">fin-widget.js</span>
+                            <span class="severity-badge medium">medium</span>
+                        </div>
+                        <div class="issue-message">Modal sin gestión de focus detectado</div>
+
+                        <div class="issue-recommendation">Implementa focus management para modales (focus al abrir, return al cerrar)</div>
+
+                    </div>
+
+                    <p style="text-align: center; color: #666; margin-top: 10px;">... y 6 problemas más en esta subsección</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <p><strong>UX Audit Tool</strong> - Herramienta de auditoría para proyectos front-end</p>
+            <p>Generado automáticamente | © 2025</p>
+        </div>
+    </div>
+</body>
+</html>

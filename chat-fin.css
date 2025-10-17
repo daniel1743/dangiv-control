@@ -45,7 +45,7 @@
     --spacing-lg: 24px;
     --spacing-xl: 32px;
 
-    /* TipografÌa */
+    /* Tipograf√≠a */
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-size-xs: 11px;
     --font-size-sm: 13px;
@@ -238,7 +238,7 @@ body {
 }
 
 /* ========================================
-   ¡REA DE MENSAJES
+   √ÅREA DE MENSAJES
    ======================================== */
 .chat-messages {
     flex: 1;
@@ -388,7 +388,7 @@ body {
     font-weight: 600;
 }
 
-/* Lista de caracterÌsticas */
+/* Lista de caracter√≠sticas */
 .feature-list {
     list-style: none;
     padding: 0;
@@ -424,7 +424,7 @@ body {
 }
 
 /* ========================================
-   SUGERENCIAS R¡PIDAS
+   SUGERENCIAS R√ÅPIDAS
    ======================================== */
 .quick-suggestions {
     margin-top: var(--spacing-lg);
@@ -516,7 +516,7 @@ body {
 }
 
 /* ========================================
-   ¡REA DE ENTRADA
+   √ÅREA DE ENTRADA
    ======================================== */
 .chat-input-container {
     padding: var(--spacing-lg);
