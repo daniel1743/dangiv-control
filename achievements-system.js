@@ -12,11 +12,11 @@ class AchievementsSystem {
   }
 
   // ========================================
-  // DEFINIR 12 LOGROS
+  // DEFINIR 16 LOGROS
   // ========================================
   initializeAchievements() {
     return [
-      // LOGROS DISPONIBLES (6)
+      // LOGROS DISPONIBLES (10)
       {
         id: 'first_expense',
         name: 'Primer Paso',
@@ -87,6 +87,54 @@ class AchievementsSystem {
         unlocked: false,
         available: true,
         requirement: 'Ahorrar $500K en 1 mes',
+        reward: null
+      },
+      {
+        id: 'shopping_planner',
+        name: 'Planificador Inteligente',
+        description: 'Crea tu primera lista de compras',
+        icon: '📋',
+        points: 15,
+        type: 'basic',
+        unlocked: false,
+        available: true,
+        requirement: 'Crear 1 lista de compras',
+        reward: null
+      },
+      {
+        id: 'goal_achiever',
+        name: 'Alcanzador de Metas',
+        description: 'Completa tu primera meta financiera',
+        icon: '🎖️',
+        points: 75,
+        type: 'advanced',
+        unlocked: false,
+        available: true,
+        requirement: 'Alcanzar 100% de 1 meta',
+        reward: null
+      },
+      {
+        id: 'week_streak',
+        name: 'Semana Perfecta',
+        description: 'Registra gastos durante 7 días consecutivos',
+        icon: '🔥',
+        points: 40,
+        type: 'basic',
+        unlocked: false,
+        available: true,
+        requirement: 'Usar la app 7 días seguidos',
+        reward: null
+      },
+      {
+        id: 'frugal_master',
+        name: 'Maestro de la Frugalidad',
+        description: 'Registra 10 gastos marcados como "No Necesario"',
+        icon: '🎓',
+        points: 35,
+        type: 'advanced',
+        unlocked: false,
+        available: true,
+        requirement: 'Identificar 10 gastos innecesarios',
         reward: null
       },
 
@@ -238,6 +286,40 @@ class AchievementsSystem {
       }
     }
 
+    // 7. Planificador Inteligente (primera lista de compras)
+    if (!this.isUnlocked('shopping_planner') && this.app.shoppingItems && this.app.shoppingItems.length >= 1) {
+      newUnlocks.push(this.unlockAchievement('shopping_planner'));
+    }
+
+    // 8. Alcanzador de Metas (completar primera meta al 100%)
+    if (!this.isUnlocked('goal_achiever') && this.app.goals && this.app.goals.length > 0) {
+      const completedGoal = this.app.goals.find(goal => {
+        const progress = (goal.saved / goal.amount) * 100;
+        return progress >= 100;
+      });
+      if (completedGoal) {
+        newUnlocks.push(this.unlockAchievement('goal_achiever'));
+      }
+    }
+
+    // 9. Semana Perfecta (7 días consecutivos)
+    if (!this.isUnlocked('week_streak')) {
+      const streakDays = this.calculateConsecutiveDays();
+      if (streakDays >= 7) {
+        newUnlocks.push(this.unlockAchievement('week_streak'));
+      }
+    }
+
+    // 10. Maestro de la Frugalidad (10 gastos "No Necesario")
+    if (!this.isUnlocked('frugal_master')) {
+      const unnecessaryExpenses = this.app.expenses.filter(e =>
+        e.necessity === 'No Necesario' || e.necessity === 'no-necesario'
+      );
+      if (unnecessaryExpenses.length >= 10) {
+        newUnlocks.push(this.unlockAchievement('frugal_master'));
+      }
+    }
+
     // Mostrar notificaciones de nuevos logros
     newUnlocks.filter(a => a).forEach(achievement => {
       this.showAchievementUnlockedNotification(achievement);
@@ -268,6 +350,52 @@ class AchievementsSystem {
 
   isUnlocked(achievementId) {
     return this.userProgress.unlockedIds.includes(achievementId);
+  }
+
+  // ========================================
+  // CALCULAR DÍAS CONSECUTIVOS
+  // ========================================
+  calculateConsecutiveDays() {
+    if (!this.app.expenses || this.app.expenses.length === 0) {
+      return 0;
+    }
+
+    // Obtener fechas únicas de gastos (ordenadas)
+    const uniqueDates = [...new Set(this.app.expenses.map(e => {
+      const date = new Date(e.date);
+      return date.toISOString().split('T')[0]; // YYYY-MM-DD
+    }))].sort().reverse(); // Más reciente primero
+
+    if (uniqueDates.length === 0) return 0;
+
+    let streak = 1;
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    // Verificar si hay registro hoy o ayer
+    const latestDate = uniqueDates[0];
+    const latestDateObj = new Date(latestDate);
+    const daysDiff = Math.floor((today - latestDateObj) / (1000 * 60 * 60 * 24));
+
+    // Si el último registro fue hace más de 1 día, no hay racha activa
+    if (daysDiff > 1) {
+      return 0;
+    }
+
+    // Contar días consecutivos hacia atrás
+    for (let i = 1; i < uniqueDates.length; i++) {
+      const currentDate = new Date(uniqueDates[i - 1]);
+      const prevDate = new Date(uniqueDates[i]);
+      const diff = Math.floor((currentDate - prevDate) / (1000 * 60 * 60 * 24));
+
+      if (diff === 1) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+
+    return streak;
   }
 
   // ========================================

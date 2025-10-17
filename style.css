@@ -15919,3 +15919,324 @@ body:not([data-theme="dark"]) .ai-icon {
     min-width: 280px;
   }
 }
+
+/* ========================================
+   MODAL HISTORIAL DE BALANCE
+   ======================================== */
+
+/* Modal size XL */
+.modal--xl .modal__content {
+  max-width: 1200px;
+  width: 95%;
+  animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Balance Summary Cards */
+.balance-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.balance-summary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.balance-summary-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(33, 128, 141, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  transition: all 0.6s ease;
+  opacity: 0;
+}
+
+.balance-summary-card:hover::before {
+  opacity: 1;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
+}
+
+.balance-summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(33, 128, 141, 0.2);
+  border-color: var(--color-primary);
+}
+
+.balance-summary-card .summary-icon {
+  font-size: 2.5rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-background);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.balance-summary-card:hover .summary-icon {
+  animation: iconPulse 1s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.balance-summary-card .summary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.balance-summary-card .summary-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.balance-summary-card .summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.balance-summary-card .summary-value.decline {
+  color: var(--color-danger);
+}
+
+/* Balance Chart Container */
+.balance-chart-container {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1rem;
+  position: relative;
+  min-height: 400px;
+}
+
+.balance-chart-container canvas {
+  max-height: 450px;
+}
+
+/* Custom Tooltip */
+.balance-tooltip {
+  position: absolute;
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  z-index: 10000;
+  max-width: 300px;
+  animation: tooltipFadeIn 0.2s ease;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.balance-tooltip .tooltip-date {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.balance-tooltip .tooltip-balance {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
+}
+
+.balance-tooltip .tooltip-expenses {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.balance-tooltip .expense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--color-border-light);
+  animation: slideInExpense 0.3s ease forwards;
+  opacity: 0;
+}
+
+.balance-tooltip .expense-item:last-child {
+  border-bottom: none;
+}
+
+.balance-tooltip .expense-item:nth-child(1) { animation-delay: 0.05s; }
+.balance-tooltip .expense-item:nth-child(2) { animation-delay: 0.1s; }
+.balance-tooltip .expense-item:nth-child(3) { animation-delay: 0.15s; }
+.balance-tooltip .expense-item:nth-child(4) { animation-delay: 0.2s; }
+.balance-tooltip .expense-item:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes slideInExpense {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.balance-tooltip .expense-name {
+  font-weight: 500;
+  color: var(--color-text);
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.balance-tooltip .expense-amount {
+  font-weight: 600;
+  color: var(--color-danger);
+}
+
+.balance-tooltip .expenses-header {
+  font-weight: 600;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.balance-tooltip .expenses-header::before {
+  content: "🛒";
+  font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .balance-summary-cards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .balance-chart-container {
+    padding: 1rem;
+    min-height: 300px;
+  }
+
+  .balance-chart-container canvas {
+    max-height: 300px;
+  }
+
+  .modal--xl .modal__content {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .balance-tooltip {
+    max-width: 250px;
+    padding: 0.75rem;
+  }
+}
+
+/* ========================================
+   EFECTO RIPPLE EN TARJETA DE BALANCE
+   ======================================== */
+.stat-card--primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card--primary .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(33, 128, 141, 0.4);
+  transform: scale(0);
+  animation: rippleEffect 0.6s ease-out;
+  pointer-events: none;
+}
+
+@keyframes rippleEffect {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Indicador visual de que es clickeable */
+.stat-card--primary::after {
+  content: '👆 Click para ver historial';
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.stat-card--primary:hover::after {
+  opacity: 0.7;
+}

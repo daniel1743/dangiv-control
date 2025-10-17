@@ -1044,6 +1044,9 @@
             class="stat-card stat-card--primary animate-on-scroll"
             data-animation="fadeInUp"
             data-delay="100"
+            onclick="openBalanceHistoryModal(event)"
+            style="cursor: pointer;"
+            title="Click para ver el historial de tu balance"
           >
             <div class="stat-icon-wrapper">
               <i class="fas fa-wallet stat-icon"></i>
@@ -1911,7 +1914,7 @@
       <!-- Goals Section -->
       <section id="goals" class="section">
         <div class="section-header">
-          <h1>Metas Financieras</h1>
+          <h1>🎯 Metas Financieras</h1>
           <p>Define y monitorea tus objetivos de ahorro</p>
         </div>
         <div class="card">
@@ -2206,7 +2209,7 @@
       <!-- Shopping List Section -->
       <section id="shopping" class="section">
         <div class="section-header">
-          <h1>Lista de Compras</h1>
+          <h1>🛒 Lista de Compras</h1>
           <p>Organiza tus compras y controla gastos de mercadería</p>
         </div>
         <div class="card">
@@ -3161,6 +3164,63 @@
           style="max-height: 70vh; overflow-y: auto"
         >
           <!-- El contenido se generará dinámicamente -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Historial de Balance -->
+    <div class="modal modal--xl" id="balanceHistoryModal">
+      <div class="modal__content">
+        <div class="modal__header">
+          <h3><i class="fas fa-chart-area"></i> Historial de Balance</h3>
+          <button class="modal__close" onclick="closeBalanceHistoryModal()">
+            &times;
+          </button>
+        </div>
+        <div class="modal__body" style="padding: 2rem;">
+          <!-- Resumen Superior -->
+          <div class="balance-summary-cards">
+            <div class="balance-summary-card">
+              <div class="summary-icon">💰</div>
+              <div class="summary-info">
+                <span class="summary-label">Balance Inicial</span>
+                <span class="summary-value" id="balanceInitial">$0</span>
+              </div>
+            </div>
+            <div class="balance-summary-card">
+              <div class="summary-icon">📉</div>
+              <div class="summary-info">
+                <span class="summary-label">Total Gastado</span>
+                <span class="summary-value decline" id="balanceTotalSpent">$0</span>
+              </div>
+            </div>
+            <div class="balance-summary-card">
+              <div class="summary-icon">💵</div>
+              <div class="summary-info">
+                <span class="summary-label">Balance Actual</span>
+                <span class="summary-value" id="balanceCurrent">$0</span>
+              </div>
+            </div>
+            <div class="balance-summary-card">
+              <div class="summary-icon">📊</div>
+              <div class="summary-info">
+                <span class="summary-label">Días Registrados</span>
+                <span class="summary-value" id="balanceDaysCount">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gráfico de Balance en el Tiempo -->
+          <div class="balance-chart-container">
+            <canvas id="balanceHistoryChart"></canvas>
+          </div>
+
+          <!-- Tooltip personalizado para mostrar detalles de gastos -->
+          <div id="balanceTooltip" class="balance-tooltip" style="display: none;">
+            <div class="tooltip-date"></div>
+            <div class="tooltip-balance"></div>
+            <div class="tooltip-expenses"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -4970,24 +5030,30 @@
     <!-- Terms Acceptance - Must load BEFORE main app -->
     <script src="terms-acceptance.js"></script>
 
-    <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="app.js?v=4.2"></script>
+    <!-- Core systems - Must load BEFORE app.js -->
     <script src="achievements-system.js"></script>
     <script src="notifications-system.js"></script>
+    <script src="ai-recommendations.js"></script>
+    <script src="balance-history.js"></script>
+    <script src="premium-manager.js"></script>
+    <script src="promo-codes-system.js"></script>
+
+    <!-- Main app -->
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="app.js?v=4.2"></script>
+
+    <!-- Additional features -->
     <script type="module" src="avatar-sidebar.js"></script>
     <script src="smart-forms.js?v=1.1"></script>
     <script src="tour.js?v=1.4"></script>
     <script src="fin-memory.js"></script>
     <script src="fin-response-optimizer.js"></script>
     <script src="fin-conversation-guide.js"></script>
-    <script src="promo-codes-system.js"></script>
-    <script src="premium-manager.js"></script>
     <script src="premium-status-widget.js"></script>
     <script src="premium-modal.js"></script>
     <script src="conversational-expense.js"></script>
     <script src="conversational-expense-ui.js"></script>
     <script src="onboarding-manager.js"></script>
-    <script src="ai-recommendations.js"></script>
     <script src="fin-widget.js"></script>
     <link rel="stylesheet" href="fin-conversation-styles.css">
   </body>
