@@ -4545,12 +4545,20 @@ select.form-control {
 }
 
 /* === CONVERSATIONAL EXPENSE MODAL === */
+.conversational-expense-modal {
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(8px);
+  z-index: 10000 !important;
+}
+
 .conversational-expense-modal .conversational-content {
   max-width: 600px;
   width: 90%;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
+  background: #ffffff !important;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
 }
 
 .conversational-header {
@@ -4712,6 +4720,30 @@ select.form-control {
   background: white;
   border-top: 1px solid #e0e0e0;
   min-height: 60px;
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar para suggestions */
+.suggestions-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.suggestions-container::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 10px;
+}
+
+.suggestions-container::-webkit-scrollbar-thumb:hover {
+  background: #a5b4fc;
 }
 
 .suggestion-chip {
@@ -16239,4 +16271,263 @@ body:not([data-theme="dark"]) .ai-icon {
 
 .stat-card--primary:hover::after {
   opacity: 0.7;
+}
+
+/* ========================================
+   MEJORAS MOBILE PARA SELECT/DROPDOWNS
+   Solución para scroll, espaciado y usabilidad
+   ======================================== */
+
+@media (max-width: 768px) {
+  /* Mejorar tamaño y espaciado de los select en móviles */
+  select.form-input-premium,
+  select.form-select-premium {
+    /* Aumentar padding para mejor touch target */
+    padding: 14px 48px 14px 16px;
+
+    /* Aumentar tamaño de fuente para mejor legibilidad */
+    font-size: 16px; /* Previene zoom automático en iOS */
+
+    /* Mejorar espaciado entre líneas */
+    line-height: 1.6;
+
+    /* Aumentar altura mínima del select */
+    min-height: 48px;
+
+    /* Mejorar área de toque */
+    touch-action: manipulation;
+  }
+
+  /* Mejorar las opciones del dropdown en móviles */
+  select.form-input-premium option,
+  select.form-select-premium option {
+    /* Aumentar padding de opciones para mejor touch */
+    padding: 16px 20px;
+
+    /* Aumentar tamaño de fuente */
+    font-size: 16px;
+
+    /* Mejorar espaciado */
+    line-height: 1.8;
+
+    /* Asegurar contraste */
+    color: #1f2937;
+    background-color: #ffffff;
+  }
+
+  /* Mejorar opciones seleccionadas */
+  select.form-input-premium option:checked,
+  select.form-select-premium option:checked {
+    background-color: #eef2ff;
+    color: #4f46e5;
+    font-weight: 600;
+  }
+
+  /* Asegurar que el scroll funcione correctamente */
+  select.form-input-premium,
+  select.form-select-premium {
+    overflow-y: auto;
+    max-height: 50vh; /* Limitar altura máxima */
+  }
+
+  /* Mejorar el indicador de dropdown */
+  select.form-input-premium,
+  select.form-select-premium {
+    background-size: 24px; /* Icono más grande */
+    background-position: right 16px center;
+    padding-right: 52px; /* Espacio para el icono */
+  }
+}
+
+/* Ajustes específicos para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  select.form-input-premium,
+  select.form-select-premium {
+    /* Aumentar aún más el padding para dedos más grandes */
+    padding: 16px 52px 16px 18px;
+
+    /* Asegurar fuente legible */
+    font-size: 16px;
+
+    /* Altura mínima para touch fácil */
+    min-height: 52px;
+  }
+
+  select.form-input-premium option,
+  select.form-select-premium option {
+    /* Opciones más espaciadas */
+    padding: 18px 22px;
+
+    /* Fuente más grande */
+    font-size: 17px;
+
+    /* Espaciado generoso */
+    line-height: 2;
+  }
+
+  /* Hacer el formulario más cómodo en móviles pequeños */
+  .expense-form-content {
+    padding: 16px;
+  }
+
+  .form-group-premium {
+    margin-bottom: 20px;
+  }
+
+  .form-label-premium {
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+}
+
+/* ========================================
+   POSICIONAMIENTO INTELIGENTE DE DROPDOWNS
+   Evita que se corten en la parte inferior
+   ======================================== */
+
+@media (max-width: 768px) {
+  /* Contenedor del modal de gastos */
+  .modal-content.expense-modal {
+    display: flex;
+    flex-direction: column;
+    max-height: 95vh;
+    overflow: hidden;
+  }
+
+  /* El cuerpo del modal debe hacer scroll, no el select */
+  .expense-form-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    padding-bottom: 80px; /* Espacio extra para evitar cortes */
+    -webkit-overflow-scrolling: touch; /* Smooth scroll en iOS */
+  }
+
+  /* Cuando un select está en la parte baja, añadir espacio */
+  .form-group-premium:has(select):last-of-type {
+    margin-bottom: 300px; /* Espacio extra al final */
+  }
+
+  /* Asegurar que los select nativos de móvil se vean bien */
+  select.form-input-premium:focus,
+  select.form-select-premium:focus {
+    /* Prevenir zoom en iOS */
+    font-size: 16px;
+
+    /* Mantener scroll suave */
+    overflow-y: auto;
+  }
+}
+
+/* ========================================
+   MEJORAS PARA CUSTOM DROPDOWNS EN MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+  /* Custom dropdown menu */
+  .custom-dropdown-menu {
+    /* Posicionamiento inteligente */
+    max-height: 60vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    /* Mejor scroll */
+    overscroll-behavior: contain;
+
+    /* Espacio visual */
+    margin-top: 8px;
+
+    /* Sombra más pronunciada para móvil */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Opciones del custom dropdown */
+  .custom-dropdown-option {
+    /* Mejor área de toque */
+    padding: 18px 20px;
+
+    /* Texto más grande */
+    font-size: 16px;
+
+    /* Espaciado generoso */
+    min-height: 56px;
+
+    /* Touch feedback */
+    touch-action: manipulation;
+  }
+
+  /* Icono de emoji en opciones */
+  .custom-dropdown-option .option-emoji {
+    /* Emoji más grande */
+    font-size: 24px;
+    min-width: 32px;
+  }
+
+  /* Búsqueda en dropdown custom */
+  .custom-dropdown-search input {
+    /* Prevenir zoom en iOS */
+    font-size: 16px;
+
+    /* Mejor área de toque */
+    padding: 14px 16px;
+    min-height: 48px;
+  }
+
+  /* Cuando el dropdown está cerca del bottom */
+  .custom-dropdown-wrapper {
+    position: relative;
+  }
+
+  /* Forzar dropdown hacia arriba si está en bottom 30% de la pantalla */
+  .custom-dropdown-wrapper.flip-up .custom-dropdown-menu {
+    bottom: 100%;
+    top: auto;
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+}
+
+/* ========================================
+   SCROLL MEJORADO PARA iOS
+   ======================================== */
+
+@media (max-width: 768px) {
+  /* Suavizar scroll en todo el formulario */
+  .expense-form-content,
+  .modal-body,
+  select,
+  .custom-dropdown-menu {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Prevenir bounce indeseado */
+  select.form-input-premium,
+  select.form-select-premium,
+  .custom-dropdown-menu {
+    overscroll-behavior: contain;
+  }
+
+  /* Indicador visual de scroll para selects largos */
+  select.form-input-premium::-webkit-scrollbar,
+  select.form-select-premium::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  select.form-input-premium::-webkit-scrollbar-track,
+  select.form-select-premium::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  select.form-input-premium::-webkit-scrollbar-thumb,
+  select.form-select-premium::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+
+  select.form-input-premium::-webkit-scrollbar-thumb:hover,
+  select.form-select-premium::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }

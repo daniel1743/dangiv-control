@@ -11,6 +11,7 @@ class ConversationalExpense {
     this.currentExpense = {};
     this.missingFields = [];
     this.conversationHistory = [];
+    this.customCategoryMode = false;
   }
 
   // ========================================
@@ -24,21 +25,17 @@ class ConversationalExpense {
       description: '',
       necessity: null,
       date: new Date().toISOString().split('T')[0],
-      user: this.app.userProfile.name
+      user: this.app.userProfile?.name || 'Usuario'
     };
     this.conversationHistory = [];
 
-    const userName = this.app.userProfile.name || 'Usuario';
+    const userName = this.app.userProfile?.name || 'Usuario';
 
     return {
-      message: `¡Hola ${userName}! 😊 Cuéntame sobre tu gasto. ¿En qué gastaste y cuánto fue?`,
-      suggestions: [
-        '💰 Gasté $50,000 en almuerzo',
-        '🛒 Compré ropa por $200,000',
-        '🚗 Pagué $80,000 de Uber',
-        '☕ Café de $5,000'
-      ],
-      progress: this.getProgress()
+      message: `¡Hola ${userName}! 👋\n\n¿En qué gastaste?`,
+      suggestions: [],
+      progress: this.getProgress(),
+      placeholder: 'Ejemplo: Almuerzo, Uber, Ropa...'
     };
   }
 
@@ -91,61 +88,164 @@ class ConversationalExpense {
   // PARSER BÁSICO (SIN IA)
   // ========================================
   processMessageBasic(userMessage) {
-    const userName = this.app.userProfile.name || 'Usuario';
+    const userName = this.app.userProfile?.name || 'Usuario';
 
-    // Extraer monto
-    const moneyMatch = userMessage.match(/\$?\s*(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)/);
-    if (moneyMatch && !this.currentExpense.amount) {
-      this.currentExpense.amount = parseFloat(moneyMatch[1].replace(/[.,]/g, ''));
-    }
+    // PASO 1: Si no hay descripción, guardarla
+    if (!this.currentExpense.description) {
+      this.currentExpense.description = userMessage;
 
-    // Detectar categoría por palabras clave
-    const categoryKeywords = {
-      'Alimentación': ['comida', 'almuerzo', 'cena', 'desayuno', 'restaurante', 'hamburguesa', 'pizza'],
-      'Transporte': ['uber', 'taxi', 'bus', 'gasolina', 'transporte', 'metro'],
-      'Compras': ['ropa', 'zapatos', 'compré', 'tienda'],
-      'Entretenimiento': ['cine', 'juego', 'netflix', 'concierto'],
-      'Servicios': ['internet', 'luz', 'agua', 'celular'],
-      'Salud': ['doctor', 'medicina', 'farmacia', 'hospital']
-    };
+      // Intentar detectar categoría por palabras clave
+      const categoryKeywords = {
+        'Alimentación': ['comida', 'almuerzo', 'cena', 'desayuno', 'restaurante', 'hamburguesa', 'pizza', 'café', 'comí', 'comer'],
+        'Transporte': ['uber', 'taxi', 'bus', 'gasolina', 'transporte', 'metro', 'cabify', 'didi'],
+        'Compras': ['ropa', 'zapatos', 'compré', 'tienda', 'ropa', 'vestido', 'pantalón'],
+        'Entretenimiento': ['cine', 'juego', 'netflix', 'concierto', 'fiesta', 'bar'],
+        'Servicios': ['internet', 'luz', 'agua', 'celular', 'teléfono'],
+        'Salud': ['doctor', 'medicina', 'farmacia', 'hospital', 'consulta']
+      };
 
-    if (!this.currentExpense.category) {
       for (const [category, keywords] of Object.entries(categoryKeywords)) {
         if (keywords.some(kw => userMessage.toLowerCase().includes(kw))) {
           this.currentExpense.category = category;
           break;
         }
       }
+
+      return {
+        message: `Perfecto! ¿Cuál fue el valor?`,
+        suggestions: [],
+        progress: this.getProgress(),
+        isComplete: false,
+        placeholder: 'Ejemplo: 50000 o $50.000'
+      };
     }
 
-    // Determinar qué falta
-    this.missingFields = this.getMissingFields();
+    // PASO 2: Capturar monto
+    if (!this.currentExpense.amount) {
+      const moneyMatch = userMessage.match(/\$?\s*(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)/);
+      if (moneyMatch) {
+        this.currentExpense.amount = parseFloat(moneyMatch[1].replace(/[.,]/g, ''));
 
-    if (this.missingFields.length === 0) {
-      return this.confirmExpense('neutral');
+        // Si aún no hay categoría, pedirla
+        if (!this.currentExpense.category) {
+          return {
+            message: `$${this.currentExpense.amount.toLocaleString('es-CO')} - ¿En qué categoría fue?`,
+            suggestions: this.getSuggestionsForField('category'),
+            progress: this.getProgress(),
+            isComplete: false
+          };
+        }
+
+        // Si ya hay categoría, pedir necesidad
+        return {
+          message: `$${this.currentExpense.amount.toLocaleString('es-CO')} en ${this.currentExpense.category}\n\n¿Qué tan necesario era?`,
+          suggestions: this.getSuggestionsForField('necessity'),
+          progress: this.getProgress(),
+          isComplete: false
+        };
+      } else {
+        return {
+          message: `No detecté el monto. Por favor ingresa un número.\n\nEjemplo: 50000`,
+          suggestions: [],
+          progress: this.getProgress(),
+          isComplete: false,
+          placeholder: 'Ejemplo: 50000'
+        };
+      }
     }
 
-    // Pedir siguiente campo
-    const nextField = this.missingFields[0];
-    const messages = {
-      amount: `${userName}, ¿cuánto gastaste?`,
-      category: `${userName}, ¿en qué categoría fue este gasto?`,
-      necessity: `${userName}, ¿qué tan necesario era este gasto?`
-    };
+    // PASO 3: Capturar categoría si falta
+    if (!this.currentExpense.category) {
+      // Verificar si quiere categoría personalizada
+      if (userMessage.trim() === 'CUSTOM_CATEGORY' || userMessage.toLowerCase().includes('personalizada')) {
+        return {
+          message: `¿Qué nombre quieres para la categoría personalizada?`,
+          suggestions: [],
+          progress: this.getProgress(),
+          isComplete: false,
+          placeholder: 'Ejemplo: Mascotas, Educación, Hobbies...',
+          customCategoryMode: true
+        };
+      }
 
-    return {
-      message: messages[nextField] || `${userName}, cuéntame más sobre este gasto`,
-      suggestions: this.getSuggestionsForField(nextField),
-      progress: this.getProgress(),
-      isComplete: false
-    };
+      // Si viene de modo personalizado, guardar la categoría
+      if (this.customCategoryMode) {
+        this.currentExpense.category = userMessage.trim();
+        this.customCategoryMode = false;
+
+        return {
+          message: `Categoría "${this.currentExpense.category}" - ¿Qué tan necesario era?`,
+          suggestions: this.getSuggestionsForField('necessity'),
+          progress: this.getProgress(),
+          isComplete: false
+        };
+      }
+
+      // Buscar en sugerencias
+      const categories = ['Alimentación', 'Transporte', 'Entretenimiento', 'Salud', 'Servicios', 'Compras', 'Otros'];
+      const foundCategory = categories.find(cat =>
+        userMessage.toLowerCase().includes(cat.toLowerCase()) ||
+        userMessage.includes(cat)
+      );
+
+      if (foundCategory) {
+        this.currentExpense.category = foundCategory;
+
+        return {
+          message: `${this.currentExpense.category} - ¿Qué tan necesario era?`,
+          suggestions: this.getSuggestionsForField('necessity'),
+          progress: this.getProgress(),
+          isComplete: false
+        };
+      } else {
+        return {
+          message: `No detecté la categoría. Selecciona una:`,
+          suggestions: this.getSuggestionsForField('category'),
+          progress: this.getProgress(),
+          isComplete: false
+        };
+      }
+    }
+
+    // PASO 4: Capturar necesidad
+    if (!this.currentExpense.necessity) {
+      const necessities = {
+        'Muy Necesario': ['muy necesario', 'indispensable', 'muy indispensable'],
+        'Necesario': ['necesario', 'muy necesario'],
+        'Poco Necesario': ['poco necesario', 'necesario'],
+        'No Necesario': ['poco necesario', 'no necesario'],
+        'Compra por Impulso': ['nada necesario', 'impulso'],
+        'Malgasto': ['malgasto', 'arrepentimiento']
+      };
+
+      for (const [necessity, keywords] of Object.entries(necessities)) {
+        if (keywords.some(kw => userMessage.toLowerCase().includes(kw))) {
+          this.currentExpense.necessity = necessity;
+          break;
+        }
+      }
+
+      if (this.currentExpense.necessity) {
+        return this.confirmExpense('neutral');
+      } else {
+        return {
+          message: `Selecciona el nivel de necesidad:`,
+          suggestions: this.getSuggestionsForField('necessity'),
+          progress: this.getProgress(),
+          isComplete: false
+        };
+      }
+    }
+
+    // Si llegamos aquí, está completo
+    return this.confirmExpense('neutral');
   }
 
   // ========================================
   // PROMPT DE EXTRACCIÓN
   // ========================================
   buildExtractionPrompt(userMessage) {
-    const userName = this.app.userProfile.name || 'Usuario';
+    const userName = this.app.userProfile?.name || 'Usuario';
 
     return `Eres Fin, asistente de registro de gastos de ${userName}.
 
@@ -194,7 +294,7 @@ RESPONDE SOLO CON JSON:
   // ========================================
   confirmExpense(sentiment) {
     const { amount, category, description, necessity } = this.currentExpense;
-    const userName = this.app.userProfile.name || 'Usuario';
+    const userName = this.app.userProfile?.name || 'Usuario';
 
     // Analizar el gasto
     const analysis = this.analyzeExpense();
@@ -234,7 +334,7 @@ RESPONDE SOLO CON JSON:
   // ========================================
   analyzeExpense() {
     const { amount, category, necessity } = this.currentExpense;
-    const userName = this.app.userProfile.name || 'Usuario';
+    const userName = this.app.userProfile?.name || 'Usuario';
 
     // Calcular total de la categoría este mes
     const currentMonth = new Date().getMonth();
@@ -300,8 +400,13 @@ RESPONDE SOLO CON JSON:
     await this.app.saveData();
 
     // Actualizar UI
-    this.app.renderExpenses();
-    this.app.updateCharts();
+    if (typeof this.app.renderExpenses === 'function') {
+      this.app.renderExpenses();
+    }
+
+    if (typeof this.app.renderDashboard === 'function') {
+      this.app.renderDashboard();
+    }
 
     this.conversationState = 'saved';
 
@@ -349,14 +454,17 @@ RESPONDE SOLO CON JSON:
         { text: '🎬 Entretenimiento', value: 'Entretenimiento' },
         { text: '💊 Salud', value: 'Salud' },
         { text: '💡 Servicios', value: 'Servicios' },
-        { text: '🛍️ Compras', value: 'Compras' }
+        { text: '🛍️ Compras', value: 'Compras' },
+        { text: '📁 Otros', value: 'Otros' },
+        { text: '➕ Agregar categoría personalizada', value: 'CUSTOM_CATEGORY' }
       ],
       necessity: [
         { text: '⭐ Muy Necesario', value: 'Muy Necesario' },
         { text: '✔️ Necesario', value: 'Necesario' },
         { text: '❓ Poco Necesario', value: 'Poco Necesario' },
         { text: '❌ No Necesario', value: 'No Necesario' },
-        { text: '😅 Compra por Impulso', value: 'Compra por Impulso' }
+        { text: '😅 Compra por Impulso', value: 'Compra por Impulso' },
+        { text: '😔 Malgasto/Arrepentimiento', value: 'Malgasto' }
       ],
       amount: [
         { text: '💵 Menos de $50K', value: 25000 },
@@ -409,6 +517,7 @@ RESPONDE SOLO CON JSON:
     this.currentExpense = {};
     this.missingFields = [];
     this.conversationHistory = [];
+    this.customCategoryMode = false;
   }
 }
 

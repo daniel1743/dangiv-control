@@ -1710,7 +1710,7 @@
           <form id="expenseForm" class="expense-form-content">
             <!-- Amount Section - Featured -->
             <div class="expense-amount-section">
-              <label class="expense-amount-label">Monto del gasto</label>
+              <label class="expense-amount-label" for="amount">Monto del gasto</label>
               <div class="expense-amount-input-wrapper">
                 <span class="expense-currency">$</span>
                 <input
@@ -1808,7 +1808,7 @@
             <!-- Grid Layout for Date and User -->
             <div class="form-grid-2">
               <div class="form-group-premium">
-                <label class="form-label-premium">
+                <label class="form-label-premium" for="date">
                   <i class="fas fa-calendar-alt"></i>
                   Fecha
                 </label>
@@ -1821,7 +1821,7 @@
               </div>
 
               <div class="form-group-premium">
-                <label class="form-label-premium">
+                <label class="form-label-premium" for="user">
                   <i class="fas fa-user"></i>
                   Usuario
                 </label>
@@ -1837,7 +1837,7 @@
 
             <!-- New User Input (Hidden by default) -->
             <div class="form-group-premium hidden" id="newUserGroup">
-              <label class="form-label-premium">
+              <label class="form-label-premium" for="newUserName">
                 <i class="fas fa-user-plus"></i>
                 Nombre del nuevo usuario
               </label>
@@ -2070,7 +2070,7 @@
             >
               <!-- Buscador -->
               <div class="form-group">
-                <label class="form-label">
+                <label class="form-label" for="historySearch">
                   <i class="fas fa-search"></i> Buscar
                 </label>
                 <input
@@ -2083,7 +2083,7 @@
 
               <!-- Filtro por Tipo -->
               <div class="form-group">
-                <label class="form-label">
+                <label class="form-label" for="historyFilterType">
                   <i class="fas fa-tag"></i> Tipo
                 </label>
                 <select id="historyFilterType" class="form-control">
@@ -2098,7 +2098,7 @@
 
               <!-- Filtro por Categoría (solo gastos) -->
               <div class="form-group">
-                <label class="form-label">
+                <label class="form-label" for="historyFilterCategory">
                   <i class="fas fa-list"></i> Categoría
                 </label>
                 <select id="historyFilterCategory" class="form-control">
@@ -2129,14 +2129,14 @@
 
               <!-- Rango de fechas -->
               <div class="form-group">
-                <label class="form-label">
+                <label class="form-label" for="historyDateFrom">
                   <i class="fas fa-calendar"></i> Desde
                 </label>
                 <input type="date" id="historyDateFrom" class="form-control" />
               </div>
 
               <div class="form-group">
-                <label class="form-label">
+                <label class="form-label" for="historyDateTo">
                   <i class="fas fa-calendar"></i> Hasta
                 </label>
                 <input type="date" id="historyDateTo" class="form-control" />
@@ -2367,7 +2367,7 @@
               <div class="leisure-item-form">
                 <div class="form-row">
                   <div class="form-group" style="flex: 2">
-                    <label>¿Para qué?</label>
+                    <label for="leisureItemDescription">¿Para qué?</label>
                     <input
                       type="text"
                       class="form-control"
@@ -2377,7 +2377,7 @@
                     />
                   </div>
                   <div class="form-group" style="flex: 1">
-                    <label>Monto (solo números)</label>
+                    <label for="leisureItemAmount">Monto (solo números)</label>
                     <input
                       type="text"
                       class="form-control"
@@ -2773,7 +2773,7 @@
             </div>
             <div class="settings-card-body">
               <div class="form-group-premium">
-                <label class="form-label-premium">Nombre completo</label>
+                <label class="form-label-premium" for="profileNameInput">Nombre completo</label>
                 <input
                   type="text"
                   class="form-input-premium"
@@ -3261,6 +3261,7 @@
                   id="currentPassword"
                   placeholder="Contraseña actual"
                   autocomplete="current-password"
+                  aria-label="Contraseña actual"
                 />
                 <i
                   class="fas fa-eye toggle-pass"
@@ -3279,6 +3280,7 @@
                     id="newPassword"
                     placeholder="Nueva contraseña"
                     autocomplete="new-password"
+                    aria-label="Nueva contraseña"
                   />
                   <i
                     class="fas fa-eye toggle-pass"
@@ -4427,7 +4429,18 @@
         <span class="fab-menu-label">Registrar Gasto</span>
       </button>
 
-      <!-- Opción 2: Modo Rápido -->
+      <!-- Opción 2: Registrar Gasto con Fin (IA) -->
+      <button class="fab-menu-item" id="quickActionConversationalExpense">
+        <div
+          class="fab-menu-icon"
+          style="background: linear-gradient(135deg, #6366f1, #4f46e5)"
+        >
+          <i class="fas fa-robot"></i>
+        </div>
+        <span class="fab-menu-label">Registrar con Fin</span>
+      </button>
+
+      <!-- Opción 3: Modo Rápido -->
       <button class="fab-menu-item" id="quickActionFastMode">
         <div
           class="fab-menu-icon"
@@ -4438,7 +4451,7 @@
         <span class="fab-menu-label">Modo Rápido</span>
       </button>
 
-      <!-- Opción 3: Registrar Sueldo -->
+      <!-- Opción 5: Registrar Sueldo -->
       <button class="fab-menu-item" id="quickActionSalary">
         <div
           class="fab-menu-icon"
@@ -4449,7 +4462,7 @@
         <span class="fab-menu-label">Registrar Sueldo</span>
       </button>
 
-      <!-- Opción 4: Entrada Extra -->
+      <!-- Opción 6: Entrada Extra -->
       <button class="fab-menu-item" id="quickActionExtraIncome">
         <div
           class="fab-menu-icon"
@@ -5053,6 +5066,8 @@
     <script src="premium-modal.js"></script>
     <script src="conversational-expense.js"></script>
     <script src="conversational-expense-ui.js"></script>
+    <script src="custom-dropdown-mobile.js"></script>
+    <script src="mobile-dropdown-fix.js"></script>
     <script src="onboarding-manager.js"></script>
     <script src="fin-widget.js"></script>
     <link rel="stylesheet" href="fin-conversation-styles.css">

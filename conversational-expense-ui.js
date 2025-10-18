@@ -16,8 +16,9 @@ class ConversationalExpenseUI {
   // ABRIR MODAL
   // ========================================
   async open() {
-    // Verificar Premium
-    if (window.premiumManager && !window.premiumManager.isPremiumActive()) {
+    // TEMPORALMENTE GRATIS - Permitir que usuarios prueben la funcionalidad
+    // TODO: Implementar límite de uso mensual para usuarios free
+    /* if (window.premiumManager && !window.premiumManager.isPremiumActive()) {
       showPremiumUpgradeModal({
         feature: 'Registro Conversacional de Gastos',
         benefits: [
@@ -29,7 +30,7 @@ class ConversationalExpenseUI {
         ]
       });
       return;
-    }
+    } */
 
     // Crear instancia conversacional
     this.conversational = new ConversationalExpense(this.app);
@@ -49,6 +50,13 @@ class ConversationalExpenseUI {
     // Limpiar chat y agregar mensaje inicial
     this.chatContainer.innerHTML = '';
     this.addFinMessage(initialMessage.message, initialMessage.suggestions);
+
+    // Actualizar placeholder si viene en el mensaje
+    if (initialMessage.placeholder) {
+      this.inputField.placeholder = initialMessage.placeholder;
+    } else {
+      this.inputField.placeholder = 'Escribe aquí...';
+    }
 
     // Focus en input
     setTimeout(() => this.inputField.focus(), 300);
@@ -301,6 +309,16 @@ class ConversationalExpenseUI {
         // Agregar respuesta de Fin
         this.addFinMessage(response.message, response.suggestions);
 
+        // Actualizar placeholder si viene
+        if (response.placeholder) {
+          this.inputField.placeholder = response.placeholder;
+        }
+
+        // Sincronizar modo de categoría personalizada
+        if (response.customCategoryMode !== undefined) {
+          this.conversational.customCategoryMode = response.customCategoryMode;
+        }
+
         // Actualizar barra de progreso
         this.updateProgress(response.progress);
       }
@@ -423,8 +441,47 @@ class ConversationalExpenseUI {
 let conversationalExpenseUI = null;
 
 function openConversationalExpense() {
+  // Asegurarse de que financeApp existe
+  if (!window.financeApp && !window.app) {
+    console.error('financeApp not initialized');
+
+    // Mostrar toast en vez de alert
+    const toast = document.createElement('div');
+    toast.className = 'toast error';
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ef4444;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 10001;
+      animation: slideUp 0.3s ease;
+      font-weight: 500;
+    `;
+    toast.innerHTML = `
+      <i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>
+      Cargando aplicación... Intenta nuevamente en un momento.
+    `;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(20px)';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+
+    return;
+  }
+
+  // Usar financeApp o app como fallback
+  const appInstance = window.financeApp || window.app;
+
   if (!conversationalExpenseUI) {
-    conversationalExpenseUI = new ConversationalExpenseUI(window.financeApp);
+    conversationalExpenseUI = new ConversationalExpenseUI(appInstance);
   }
   conversationalExpenseUI.open();
 }

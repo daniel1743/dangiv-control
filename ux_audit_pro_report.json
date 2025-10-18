@@ -1,0 +1,238 @@
+{
+  "project_path": "C:\\Users\\Lenovo\\Desktop\\aplica",
+  "audit_date": "2025-10-17T14:15:47.898542",
+  "tool_version": "2.0.0",
+  "scores": {
+    "overall": 62.5,
+    "performance": 28.0,
+    "seo": 10,
+    "accessibility": 100,
+    "html_structure": 100,
+    "ux_patterns": 100,
+    "responsive": 85
+  },
+  "performance_metrics": {
+    "fcp": 9919.186,
+    "lcp": 19640.110999999997,
+    "tbt": 1696,
+    "cls": 0.02816540824379892,
+    "tti": 23062.6296,
+    "speed_index": 20018.374928212575
+  },
+  "stats": {
+    "files_analyzed": 677,
+    "html_files": 15,
+    "css_files": 21,
+    "js_files": 641,
+    "total_size_mb": 13.55,
+    "images_count": 9
+  },
+  "summary": {
+    "total_issues": 23,
+    "by_severity": {
+      "critical": 4,
+      "high": 2,
+      "medium": 17,
+      "low": 0
+    }
+  },
+  "issues": {
+    "html_issues": [],
+    "css_issues": [],
+    "js_issues": [
+      {
+        "file": "ai-recommendations.js",
+        "type": "performance",
+        "message": "Eventos scroll/resize sin debounce",
+        "recommendation": "Implementa debounce de 150-250ms",
+        "severity": "medium",
+        "impact": "Lag en scroll, CPU elevado"
+      },
+      {
+        "file": "chat-fin.backup.js",
+        "type": "performance",
+        "message": "Eventos scroll/resize sin debounce",
+        "recommendation": "Implementa debounce de 150-250ms",
+        "severity": "medium",
+        "impact": "Lag en scroll, CPU elevado"
+      },
+      {
+        "file": "chat-fin.js",
+        "type": "performance",
+        "message": "Eventos scroll/resize sin debounce",
+        "recommendation": "Implementa debounce de 150-250ms",
+        "severity": "medium",
+        "impact": "Lag en scroll, CPU elevado"
+      }
+    ],
+    "seo_issues": [
+      {
+        "file": "ux_audit_pro_dashboard.html",
+        "type": "missing_description",
+        "message": "Falta meta description",
+        "recommendation": "Añade descripción de 120-160 caracteres",
+        "severity": "critical",
+        "impact": "CTR reducido hasta 50% en búsquedas"
+      },
+      {
+        "file": "node_modules\\playwright-core\\lib\\vite\\htmlReport\\index.html",
+        "type": "missing_description",
+        "message": "Falta meta description",
+        "recommendation": "Añade descripción de 120-160 caracteres",
+        "severity": "critical",
+        "impact": "CTR reducido hasta 50% en búsquedas"
+      },
+      {
+        "file": "node_modules\\playwright-core\\lib\\vite\\recorder\\index.html",
+        "type": "missing_description",
+        "message": "Falta meta description",
+        "recommendation": "Añade descripción de 120-160 caracteres",
+        "severity": "critical",
+        "impact": "CTR reducido hasta 50% en búsquedas"
+      }
+    ],
+    "ux_issues": [],
+    "responsive_issues": [
+      {
+        "file": "daily-messages.css",
+        "type": "no_media_queries",
+        "message": "Sin media queries (móvil afectado)",
+        "recommendation": "Añade @media para 768px y 480px",
+        "severity": "high"
+      }
+    ],
+    "accessibility_issues": [],
+    "performance_issues": [
+      {
+        "file": "index.html",
+        "type": "poor_performance",
+        "message": "Performance muy bajo: 28.0/100",
+        "recommendation": "Optimiza imágenes, reduce JavaScript, implementa lazy loading",
+        "severity": "critical",
+        "impact": "Usuarios abandonan sitios que tardan >3 segundos en cargar"
+      }
+    ],
+    "resource_issues": [
+      {
+        "file": "img\\ahorro.png",
+        "type": "large_image",
+        "message": "Imagen muy pesada: 620.63 KB",
+        "recommendation": "Optimiza con TinyPNG o usa WebP. Objetivo: <200KB",
+        "severity": "medium",
+        "impact": "Carga lenta: +6.2s en 3G"
+      },
+      {
+        "file": "img\\FIN.png",
+        "type": "large_image",
+        "message": "Imagen muy pesada: 681.87 KB",
+        "recommendation": "Optimiza con TinyPNG o usa WebP. Objetivo: <200KB",
+        "severity": "medium",
+        "impact": "Carga lenta: +6.8s en 3G"
+      },
+      {
+        "file": "img\\informativo.png",
+        "type": "large_image",
+        "message": "Imagen muy pesada: 3344.23 KB",
+        "recommendation": "Optimiza con TinyPNG o usa WebP. Objetivo: <200KB",
+        "severity": "high",
+        "impact": "Carga lenta: +33.4s en 3G"
+      },
+      {
+        "file": "app.js",
+        "type": "large_javascript",
+        "message": "JavaScript pesado: 551.48 KB",
+        "recommendation": "Minifica, usa code splitting y lazy loading",
+        "severity": "medium",
+        "impact": "Parseo lento, posible bloqueo del render"
+      },
+      {
+        "file": "node_modules\\playwright\\lib\\utilsBundleImpl.js",
+        "type": "large_javascript",
+        "message": "JavaScript pesado: 204.88 KB",
+        "recommendation": "Minifica, usa code splitting y lazy loading",
+        "severity": "medium",
+        "impact": "Parseo lento, posible bloqueo del render"
+      },
+      {
+        "file": "node_modules\\playwright\\lib\\common\\expectBundleImpl.js",
+        "type": "large_javascript",
+        "message": "JavaScript pesado: 249.55 KB",
+        "recommendation": "Minifica, usa code splitting y lazy loading",
+        "severity": "medium",
+        "impact": "Parseo lento, posible bloqueo del render"
+      },
+      {
+        "file": "node_modules\\playwright\\lib\\transform\\babelBundleImpl.js",
+        "type": "large_javascript",
+        "message": "JavaScript pesado: 1329.62 KB",
+        "recommendation": "Minifica, usa code splitting y lazy loading",
+        "severity": "medium",
+        "impact": "Parseo lento, posible bloqueo del render"
+      },
+      {
+        "file": "node_modules\\playwright-core\\lib\\generated\\injectedScriptSource.js",
+        "type": "large_javascript",
+        "message": "JavaScript pesado: 241.51 KB",
+        "recommendation": "Minifica, usa code splitting y lazy loading",
+        "severity": "medium",
+        "impact": "Parseo lento, posible bloqueo del render"
+      },
+      {
+        "file": "node_modules\\playwright-core\\lib\\protocol\\validator.js",
+        "type": "large_javascript",
+        "message": "JavaScript pesado: 182.5 KB",
+        "recommendation": "Minifica, usa code splitting y lazy loading",
+        "severity": "medium",
+        "impact": "Parseo lento, posible bloqueo del render"
+      },
+      {
+        "file": "node_modules\\playwright-core\\lib\\utilsBundleImpl\\index.js",
+        "type": "large_javascript",
+        "message": "JavaScript pesado: 314.37 KB",
+        "recommendation": "Minifica, usa code splitting y lazy loading",
+        "severity": "medium",
+        "impact": "Parseo lento, posible bloqueo del render"
+      },
+      {
+        "file": "node_modules\\playwright-core\\lib\\vite\\recorder\\assets\\codeMirrorModule-B1i3rfYT.js",
+        "type": "large_javascript",
+        "message": "JavaScript pesado: 282.64 KB",
+        "recommendation": "Minifica, usa code splitting y lazy loading",
+        "severity": "medium",
+        "impact": "Parseo lento, posible bloqueo del render"
+      },
+      {
+        "file": "node_modules\\playwright-core\\lib\\vite\\recorder\\assets\\index-BOBrf0jA.js",
+        "type": "large_javascript",
+        "message": "JavaScript pesado: 188.95 KB",
+        "recommendation": "Minifica, usa code splitting y lazy loading",
+        "severity": "medium",
+        "impact": "Parseo lento, posible bloqueo del render"
+      },
+      {
+        "file": "node_modules\\playwright-core\\lib\\vite\\traceViewer\\assets\\codeMirrorModule-fW5ozdnz.js",
+        "type": "large_javascript",
+        "message": "JavaScript pesado: 282.59 KB",
+        "recommendation": "Minifica, usa code splitting y lazy loading",
+        "severity": "medium",
+        "impact": "Parseo lento, posible bloqueo del render"
+      },
+      {
+        "file": "node_modules\\playwright-core\\lib\\vite\\traceViewer\\assets\\inspectorTab-pwne29yQ.js",
+        "type": "large_javascript",
+        "message": "JavaScript pesado: 349.21 KB",
+        "recommendation": "Minifica, usa code splitting y lazy loading",
+        "severity": "medium",
+        "impact": "Parseo lento, posible bloqueo del render"
+      },
+      {
+        "file": "node_modules\\playwright-core\\lib\\vite\\traceViewer\\assets\\xtermModule-BeNbaIVa.js",
+        "type": "large_javascript",
+        "message": "JavaScript pesado: 277.15 KB",
+        "recommendation": "Minifica, usa code splitting y lazy loading",
+        "severity": "medium",
+        "impact": "Parseo lento, posible bloqueo del render"
+      }
+    ]
+  }
+}

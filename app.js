@@ -9080,6 +9080,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Inicializa la aplicaciÃ³n principal una sola vez.
   if (!window.app) {
     window.app = new FinanceApp();
+    window.financeApp = window.app; // Alias para compatibilidad
     window.app.init();
     // Cargar preferencias guardadas
     window.app.loadThemePreference();
@@ -15129,7 +15130,25 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
     });
   }
 
-  // === OPTION 2: MODO RÁPIDO ===
+  // === OPTION 2: REGISTRAR GASTO CON FIN (IA Conversacional) ===
+  const conversationalExpenseBtn = document.getElementById('quickActionConversationalExpense');
+  if (conversationalExpenseBtn) {
+    conversationalExpenseBtn.addEventListener('click', () => {
+      // Close menu
+      menu.classList.add('hidden');
+
+      // Open conversational expense modal
+      if (typeof openConversationalExpense === 'function') {
+        openConversationalExpense();
+      } else {
+        console.warn('openConversationalExpense function not found');
+        // Fallback: abrir formulario normal
+        this.showSection('expenses');
+      }
+    });
+  }
+
+  // === OPTION 3: MODO RÁPIDO ===
   const fastModeBtn = document.getElementById('quickActionFastMode');
   const fastModeModal = document.getElementById('fastModeModal');
   const closeFastMode = document.getElementById('closeFastModeModal');
@@ -15166,7 +15185,7 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
     });
   }
 
-  // === OPTION 3: REGISTRAR SUELDO ===
+  // === OPTION 5: REGISTRAR SUELDO ===
   const salaryBtn = document.getElementById('quickActionSalary');
   const salaryModal = document.getElementById('salaryModal');
   const closeSalary = document.getElementById('closeSalaryModal');
@@ -15242,7 +15261,7 @@ FinanceApp.prototype.setupQuickExpenseListeners = function () {
     });
   }
 
-  // === OPTION 4: ENTRADA EXTRA ===
+  // === OPTION 6: ENTRADA EXTRA ===
   const extraBtn = document.getElementById('quickActionExtraIncome');
   const extraModal = document.getElementById('extraIncomeModal');
   const closeExtra = document.getElementById('closeExtraIncomeModal');
