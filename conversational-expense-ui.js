@@ -153,6 +153,9 @@ class ConversationalExpenseUI {
 
     // Agregar sugerencias si existen
     if (suggestions && suggestions.length > 0) {
+      // Ocultar teclado cuando hay sugerencias
+      this.inputField.blur();
+
       setTimeout(() => {
         this.renderSuggestions(suggestions);
       }, 300);
@@ -258,6 +261,28 @@ class ConversationalExpenseUI {
 
     if (!suggestions || suggestions.length === 0) return;
 
+    // Cambiar placeholder cuando hay sugerencias
+    const originalPlaceholder = this.inputField.placeholder;
+    this.inputField.placeholder = 'Selecciona una opción o toca aquí para escribir...';
+
+    // Restaurar placeholder al hacer focus
+    this.inputField.addEventListener('focus', () => {
+      if (this.inputField.placeholder === 'Selecciona una opción o toca aquí para escribir...') {
+        this.inputField.placeholder = originalPlaceholder;
+      }
+    }, { once: true });
+
+    // Agregar chip para escritura manual
+    const manualBtn = document.createElement('button');
+    manualBtn.className = 'suggestion-chip manual-input-chip';
+    manualBtn.innerHTML = '✏️ Escribir manualmente';
+    manualBtn.onclick = () => {
+      this.inputField.focus();
+      container.scrollTop = 0; // Scroll al inicio para ver el input
+    };
+    container.appendChild(manualBtn);
+
+    // Agregar sugerencias
     suggestions.forEach((suggestion) => {
       const btn = document.createElement('button');
       btn.className = 'suggestion-chip';
@@ -317,6 +342,11 @@ class ConversationalExpenseUI {
         // Sincronizar modo de categoría personalizada
         if (response.customCategoryMode !== undefined) {
           this.conversational.customCategoryMode = response.customCategoryMode;
+        }
+
+        // Si no hay sugerencias, abrir teclado automáticamente
+        if (!response.suggestions || response.suggestions.length === 0) {
+          setTimeout(() => this.inputField.focus(), 300);
         }
 
         // Actualizar barra de progreso
