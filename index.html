@@ -95,11 +95,12 @@
     />
 
     <!-- Favicons - Optimizados para buscadores -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <!-- Manifest comentado para desarrollo local (file://), habilitar en producción -->
+    <!-- <link rel="manifest" href="site.webmanifest" /> -->
 
     <!-- Meta tags adicionales para mejor indexación -->
     <meta name="theme-color" content="#6366f1" />
@@ -1754,8 +1755,8 @@
             <!-- Grid Layout for Category and Necessity -->
             <div class="form-grid-2">
               <div class="form-group-premium">
-                <label class="form-label-premium">
-                  <i class="fas fa-tag"></i>
+                <label class="form-label-premium" for="category">
+                  <i class="fas fa-tag" aria-hidden="true"></i>
                   Categoría
                 </label>
                 <div class="category-selector-premium">
@@ -1783,8 +1784,8 @@
               </div>
 
               <div class="form-group-premium">
-                <label class="form-label-premium">
-                  <i class="fas fa-chart-line"></i>
+                <label class="form-label-premium" for="necessity">
+                  <i class="fas fa-chart-line" aria-hidden="true"></i>
                   Prioridad
                 </label>
                 <select
@@ -1793,13 +1794,13 @@
                   required
                 >
                   <option value="">Nivel de necesidad</option>
-                  <option value="Muy Necesario">
+                  <option value="Muy Indispensable">
                     ⭐⭐⭐⭐⭐ Muy Indispensable
                   </option>
-                  <option value="Necesario">⭐⭐⭐⭐ Muy Necesario</option>
-                  <option value="Poco Necesario">⭐⭐⭐ Necesario</option>
-                  <option value="No Necesario">⭐⭐ Poco Necesario</option>
-                  <option value="Compra por Impulso">⭐ Nada Necesario</option>
+                  <option value="Muy Necesario">⭐⭐⭐⭐ Muy Necesario</option>
+                  <option value="Necesario">⭐⭐⭐ Necesario</option>
+                  <option value="Poco Necesario">⭐⭐ Poco Necesario</option>
+                  <option value="Nada Necesario">⭐ Nada Necesario</option>
                   <option value="Malgasto">❌ Malgasto/Arrepentimiento</option>
                 </select>
               </div>
@@ -1828,6 +1829,7 @@
                 <select
                   id="user"
                   class="form-input-premium form-select-premium"
+                  data-native-dropdown="true"
                 >
                   <option value="">Sin asignar</option>
                   <option value="__add_new__">+ Añadir usuario</option>

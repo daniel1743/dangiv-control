@@ -8313,6 +8313,38 @@ select.form-control {
   position: relative;
 }
 
+/* Nuevo grupo de usuario - estilos específicos para asegurar visibilidad */
+#newUserGroup {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb); /* Borde más sutil */
+  border-left: 3px solid var(--color-primary, #14b8a6); /* Acento lateral */
+  border-radius: var(--radius-md, 8px);
+  padding: var(--space-12, 12px);
+  margin-top: var(--space-8, 8px);
+  margin-bottom: var(--space-12, 12px);
+  animation: slideDown 0.2s ease-out; /* Animación más rápida */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Sombra sutil */
+  position: relative;
+  z-index: 10; /* Ya no necesita z-index alto - select es nativo */
+}
+
+#newUserGroup:not(.hidden) {
+  display: block !important;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 100px;
+  }
+}
+
 .form-label-premium {
   display: flex;
   align-items: center;
@@ -12047,6 +12079,12 @@ select.form-control {
   position: relative;
   z-index: auto;
   overflow: visible;
+  margin-bottom: var(--space-20, 20px); /* Espaciado consistente entre grids */
+}
+
+/* Reducir espacio entre form-grid-2 consecutivos */
+.form-grid-2 + .form-grid-2 {
+  margin-top: 0;
 }
 
 /* Category Selector Premium */
@@ -12796,6 +12834,13 @@ input[type="date"].form-input-premium:hover::-webkit-calendar-picker-indicator,
 
   .form-grid-2 {
     grid-template-columns: 1fr;
+    gap: var(--space-16, 16px); /* Espaciado consistente */
+    margin-bottom: var(--space-20, 20px); /* Espaciado entre grids */
+  }
+
+  /* Reducir el gap entre campos en mobile para mejor aprovechamiento */
+  .form-grid-2 .form-group-premium {
+    margin-bottom: 0; /* El gap del grid se encarga del espaciado */
   }
 
   .expense-form-actions {
@@ -16418,9 +16463,29 @@ body:not([data-theme="dark"]) .ai-icon {
     -webkit-overflow-scrolling: touch; /* Smooth scroll en iOS */
   }
 
-  /* Cuando un select está en la parte baja, añadir espacio */
+  /* Cuando un select está en la parte baja, añadir espacio
+     NOTA: Reducido de 300px a 80px para mejor UX en mobile */
   .form-group-premium:has(select):last-of-type {
-    margin-bottom: 300px; /* Espacio extra al final */
+    margin-bottom: 80px; /* Espacio extra al final */
+  }
+
+  /* Fallback para navegadores sin soporte de :has() (Firefox < 121, Safari < 15.4) */
+  #newUserGroup,
+  .form-group-premium:last-of-type {
+    margin-bottom: 80px;
+  }
+}
+
+/* Ajuste adicional para pantallas muy pequeñas (iPhone SE, etc) */
+@media (max-width: 480px) {
+  .form-group-premium:has(select):last-of-type {
+    margin-bottom: 60px; /* Aún menos espacio en pantallas pequeñas */
+  }
+
+  /* Fallback sin :has() */
+  #newUserGroup,
+  .form-group-premium:last-of-type {
+    margin-bottom: 60px;
   }
 
   /* Asegurar que los select nativos de móvil se vean bien */

@@ -359,6 +359,18 @@ class CustomDropdownManager {
       // No reemplazar si ya está reemplazado
       if (this.dropdowns.has(select)) return;
 
+      // ✅ CRÍTICO: No reemplazar selects marcados con data-native-dropdown="true"
+      if (select.getAttribute('data-native-dropdown') === 'true') {
+        console.log(`⏭️ Skipping #${select.id || 'unnamed'} - marked as native dropdown`);
+        return;
+      }
+
+      // No reemplazar el select de usuario (doble seguridad)
+      if (select.id === 'user') {
+        console.log('⏭️ Skipping #user - using native mobile dropdown');
+        return;
+      }
+
       // Crear custom dropdown
       const dropdown = new CustomDropdownMobile(select);
       this.dropdowns.set(select, dropdown);

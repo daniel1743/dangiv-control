@@ -2799,25 +2799,18 @@ class FinanceApp {
     // Update expense stats on page load
     this.updateExpenseStats();
 
-    // Manejo del selector de usuarios
-    const userSelect = document.getElementById('user');
-    const newUserGroup = document.getElementById('newUserGroup');
-    const newUserNameInput = document.getElementById('newUserName');
-
-    if (userSelect) {
-      userSelect.addEventListener('change', (e) => {
-        if (e.target.value === '__add_new__') {
-          newUserGroup?.classList.remove('hidden');
-          newUserNameInput?.focus();
-        } else {
-          newUserGroup?.classList.add('hidden');
-        }
-      });
-    }
+    // Manejo del selector de usuarios - EXTRAÍDO A FUNCIÓN REUTILIZABLE
+    this.setupUserSelectListener();
 
     // Función para guardar nuevo usuario
     const saveNewUser = () => {
-      const newUserName = newUserNameInput.value.trim();
+      // Get fresh references from DOM
+      const input = document.getElementById('newUserName');
+      const group = document.getElementById('newUserGroup');
+      const select = document.getElementById('user');
+      const newUserName = input?.value.trim();
+
+      console.log('Attempting to save new user:', newUserName);
 
       if (newUserName && !this.customUsers.includes(newUserName)) {
         this.customUsers.push(newUserName);
@@ -2826,35 +2819,66 @@ class FinanceApp {
         this.updateDefaultUserDropdown(); // Update settings dropdown too
 
         // Seleccionar el usuario recién creado
-        userSelect.value = newUserName;
-        newUserGroup.classList.add('hidden');
-        newUserNameInput.value = '';
+        if (select) {
+          select.value = newUserName;
+        }
+        group?.classList.add('hidden');
+        if (input) {
+          input.value = '';
+        }
 
         this.showToast(`Usuario "${newUserName}" añadido`, 'success');
-      } else if (this.customUsers.includes(newUserName)) {
+        console.log('User added successfully:', newUserName);
+      } else if (newUserName && this.customUsers.includes(newUserName)) {
         this.showToast('Este usuario ya existe', 'error');
       } else {
         this.showToast('Ingresa un nombre de usuario', 'error');
       }
     };
 
-    if (newUserNameInput) {
-      // Guardar con Enter
-      newUserNameInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          saveNewUser();
-        }
-      });
-    }
+    // Setup input listener with fresh reference
+    const setupInputListener = () => {
+      const input = document.getElementById('newUserName');
+      if (input) {
+        // Remove existing listeners by cloning
+        const newInput = input.cloneNode(true);
+        input.parentNode.replaceChild(newInput, input);
 
-    // Guardar con botón
-    const saveNewUserBtn = document.getElementById('saveNewUserBtn');
-    if (saveNewUserBtn) {
-      saveNewUserBtn.addEventListener('click', () => {
-        saveNewUser();
-      });
-    }
+        // Guardar con Enter
+        newInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            console.log('Enter pressed in new user input');
+            saveNewUser();
+          }
+        });
+      }
+    };
+
+    // Setup button listener with fresh reference
+    const setupButtonListener = () => {
+      const btn = document.getElementById('saveNewUserBtn');
+      if (btn) {
+        // Remove existing listeners by cloning
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        newBtn.addEventListener('click', () => {
+          console.log('Save user button clicked');
+          saveNewUser();
+        });
+      }
+    };
+
+    // Initialize listeners
+    setupInputListener();
+    setupButtonListener();
+
+    // Setup intelligent dropdown positioning for mobile
+    this.setupIntelligentDropdownPositioning();
+
+    // Setup responsive listeners (resize, orientation)
+    this.initResponsiveListeners();
 
     // Setup onboarding tour system
     //this.setupOnboardingTour();
@@ -11108,6 +11132,34 @@ FinanceApp.prototype.updateAccountDisplay = function () {
   }
 };
 
+// Función para configurar el event listener del select de usuario
+FinanceApp.prototype.setupUserSelectListener = function () {
+  const userSelect = document.getElementById('user');
+  if (!userSelect) return;
+
+  // Remove any existing listeners by cloning the element
+  const newUserSelect = userSelect.cloneNode(true);
+  userSelect.parentNode.replaceChild(newUserSelect, userSelect);
+
+  newUserSelect.addEventListener('change', (e) => {
+    console.log('User select changed:', e.target.value);
+    const group = document.getElementById('newUserGroup');
+    const input = document.getElementById('newUserName');
+
+    if (e.target.value === '__add_new__') {
+      console.log('Showing new user group');
+
+      group?.classList.remove('hidden');
+      // Small delay to ensure the element is visible before focusing
+      setTimeout(() => {
+        input?.focus();
+      }, 100);
+    } else {
+      group?.classList.add('hidden');
+    }
+  });
+};
+
 FinanceApp.prototype.updateUserSelectionDropdown = function () {
   const userSelect = document.getElementById('user');
   if (!userSelect) return;
@@ -11136,6 +11188,9 @@ FinanceApp.prototype.updateUserSelectionDropdown = function () {
   addNewOption.value = '__add_new__';
   addNewOption.textContent = '+ Añadir nuevo usuario';
   userSelect.appendChild(addNewOption);
+
+  // ✅ RE-AGREGAR EL EVENT LISTENER DESPUÉS DE RECONSTRUIR EL HTML
+  this.setupUserSelectListener();
 };
 
 FinanceApp.prototype.updateActivityLog = function () {
@@ -17240,6 +17295,108 @@ FinanceApp.prototype.applyHistoryFilters = function () {
   };
 
   this.renderHistory(filters);
+};
+
+/* ============================================
+   INTELLIGENT DROPDOWN POSITIONING FOR MOBILE
+   ============================================ */
+
+FinanceApp.prototype.setupIntelligentDropdownPositioning = function () {
+  // Solo aplicar en dispositivos móviles
+  if (window.innerWidth > 768) return;
+
+  // Limpiar listeners anteriores si existen
+  const selectElements = document.querySelectorAll(
+    '#expenseForm select, .form-select-premium, .form-input-premium[type="date"]'
+  );
+
+  selectElements.forEach((select) => {
+    // Evitar duplicar listeners - usar flag
+    if (select.dataset.intelligentPositioningSet === 'true') return;
+    select.dataset.intelligentPositioningSet = 'true';
+
+    // Función handler reutilizable
+    const handleDropdownPosition = (e) => {
+      const element = e.target;
+
+      setTimeout(() => {
+        const rect = element.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const spaceBelow = viewportHeight - rect.bottom;
+
+        // Si hay menos de 250px de espacio abajo, hacer scroll
+        const MIN_DROPDOWN_SPACE = 250;
+        if (spaceBelow < MIN_DROPDOWN_SPACE) {
+          const scrollAmount = MIN_DROPDOWN_SPACE - spaceBelow;
+
+          console.log(`📍 Select tiene poco espacio (${Math.round(spaceBelow)}px). Scrolling ${Math.round(scrollAmount)}px`);
+
+          try {
+            window.scrollBy({
+              top: scrollAmount,
+              behavior: 'smooth'
+            });
+          } catch (error) {
+            // Fallback para navegadores antiguos
+            window.scrollBy(0, scrollAmount);
+          }
+        }
+      }, e.type === 'focus' ? 100 : 50);
+    };
+
+    // Listener para cuando se hace focus en el select
+    select.addEventListener('focus', handleDropdownPosition);
+
+    // También agregar listener para el evento 'click' como respaldo
+    select.addEventListener('click', handleDropdownPosition);
+  });
+
+  console.log('✅ Sistema de posicionamiento inteligente de dropdowns activado para', selectElements.length, 'elementos');
+};
+
+// Utility: Debounce function para optimizar eventos de resize
+FinanceApp.prototype.debounce = function(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func.apply(this, args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
+
+// Re-inicializar en resize y orientationchange
+FinanceApp.prototype.initResponsiveListeners = function() {
+  const MOBILE_BREAKPOINT = 768;
+
+  // Debounced handler para resize
+  const handleResize = this.debounce(() => {
+    // Limpiar flags de listeners anteriores
+    document.querySelectorAll('[data-intelligent-positioning-set]').forEach(el => {
+      el.dataset.intelligentPositioningSet = 'false';
+    });
+
+    this.setupIntelligentDropdownPositioning();
+  }, 300);
+
+  // Resize listener
+  window.addEventListener('resize', handleResize);
+
+  // Orientation change listener (mobile)
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      // Limpiar flags
+      document.querySelectorAll('[data-intelligent-positioning-set]').forEach(el => {
+        el.dataset.intelligentPositioningSet = 'false';
+      });
+
+      this.setupIntelligentDropdownPositioning();
+    }, 200);
+  });
+
+  console.log('✅ Listeners responsive inicializados (resize, orientationchange)');
 };
 
 if (typeof window !== 'undefined') {
