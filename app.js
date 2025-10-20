@@ -1646,17 +1646,14 @@ class FinanceApp {
           sessionStorage.removeItem('isNewUser');
 
           console.log(
-            '✅ Bandera de usuario nuevo detectada. ¡Iniciando chat de onboarding!'
+            '✅ Bandera de usuario nuevo detectada. Mostrando modal de bienvenida de Fin.'
           );
 
-          // Ocultamos el spinner de carga general para dar paso al chat
-          this.hideAppLoading();
+          // CAMBIO: En lugar de abrir el chat directamente, mostrar el modal de bienvenida
+          // El usuario puede ELEGIR si quiere configurar con Fin o explorar la app primero
 
-          // Esperamos un instante antes de lanzar el chat para que la UI se estabilice
-          setTimeout(() => {
-            this.startOnboardingChat();
-          }, 300);
-          return; // Detenemos la ejecución aquí para no cargar el dashboard
+          // Continuar con el flujo normal (cargar dashboard)
+          // El modal de Fin se mostrará automáticamente más adelante (línea 1719)
         }
 
         // ===================================================================
@@ -1711,13 +1708,23 @@ class FinanceApp {
             // === MOSTRAR MODAL DE BIENVENIDA DE FIN (SOLO SI NO SE HA VISTO) ===
             // Solo mostrar si el usuario está autenticado y no ha visto el modal
             const finWelcomeShown = localStorage.getItem('finWelcomeShown');
+            const wasNewUser = sessionStorage.getItem('wasNewUser') === 'true'; // Detectar si acaba de registrarse
+
             if (!finWelcomeShown && this.currentUser !== 'anonymous') {
               console.log('🎉 Primera vez usando Fin - Mostrando modal de bienvenida');
 
               // Esperar un poco para que se cargue la UI completamente
+              // Menos tiempo si es usuario nuevo que acaba de registrarse
+              const delay = wasNewUser ? 800 : 1500;
+
               setTimeout(() => {
                 this.showFinWelcomeModal();
-              }, 1500);
+
+                // Limpiar la bandera después de mostrar el modal
+                if (wasNewUser) {
+                  sessionStorage.removeItem('wasNewUser');
+                }
+              }, delay);
             }
           })
           .catch((err) => {
@@ -11447,7 +11454,8 @@ FinanceApp.prototype.handleRegistration = async function () {
     this.isRegistering = true;
     console.log('DEBUG: Bandera isRegistering activada');
 
-    sessionStorage.setItem('isNewUser', 'true');
+    // Marcar como usuario nuevo para mostrar modal de Fin después del registro
+    sessionStorage.setItem('wasNewUser', 'true');
 
     // Primero registrar en Firebase Auth
     const userCredential = await FB.createUserWithEmailAndPassword(
