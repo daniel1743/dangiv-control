@@ -12835,12 +12835,12 @@ input[type="date"].form-input-premium:hover::-webkit-calendar-picker-indicator,
   .form-grid-2 {
     grid-template-columns: 1fr;
     gap: var(--space-16, 16px); /* Espaciado consistente */
-    margin-bottom: var(--space-20, 20px); /* Espaciado entre grids */
+    margin-bottom: var(--space-16, 16px); /* Espaciado entre grids reducido */
   }
 
-  /* Reducir el gap entre campos en mobile para mejor aprovechamiento */
+  /* CRÍTICO: Eliminar margen inferior en mobile para evitar espacios excesivos */
   .form-grid-2 .form-group-premium {
-    margin-bottom: 0; /* El gap del grid se encarga del espaciado */
+    margin-bottom: 0 !important; /* El gap del grid se encarga del espaciado */
   }
 
   .expense-form-actions {
@@ -16609,5 +16609,413 @@ body:not([data-theme="dark"]) .ai-icon {
   select.form-input-premium::-webkit-scrollbar-thumb:hover,
   select.form-select-premium::-webkit-scrollbar-thumb:hover {
     background: #555;
+  }
+}
+
+/* ========================================
+   MODAL-BASED SELECTION SYSTEM
+   Sistema de selección mediante modales
+   ======================================== */
+
+/* Base modal container */
+.select-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.select-modal.show {
+  display: flex;
+  opacity: 1;
+}
+
+/* Semi-transparent backdrop */
+.select-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1;
+}
+
+/* Modal content container - slides up from bottom */
+.select-modal-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-surface, #ffffff);
+  border-radius: 20px 20px 0 0;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.select-modal.show .select-modal-content {
+  transform: translateY(0);
+}
+
+/* Modal header */
+.select-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  position: sticky;
+  top: 0;
+  background: var(--color-surface, #ffffff);
+  border-radius: 20px 20px 0 0;
+  z-index: 10;
+}
+
+.select-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text, #1f2937);
+}
+
+.select-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary, #6b7280);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.select-modal-close:hover,
+.select-modal-close:active {
+  background: var(--color-hover, #f3f4f6);
+  color: var(--color-text, #1f2937);
+}
+
+/* Modal body - scrollable options */
+.select-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0;
+}
+
+/* Individual option row */
+.select-modal-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-bottom: 1px solid var(--color-border-light, #f3f4f6);
+  min-height: 56px;
+  position: relative;
+}
+
+.select-modal-option:last-child {
+  border-bottom: none;
+}
+
+.select-modal-option:hover,
+.select-modal-option:active {
+  background: var(--color-hover, #f3f4f6);
+}
+
+.select-modal-option.selected {
+  background: var(--color-primary-light, #e6f7f5);
+}
+
+/* Option icon */
+.option-icon {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Option text */
+.option-text {
+  flex: 1;
+  font-size: 16px;
+  color: var(--color-text, #1f2937);
+  font-weight: 500;
+}
+
+.select-modal-option.selected .option-text {
+  color: var(--color-primary, #14b8a6);
+  font-weight: 600;
+}
+
+/* Checkmark indicator */
+.option-check {
+  opacity: 0;
+  color: var(--color-primary, #14b8a6);
+  font-size: 20px;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.select-modal-option.selected .option-check {
+  opacity: 1;
+}
+
+/* Modal footer (for buttons) */
+.select-modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--color-border, #e5e7eb);
+  display: flex;
+  gap: 12px;
+  background: var(--color-surface, #ffffff);
+}
+
+/* Botón especial para añadir usuario */
+.btn-add-user {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  border: 2px dashed var(--color-border, #e5e7eb);
+  background: transparent;
+  color: var(--color-primary, #14b8a6);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+}
+
+.btn-add-user:hover,
+.btn-add-user:active {
+  background: var(--color-primary-light, #e6f7f5);
+  border-color: var(--color-primary, #14b8a6);
+}
+
+.btn-modal-cancel,
+.btn-modal-save {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+}
+
+.btn-modal-cancel {
+  background: var(--color-surface-secondary, #f3f4f6);
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.btn-modal-cancel:hover,
+.btn-modal-cancel:active {
+  background: var(--color-hover, #e5e7eb);
+}
+
+.btn-modal-save {
+  background: var(--color-primary, #14b8a6);
+  color: white;
+}
+
+.btn-modal-save:hover,
+.btn-modal-save:active {
+  background: var(--color-primary-dark, #0d9488);
+}
+
+/* Small modal variant (for add user) */
+.select-modal-small .select-modal-content {
+  bottom: auto;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  transform: translate(-50%, -50%) scale(0.9);
+  border-radius: 16px;
+  max-height: 90vh;
+  max-width: 400px;
+  width: 90%;
+}
+
+.select-modal-small.show .select-modal-content {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Form group inside modal */
+.form-group-modal {
+  padding: 0 20px 8px;
+}
+
+.form-group-modal label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text, #1f2937);
+  margin-bottom: 8px;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--color-border, #e5e7eb);
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text, #1f2937);
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: var(--color-primary, #14b8a6);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+/* Desktop adjustments */
+@media (min-width: 769px) {
+  .select-modal-content {
+    bottom: auto;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    border-radius: 16px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+  }
+
+  .select-modal.show .select-modal-content {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .select-modal-header {
+    border-radius: 16px 16px 0 0;
+  }
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .select-modal-content,
+  .select-modal-header,
+  .select-modal-footer {
+    background: var(--color-surface-dark, #1f2937);
+  }
+
+  .select-modal-header h3,
+  .option-text {
+    color: var(--color-text-dark, #f9fafb);
+  }
+
+  .select-modal-close {
+    color: var(--color-text-secondary-dark, #9ca3af);
+  }
+
+  .select-modal-close:hover,
+  .select-modal-close:active {
+    background: var(--color-hover-dark, #374151);
+    color: var(--color-text-dark, #f9fafb);
+  }
+
+  .select-modal-option:hover,
+  .select-modal-option:active {
+    background: var(--color-hover-dark, #374151);
+  }
+
+  .select-modal-option {
+    border-bottom-color: var(--color-border-dark, #374151);
+  }
+
+  .modal-input {
+    background: var(--color-surface-dark, #1f2937);
+    border-color: var(--color-border-dark, #374151);
+    color: var(--color-text-dark, #f9fafb);
+  }
+
+  .btn-modal-cancel {
+    background: var(--color-surface-secondary-dark, #374151);
+    color: var(--color-text-secondary-dark, #9ca3af);
+  }
+
+  .btn-modal-cancel:hover,
+  .btn-modal-cancel:active {
+    background: var(--color-hover-dark, #4b5563);
+  }
+}
+
+/* Smooth scrolling for modal body */
+.select-modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.select-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.select-modal-body::-webkit-scrollbar-thumb {
+  background: var(--color-border, #e5e7eb);
+  border-radius: 10px;
+}
+
+.select-modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary, #6b7280);
+}
+
+/* Animation for modal appearance */
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

@@ -2687,36 +2687,170 @@ class FinanceApp {
     this.initLazyLoading();
     this.initScrollAnimations();
     // initMobileMenu() se llama después de Firebase sync
+
+    // Inicializar sistema de modales de selección (responsive UX improvement)
+    this.initSelectModals();
   }
 
+  /**
+   * Detecta si el usuario es NUEVO o RECURRENTE y lanza la conversación apropiada
+   */
   startOnboardingChat = function () {
-    console.log('🚀 Iniciando chat de onboarding para usuario personal...');
+    console.log('🚀 Iniciando conversación con Fin...');
 
     const userName = this.userProfile.name || 'Usuario';
 
-    // 1. Preparamos el primer mensaje del asistente
+    // Detectar si el usuario es NUEVO o RECURRENTE
+    const isNewUser = this.isFirstTimeUser();
+
+    if (isNewUser) {
+      console.log('👶 Usuario NUEVO detectado - Iniciando onboarding guiado');
+      this.startNewUserConversation(userName);
+    } else {
+      console.log('👋 Usuario RECURRENTE detectado - Mostrando insights financieros');
+      this.startReturningUserConversation(userName);
+    }
+  };
+
+  /**
+   * Determina si el usuario es nuevo (primera vez) o recurrente
+   * @returns {boolean} true si es primera vez, false si tiene datos históricos
+   */
+  isFirstTimeUser() {
+    // Criterios para considerar a un usuario como "nuevo":
+    // 1. No tiene gastos registrados
+    // 2. No tiene metas configuradas
+    // 3. Ingreso mensual en 0 o default
+    // 4. No hay historial de transacciones
+
+    const hasExpenses = this.expenses && this.expenses.length > 0;
+    const hasGoals = this.goals && this.goals.length > 0;
+    const hasIncome = this.monthlyIncome && this.monthlyIncome > 0;
+    const hasTransactions = this.transactionHistory && this.transactionHistory.length > 0;
+
+    // Si no tiene NINGUNO de estos datos, es usuario nuevo
+    const isNew = !hasExpenses && !hasGoals && !hasIncome && !hasTransactions;
+
+    console.log('📊 Análisis de usuario:', {
+      hasExpenses,
+      hasGoals,
+      hasIncome,
+      hasTransactions,
+      isNew
+    });
+
+    return isNew;
+  }
+
+  /**
+   * Conversación para usuario NUEVO - Onboarding guiado paso a paso
+   */
+  startNewUserConversation(userName) {
     this.conversationHistory = [
       {
         role: 'assistant',
-        content: `¡Hola, ${userName}! Soy Fin, tu asistente financiero. ¡Qué bueno tenerte aquí! Para crear tu plan perfecto, necesito saber, ¿cuál es tu ingreso mensual aproximado? 💰`,
+        content: `¡Hola, ${userName}! 👋 Soy Fin, tu asistente financiero personal.
+
+Voy a ayudarte a configurar tu espacio financiero en 3 pasos simples:
+
+**Paso 1 de 3: Tu ingreso mensual** 💰
+Para crear tu plan personalizado, primero necesito saber cuánto dinero ingresa a tu bolsillo cada mes.
+
+**Ejemplos:**
+• $500.000 - Ingreso básico
+• $800.000 - Ingreso medio
+• $1.500.000 - Ingreso alto
+• $2.500.000+ - Ingreso superior
+
+Escribe tu ingreso mensual aproximado (puedes redondearlo):`,
       },
     ];
 
-    // 2. Ocultamos todas las secciones
+    this.showChatInterface();
+  }
+
+  /**
+   * Conversación para usuario RECURRENTE - Insights financieros personalizados
+   */
+  startReturningUserConversation(userName) {
+    // Analizar datos del usuario para generar insights
+    const totalExpenses = this.expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+    const expenseCount = this.expenses.length;
+    const goalCount = this.goals.length;
+    const currentMonth = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+
+    // Calcular gastos del mes actual
+    const currentMonthExpenses = this.expenses.filter(exp => {
+      const expDate = new Date(exp.date);
+      const now = new Date();
+      return expDate.getMonth() === now.getMonth() && expDate.getFullYear() === now.getFullYear();
+    });
+    const monthlySpending = currentMonthExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+
+    // Categoría con más gastos
+    const categoryTotals = {};
+    this.expenses.forEach(exp => {
+      const cat = exp.category || 'Otros';
+      categoryTotals[cat] = (categoryTotals[cat] || 0) + (exp.amount || 0);
+    });
+    const topCategory = Object.keys(categoryTotals).reduce((a, b) =>
+      categoryTotals[a] > categoryTotals[b] ? a : b, 'Ninguna'
+    );
+
+    // Progreso de metas
+    const activeGoals = this.goals.filter(g => !g.achieved);
+    const achievedGoals = this.goals.filter(g => g.achieved).length;
+
+    // Generar mensaje personalizado basado en datos reales
+    this.conversationHistory = [
+      {
+        role: 'assistant',
+        content: `¡Hola de nuevo, ${userName}! 👋 Me alegra verte.
+
+**📊 Tu resumen financiero de ${currentMonth}:**
+
+💰 **Balance actual:**
+• Ingreso mensual: $${this.monthlyIncome.toLocaleString('es-CL')}
+• Gastado este mes: $${monthlySpending.toLocaleString('es-CL')}
+• Disponible: $${(this.monthlyIncome - monthlySpending).toLocaleString('es-CL')}
+
+📈 **Tu actividad:**
+• ${expenseCount} gastos registrados
+• Categoría principal: ${topCategory}
+• ${goalCount} metas activas${achievedGoals > 0 ? ` (${achievedGoals} logradas 🎉)` : ''}
+
+**¿Qué te gustaría hacer hoy?**
+
+1️⃣ Ver análisis detallado de tus gastos
+2️⃣ Revisar el progreso de tus metas
+3️⃣ Obtener recomendaciones para ahorrar
+4️⃣ Configurar un nuevo presupuesto
+5️⃣ Hacer una pregunta sobre tus finanzas
+
+Escribe el número de la opción o cuéntame qué necesitas:`,
+      },
+    ];
+
+    this.showChatInterface();
+  }
+
+  /**
+   * Muestra la interfaz del chat y renderiza el historial
+   */
+  showChatInterface() {
+    // Ocultamos todas las secciones
     document.querySelectorAll('.section').forEach((section) => {
       section.classList.remove('active');
     });
 
-    // 3. Mostramos la interfaz del chat
+    // Mostramos la interfaz del chat
     const chatInterface = document.getElementById('chatInterface');
     if (chatInterface) {
       chatInterface.classList.remove('hidden');
-      chatInterface.classList.add('active'); // La hacemos la sección activa
+      chatInterface.classList.add('active');
       this.renderChatHistory();
     } else {
-      console.error(
-        "Error: No se encontró el elemento 'chatInterface' en el HTML."
-      );
+      console.error("Error: No se encontró el elemento 'chatInterface' en el HTML.");
       this.showToast('Error al iniciar el asistente de IA.', 'error');
     }
   };
@@ -8600,8 +8734,23 @@ Historial de la conversación (lo más reciente al final):
 ${JSON.stringify(conversationHistory)}
 
 Tarea:
-1.  Analiza el historial. Si el usuario acaba de dar su ingreso mensual, agradécele y pregúntale por sus gastos fijos más importantes (ej: arriendo, deudas, suscripciones).
-2.  Si el usuario acaba de dar sus gastos fijos, agradécele.
+1.  Analiza el historial. Si el usuario acaba de dar su ingreso mensual, responde con un mensaje GUIADO estructurado así:
+
+"¡Perfecto, ${nickname}! Con $[ingreso] mensuales vamos a crear un plan inteligente.
+
+**Paso 2 de 3: Tus gastos fijos** 🏠
+Ahora necesito conocer tus compromisos mensuales obligatorios para calcular tu presupuesto disponible.
+
+**Ejemplos de gastos fijos:**
+• Arriendo/Hipoteca: $______
+• Servicios (luz, agua, internet): $______
+• Deudas/Créditos: $______
+• Transporte (bencina/metro): $______
+• Alimentación básica: $______
+
+Escribe el total aproximado de tus gastos fijos mensuales:"
+
+2.  Si el usuario acaba de dar sus gastos fijos, agradécele con contexto emocional y anticipa el siguiente paso.
 3.  Una vez que tengas el ingreso Y los gastos fijos, analiza toda la información y genera un objeto JSON con el siguiente formato exacto. No incluyas NADA de texto adicional antes o después, solo el objeto JSON.
 
 {
@@ -8617,7 +8766,22 @@ Tarea:
     "target": ${amount},
     "deadline": "<una fecha estimada por ti en formato YYYY-MM-DD para alcanzar la meta>"
   },
-  "summaryMessage": "¡Perfecto, ${nickname}! He creado tu plan inicial. Establecí un presupuesto y tu primera meta para '${goal}'. ¡Vamos a empezar!"
+  "summaryMessage": "🎉 ¡Listo, ${nickname}! Tu plan financiero está configurado.
+
+**Resumen de tu configuración:**
+💰 Ingreso mensual: $[mostrar ingreso]
+🏠 Gastos fijos: $[mostrar gastos]
+💵 Disponible para gastar: $[ingreso - gastos]
+
+🎯 **Tu primera meta:** ${goal} ($${amount})
+📅 Meta estimada: [fecha]
+
+**Próximos pasos:**
+1️⃣ Registra tus gastos diarios para visualizar patrones
+2️⃣ Revisa tu presupuesto sugerido en el Dashboard
+3️⃣ Ajusta tu plan según tus necesidades reales
+
+¡Vamos a empezar tu camino hacia la libertad financiera! 🚀"
 }
 `;
     const geminiApiKey = window.FB.geminiApiKey;
@@ -8729,15 +8893,42 @@ Historial de la conversación (lo más reciente al final):
 ${JSON.stringify(this.conversationHistory)}
 
 Tarea:
-1.  Analiza el historial. Si el usuario acaba de dar su ingreso mensual, agradécele y pregúntale por sus gastos fijos más importantes (ej: arriendo, deudas, suscripciones).
-2.  Si el usuario acaba de dar sus gastos fijos, agradécele.
+1.  Analiza el historial. Si el usuario acaba de dar su ingreso mensual, responde con un mensaje GUIADO estructurado así:
+
+"¡Perfecto, ${nickname}! Con $[ingreso] mensuales vamos a crear un plan inteligente.
+
+**Paso 2 de 3: Tus gastos fijos** 🏠
+Ahora necesito conocer tus compromisos mensuales obligatorios para calcular tu presupuesto disponible.
+
+**Ejemplos de gastos fijos:**
+• Arriendo/Hipoteca: $______
+• Servicios (luz, agua, internet): $______
+• Deudas/Créditos: $______
+• Transporte (bencina/metro): $______
+• Alimentación básica: $______
+
+Escribe el total aproximado de tus gastos fijos mensuales:"
+
+2.  Si el usuario acaba de dar sus gastos fijos, agradécele con contexto emocional y anticipa el siguiente paso.
 3.  Una vez que tengas el ingreso Y los gastos fijos, analiza toda la información y genera un objeto JSON con el siguiente formato exacto. No incluyas NADA de texto adicional antes o después, solo el objeto JSON.
 
 {
   "monthlyIncome": <el ingreso mensual que te dio el usuario como número>,
   "suggestedBudget": { "Alimentación": <número>, "Transporte": <número>, "Entretenimiento": <número>, "Otros": <número> },
   "initialGoal": { "name": "Mi Primera Meta", "target": 500, "deadline": "<fecha estimada por ti en YYYY-MM-DD>" },
-  "summaryMessage": "¡Perfecto, ${nickname}! He creado tu plan inicial. ¡Vamos a empezar!"
+  "summaryMessage": "🎉 ¡Excelente! Tu espacio financiero personal está listo.
+
+**Tu configuración inicial:**
+💰 Ingreso mensual: $[mostrar ingreso]
+📊 Presupuesto sugerido creado
+🎯 Primera meta configurada
+
+**¿Qué sigue ahora?**
+1️⃣ Explora tu Dashboard para ver tu resumen financiero
+2️⃣ Comienza a registrar gastos desde la sección 'Gastos'
+3️⃣ Ajusta tu presupuesto según tus hábitos reales
+
+¡Estoy aquí para ayudarte en cada paso! 💪"
 }
 `;
 
@@ -16858,35 +17049,67 @@ FinanceApp.prototype.updateExpenseStats = function () {
 // ============================================================================
 
 // Formatea número con separadores de miles (formato chileno: 1.000.000)
+// MEJORADO: Usa toLocaleString para formato más robusto y regional
 FinanceApp.prototype.formatNumber = function (number) {
   if (number === null || number === undefined || isNaN(number)) return '0';
 
   // Convertir a número si es string
   const num = typeof number === 'string' ? parseFloat(number) : number;
 
-  // Separar parte entera y decimal
-  const parts = num.toFixed(2).split('.');
-  const integerPart = parts[0];
-  const decimalPart = parts[1];
-
-  // Formatear parte entera con puntos como separadores de miles
-  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-  // Retornar sin decimales si son .00, sino con decimales
-  return decimalPart === '00'
-    ? formattedInteger
-    : `${formattedInteger},${decimalPart}`;
+  // Usar toLocaleString para formato regional chileno/colombiano
+  // de-DE usa punto como separador de miles y coma como decimal
+  return num.toLocaleString('de-DE', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
 };
 
 // Limpia el formato de número para obtener valor numérico puro
+// MEJORADO: Más robusto para manejar diferentes formatos regionales
 FinanceApp.prototype.unformatNumber = function (formattedNumber) {
   if (typeof formattedNumber !== 'string' || !formattedNumber) {
     return 0;
   }
 
-  // CORRECCIÓN: Elimina TODOS los caracteres que no sean dígitos o una coma decimal.
-  // Luego, reemplaza la coma por un punto para el parseFloat.
-  const cleaned = formattedNumber.replace(/[^0-9,]/g, '').replace(/,/g, '.');
+  // Eliminar espacios y caracteres especiales excepto dígitos, punto y coma
+  let cleaned = formattedNumber.trim();
+
+  // Detectar formato: si tiene punto antes de la coma, es formato europeo (1.000,50)
+  // Si tiene coma antes del punto, es formato americano (1,000.50)
+  if (cleaned.includes('.') && cleaned.includes(',')) {
+    // Verificar cuál viene primero
+    const dotIndex = cleaned.indexOf('.');
+    const commaIndex = cleaned.indexOf(',');
+
+    if (dotIndex < commaIndex) {
+      // Formato europeo: 1.000,50 → remover puntos, reemplazar coma por punto
+      cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+    } else {
+      // Formato americano: 1,000.50 → remover comas
+      cleaned = cleaned.replace(/,/g, '');
+    }
+  } else if (cleaned.includes(',')) {
+    // Solo coma: podría ser decimal o separador de miles
+    // Si hay más de una coma o si aparece lejos del final, es separador de miles
+    const commaCount = (cleaned.match(/,/g) || []).length;
+    const lastCommaIndex = cleaned.lastIndexOf(',');
+    const digitsAfterComma = cleaned.length - lastCommaIndex - 1;
+
+    if (commaCount > 1 || digitsAfterComma > 2) {
+      // Es separador de miles: 1,000 o 1,000,000
+      cleaned = cleaned.replace(/,/g, '');
+    } else {
+      // Es decimal: 10,50
+      cleaned = cleaned.replace(',', '.');
+    }
+  } else if (cleaned.includes('.')) {
+    // Solo punto: mantener como está (formato americano)
+    // Ya está en formato correcto para parseFloat
+  }
+
+  // Limpiar cualquier carácter no numérico restante (excepto el punto decimal)
+  cleaned = cleaned.replace(/[^0-9.]/g, '');
+
   return parseFloat(cleaned) || 0;
 };
 
@@ -17397,6 +17620,363 @@ FinanceApp.prototype.initResponsiveListeners = function() {
   });
 
   console.log('✅ Listeners responsive inicializados (resize, orientationchange)');
+};
+
+// ========================================
+// MODAL-BASED SELECTION SYSTEM
+// Sistema de selección mediante modales
+// ========================================
+
+/**
+ * Abre un modal de selección y resalta la opción actual
+ * @param {string} modalId - ID del modal a abrir
+ * @param {string} currentValue - Valor actualmente seleccionado
+ */
+window.openSelectModal = function(modalId, currentValue) {
+  const modal = document.getElementById(modalId);
+  if (!modal) {
+    console.error(`Modal ${modalId} no encontrado`);
+    return;
+  }
+
+  // Agregar clase show para mostrar el modal
+  modal.classList.add('show');
+
+  // Prevenir scroll del body
+  document.body.classList.add('modal-open');
+
+  // Resaltar opción seleccionada actual
+  const options = modal.querySelectorAll('.select-modal-option');
+  options.forEach(option => {
+    option.classList.remove('selected');
+    if (option.dataset.value === currentValue) {
+      option.classList.add('selected');
+    }
+  });
+
+  console.log(`✅ Modal ${modalId} abierto - Valor actual: ${currentValue}`);
+};
+
+/**
+ * Cierra un modal de selección
+ * @param {string} modalId - ID del modal a cerrar
+ */
+window.closeSelectModal = function(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) {
+    console.error(`Modal ${modalId} no encontrado`);
+    return;
+  }
+
+  // Remover clase show para ocultar el modal
+  modal.classList.remove('show');
+
+  // Restaurar scroll del body
+  document.body.classList.remove('modal-open');
+
+  console.log(`✅ Modal ${modalId} cerrado`);
+};
+
+/**
+ * Maneja el click en una opción del modal
+ * @param {string} modalId - ID del modal
+ * @param {string} selectId - ID del select a actualizar
+ * @param {string} value - Valor seleccionado
+ */
+window.handleModalOptionClick = function(modalId, selectId, value) {
+  // Caso especial: añadir nuevo usuario
+  if (value === '__add_new__') {
+    closeSelectModal(modalId);
+    setTimeout(() => {
+      openSelectModal('addUserModal');
+    }, 200);
+    return;
+  }
+
+  // Actualizar el select oculto
+  const select = document.getElementById(selectId);
+  if (select) {
+    select.value = value;
+
+    // Disparar evento change para que la app procese el cambio
+    const event = new Event('change', { bubbles: true });
+    select.dispatchEvent(event);
+
+    console.log(`✅ ${selectId} actualizado a: ${value}`);
+  }
+
+  // Cerrar el modal
+  closeSelectModal(modalId);
+};
+
+/**
+ * Guarda un nuevo usuario desde el modal de añadir usuario
+ */
+window.saveNewUserFromModal = function() {
+  const input = document.getElementById('newUserModalInput');
+  if (!input) {
+    console.error('Input de nuevo usuario no encontrado');
+    return;
+  }
+
+  const userName = input.value.trim();
+
+  if (!userName) {
+    alert('Por favor ingresa un nombre de usuario');
+    input.focus();
+    return;
+  }
+
+  // Agregar el usuario a la lista personalizada
+  if (window.financeApp && window.financeApp.customUsers) {
+    if (!window.financeApp.customUsers.includes(userName)) {
+      window.financeApp.customUsers.push(userName);
+      window.financeApp.saveData();
+
+      // Actualizar el dropdown de usuarios
+      if (typeof window.financeApp.updateUserSelectionDropdown === 'function') {
+        window.financeApp.updateUserSelectionDropdown();
+      }
+
+      // Actualizar el modal de usuarios
+      populateUserModal();
+
+      console.log(`✅ Usuario "${userName}" agregado`);
+    }
+  }
+
+  // Seleccionar el nuevo usuario
+  const userSelect = document.getElementById('user');
+  if (userSelect) {
+    userSelect.value = userName;
+    const event = new Event('change', { bubbles: true });
+    userSelect.dispatchEvent(event);
+  }
+
+  // Limpiar input
+  input.value = '';
+
+  // Cerrar modal
+  closeSelectModal('addUserModal');
+};
+
+/**
+ * Puebla el modal de usuarios con las opciones dinámicas
+ * Solo agrega los usuarios personalizados, ya que Daniel y Givonik están en el HTML
+ */
+window.populateUserModal = function() {
+  const modal = document.getElementById('userModal');
+  if (!modal) return;
+
+  const modalBody = modal.querySelector('.select-modal-body');
+  if (!modalBody) return;
+
+  // Obtener usuarios personalizados
+  const customUsers = (window.financeApp && window.financeApp.customUsers) ? window.financeApp.customUsers : [];
+
+  // Encontrar el elemento de Givonik para insertar después de él
+  const givonikOption = modalBody.querySelector('[data-value="Givonik"]');
+  if (!givonikOption) {
+    console.error('No se encontró la opción de Givonik');
+    return;
+  }
+
+  // Eliminar usuarios personalizados anteriores (para evitar duplicados)
+  const existingCustomUsers = modalBody.querySelectorAll('.custom-user-option');
+  existingCustomUsers.forEach(el => el.remove());
+
+  // Agregar usuarios personalizados después de Givonik
+  let lastUserOption = givonikOption;
+
+  customUsers.forEach(user => {
+    const userOption = document.createElement('div');
+    userOption.className = 'select-modal-option custom-user-option';
+    userOption.setAttribute('data-value', user);
+    userOption.onclick = () => handleModalOptionClick('userModal', 'user', user);
+
+    userOption.innerHTML = `
+      <div class="option-icon">👤</div>
+      <div class="option-text">${user}</div>
+      <div class="option-check"><i class="fas fa-check"></i></div>
+    `;
+
+    // Insertar después del último usuario agregado
+    lastUserOption.insertAdjacentElement('afterend', userOption);
+    lastUserOption = userOption; // Actualizar referencia para el siguiente
+  });
+
+  console.log('✅ Modal de usuarios actualizado - Usuarios personalizados:', customUsers.length);
+};
+
+/**
+ * Inicializa el sistema de modales de selección
+ */
+FinanceApp.prototype.initSelectModals = function() {
+  console.log('🚀 Inicializando sistema de modales de selección...');
+
+  // Poblar modal de usuarios
+  populateUserModal();
+
+  // Cerrar modales al hacer click en el overlay
+  document.querySelectorAll('.select-modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function() {
+      const modal = this.closest('.select-modal');
+      if (modal) {
+        closeSelectModal(modal.id);
+      }
+    });
+  });
+
+  // Convertir los selects en triggers de modales
+  this.setupSelectModalTriggers();
+
+  // Manejar Enter en el input de nuevo usuario
+  const newUserInput = document.getElementById('newUserModalInput');
+  if (newUserInput) {
+    newUserInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveNewUserFromModal();
+      }
+    });
+  }
+
+  console.log('✅ Sistema de modales de selección inicializado');
+};
+
+/**
+ * Configura los selects para que abran modales en vez de dropdown nativo
+ */
+FinanceApp.prototype.setupSelectModalTriggers = function() {
+  // Category select
+  const categorySelect = document.getElementById('category');
+  if (categorySelect) {
+    // Ocultar visualmente pero mantener en DOM para form submission
+    categorySelect.style.position = 'absolute';
+    categorySelect.style.opacity = '0';
+    categorySelect.style.pointerEvents = 'none';
+
+    // Crear elemento visual que actúa como trigger
+    const categoryTrigger = this.createModalTrigger(
+      categorySelect,
+      'categoryModal',
+      '🏷️ Selecciona una categoría'
+    );
+
+    if (categoryTrigger) {
+      categorySelect.parentNode.insertBefore(categoryTrigger, categorySelect);
+    }
+  }
+
+  // Necessity select
+  const necessitySelect = document.getElementById('necessity');
+  if (necessitySelect) {
+    necessitySelect.style.position = 'absolute';
+    necessitySelect.style.opacity = '0';
+    necessitySelect.style.pointerEvents = 'none';
+
+    const necessityTrigger = this.createModalTrigger(
+      necessitySelect,
+      'necessityModal',
+      '⭐ Selecciona nivel de necesidad'
+    );
+
+    if (necessityTrigger) {
+      necessitySelect.parentNode.insertBefore(necessityTrigger, necessitySelect);
+    }
+  }
+
+  // User select
+  const userSelect = document.getElementById('user');
+  if (userSelect) {
+    userSelect.style.position = 'absolute';
+    userSelect.style.opacity = '0';
+    userSelect.style.pointerEvents = 'none';
+
+    const userTrigger = this.createModalTrigger(
+      userSelect,
+      'userModal',
+      '👤 Selecciona usuario'
+    );
+
+    if (userTrigger) {
+      userSelect.parentNode.insertBefore(userTrigger, userSelect);
+    }
+  }
+
+  console.log('✅ Triggers de modales configurados');
+};
+
+/**
+ * Crea un elemento trigger que abre un modal
+ * @param {HTMLElement} select - Select original
+ * @param {string} modalId - ID del modal a abrir
+ * @param {string} placeholder - Texto placeholder
+ * @returns {HTMLElement} - Elemento trigger
+ */
+FinanceApp.prototype.createModalTrigger = function(select, modalId, placeholder) {
+  const trigger = document.createElement('div');
+  trigger.className = 'modal-trigger-select';
+  trigger.dataset.modalId = modalId;
+  trigger.dataset.selectId = select.id;
+
+  // Estilo del trigger (similar a un select)
+  trigger.style.cssText = `
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--color-border, #e5e7eb);
+    border-radius: 10px;
+    font-size: 16px;
+    background: var(--color-surface, #ffffff);
+    color: var(--color-text, #1f2937);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    min-height: 48px;
+  `;
+
+  // Contenido inicial
+  const updateTriggerText = () => {
+    const value = select.value;
+    const selectedOption = select.querySelector(`option[value="${value}"]`);
+    const text = selectedOption ? selectedOption.textContent : placeholder;
+
+    trigger.innerHTML = `
+      <span style="flex: 1; ${!value ? 'color: #9ca3af;' : ''}">${text}</span>
+      <i class="fas fa-chevron-down" style="color: #6b7280; margin-left: 8px;"></i>
+    `;
+  };
+
+  updateTriggerText();
+
+  // Evento click para abrir modal
+  trigger.addEventListener('click', function() {
+    const currentValue = select.value;
+    openSelectModal(modalId, currentValue);
+  });
+
+  // Evento focus/active para feedback visual
+  trigger.addEventListener('mousedown', function() {
+    this.style.borderColor = 'var(--color-primary, #14b8a6)';
+    this.style.boxShadow = '0 0 0 3px rgba(20, 184, 166, 0.1)';
+  });
+
+  trigger.addEventListener('mouseup', function() {
+    this.style.borderColor = 'var(--color-border, #e5e7eb)';
+    this.style.boxShadow = 'none';
+  });
+
+  trigger.addEventListener('mouseleave', function() {
+    this.style.borderColor = 'var(--color-border, #e5e7eb)';
+    this.style.boxShadow = 'none';
+  });
+
+  // Actualizar texto cuando el select cambie
+  select.addEventListener('change', updateTriggerText);
+
+  return trigger;
 };
 
 if (typeof window !== 'undefined') {
