@@ -400,8 +400,9 @@ class FinanceApp {
     this.pendingDeleteId = null;
     this.aiRecommendations = [];
 
-    this.conversationHistory = []; // Para guardar el historial del chat
-    this.conversationState = 'START'; // Para saber en quÃ© punto del chat estamos
+    // Sistema de memoria de Fin - Cargar historial guardado
+    this.conversationHistory = savedData.conversationHistory || []; // Para guardar el historial del chat
+    this.conversationState = savedData.conversationState || 'START'; // Para saber en quÃ© punto del chat estamos
 
     // Detectar enlace de invitación en la URL
     this.checkInvitationLink();
@@ -707,6 +708,9 @@ class FinanceApp {
       notificationStates: this.notificationStates
         ? Object.fromEntries(this.notificationStates)
         : {},
+      // Sistema de memoria de Fin (historial de conversación)
+      conversationHistory: this.conversationHistory || [],
+      conversationState: this.conversationState || 'START',
       // lastUpdate: Date.now(), // <--- LÍNEA CRÍTICA ELIMINADA
     };
 
@@ -9198,8 +9202,12 @@ Escribe el total aproximado de tus gastos fijos mensuales:"
       }
     }
 
-    // Agrega el mensaje del usuario al historial y renderiza
-    this.conversationHistory.push({ role: 'user', content: messageText });
+    // Agrega el mensaje del usuario al historial y renderiza (con timestamp)
+    this.conversationHistory.push({
+      role: 'user',
+      content: messageText,
+      timestamp: Date.now()
+    });
     this.renderChatHistory();
     if (input) input.value = '';
 
@@ -9261,8 +9269,42 @@ Tarea:
       // PROMPT PARA CONVERSACIÓN GENERAL (Preguntas sobre finanzas)
       const isAnonymous = this.currentUser === 'anonymous' || !this.currentUser;
 
+      // Generar resumen de conversaciones anteriores para contexto
+      let conversationMemory = '';
+      if (this.conversationHistory.length > 10 && !isAnonymous) {
+        const oldMessages = this.conversationHistory.slice(0, -6);
+        const topics = [];
+
+        // Detectar temas principales de conversaciones pasadas
+        const keywordMap = {
+          'ahorro': 'ahorrar',
+          'deuda': 'deudas',
+          'presupuesto': 'presupuestos',
+          'gasto': 'gastos',
+          'meta': 'metas',
+          'ingreso': 'ingresos',
+        };
+
+        oldMessages.forEach(msg => {
+          if (msg.role === 'user') {
+            const content = msg.content.toLowerCase();
+            Object.keys(keywordMap).forEach(keyword => {
+              if (content.includes(keyword) && !topics.includes(keywordMap[keyword])) {
+                topics.push(keywordMap[keyword]);
+              }
+            });
+          }
+        });
+
+        if (topics.length > 0) {
+          conversationMemory = `\n\nCONTEXTO DE MEMORIA (Temas previos con ${nickname}):
+Has hablado antes sobre: ${topics.join(', ')}.
+Si es relevante, haz referencia a conversaciones anteriores para crear continuidad.`;
+        }
+      }
+
       prompt = `
-Eres Fin, un asistente financiero experto y amigable.
+Eres Fin, un asistente financiero experto y amigable que RECUERDA las conversaciones con cada usuario.
 
 ${isAnonymous ?
   'Usuario: Anónimo (modo demo). Respuestas generales sobre finanzas personales.' :
@@ -9270,10 +9312,11 @@ ${isAnonymous ?
 Datos disponibles:
 - Ingreso mensual: $${this.monthlyIncome.toLocaleString('es-CL')}
 - Gastos registrados: ${this.expenses.length}
-- Metas activas: ${this.goals.length}`
-}
+- Metas activas: ${this.goals.length}
+- Total de conversaciones guardadas: ${this.conversationHistory.length}`
+}${conversationMemory}
 
-Historial de la conversación:
+Historial reciente (últimos 6 mensajes):
 ${JSON.stringify(this.conversationHistory.slice(-6))}
 
 REGLAS IMPORTANTES:
@@ -9281,10 +9324,11 @@ REGLAS IMPORTANTES:
 2. Sé breve y conciso (máximo 3-4 párrafos).
 3. ${isAnonymous ?
     'Da consejos GENERALES. No tienes acceso a sus datos personales.' :
-    'Usa los datos del usuario para dar consejos PERSONALIZADOS y específicos.'
+    'Usa los datos del usuario para dar consejos PERSONALIZADOS. Si has hablado con ellos antes, menciona conversaciones previas cuando sea relevante (ej: "Recuerdo que hace unos días me preguntaste sobre...")'
    }
 4. Usa emojis con moderación (1-2 por respuesta).
 5. Si te preguntan sobre sus gastos/metas, analiza los datos y da insights concretos.
+6. MEMORIA: Si el usuario vuelve después de varios días, reconoce que lo recuerdas de conversaciones anteriores.
 
 Responde de forma natural y conversacional:`;
     }
@@ -9331,8 +9375,13 @@ Responde de forma natural y conversacional:`;
         this.conversationHistory.push({
           role: 'assistant',
           content: aiResponseText,
+          timestamp: Date.now()
         });
         this.renderChatHistory();
+
+        // Guardar el historial de conversación en Firebase/localStorage
+        await this.saveData();
+        console.log('💾 Historial de conversación guardado (' + this.conversationHistory.length + ' mensajes)');
       }
     } catch (error) {
       typingIndicator.remove();
