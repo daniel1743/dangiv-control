@@ -18274,12 +18274,8 @@ FinanceApp.prototype.initSelectModals = function() {
 FinanceApp.prototype.setupSelectModalTriggers = function() {
   // Category select
   const categorySelect = document.getElementById('category');
-  if (categorySelect) {
-    // Ocultar visualmente pero mantener en DOM para form submission
-    categorySelect.style.position = 'absolute';
-    categorySelect.style.opacity = '0';
-    categorySelect.style.pointerEvents = 'none';
-
+  const categoryContainer = document.getElementById('categoryTriggerContainer');
+  if (categorySelect && categoryContainer) {
     // Crear elemento visual que actúa como trigger
     const categoryTrigger = this.createModalTrigger(
       categorySelect,
@@ -18288,17 +18284,14 @@ FinanceApp.prototype.setupSelectModalTriggers = function() {
     );
 
     if (categoryTrigger) {
-      categorySelect.parentNode.insertBefore(categoryTrigger, categorySelect);
+      categoryContainer.appendChild(categoryTrigger);
     }
   }
 
   // Necessity select
   const necessitySelect = document.getElementById('necessity');
-  if (necessitySelect) {
-    necessitySelect.style.position = 'absolute';
-    necessitySelect.style.opacity = '0';
-    necessitySelect.style.pointerEvents = 'none';
-
+  const necessityContainer = document.getElementById('necessityTriggerContainer');
+  if (necessitySelect && necessityContainer) {
     const necessityTrigger = this.createModalTrigger(
       necessitySelect,
       'necessityModal',
@@ -18306,7 +18299,7 @@ FinanceApp.prototype.setupSelectModalTriggers = function() {
     );
 
     if (necessityTrigger) {
-      necessitySelect.parentNode.insertBefore(necessityTrigger, necessitySelect);
+      necessityContainer.appendChild(necessityTrigger);
     }
   }
 

@@ -1755,58 +1755,29 @@
             <!-- Grid Layout for Category and Necessity -->
             <div class="form-grid-2">
               <div class="form-group-premium">
-                <label class="form-label-premium" for="category">
+                <label class="form-label-premium">
                   <i class="fas fa-tag" aria-hidden="true"></i>
                   Categoría
                 </label>
-                <div class="category-selector-premium">
-                  <select
-                    id="category"
-                    class="form-input-premium form-select-premium category-select native-mobile-select"
-                    data-native-dropdown="true"
-                    inputmode="none"
-                    required
-                  >
-                    <option value="">Selecciona categoría</option>
-                    <option value="Alimentación" data-icon="🍽️">
-                      Alimentación
-                    </option>
-                    <option value="Transporte" data-icon="🚗">
-                      Transporte
-                    </option>
-                    <option value="Entretenimiento" data-icon="🎬">
-                      Entretenimiento
-                    </option>
-                    <option value="Salud" data-icon="🏥">Salud</option>
-                    <option value="Servicios" data-icon="⚡">Servicios</option>
-                    <option value="Compras" data-icon="🛍️">Compras</option>
-                    <option value="Otros" data-icon="📦">Otros</option>
-                  </select>
-                </div>
+                <!-- Select oculto para almacenar el valor seleccionado -->
+                <select id="category" class="form-input-premium" style="display: none" required>
+                  <option value="">Selecciona categoría</option>
+                </select>
+                <!-- Contenedor del trigger visual para el modal -->
+                <div id="categoryTriggerContainer"></div>
               </div>
 
               <div class="form-group-premium">
-                <label class="form-label-premium" for="necessity">
+                <label class="form-label-premium">
                   <i class="fas fa-chart-line" aria-hidden="true"></i>
                   Prioridad
                 </label>
-                <select
-                  id="necessity"
-                  class="form-input-premium form-select-premium native-mobile-select"
-                  data-native-dropdown="true"
-                  inputmode="none"
-                  required
-                >
+                <!-- Select oculto para almacenar el valor seleccionado -->
+                <select id="necessity" class="form-input-premium" style="display: none" required>
                   <option value="">Nivel de necesidad</option>
-                  <option value="Muy Indispensable">
-                    ⭐⭐⭐⭐⭐ Muy Indispensable
-                  </option>
-                  <option value="Muy Necesario">⭐⭐⭐⭐ Muy Necesario</option>
-                  <option value="Necesario">⭐⭐⭐ Necesario</option>
-                  <option value="Poco Necesario">⭐⭐ Poco Necesario</option>
-                  <option value="Nada Necesario">⭐ Nada Necesario</option>
-                  <option value="Malgasto">❌ Malgasto/Arrepentimiento</option>
                 </select>
+                <!-- Contenedor del trigger visual para el modal -->
+                <div id="necessityTriggerContainer"></div>
               </div>
             </div>
 
