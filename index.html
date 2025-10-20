@@ -5250,5 +5250,148 @@
       </div>
     </div>
 
+    <!-- ============================================ -->
+    <!-- MODAL DE BIENVENIDA DE FIN (IA ASSISTANT)   -->
+    <!-- ============================================ -->
+    <div class="fin-welcome-modal" id="finWelcomeModal">
+      <div class="fin-welcome-overlay"></div>
+      <div class="fin-welcome-content">
+        <button class="fin-welcome-close" onclick="closeFinWelcomeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <div class="fin-welcome-header">
+          <div class="fin-avatar-large">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h2>¡Hola! Soy Fin 👋</h2>
+          <p class="fin-subtitle">Tu asistente financiero personal con inteligencia artificial</p>
+        </div>
+
+        <div class="fin-welcome-body">
+          <div class="fin-feature-card">
+            <div class="fin-feature-icon">💡</div>
+            <h3>¿Qué puedo hacer por ti?</h3>
+            <ul class="fin-feature-list">
+              <li><i class="fas fa-check-circle"></i> Configurar tu presupuesto personalizado</li>
+              <li><i class="fas fa-check-circle"></i> Analizar tus gastos y patrones</li>
+              <li><i class="fas fa-check-circle"></i> Ayudarte a alcanzar tus metas de ahorro</li>
+              <li><i class="fas fa-check-circle"></i> Responder preguntas sobre finanzas personales</li>
+              <li><i class="fas fa-check-circle"></i> Darte recomendaciones basadas en tus datos</li>
+            </ul>
+          </div>
+
+          <div class="fin-examples-section">
+            <h3>📝 Ejemplos de preguntas que puedes hacerme:</h3>
+            <div class="fin-examples-grid">
+              <button class="fin-example-btn" onclick="askFinQuestion('¿Cómo puedo ahorrar más dinero cada mes?')">
+                <i class="fas fa-piggy-bank"></i>
+                <span>¿Cómo puedo ahorrar más?</span>
+              </button>
+              <button class="fin-example-btn" onclick="askFinQuestion('Analiza mis gastos del último mes')">
+                <i class="fas fa-chart-line"></i>
+                <span>Analiza mis gastos</span>
+              </button>
+              <button class="fin-example-btn" onclick="askFinQuestion('¿En qué categoría gasto más dinero?')">
+                <i class="fas fa-search-dollar"></i>
+                <span>¿Dónde gasto más?</span>
+              </button>
+              <button class="fin-example-btn" onclick="askFinQuestion('Dame consejos para reducir gastos')">
+                <i class="fas fa-lightbulb"></i>
+                <span>Consejos para ahorrar</span>
+              </button>
+              <button class="fin-example-btn" onclick="askFinQuestion('¿Cómo puedo crear un presupuesto efectivo?')">
+                <i class="fas fa-calculator"></i>
+                <span>Crear presupuesto</span>
+              </button>
+              <button class="fin-example-btn" onclick="askFinQuestion('¿Cuánto debería ahorrar mensualmente?')">
+                <i class="fas fa-question-circle"></i>
+                <span>¿Cuánto ahorrar?</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="fin-tips-section">
+            <div class="fin-tip">
+              <i class="fas fa-info-circle"></i>
+              <p><strong>Tip:</strong> Puedo analizar tus datos financieros para darte recomendaciones personalizadas. Cuanto más uses la app, mejores serán mis consejos.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="fin-welcome-footer">
+          <button class="btn-fin-start" onclick="startConversationWithFin()">
+            <i class="fas fa-comments"></i>
+            Empezar conversación
+          </button>
+          <button class="btn-fin-later" onclick="closeFinWelcomeModal()">
+            Explorar la app primero
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- INTERFAZ DE CHAT CON FIN (IA ASSISTANT)     -->
+    <!-- ============================================ -->
+    <div class="section hidden" id="chatInterface">
+      <div class="chat-container">
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="fin-avatar-small">
+              <i class="fas fa-robot"></i>
+            </div>
+            <div class="chat-header-info">
+              <h2>Fin - Asistente Financiero</h2>
+              <p class="chat-status">
+                <span class="status-dot"></span>
+                Online y listo para ayudarte
+              </p>
+            </div>
+          </div>
+          <div class="chat-header-actions">
+            <button class="btn-icon-chat" onclick="showFinHelp()" title="Ver ejemplos de preguntas">
+              <i class="fas fa-question-circle"></i>
+            </button>
+            <button class="btn-icon-chat" onclick="clearChatHistory()" title="Limpiar conversación">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+            <button class="btn-icon-chat" onclick="closeChatInterface()" title="Cerrar chat">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chatHistory">
+          <!-- Los mensajes se renderizan aquí dinámicamente -->
+        </div>
+
+        <div class="chat-input-container">
+          <div class="chat-suggestions" id="chatSuggestions">
+            <!-- Sugerencias contextuales aparecerán aquí -->
+          </div>
+          <form class="chat-input-form" id="chatForm">
+            <textarea
+              id="chatInput"
+              class="chat-textarea"
+              placeholder="Escribe tu pregunta o mensaje a Fin..."
+              rows="1"
+              maxlength="500"
+            ></textarea>
+            <button type="submit" class="btn-send-chat" title="Enviar mensaje">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </form>
+          <div class="chat-input-footer">
+            <span class="char-counter" id="chatCharCounter">0/500</span>
+            <span class="ai-indicator">
+              <i class="fas fa-robot"></i>
+              Potenciado por IA Gemini
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </body>
 </html>

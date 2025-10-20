@@ -1703,6 +1703,18 @@ class FinanceApp {
 
             // Actualizar notificaciones
             this.updateNotifications();
+
+            // === MOSTRAR MODAL DE BIENVENIDA DE FIN (SOLO SI NO SE HA VISTO) ===
+            // Solo mostrar si el usuario está autenticado y no ha visto el modal
+            const finWelcomeShown = localStorage.getItem('finWelcomeShown');
+            if (!finWelcomeShown && this.currentUser !== 'anonymous') {
+              console.log('🎉 Primera vez usando Fin - Mostrando modal de bienvenida');
+
+              // Esperar un poco para que se cargue la UI completamente
+              setTimeout(() => {
+                this.showFinWelcomeModal();
+              }, 1500);
+            }
           })
           .catch((err) => {
             console.error('[Auth] Error en sincronización:', err);
@@ -2854,6 +2866,272 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       this.showToast('Error al iniciar el asistente de IA.', 'error');
     }
   };
+
+  /**
+   * Muestra el modal de bienvenida de Fin
+   * Permite a usuarios anónimos ver el modal pero con mensaje de "modo demo"
+   * Con actitud tímida/cautelosa para usuarios nuevos
+   */
+  showFinWelcomeModal() {
+    const modal = document.getElementById('finWelcomeModal');
+    if (!modal) {
+      console.error('❌ Modal de bienvenida de Fin no encontrado en el HTML');
+      return;
+    }
+
+    const modalTitle = modal.querySelector('h2');
+    const modalSubtitle = modal.querySelector('.fin-subtitle');
+    const isAnonymous = this.currentUser === 'anonymous' || !this.currentUser;
+
+    if (isAnonymous) {
+      // Usuario ANÓNIMO: Mostrar que puede probar 3 preguntas gratis
+      if (modalTitle) {
+        modalTitle.textContent = '¡Hola! Soy Fin 👋';
+      }
+      if (modalSubtitle) {
+        const questionsAsked = parseInt(sessionStorage.getItem('finQuestionsCount') || '0');
+        const remaining = 3 - questionsAsked;
+        modalSubtitle.textContent = `Prueba gratis mi asistencia con IA (${remaining} preguntas disponibles). Para acceso ilimitado y análisis personalizado, crea tu cuenta.`;
+      }
+
+      console.log('✅ Modal de Fin (modo demo) mostrado para usuario anónimo');
+    } else {
+      // Usuario AUTENTICADO
+      const isNewUser = this.isFirstTimeUser();
+      const userName = this.userProfile.name || 'Usuario';
+
+      if (isNewUser) {
+        // Usuario NUEVO: Tono tímido, cauteloso, respetuoso
+        if (modalTitle) {
+          modalTitle.textContent = '¡Hola! Soy Fin 👋';
+        }
+        if (modalSubtitle) {
+          modalSubtitle.textContent = 'Si me lo permites, me gustaría ayudarte a organizar tus finanzas... solo si tú quieres 😊';
+        }
+      } else {
+        // Usuario RECURRENTE: Más directo pero aún respetuoso
+        if (modalTitle) {
+          modalTitle.textContent = `¡Hola de nuevo, ${userName}! 👋`;
+        }
+        if (modalSubtitle) {
+          modalSubtitle.textContent = 'Tu asistente financiero está listo para ayudarte con tus finanzas';
+        }
+      }
+
+      console.log('✅ Modal de bienvenida de Fin mostrado:', { isNewUser, userName });
+    }
+
+    // Mostrar modal con animación
+    modal.classList.add('show');
+  }
+
+  /**
+   * Cierra el modal de bienvenida de Fin
+   * @param {boolean} markAsSeen - Si es true, marca el modal como visto (no volver a mostrar automáticamente)
+   */
+  closeFinWelcomeModal(markAsSeen = false) {
+    const modal = document.getElementById('finWelcomeModal');
+    if (!modal) return;
+
+    modal.classList.remove('show');
+
+    if (markAsSeen) {
+      // Guardar en localStorage que el usuario ya vio el modal
+      localStorage.setItem('finWelcomeShown', 'true');
+      console.log('✅ Modal de Fin marcado como visto');
+    }
+  }
+
+  /**
+   * Pre-llena el chat con una pregunta de ejemplo y abre la interfaz
+   * @param {string} question - La pregunta a pre-llenar
+   */
+  askFinQuestion(question) {
+    // Cerrar el modal de bienvenida
+    this.closeFinWelcomeModal(true);
+
+    // Mostrar la interfaz del chat
+    this.showChatInterface();
+
+    // Pre-llenar el textarea con la pregunta
+    const chatInput = document.getElementById('chatInput');
+    if (chatInput) {
+      chatInput.value = question;
+      chatInput.focus();
+
+      // Actualizar contador de caracteres si existe
+      this.updateCharCounter();
+    }
+
+    console.log('💬 Pregunta pre-llenada:', question);
+  }
+
+  /**
+   * Inicia conversación con Fin y cierra el modal
+   */
+  startConversationWithFin() {
+    this.closeFinWelcomeModal(true);
+    this.startOnboardingChat();
+  }
+
+  /**
+   * Muestra ayuda de Fin (reabre modal o muestra tooltip contextual)
+   */
+  showFinHelp() {
+    const modal = document.getElementById('finWelcomeModal');
+    if (modal) {
+      modal.classList.add('show');
+    } else {
+      this.showToast('Pregúntame sobre tus gastos, metas o consejos de ahorro 💡', 'info', 5000);
+    }
+  }
+
+  /**
+   * Limpia el historial del chat con Fin
+   */
+  clearChatHistory() {
+    if (confirm('¿Estás seguro de que quieres borrar toda la conversación con Fin?')) {
+      this.conversationHistory = [];
+      this.renderChatHistory();
+      this.showToast('Conversación reiniciada', 'success');
+
+      console.log('🗑️ Historial de chat limpiado');
+    }
+  }
+
+  /**
+   * Cierra la interfaz del chat y vuelve al dashboard
+   */
+  closeChatInterface() {
+    const chatInterface = document.getElementById('chatInterface');
+    if (chatInterface) {
+      chatInterface.classList.add('hidden');
+      chatInterface.classList.remove('active');
+    }
+
+    // Volver al dashboard
+    this.showSection('dashboard');
+
+    console.log('❌ Interfaz de chat cerrada');
+  }
+
+  /**
+   * Actualiza el contador de caracteres del textarea del chat
+   */
+  updateCharCounter() {
+    const chatInput = document.getElementById('chatInput');
+    const charCounter = document.getElementById('chatCharCounter');
+
+    if (!chatInput || !charCounter) return;
+
+    const currentLength = chatInput.value.length;
+    const maxLength = 500; // Límite de caracteres
+
+    charCounter.textContent = `${currentLength}/${maxLength}`;
+
+    // Cambiar color si se acerca al límite
+    if (currentLength > maxLength * 0.9) {
+      charCounter.style.color = '#ef4444'; // Rojo
+    } else if (currentLength > maxLength * 0.75) {
+      charCounter.style.color = '#f59e0b'; // Naranja
+    } else {
+      charCounter.style.color = '#6b7280'; // Gris normal
+    }
+  }
+
+  /**
+   * Muestra banner informando cuántas preguntas gratuitas quedan
+   * @param {number} remaining - Número de preguntas restantes
+   */
+  showFreeQuestionsRemaining(remaining) {
+    if (remaining === 2) {
+      this.showToast('💡 Tip: Si te registras, puedo analizar TUS gastos reales y darte recomendaciones personalizadas', 'info', 5000);
+    } else if (remaining === 1) {
+      this.showToast(`⚠️ Te queda ${remaining} pregunta gratuita. Regístrate para acceso ilimitado`, 'warning', 6000);
+    } else if (remaining === 0) {
+      // No mostrar toast aquí, el modal se encargará
+    }
+  }
+
+  /**
+   * Muestra modal de conversión cuando el usuario anónimo alcanza el límite de preguntas
+   */
+  showConversionModal() {
+    // Verificar si ya existe un modal de conversión
+    const existingModal = document.getElementById('finConversionModal');
+    if (existingModal) {
+      existingModal.classList.add('show');
+      return;
+    }
+
+    // Crear modal dinámicamente
+    const modalHTML = `
+      <div class="fin-conversion-modal show" id="finConversionModal">
+        <div class="fin-conversion-overlay"></div>
+        <div class="fin-conversion-content">
+          <div class="fin-conversion-icon">
+            🎯
+          </div>
+          <h2>¡Fin te está esperando!</h2>
+          <p class="fin-conversion-subtitle">Has usado tus 3 preguntas gratuitas</p>
+
+          <div class="fin-conversion-benefits">
+            <h3>✨ Con una cuenta gratuita obtienes:</h3>
+            <ul>
+              <li><i class="fas fa-check"></i> <strong>Preguntas ilimitadas</strong> a Fin, tu asistente de IA</li>
+              <li><i class="fas fa-check"></i> <strong>Análisis personalizado</strong> de tus finanzas reales</li>
+              <li><i class="fas fa-check"></i> <strong>Recomendaciones inteligentes</strong> basadas en tus patrones</li>
+              <li><i class="fas fa-check"></i> <strong>Historial guardado</strong> en la nube (acceso desde cualquier dispositivo)</li>
+              <li><i class="fas fa-check"></i> <strong>Seguimiento de progreso</strong> financiero en tiempo real</li>
+            </ul>
+          </div>
+
+          <div class="fin-conversion-cta">
+            <button class="btn-conversion-primary" onclick="window.app.openAuthModal('register')">
+              <i class="fas fa-rocket"></i>
+              Crear cuenta gratuita (30 segundos)
+            </button>
+            <button class="btn-conversion-secondary" onclick="window.app.openAuthModal('login')">
+              Ya tengo cuenta
+            </button>
+          </div>
+
+          <div class="fin-conversion-footer">
+            <p>🔒 100% seguro y privado • Sin tarjeta de crédito</p>
+            <button class="btn-conversion-close" onclick="window.app.closeConversionModal()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Insertar en el body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Agregar event listener al overlay
+    const overlay = document.querySelector('.fin-conversion-overlay');
+    if (overlay) {
+      overlay.addEventListener('click', () => {
+        this.closeConversionModal();
+      });
+    }
+
+    console.log('🚫 Modal de conversión mostrado - Límite de preguntas alcanzado');
+  }
+
+  /**
+   * Cierra el modal de conversión
+   */
+  closeConversionModal() {
+    const modal = document.getElementById('finConversionModal');
+    if (modal) {
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.remove();
+      }, 300);
+    }
+  }
   // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
   resetPasswords() {
     // CORRECCIÃƒâ€œN: Se eliminÃ³ la referencia a 'savedData' y se asignan los valores por defecto directamente.
@@ -3092,6 +3370,28 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
         e.preventDefault();
         this.sendChatMessage();
       });
+    }
+
+    // Event listener para contador de caracteres en el textarea del chat
+    const chatInput = document.getElementById('chatInput');
+    if (chatInput) {
+      chatInput.addEventListener('input', () => {
+        this.updateCharCounter();
+      });
+
+      // Límite de caracteres
+      chatInput.setAttribute('maxlength', '500');
+    }
+
+    // Event listener para cerrar modal de Fin al hacer click en el overlay
+    const finWelcomeModal = document.getElementById('finWelcomeModal');
+    if (finWelcomeModal) {
+      const overlay = finWelcomeModal.querySelector('.fin-welcome-overlay');
+      if (overlay) {
+        overlay.addEventListener('click', () => {
+          this.closeFinWelcomeModal(false); // No marcar como visto si cierra con overlay
+        });
+      }
     }
 
     // === NAVEGACIÃƒâ€œN Y UI GENERAL ===
@@ -7195,7 +7495,7 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
 
   // === SECCIÓN: MANEJO DEL MODAL DE AUTENTICACIÓN (LOGIN/REGISTRO) ===
 
-  openAuthModal() {
+  openAuthModal(mode = 'login') {
     const modal = document.getElementById('authModal');
     if (modal) {
       // Limpiar estado anterior
@@ -7206,8 +7506,13 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       // Forzar reflow del DOM
       void modal.offsetHeight;
 
-      // Mostrar modal con formulario de login
-      switchToLogin();
+      // Mostrar modal con formulario según el modo
+      if (mode === 'register') {
+        switchToRegister(); // Cambiar a formulario de registro
+      } else {
+        switchToLogin(); // Por defecto, mostrar login
+      }
+
       modal.classList.add('show');
       document.body.style.overflow = 'hidden';
     }
@@ -8866,10 +9171,40 @@ Escribe el total aproximado de tus gastos fijos mensuales:"
     const messageText = input ? input.value.trim() : '';
     if (!messageText) return;
 
+    // ========================================
+    // VERIFICAR LÍMITE PARA USUARIOS ANÓNIMOS
+    // ========================================
+    if (this.currentUser === 'anonymous' || !this.currentUser) {
+      const questionsAsked = parseInt(sessionStorage.getItem('finQuestionsCount') || '0');
+      const maxFreeQuestions = 3;
+
+      console.log(`🔍 Usuario anónimo - Pregunta ${questionsAsked + 1}/${maxFreeQuestions}`);
+
+      // Si llegó al límite, mostrar modal de conversión
+      if (questionsAsked >= maxFreeQuestions) {
+        this.showConversionModal();
+        return; // Bloquear el envío
+      }
+
+      // Incrementar contador
+      sessionStorage.setItem('finQuestionsCount', (questionsAsked + 1).toString());
+
+      // Mostrar banner de advertencia cuando quedan pocas preguntas
+      const remaining = maxFreeQuestions - (questionsAsked + 1);
+      if (remaining > 0) {
+        setTimeout(() => {
+          this.showFreeQuestionsRemaining(remaining);
+        }, 2000);
+      }
+    }
+
     // Agrega el mensaje del usuario al historial y renderiza
     this.conversationHistory.push({ role: 'user', content: messageText });
     this.renderChatHistory();
     if (input) input.value = '';
+
+    // Actualizar contador de caracteres
+    this.updateCharCounter();
 
     // Muestra el indicador de "escribiendo..."
     const chatHistoryContainer = document.getElementById('chatHistory');
@@ -8881,56 +9216,80 @@ Escribe el total aproximado de tus gastos fijos mensuales:"
 
     // --- AQUÍ EMPIEZA LA LÓGICA DE GEMINI ---
 
-    // Prepara el prompt con la misma lógica que usamos antes
-    const nickname = this.userProfile.name;
-    const goal = 'alcanzar mis metas'; // Placeholder
-    const amount = 0; // Placeholder
+    // Detectar si es la primera interacción (para onboarding) o conversación general
+    const isOnboarding = this.conversationHistory.length <= 2 &&
+                        this.conversationHistory.some(msg =>
+                          msg.content.includes('Paso 1 de 3') ||
+                          msg.content.includes('ingreso mensual')
+                        );
 
-    const prompt = `
-Eres un asistente financiero amigable y experto llamado Fin. Tu misión es configurar la aplicación Financia Suite para un nuevo usuario llamado "${nickname}" a través de una conversación.
+    const nickname = this.userProfile.name || 'Usuario';
+    let prompt;
 
-Historial de la conversación (lo más reciente al final):
+    if (isOnboarding) {
+      // PROMPT PARA ONBOARDING (Solo primeras conversaciones)
+      prompt = `
+Eres Fin, un asistente financiero amigable. Estás ayudando a "${nickname}" a configurar su presupuesto inicial.
+
+Historial de la conversación:
 ${JSON.stringify(this.conversationHistory)}
 
+IMPORTANTE: NO saludes de nuevo. Ya te presentaste en el primer mensaje.
+
 Tarea:
-1.  Analiza el historial. Si el usuario acaba de dar su ingreso mensual, responde con un mensaje GUIADO estructurado así:
+1. Si el usuario dio su ingreso mensual, responde:
+   "Perfecto, con $[ingreso] mensuales vamos a crear un plan inteligente.
 
-"¡Perfecto, ${nickname}! Con $[ingreso] mensuales vamos a crear un plan inteligente.
+   **Paso 2 de 3: Tus gastos fijos** 🏠
+   Necesito conocer tus compromisos mensuales obligatorios.
 
-**Paso 2 de 3: Tus gastos fijos** 🏠
-Ahora necesito conocer tus compromisos mensuales obligatorios para calcular tu presupuesto disponible.
+   **Ejemplos:** Arriendo, servicios, deudas, transporte, alimentación básica.
 
-**Ejemplos de gastos fijos:**
-• Arriendo/Hipoteca: $______
-• Servicios (luz, agua, internet): $______
-• Deudas/Créditos: $______
-• Transporte (bencina/metro): $______
-• Alimentación básica: $______
+   Escribe el total aproximado de tus gastos fijos mensuales:"
 
-Escribe el total aproximado de tus gastos fijos mensuales:"
+2. Si dio los gastos fijos, agradece brevemente y pide la siguiente información.
 
-2.  Si el usuario acaba de dar sus gastos fijos, agradécele con contexto emocional y anticipa el siguiente paso.
-3.  Una vez que tengas el ingreso Y los gastos fijos, analiza toda la información y genera un objeto JSON con el siguiente formato exacto. No incluyas NADA de texto adicional antes o después, solo el objeto JSON.
-
+3. Cuando tengas ingreso Y gastos fijos, genera este JSON (SOLO el JSON, sin texto adicional):
 {
-  "monthlyIncome": <el ingreso mensual que te dio el usuario como número>,
+  "monthlyIncome": <número>,
   "suggestedBudget": { "Alimentación": <número>, "Transporte": <número>, "Entretenimiento": <número>, "Otros": <número> },
-  "initialGoal": { "name": "Mi Primera Meta", "target": 500, "deadline": "<fecha estimada por ti en YYYY-MM-DD>" },
-  "summaryMessage": "🎉 ¡Excelente! Tu espacio financiero personal está listo.
-
-**Tu configuración inicial:**
-💰 Ingreso mensual: $[mostrar ingreso]
-📊 Presupuesto sugerido creado
-🎯 Primera meta configurada
-
-**¿Qué sigue ahora?**
-1️⃣ Explora tu Dashboard para ver tu resumen financiero
-2️⃣ Comienza a registrar gastos desde la sección 'Gastos'
-3️⃣ Ajusta tu presupuesto según tus hábitos reales
-
-¡Estoy aquí para ayudarte en cada paso! 💪"
+  "initialGoal": { "name": "Mi Primera Meta", "target": 500, "deadline": "YYYY-MM-DD" },
+  "summaryMessage": "🎉 Tu espacio financiero está listo. [Detalles breves]"
 }
 `;
+    } else {
+      // PROMPT PARA CONVERSACIÓN GENERAL (Preguntas sobre finanzas)
+      const isAnonymous = this.currentUser === 'anonymous' || !this.currentUser;
+
+      prompt = `
+Eres Fin, un asistente financiero experto y amigable.
+
+${isAnonymous ?
+  'Usuario: Anónimo (modo demo). Respuestas generales sobre finanzas personales.' :
+  `Usuario: ${nickname}
+Datos disponibles:
+- Ingreso mensual: $${this.monthlyIncome.toLocaleString('es-CL')}
+- Gastos registrados: ${this.expenses.length}
+- Metas activas: ${this.goals.length}`
+}
+
+Historial de la conversación:
+${JSON.stringify(this.conversationHistory.slice(-6))}
+
+REGLAS IMPORTANTES:
+1. NO saludes en cada respuesta. Solo responde la pregunta directamente.
+2. Sé breve y conciso (máximo 3-4 párrafos).
+3. ${isAnonymous ?
+    'Da consejos GENERALES. No tienes acceso a sus datos personales.' :
+    'Usa los datos del usuario para dar consejos PERSONALIZADOS y específicos.'
+   }
+4. Usa emojis con moderación (1-2 por respuesta).
+5. Si te preguntan sobre sus gastos/metas, analiza los datos y da insights concretos.
+
+Responde de forma natural y conversacional:`;
+    }
+
+    console.log('📝 Prompt tipo:', isOnboarding ? 'ONBOARDING' : 'CONVERSACIÓN GENERAL');
 
     // Llama a la API de Gemini (igual que en la función que te di antes)
     const geminiApiKey = window.FB.geminiApiKey;
@@ -9305,6 +9664,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // Iniciar sistema de mensajes programados
       window.app.startMessageScheduler();
     });
+
+    // === EXPONER FUNCIONES DE FIN GLOBALMENTE PARA HTML ===
+    window.closeFinWelcomeModal = (markAsSeen) => window.app.closeFinWelcomeModal(markAsSeen);
+    window.askFinQuestion = (question) => window.app.askFinQuestion(question);
+    window.startConversationWithFin = () => window.app.startConversationWithFin();
+    window.showFinHelp = () => window.app.showFinHelp();
+    window.clearChatHistory = () => window.app.clearChatHistory();
+    window.closeChatInterface = () => window.app.closeChatInterface();
   }
 
   // 2. Configurar event delegation para el enlace de cambio de formulario auth
