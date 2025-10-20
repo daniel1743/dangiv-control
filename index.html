@@ -30,7 +30,7 @@
       content="ksz9e3ZMEltmTGQR3un92KzS3z3Xh8dOf1ZQpGAMeOg"
     />
 
-    <link rel="canonical" href="https://financiasuite.com" />
+    <link rel="canonical" href="https://financiasuite.com/" />
 
     <!-- Additional SEO -->
     <meta name="language" content="Spanish" />
@@ -1762,7 +1762,9 @@
                 <div class="category-selector-premium">
                   <select
                     id="category"
-                    class="form-input-premium form-select-premium category-select"
+                    class="form-input-premium form-select-premium category-select native-mobile-select"
+                    data-native-dropdown="true"
+                    inputmode="none"
                     required
                   >
                     <option value="">Selecciona categoría</option>
@@ -1790,7 +1792,9 @@
                 </label>
                 <select
                   id="necessity"
-                  class="form-input-premium form-select-premium"
+                  class="form-input-premium form-select-premium native-mobile-select"
+                  data-native-dropdown="true"
+                  inputmode="none"
                   required
                 >
                   <option value="">Nivel de necesidad</option>
@@ -1828,8 +1832,9 @@
                 </label>
                 <select
                   id="user"
-                  class="form-input-premium form-select-premium"
+                  class="form-input-premium form-select-premium native-mobile-select"
                   data-native-dropdown="true"
+                  inputmode="none"
                 >
                   <option value="">Sin asignar</option>
                   <option value="__add_new__">+ Añadir usuario</option>
@@ -5073,5 +5078,177 @@
     <script src="onboarding-manager.js"></script>
     <script src="fin-widget.js"></script>
     <link rel="stylesheet" href="fin-conversation-styles.css">
+
+    <!-- ============================================
+         MODALES DE SELECCIÓN MÓVIL (NUEVO SISTEMA)
+         ============================================ -->
+
+    <!-- Modal: Selección de Categoría -->
+    <div class="select-modal" id="categoryModal">
+      <div class="select-modal-overlay"></div>
+      <div class="select-modal-content">
+        <div class="select-modal-header">
+          <h3>Selecciona una categoría</h3>
+          <button class="select-modal-close" onclick="closeSelectModal('categoryModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="select-modal-body">
+          <div class="select-modal-option" data-value="Alimentación" onclick="handleModalOptionClick('categoryModal', 'category', 'Alimentación')">
+            <div class="option-icon">🍽️</div>
+            <div class="option-text">Alimentación</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Transporte" onclick="handleModalOptionClick('categoryModal', 'category', 'Transporte')">
+            <div class="option-icon">🚗</div>
+            <div class="option-text">Transporte</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Entretenimiento" onclick="handleModalOptionClick('categoryModal', 'category', 'Entretenimiento')">
+            <div class="option-icon">🎬</div>
+            <div class="option-text">Entretenimiento</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Salud" onclick="handleModalOptionClick('categoryModal', 'category', 'Salud')">
+            <div class="option-icon">🏥</div>
+            <div class="option-text">Salud</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Servicios" onclick="handleModalOptionClick('categoryModal', 'category', 'Servicios')">
+            <div class="option-icon">⚡</div>
+            <div class="option-text">Servicios</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Compras" onclick="handleModalOptionClick('categoryModal', 'category', 'Compras')">
+            <div class="option-icon">🛍️</div>
+            <div class="option-text">Compras</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Otros" onclick="handleModalOptionClick('categoryModal', 'category', 'Otros')">
+            <div class="option-icon">📦</div>
+            <div class="option-text">Otros</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Selección de Prioridad/Necesidad -->
+    <div class="select-modal" id="necessityModal">
+      <div class="select-modal-overlay"></div>
+      <div class="select-modal-content">
+        <div class="select-modal-header">
+          <h3>Nivel de necesidad</h3>
+          <button class="select-modal-close" onclick="closeSelectModal('necessityModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="select-modal-body">
+          <div class="select-modal-option" data-value="Muy Indispensable" onclick="handleModalOptionClick('necessityModal', 'necessity', 'Muy Indispensable')">
+            <div class="option-icon">⭐⭐⭐⭐⭐</div>
+            <div class="option-text">Muy Indispensable</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Muy Necesario" onclick="handleModalOptionClick('necessityModal', 'necessity', 'Muy Necesario')">
+            <div class="option-icon">⭐⭐⭐⭐</div>
+            <div class="option-text">Muy Necesario</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Necesario" onclick="handleModalOptionClick('necessityModal', 'necessity', 'Necesario')">
+            <div class="option-icon">⭐⭐⭐</div>
+            <div class="option-text">Necesario</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Poco Necesario" onclick="handleModalOptionClick('necessityModal', 'necessity', 'Poco Necesario')">
+            <div class="option-icon">⭐⭐</div>
+            <div class="option-text">Poco Necesario</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Nada Necesario" onclick="handleModalOptionClick('necessityModal', 'necessity', 'Nada Necesario')">
+            <div class="option-icon">⭐</div>
+            <div class="option-text">Nada Necesario</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Malgasto" onclick="handleModalOptionClick('necessityModal', 'necessity', 'Malgasto')">
+            <div class="option-icon">❌</div>
+            <div class="option-text">Malgasto/Arrepentimiento</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Selección/Adición de Usuario -->
+    <div class="select-modal" id="userModal">
+      <div class="select-modal-overlay"></div>
+      <div class="select-modal-content">
+        <div class="select-modal-header">
+          <h3>Selecciona usuario</h3>
+          <button class="select-modal-close" onclick="closeSelectModal('userModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="select-modal-body" id="userModalOptions">
+          <!-- Opciones base que se completan dinámicamente -->
+          <div class="select-modal-option" data-value="" onclick="handleModalOptionClick('userModal', 'user', '')">
+            <div class="option-icon">👤</div>
+            <div class="option-text">Sin usuario asignado</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Daniel" onclick="handleModalOptionClick('userModal', 'user', 'Daniel')">
+            <div class="option-icon">👨</div>
+            <div class="option-text">Daniel</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="select-modal-option" data-value="Givonik" onclick="handleModalOptionClick('userModal', 'user', 'Givonik')">
+            <div class="option-icon">👨‍💼</div>
+            <div class="option-text">Givonik</div>
+            <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+          <!-- Usuarios personalizados se agregarán dinámicamente aquí -->
+        </div>
+        <div class="select-modal-footer">
+          <button class="btn-add-user" onclick="handleModalOptionClick('userModal', 'user', '__add_new__')">
+            <i class="fas fa-user-plus"></i>
+            Añadir nuevo usuario
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Añadir Nuevo Usuario (Pequeño) -->
+    <div class="select-modal select-modal-small" id="addUserModal">
+      <div class="select-modal-overlay"></div>
+      <div class="select-modal-content">
+        <div class="select-modal-header">
+          <h3>Nuevo usuario</h3>
+          <button class="select-modal-close" onclick="closeSelectModal('addUserModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="select-modal-body">
+          <div class="form-group-modal">
+            <label for="newUserModalInput">Nombre del usuario</label>
+            <input
+              type="text"
+              id="newUserModalInput"
+              class="modal-input"
+              placeholder="Escribe el nombre"
+              maxlength="30"
+            />
+          </div>
+        </div>
+        <div class="select-modal-footer">
+          <button class="btn-modal-cancel" onclick="closeSelectModal('addUserModal')">
+            Cancelar
+          </button>
+          <button class="btn-modal-save" onclick="saveNewUserFromModal()">
+            <i class="fas fa-check"></i>
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
   </body>
 </html>
