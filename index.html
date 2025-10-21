@@ -125,6 +125,7 @@
     />
 
     <link rel="stylesheet" href="style.css?v=3.5" />
+    <link rel="stylesheet" href="landing-styles.css" />
     <link rel="stylesheet" href="user-system.css" />
     <link rel="stylesheet" href="store.css" />
     <link rel="stylesheet" href="config.css" />
@@ -1032,8 +1033,359 @@
 
     <!-- Main Content -->
     <main class="main-content">
+
+      <!-- ============================================ -->
+      <!-- LANDING PAGE                                -->
+      <!-- ============================================ -->
+      <section id="landing" class="section active landing-page">
+        <!-- Fondo animado con parallax -->
+        <div class="parallax-background">
+          <div class="parallax-blob blob-1"></div>
+          <div class="parallax-blob blob-2"></div>
+          <div class="parallax-blob blob-3"></div>
+        </div>
+
+        <!-- Hero Section -->
+        <div class="hero-section">
+          <div class="hero-container">
+            <div class="typing-text-wrapper">
+              <h1 class="hero-title">
+                <span class="typing-text" data-texts="Controla tus gastos|Alcanza tus metas|Ahorra inteligentemente"></span>
+                <span class="typing-cursor"></span>
+              </h1>
+            </div>
+
+            <p class="hero-subtitle">
+              Financia Suite es tu asistente financiero con <strong>IA que te aconseja 24/7</strong>,
+              ayudándote a <strong>controlar gastos</strong>, <strong>ahorrar más</strong>
+              y <strong>alcanzar tus metas</strong> sin complicaciones. 100% gratis.
+            </p>
+
+            <div class="hero-cta">
+              <button class="btn-ripple btn-cta-primary" onclick="openAuthModal('register')">
+                <i class="fas fa-rocket"></i>
+                Empieza Gratis Ahora
+              </button>
+              <button class="btn-ripple btn-cta-secondary" onclick="scrollToBenefits()">
+                <i class="fas fa-play-circle"></i>
+                Ver Cómo Funciona
+              </button>
+            </div>
+
+            <!-- Estadísticas con contadores animados -->
+            <div class="hero-stats">
+              <div class="stat-item fade-in-up" style="animation-delay: 0.1s">
+                <div class="stat-icon">👥</div>
+                <div class="animated-counter" data-value="5000" data-suffix="+">5000+</div>
+                <div class="stat-label">Usuarios Activos</div>
+                <div class="stat-context">Personas que ya mejoraron sus finanzas con nosotros</div>
+              </div>
+
+              <div class="stat-item fade-in-up" style="animation-delay: 0.2s">
+                <div class="stat-icon">💰</div>
+                <div class="animated-counter" data-value="85" data-suffix="%">85%</div>
+                <div class="stat-label">Ahorra Más</div>
+                <div class="stat-context">Promedio de ahorro mensual de nuestros usuarios</div>
+              </div>
+
+              <div class="stat-item fade-in-up" style="animation-delay: 0.3s">
+                <div class="stat-icon">⚡</div>
+                <div class="animated-counter" data-value="24" data-suffix="/7">24/7</div>
+                <div class="stat-label">IA Disponible</div>
+                <div class="stat-context">Tu asistente siempre listo para ayudarte</div>
+              </div>
+
+              <div class="stat-item fade-in-up" style="animation-delay: 0.4s">
+                <div class="stat-icon">🔒</div>
+                <div class="animated-counter" data-value="100" data-suffix="%">100%</div>
+                <div class="stat-label">Datos Seguros</div>
+                <div class="stat-context">Cifrado de extremo a extremo con Firebase</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benefits Section -->
+        <div class="benefits-section content-section" id="benefits">
+          <div class="section-header-center fade-in-up">
+            <h2>¿Por qué Financia Suite?</h2>
+            <p>Todo lo que necesitas para tomar control de tus finanzas en un solo lugar</p>
+          </div>
+
+          <div class="benefits-grid">
+            <div class="benefit-card hover-card fade-in-up" style="animation-delay: 0.1s">
+              <div class="benefit-icon card-icon">
+                <i class="fas fa-brain"></i>
+              </div>
+              <h3>IA Financiera Personal</h3>
+              <p>Fin, tu asistente con inteligencia artificial, analiza tus gastos y te da consejos personalizados para ahorrar más cada mes.</p>
+              <ul class="benefit-list">
+                <li><i class="fas fa-check"></i> Respuestas instantáneas 24/7</li>
+                <li><i class="fas fa-check"></i> Análisis inteligente de patrones</li>
+                <li><i class="fas fa-check"></i> Recomendaciones personalizadas</li>
+              </ul>
+            </div>
+
+            <div class="benefit-card hover-card fade-in-up" style="animation-delay: 0.2s">
+              <div class="benefit-icon card-icon">
+                <i class="fas fa-chart-pie"></i>
+              </div>
+              <h3>Control Visual de Gastos</h3>
+              <p>Ve exactamente en qué gastas tu dinero con gráficos claros y fáciles de entender. Sin complicaciones técnicas.</p>
+              <ul class="benefit-list">
+                <li><i class="fas fa-check"></i> Gráficos interactivos y claros</li>
+                <li><i class="fas fa-check"></i> Categorización automática</li>
+                <li><i class="fas fa-check"></i> Reportes mensuales detallados</li>
+              </ul>
+            </div>
+
+            <div class="benefit-card hover-card fade-in-up" style="animation-delay: 0.3s">
+              <div class="benefit-icon card-icon">
+                <i class="fas fa-bullseye"></i>
+              </div>
+              <h3>Metas que Motivan</h3>
+              <p>Define tus objetivos financieros y recibe notificaciones que te mantienen enfocado en alcanzarlos.</p>
+              <ul class="benefit-list">
+                <li><i class="fas fa-check"></i> Seguimiento visual del progreso</li>
+                <li><i class="fas fa-check"></i> Recordatorios inteligentes</li>
+                <li><i class="fas fa-check"></i> Celebra cada logro alcanzado</li>
+              </ul>
+            </div>
+
+            <div class="benefit-card hover-card fade-in-up" style="animation-delay: 0.4s">
+              <div class="benefit-icon card-icon">
+                <i class="fas fa-bell"></i>
+              </div>
+              <h3>Notificaciones Inteligentes</h3>
+              <p>Recibe alertas cuando gastes de más, estés cerca de tus metas o necesites registrar tus gastos del día.</p>
+              <ul class="benefit-list">
+                <li><i class="fas fa-check"></i> Alertas de presupuesto excedido</li>
+                <li><i class="fas fa-check"></i> Recordatorios de metas</li>
+                <li><i class="fas fa-check"></i> Resúmenes diarios automáticos</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonials Section -->
+        <div class="testimonials-section content-section">
+          <div class="section-header-center fade-in-up">
+            <h2>Lo que dicen nuestros usuarios</h2>
+            <p>Miles de personas ya están mejorando sus finanzas con Financia Suite</p>
+          </div>
+
+          <div class="testimonials-grid">
+            <div class="testimonial-card fade-in-up" style="animation-delay: 0.1s">
+              <div class="testimonial-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <p class="testimonial-text">
+                "Wn esta app me salvó la vida! Antes llegaba a fin de mes endeudado y no cachaba en qué se me iba la plata. Ahora veo todo clarito y pude juntar como 400 lucas para el regalo de mi polola. La recomiendo caleta 👌"
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">🙋‍♂️</div>
+                <div class="author-info">
+                  <strong>Cristian M.</strong>
+                  <span>Santiago, Chile</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="testimonial-card fade-in-up" style="animation-delay: 0.2s">
+              <div class="testimonial-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <p class="testimonial-text">
+                "Como contador, he probado varios softwares de control financiero para recomendar a mis clientes. Financia Suite destaca por su simplicidad y el asistente con IA. Una herramienta profesional accesible para todos."
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">👨‍💼</div>
+                <div class="author-info">
+                  <strong>Dr. Roberto Fuentes</strong>
+                  <span>Contador Auditor</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="testimonial-card fade-in-up" style="animation-delay: 0.3s">
+              <div class="testimonial-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <p class="testimonial-text">
+                "Yo no soy de tecnología pero mi hija me enseñó a usar esto y ahora registro todos mis gastos desde el celu. Me encanta que me avisa cuando gasto mucho. Ya ahorré para comprar el regalo de navidad de mis nietos 😊"
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">👵</div>
+                <div class="author-info">
+                  <strong>Carmen de González</strong>
+                  <span>Jubilada, 62 años</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="testimonial-card fade-in-up" style="animation-delay: 0.4s">
+              <div class="testimonial-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <p class="testimonial-text">
+                "Mi esposo y yo compartimos la cuenta y así vemos TODO lo que gastamos los dos. Antes peleábamos porque él decía que yo gastaba mucho, ahora vemos que gastamos parecido jaja. Nos ayudó a organizarnos juntos 💑"
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">👩</div>
+                <div class="author-info">
+                  <strong>Valentina R.</strong>
+                  <span>Maestra de Preescolar</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="testimonial-card fade-in-up" style="animation-delay: 0.5s">
+              <div class="testimonial-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <p class="testimonial-text">
+                "Como desarrollador de software, valoro la arquitectura limpia y el uso de Firebase. La integración con IA de Gemini es impresionante. Es un proyecto bien ejecutado técnicamente y muy útil."
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">👨‍💻</div>
+                <div class="author-info">
+                  <strong>Jorge Ramírez T.</strong>
+                  <span>Ingeniero de Software Sr.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="testimonial-card fade-in-up" style="animation-delay: 0.6s">
+              <div class="testimonial-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <p class="testimonial-text">
+                "Llevo meses buscando algo así de simple y gratis. Otras apps te cobran o tienen publicidad molesta. Acá todo funciona bien y el robot que responde preguntas es re piola. Ya mis amigas también la usan!"
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">👩‍🎓</div>
+                <div class="author-info">
+                  <strong>Sofía P.</strong>
+                  <span>Estudiante Universitaria</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section content-section">
+          <div class="section-header-center fade-in-up">
+            <h2>Preguntas Frecuentes</h2>
+            <p>Resolvemos tus dudas más comunes</p>
+          </div>
+
+          <div class="faq-container">
+            <div class="faq-item" onclick="toggleFAQ(this)">
+              <div class="faq-question">
+                <h3>¿Es realmente gratis? ¿No hay trampa?</h3>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Sí, Financia Suite es 100% gratuito. No hay costos ocultos, planes premium obligatorios ni publicidad molesta. Nuestro objetivo es ayudarte a mejorar tus finanzas, no lucrar con tus datos.</p>
+              </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+              <div class="faq-question">
+                <h3>¿Mis datos bancarios están seguros?</h3>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Absolutamente. Usamos Firebase de Google con cifrado de extremo a extremo. Tus datos se guardan de forma segura y privada. Nunca pedimos claves bancarias ni acceso a tus cuentas.</p>
+              </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+              <div class="faq-question">
+                <h3>¿Necesito ser experto en finanzas para usarla?</h3>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Para nada. Financia Suite está diseñado para ser simple e intuitivo. Si puedes usar WhatsApp, puedes usar nuestra app. Además, el asistente IA te guía en todo momento.</p>
+              </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+              <div class="faq-question">
+                <h3>¿Funciona en mi celular?</h3>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Sí, funciona perfecto en cualquier celular, tablet o computadora. Es una aplicación web responsive que se adapta a cualquier pantalla. Próximamente también será instalable como app nativa.</p>
+              </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+              <div class="faq-question">
+                <h3>¿Puedo compartir la cuenta con mi pareja o familia?</h3>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Sí, puedes crear cuentas compartidas para gestionar las finanzas en pareja o familia. Cada persona puede registrar sus gastos y todos ven el panorama completo.</p>
+              </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+              <div class="faq-question">
+                <h3>¿Qué hace diferente a Financia Suite de otras apps?</h3>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Tres cosas: 1) Asistente con IA que responde tus dudas 24/7, 2) Completamente gratis sin trucos, 3) Interfaz super simple que cualquiera puede usar. No necesitas ser experto financiero.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Final CTA Section -->
+        <div class="cta-final-section">
+          <div class="cta-final-container">
+            <h2>Comienza a Tomar Control de Tus Finanzas Hoy</h2>
+            <p>Únete a miles de usuarios que ya están ahorrando más y gastando mejor</p>
+            <button class="btn-ripple btn-cta-large" onclick="openAuthModal('register')">
+              <i class="fas fa-rocket"></i>
+              Crear Cuenta Gratis
+            </button>
+            <p class="cta-subtext">
+              <i class="fas fa-shield-alt"></i>
+              No se requiere tarjeta de crédito • Regístrate en 30 segundos
+            </p>
+          </div>
+        </div>
+      </section>
+
       <!-- Sección Inicio -->
-      <section id="dashboard" class="section active">
+      <section id="dashboard" class="section">
         <div class="section-header">
           <h2>¡Bienvenido a tu asistente financiero!</h2>
           <p>Gestiona tus finanzas de manera inteligente y alcanza tus metas</p>
@@ -5031,7 +5383,11 @@
 
     <!-- Main app -->
     <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="push-notifications.js"></script>
     <script type="module" src="app.js?v=4.2"></script>
+
+    <!-- Landing Page Animations -->
+    <script src="landing-animations.js"></script>
 
     <!-- Additional features -->
     <script type="module" src="avatar-sidebar.js"></script>
@@ -5100,6 +5456,13 @@
             <div class="option-text">Otros</div>
             <div class="option-check"><i class="fas fa-check"></i></div>
           </div>
+
+          <!-- Botón para agregar categoría personalizada -->
+          <div class="select-modal-option add-custom-option" onclick="handleModalOptionClick('categoryModal', 'category', '__add_custom__')">
+            <div class="option-icon">➕</div>
+            <div class="option-text">Agregar categoría personalizada</div>
+            <div class="option-check"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -5144,6 +5507,13 @@
             <div class="option-icon">❌</div>
             <div class="option-text">Malgasto/Arrepentimiento</div>
             <div class="option-check"><i class="fas fa-check"></i></div>
+          </div>
+
+          <!-- Botón para agregar necesidad personalizada -->
+          <div class="select-modal-option add-custom-option" onclick="handleModalOptionClick('necessityModal', 'necessity', '__add_custom__')">
+            <div class="option-icon">➕</div>
+            <div class="option-text">Agregar nivel personalizado</div>
+            <div class="option-check"></div>
           </div>
         </div>
       </div>
@@ -5216,6 +5586,171 @@
           <button class="btn-modal-save" onclick="saveNewUserFromModal()">
             <i class="fas fa-check"></i>
             Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Añadir Categoría Personalizada -->
+    <div class="select-modal select-modal-small" id="addCategoryModal">
+      <div class="select-modal-overlay"></div>
+      <div class="select-modal-content">
+        <div class="select-modal-header">
+          <h3>Nueva categoría</h3>
+          <button class="select-modal-close" onclick="closeSelectModal('addCategoryModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="select-modal-body">
+          <div class="form-group-modal">
+            <label for="newCategoryInput">Nombre de la categoría</label>
+            <input
+              type="text"
+              id="newCategoryInput"
+              class="modal-input"
+              placeholder="Ej: Mascotas, Educación, etc."
+              maxlength="30"
+              onkeypress="if(event.key === 'Enter') saveNewCategoryFromModal()"
+            />
+          </div>
+          <div class="form-group-modal">
+            <label for="newCategoryIcon">Icono (emoji)</label>
+            <input
+              type="text"
+              id="newCategoryIcon"
+              class="modal-input"
+              placeholder="🐕 🎓 💼 ..."
+              maxlength="2"
+              onkeypress="if(event.key === 'Enter') saveNewCategoryFromModal()"
+            />
+            <small style="color: #6b7280; font-size: 12px;">Opcional - Puedes usar un emoji</small>
+          </div>
+        </div>
+        <div class="select-modal-footer">
+          <button class="btn-modal-cancel" onclick="closeSelectModal('addCategoryModal')">
+            Cancelar
+          </button>
+          <button class="btn-modal-save" onclick="saveNewCategoryFromModal()">
+            <i class="fas fa-check"></i>
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Añadir Necesidad Personalizada -->
+    <div class="select-modal select-modal-small" id="addNecessityModal">
+      <div class="select-modal-overlay"></div>
+      <div class="select-modal-content">
+        <div class="select-modal-header">
+          <h3>Nuevo nivel de necesidad</h3>
+          <button class="select-modal-close" onclick="closeSelectModal('addNecessityModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="select-modal-body">
+          <div class="form-group-modal">
+            <label for="newNecessityInput">Nombre del nivel</label>
+            <input
+              type="text"
+              id="newNecessityInput"
+              class="modal-input"
+              placeholder="Ej: Urgente, Planificado, etc."
+              maxlength="30"
+              onkeypress="if(event.key === 'Enter') saveNewNecessityFromModal()"
+            />
+          </div>
+          <div class="form-group-modal">
+            <label for="newNecessityIcon">Icono (emoji o estrellas)</label>
+            <input
+              type="text"
+              id="newNecessityIcon"
+              class="modal-input"
+              placeholder="⭐⭐⭐ 🔥 ⚡ ..."
+              maxlength="10"
+              onkeypress="if(event.key === 'Enter') saveNewNecessityFromModal()"
+            />
+            <small style="color: #6b7280; font-size: 12px;">Opcional - Puedes usar emojis o estrellas</small>
+          </div>
+        </div>
+        <div class="select-modal-footer">
+          <button class="btn-modal-cancel" onclick="closeSelectModal('addNecessityModal')">
+            Cancelar
+          </button>
+          <button class="btn-modal-save" onclick="saveNewNecessityFromModal()">
+            <i class="fas fa-check"></i>
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MODAL DE PERMISO DE NOTIFICACIONES PUSH     -->
+    <!-- ============================================ -->
+    <div class="push-notification-modal" id="pushNotificationModal" style="display: none;">
+      <div class="push-modal-overlay"></div>
+      <div class="push-modal-content">
+        <button class="push-modal-close" onclick="closePushNotificationModal()">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <div class="push-modal-header">
+          <div class="push-icon-bell">
+            <i class="fas fa-bell"></i>
+          </div>
+          <h2>Activa las Notificaciones 🔔</h2>
+          <p class="push-subtitle">Recibe alertas importantes en tu móvil</p>
+        </div>
+
+        <div class="push-modal-body">
+          <div class="push-benefits-list">
+            <div class="push-benefit-item">
+              <div class="benefit-icon">🎯</div>
+              <div class="benefit-text">
+                <strong>Recordatorios de metas</strong>
+                <span>Te avisamos cuando estés cerca de alcanzar tus objetivos</span>
+              </div>
+            </div>
+
+            <div class="push-benefit-item">
+              <div class="benefit-icon">💰</div>
+              <div class="benefit-text">
+                <strong>Alertas de presupuesto</strong>
+                <span>Notificaciones si estás gastando más de lo planeado</span>
+              </div>
+            </div>
+
+            <div class="push-benefit-item">
+              <div class="benefit-icon">📊</div>
+              <div class="benefit-text">
+                <strong>Resúmenes diarios</strong>
+                <span>Recibe un resumen de tus finanzas cada día</span>
+              </div>
+            </div>
+
+            <div class="push-benefit-item">
+              <div class="benefit-icon">🎁</div>
+              <div class="benefit-text">
+                <strong>Ofertas especiales</strong>
+                <span>Sé el primero en conocer promociones y funciones nuevas</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="push-privacy-note">
+            <i class="fas fa-shield-alt"></i>
+            <span>Tus datos están seguros. Puedes desactivar las notificaciones en cualquier momento.</span>
+          </div>
+        </div>
+
+        <div class="push-modal-footer">
+          <button class="btn-push-allow" onclick="handleAllowNotifications()">
+            <i class="fas fa-bell"></i>
+            Activar Notificaciones
+          </button>
+          <button class="btn-push-later" onclick="closePushNotificationModal()">
+            Más tarde
           </button>
         </div>
       </div>

@@ -16748,14 +16748,26 @@ body:not([data-theme="dark"]) .ai-icon {
 
 /* Option icon */
 .option-icon {
-  font-size: 28px;
+  font-size: 20px;
   line-height: 1;
   flex-shrink: 0;
-  width: 40px;
+  min-width: 40px;
+  width: auto;
+  max-width: 120px;
   height: 40px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  overflow: visible;
+  white-space: nowrap;
+  margin-right: 8px;
+  padding: 0 4px;
+}
+
+/* Reducir tamaño de iconos con múltiples caracteres (estrellas) */
+#necessityModal .option-icon {
+  font-size: 16px;
+  letter-spacing: -1px;
 }
 
 /* Option text */
@@ -16764,6 +16776,8 @@ body:not([data-theme="dark"]) .ai-icon {
   font-size: 16px;
   color: var(--color-text, #1f2937);
   font-weight: 500;
+  margin-left: 0;
+  line-height: 1.4;
 }
 
 .select-modal-option.selected .option-text {
@@ -17727,5 +17741,310 @@ body.modal-open {
   .btn-conversion-primary {
     font-size: 16px;
     padding: 14px 20px;
+  }
+}
+
+/* ========================================
+   MODAL DE NOTIFICACIONES PUSH
+   ======================================== */
+
+.push-notification-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.push-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+.push-modal-content {
+  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 24px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUpBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes slideUpBounce {
+  0% {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.push-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.1);
+  color: #6b7280;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.push-modal-close:hover {
+  background: rgba(0, 0, 0, 0.15);
+  transform: rotate(90deg);
+}
+
+.push-modal-header {
+  text-align: center;
+  padding: 40px 32px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.push-icon-bell {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: white;
+  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3);
+  animation: bellRing 1s ease infinite;
+}
+
+@keyframes bellRing {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  10%, 30% {
+    transform: rotate(-10deg);
+  }
+  20%, 40% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+}
+
+.push-modal-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px;
+}
+
+.push-subtitle {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.push-modal-body {
+  padding: 32px;
+}
+
+.push-benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.push-benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.push-benefit-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.benefit-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0fdf4;
+  border-radius: 12px;
+}
+
+.benefit-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.benefit-text strong {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.benefit-text span {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.push-privacy-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #fef3c7;
+  border-radius: 12px;
+  border-left: 4px solid #f59e0b;
+}
+
+.push-privacy-note i {
+  font-size: 20px;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.push-privacy-note span {
+  font-size: 13px;
+  color: #92400e;
+  line-height: 1.6;
+}
+
+.push-modal-footer {
+  padding: 24px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-push-allow {
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-push-allow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(20, 184, 166, 0.4);
+}
+
+.btn-push-allow:active {
+  transform: translateY(0);
+}
+
+.btn-push-later {
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #6b7280;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-push-later:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .push-modal-content {
+    width: 95%;
+    border-radius: 20px;
+  }
+
+  .push-modal-header {
+    padding: 32px 24px 20px;
+  }
+
+  .push-icon-bell {
+    width: 70px;
+    height: 70px;
+    font-size: 35px;
+  }
+
+  .push-modal-header h2 {
+    font-size: 24px;
+  }
+
+  .push-modal-body {
+    padding: 24px 20px;
+  }
+
+  .push-benefit-item {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .benefit-icon {
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .benefit-text strong {
+    font-size: 15px;
+  }
+
+  .benefit-text span {
+    font-size: 13px;
+  }
+
+  .push-modal-footer {
+    padding: 20px 20px 24px;
+  }
+
+  .btn-push-allow {
+    padding: 14px 20px;
+    font-size: 15px;
   }
 }

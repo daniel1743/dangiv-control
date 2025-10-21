@@ -47,6 +47,12 @@ import {
   getDownloadURL,
 } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js';
 
+import {
+  getMessaging,
+  getToken,
+  onMessage,
+} from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js';
+
 // Importar configuración
 import { firebaseConfig, apiKeys, config } from './config.js';
 
@@ -85,6 +91,15 @@ try {
 
 const storage = getStorage(app);
 
+// Inicializar Firebase Cloud Messaging
+let messaging = null;
+try {
+  messaging = getMessaging(app);
+  console.log('✅ Firebase Messaging inicializado');
+} catch (error) {
+  console.warn('⚠️ Firebase Messaging no disponible:', error.message);
+}
+
 // ========================================
 // EXPONER GLOBALMENTE
 // ========================================
@@ -93,6 +108,7 @@ window.FB = {
   auth,
   db,
   storage,
+  messaging,
   // Auth methods
   onAuthStateChanged,
   signInAnonymously,
@@ -127,6 +143,9 @@ window.FB = {
   ref,
   uploadString,
   getDownloadURL,
+  // Messaging methods
+  getToken,
+  onMessage,
 
   // ⚠️ API Keys (TEMPORAL - Migrar a backend)
   geminiApiKey: apiKeys.gemini,

@@ -85,6 +85,10 @@ class FinanceApp {
     // Default User Configuration
     this.defaultUser = savedData.defaultUser || '';
 
+    // Custom Categories and Necessities (User-defined)
+    this.customCategories = savedData.customCategories || [];
+    this.customNecessities = savedData.customNecessities || [];
+
     // Motivational Messages System (Gemini API)
     this.motivationalMessages = savedData.motivationalMessages || [];
     this.lastMessageUpdate = savedData.lastMessageUpdate || null;
@@ -699,6 +703,8 @@ class FinanceApp {
       expenseTemplates: this.expenseTemplates,
       expensePatterns: this.expensePatterns,
       defaultUser: this.defaultUser,
+      customCategories: this.customCategories || [],
+      customNecessities: this.customNecessities || [],
       motivationalMessages: this.motivationalMessages,
       lastMessageUpdate: this.lastMessageUpdate,
       messageHistory: this.messageHistory,
@@ -2880,10 +2886,16 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
 
   /**
    * Muestra el modal de bienvenida de Fin
-   * Permite a usuarios anónimos ver el modal pero con mensaje de "modo demo"
+   * SOLO para usuarios REGISTRADOS (NO anónimos)
    * Con actitud tímida/cautelosa para usuarios nuevos
    */
   showFinWelcomeModal() {
+    // VALIDACIÓN ESTRICTA: Solo usuarios registrados
+    if (this.currentUser === 'anonymous' || !this.currentUser || this.currentUser === null) {
+      console.log('❌ Modal Fin bloqueado - Usuario no autenticado:', this.currentUser);
+      return;
+    }
+
     const modal = document.getElementById('finWelcomeModal');
     if (!modal) {
       console.error('❌ Modal de bienvenida de Fin no encontrado en el HTML');
@@ -2892,7 +2904,7 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
 
     const modalTitle = modal.querySelector('h2');
     const modalSubtitle = modal.querySelector('.fin-subtitle');
-    const isAnonymous = this.currentUser === 'anonymous' || !this.currentUser;
+    const isAnonymous = false; // Ya validamos arriba que NO es anónimo
 
     if (isAnonymous) {
       // Usuario ANÓNIMO: Mostrar que puede probar 3 preguntas gratis
@@ -9720,6 +9732,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Iniciar sistema de mensajes programados
       window.app.startMessageScheduler();
     });
+
+    // === INICIALIZAR SISTEMA DE NOTIFICACIONES PUSH ===
+    if (window.initPushNotifications) {
+      window.initPushNotifications();
+    }
 
     // === EXPONER FUNCIONES DE FIN GLOBALMENTE PARA HTML ===
     window.closeFinWelcomeModal = (markAsSeen) => window.app.closeFinWelcomeModal(markAsSeen);
@@ -18117,6 +18134,24 @@ window.handleModalOptionClick = function(modalId, selectId, value) {
     return;
   }
 
+  // Caso especial: añadir categoría personalizada
+  if (value === '__add_custom__' && selectId === 'category') {
+    closeSelectModal(modalId);
+    setTimeout(() => {
+      openSelectModal('addCategoryModal');
+    }, 200);
+    return;
+  }
+
+  // Caso especial: añadir necesidad personalizada
+  if (value === '__add_custom__' && selectId === 'necessity') {
+    closeSelectModal(modalId);
+    setTimeout(() => {
+      openSelectModal('addNecessityModal');
+    }, 200);
+    return;
+  }
+
   // Actualizar el select oculto
   const select = document.getElementById(selectId);
   if (select) {
@@ -18233,6 +18268,125 @@ window.populateUserModal = function() {
 };
 
 /**
+ * Pobla el modal de categorías con opciones predeterminadas y personalizadas
+ */
+FinanceApp.prototype.populateCategoryModal = function() {
+  const modal = document.getElementById('categoryModal');
+  if (!modal) return;
+
+  const modalBody = modal.querySelector('.select-modal-body');
+  if (!modalBody) return;
+
+  // Encontrar el botón de agregar categoría personalizada
+  const addCustomButton = modalBody.querySelector('.add-custom-option');
+  if (!addCustomButton) {
+    console.error('❌ No se encontró el botón de agregar categoría');
+    return;
+  }
+
+  // Eliminar categorías personalizadas anteriores (para evitar duplicados)
+  const existingCustomCategories = modalBody.querySelectorAll('.custom-category-option');
+  existingCustomCategories.forEach(el => el.remove());
+
+  // Agregar categorías personalizadas ANTES del botón de agregar
+  this.customCategories.forEach(category => {
+    const categoryOption = document.createElement('div');
+    categoryOption.className = 'select-modal-option custom-category-option';
+    categoryOption.setAttribute('data-value', category.name);
+    categoryOption.onclick = () => handleModalOptionClick('categoryModal', 'category', category.name);
+
+    categoryOption.innerHTML = `
+      <div class="option-icon">${category.icon}</div>
+      <div class="option-text">${category.name}</div>
+      <div class="option-check"><i class="fas fa-check"></i></div>
+    `;
+
+    // Insertar antes del botón de agregar
+    addCustomButton.insertAdjacentElement('beforebegin', categoryOption);
+  });
+
+  console.log('✅ Modal de categorías actualizado - Personalizadas:', this.customCategories.length);
+};
+
+/**
+ * Pobla el modal de necesidades con opciones predeterminadas y personalizadas
+ */
+FinanceApp.prototype.populateNecessityModal = function() {
+  const modal = document.getElementById('necessityModal');
+  if (!modal) return;
+
+  const modalBody = modal.querySelector('.select-modal-body');
+  if (!modalBody) return;
+
+  // Encontrar el botón de agregar necesidad personalizada
+  const addCustomButton = modalBody.querySelector('.add-custom-option');
+  if (!addCustomButton) {
+    console.error('❌ No se encontró el botón de agregar necesidad');
+    return;
+  }
+
+  // Eliminar necesidades personalizadas anteriores (para evitar duplicados)
+  const existingCustomNecessities = modalBody.querySelectorAll('.custom-necessity-option');
+  existingCustomNecessities.forEach(el => el.remove());
+
+  // Agregar necesidades personalizadas ANTES del botón de agregar
+  this.customNecessities.forEach(necessity => {
+    const necessityOption = document.createElement('div');
+    necessityOption.className = 'select-modal-option custom-necessity-option';
+    necessityOption.setAttribute('data-value', necessity.name);
+    necessityOption.onclick = () => handleModalOptionClick('necessityModal', 'necessity', necessity.name);
+
+    necessityOption.innerHTML = `
+      <div class="option-icon">${necessity.icon}</div>
+      <div class="option-text">${necessity.name}</div>
+      <div class="option-check"><i class="fas fa-check"></i></div>
+    `;
+
+    // Insertar antes del botón de agregar
+    addCustomButton.insertAdjacentElement('beforebegin', necessityOption);
+  });
+
+  console.log('✅ Modal de necesidades actualizado - Personalizadas:', this.customNecessities.length);
+};
+
+/**
+ * Restaura las opciones personalizadas en los selects ocultos
+ */
+FinanceApp.prototype.restoreCustomSelectOptions = function() {
+  // Restaurar categorías personalizadas en el select
+  const categorySelect = document.getElementById('category');
+  if (categorySelect && this.customCategories.length > 0) {
+    this.customCategories.forEach(category => {
+      // Verificar que no exista ya
+      const existingOption = categorySelect.querySelector(`option[value="${category.name}"]`);
+      if (!existingOption) {
+        const option = document.createElement('option');
+        option.value = category.name;
+        option.textContent = `${category.icon} ${category.name}`;
+        categorySelect.appendChild(option);
+      }
+    });
+    console.log(`✅ ${this.customCategories.length} categorías personalizadas restauradas`);
+  }
+
+  // Restaurar necesidades personalizadas en el select
+  const necessitySelect = document.getElementById('necessity');
+  if (necessitySelect && this.customNecessities.length > 0) {
+    this.customNecessities.forEach(necessity => {
+      // Verificar que no exista ya
+      const existingOption = necessitySelect.querySelector(`option[value="${necessity.name}"]`);
+      if (!existingOption) {
+        const option = document.createElement('option');
+        option.value = necessity.name;
+        option.textContent = `${necessity.icon} ${necessity.name}`;
+        necessitySelect.appendChild(option);
+      }
+    });
+    console.log(`✅ ${this.customNecessities.length} necesidades personalizadas restauradas`);
+  }
+};
+
+/**
  * Inicializa el sistema de modales de selección
  */
 FinanceApp.prototype.initSelectModals = function() {
@@ -18240,6 +18394,13 @@ FinanceApp.prototype.initSelectModals = function() {
 
   // Poblar modal de usuarios
   populateUserModal();
+
+  // Restaurar opciones personalizadas en los selects ocultos
+  this.restoreCustomSelectOptions();
+
+  // Poblar modales de categorías y necesidades con opciones personalizadas
+  this.populateCategoryModal();
+  this.populateNecessityModal();
 
   // Cerrar modales al hacer click en el overlay
   document.querySelectorAll('.select-modal-overlay').forEach(overlay => {
@@ -18394,6 +18555,304 @@ FinanceApp.prototype.createModalTrigger = function(select, modalId, placeholder)
   select.addEventListener('change', updateTriggerText);
 
   return trigger;
+};
+
+// ========================================
+// FUNCIONES GLOBALES PARA CATEGORÍAS Y NECESIDADES PERSONALIZADAS
+// ========================================
+
+/**
+ * Guardar nueva categoría personalizada desde el modal
+ */
+window.saveNewCategoryFromModal = function() {
+  const input = document.getElementById('newCategoryInput');
+  const iconInput = document.getElementById('newCategoryIcon');
+
+  if (!input || !iconInput) {
+    console.error('❌ Inputs de categoría no encontrados');
+    return;
+  }
+
+  const name = input.value.trim();
+  const icon = iconInput.value.trim() || '📦';
+
+  if (!name) {
+    window.app.showToast('Ingresa un nombre para la categoría', 'error');
+    return;
+  }
+
+  // Validar que no exista ya
+  const existingCategory = window.app.customCategories.find(
+    cat => cat.name.toLowerCase() === name.toLowerCase()
+  );
+
+  if (existingCategory) {
+    window.app.showToast('Ya existe una categoría con ese nombre', 'error');
+    return;
+  }
+
+  // Agregar a la lista de categorías personalizadas
+  const newCategory = {
+    id: `custom_${Date.now()}`,
+    name: name,
+    icon: icon,
+    createdAt: Date.now()
+  };
+
+  window.app.customCategories.push(newCategory);
+
+  // Agregar la categoría al select oculto para que esté disponible en el formulario
+  const categorySelect = document.getElementById('category');
+  if (categorySelect) {
+    const option = document.createElement('option');
+    option.value = name;
+    option.textContent = `${icon} ${name}`;
+    categorySelect.appendChild(option);
+  }
+
+  // Guardar en localStorage/Firebase
+  window.app.saveData();
+
+  // Actualizar el modal de categorías
+  window.app.populateCategoryModal();
+
+  // Cerrar el modal de agregar categoría
+  closeSelectModal('addCategoryModal');
+
+  // Limpiar inputs
+  input.value = '';
+  iconInput.value = '';
+
+  // Mostrar toast de éxito
+  window.app.showToast(`Categoría "${name}" agregada exitosamente`, 'success');
+
+  console.log('✅ Categoría personalizada agregada:', newCategory);
+};
+
+/**
+ * Guardar nueva necesidad personalizada desde el modal
+ */
+window.saveNewNecessityFromModal = function() {
+  const input = document.getElementById('newNecessityInput');
+  const iconInput = document.getElementById('newNecessityIcon');
+
+  if (!input || !iconInput) {
+    console.error('❌ Inputs de necesidad no encontrados');
+    return;
+  }
+
+  const name = input.value.trim();
+  const icon = iconInput.value.trim() || '⭐';
+
+  if (!name) {
+    window.app.showToast('Ingresa un nombre para el nivel de necesidad', 'error');
+    return;
+  }
+
+  // Validar que no exista ya
+  const existingNecessity = window.app.customNecessities.find(
+    nec => nec.name.toLowerCase() === name.toLowerCase()
+  );
+
+  if (existingNecessity) {
+    window.app.showToast('Ya existe un nivel con ese nombre', 'error');
+    return;
+  }
+
+  // Agregar a la lista de necesidades personalizadas
+  const newNecessity = {
+    id: `custom_${Date.now()}`,
+    name: name,
+    icon: icon,
+    createdAt: Date.now()
+  };
+
+  window.app.customNecessities.push(newNecessity);
+
+  // Agregar la necesidad al select oculto para que esté disponible en el formulario
+  const necessitySelect = document.getElementById('necessity');
+  if (necessitySelect) {
+    const option = document.createElement('option');
+    option.value = name;
+    option.textContent = `${icon} ${name}`;
+    necessitySelect.appendChild(option);
+  }
+
+  // Guardar en localStorage/Firebase
+  window.app.saveData();
+
+  // Actualizar el modal de necesidades
+  window.app.populateNecessityModal();
+
+  // Cerrar el modal de agregar necesidad
+  closeSelectModal('addNecessityModal');
+
+  // Limpiar inputs
+  input.value = '';
+  iconInput.value = '';
+
+  // Mostrar toast de éxito
+  window.app.showToast(`Nivel "${name}" agregado exitosamente`, 'success');
+
+  console.log('✅ Necesidad personalizada agregada:', newNecessity);
+};
+
+// ========================================
+// FUNCIONES GLOBALES PARA NOTIFICACIONES PUSH
+// ========================================
+
+/**
+ * Muestra el modal de solicitud de permisos de notificación
+ */
+window.showPushNotificationModal = function() {
+  const modal = document.getElementById('pushNotificationModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    console.log('🔔 Modal de notificaciones push mostrado');
+  }
+};
+
+/**
+ * Cierra el modal de notificaciones push
+ */
+window.closePushNotificationModal = function() {
+  const modal = document.getElementById('pushNotificationModal');
+  if (modal) {
+    modal.style.display = 'none';
+
+    // Marcar que el usuario ya vio el modal (no volver a mostrar)
+    localStorage.setItem('pushNotificationPromptShown', 'true');
+
+    console.log('🔔 Modal de notificaciones push cerrado');
+  }
+};
+
+/**
+ * Maneja el click en "Activar Notificaciones"
+ */
+window.handleAllowNotifications = async function() {
+  console.log('🔔 Usuario aceptó activar notificaciones');
+
+  // Cerrar el modal
+  closePushNotificationModal();
+
+  // Verificar que el manager esté disponible
+  if (!window.pushNotificationManager) {
+    console.error('❌ PushNotificationManager no disponible');
+    if (window.app) {
+      window.app.showToast('Error al activar notificaciones', 'error');
+    }
+    return;
+  }
+
+  // Solicitar permisos
+  const granted = await window.pushNotificationManager.requestPermission();
+
+  if (granted) {
+    // Mostrar mensaje de éxito
+    if (window.app) {
+      window.app.showToast('¡Notificaciones activadas correctamente! 🔔', 'success');
+    }
+
+    // Enviar notificación de prueba después de 2 segundos
+    setTimeout(() => {
+      window.pushNotificationManager.sendTestNotification();
+    }, 2000);
+
+    // Marcar en localStorage que las notificaciones están activadas
+    localStorage.setItem('pushNotificationsEnabled', 'true');
+  } else {
+    // Mostrar mensaje de error
+    if (window.app) {
+      window.app.showToast('No se pudieron activar las notificaciones. Verifica los permisos del navegador.', 'error');
+    }
+  }
+};
+
+/**
+ * Inicializa el sistema de notificaciones push al cargar la app
+ */
+window.initPushNotifications = async function() {
+  console.log('🔔 Inicializando sistema de notificaciones push...');
+
+  // Verificar que el manager esté disponible
+  if (!window.pushNotificationManager) {
+    console.warn('⚠️ PushNotificationManager no disponible');
+    return;
+  }
+
+  // Inicializar el manager
+  const supported = await window.pushNotificationManager.init();
+
+  if (!supported) {
+    console.log('⚠️ Notificaciones push no soportadas en este navegador');
+    return;
+  }
+
+  // Verificar si ya se solicitaron permisos
+  const permissionStatus = await window.pushNotificationManager.checkPermissionStatus();
+
+  if (permissionStatus === 'granted') {
+    console.log('✅ Notificaciones ya activadas');
+    localStorage.setItem('pushNotificationsEnabled', 'true');
+    return;
+  }
+
+  if (permissionStatus === 'denied') {
+    console.log('❌ Usuario denegó permisos de notificación previamente');
+    return;
+  }
+
+  // Si es "default" (no se ha preguntado), verificar si ya mostramos el modal
+  const promptShown = localStorage.getItem('pushNotificationPromptShown');
+
+  if (!promptShown) {
+    // Esperar 10 segundos después de cargar la app antes de mostrar el modal
+    setTimeout(() => {
+      // Solo mostrar si el usuario está autenticado (no anónimo)
+      if (window.app && window.app.currentUser && window.app.currentUser !== 'anonymous') {
+        showPushNotificationModal();
+      }
+    }, 10000); // 10 segundos
+  }
+};
+
+// ========================================
+// FUNCIONES GLOBALES PARA LANDING PAGE
+// ========================================
+
+/**
+ * Scroll suave a la sección de beneficios
+ */
+window.scrollToBenefits = function() {
+  const benefitsSection = document.getElementById('benefits');
+  if (benefitsSection) {
+    benefitsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+};
+
+/**
+ * Toggle FAQ item (abrir/cerrar)
+ */
+window.toggleFAQ = function(faqItem) {
+  faqItem.classList.toggle('active');
+};
+
+/**
+ * Navegar al dashboard después de login
+ */
+window.goToDashboard = function() {
+  // Ocultar landing
+  const landingSection = document.getElementById('landing');
+  if (landingSection) {
+    landingSection.classList.remove('active');
+  }
+
+  // Mostrar dashboard
+  const dashboardSection = document.getElementById('dashboard');
+  if (dashboardSection) {
+    dashboardSection.classList.add('active');
+  }
 };
 
 if (typeof window !== 'undefined') {
