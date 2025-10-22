@@ -3,7 +3,8 @@
    ======================================== */
 
 :root {
-  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Paleta de colores del navbar (teal/cyan) */
+  --primary-gradient: linear-gradient(135deg, #3da1ac 0%, #2b7980 100%);
   --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
   --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   --bg-primary: #ffffff;

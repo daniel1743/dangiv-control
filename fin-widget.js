@@ -181,15 +181,24 @@ class FinWidget {
   // VERIFICAR PRIMERA VISITA
   // ========================================
   async checkFirstVisit() {
+    // IMPORTANTE: NO mostrar modal automáticamente para usuarios anónimos
+    // El landing page debe mostrarse sin interferencias
+    const isAnonymous = !window.app || window.app.currentUser === 'anonymous';
+
+    if (isAnonymous) {
+      console.log('⏭️ Usuario anónimo - No se muestra modal de onboarding automáticamente');
+      return; // Salir sin mostrar nada
+    }
+
     // No mostrar si ya vio la bienvenida
     if (this.hasSeenWelcome) {
       return;
     }
 
-    // Verificar si el usuario est� autenticado y tiene datos
+    // Verificar si el usuario está autenticado y tiene datos
     const hasUserData = await this.checkUserData();
 
-    // DECISI�N: Si es usuario completamente nuevo, mostrar onboarding completo
+    // DECISIÓN: Si es usuario completamente nuevo, mostrar onboarding completo
     // Si tiene algunos datos, mostrar welcome modal simple
     const onboardingCompleted = localStorage.getItem('onboardingCompleted') === 'true';
 
@@ -197,7 +206,7 @@ class FinWidget {
       // Usuario NUEVO sin onboarding → Mostrar onboarding completo
       this.showOnboarding();
     } else {
-      // Usuario con datos o que ya complet� onboarding → Welcome modal simple
+      // Usuario con datos o que ya completó onboarding → Welcome modal simple
       const message = this.generateWelcomeMessage(hasUserData);
       this.showWelcome(message, hasUserData);
     }
@@ -521,6 +530,21 @@ class FinWidget {
     this.hasSeenWelcome = false;
     this.checkFirstVisit();
   }
+
+  // ========================================
+  // MOSTRAR ONBOARDING DESPUÉS DEL REGISTRO
+  // Método público para llamar después de que un usuario se registre
+  // ========================================
+  showOnboardingAfterRegistration() {
+    console.log('🎉 Nuevo usuario registrado - Mostrando onboarding');
+
+    // Resetear la bandera para asegurarnos de que se muestre
+    this.hasSeenWelcome = false;
+    localStorage.removeItem('finWelcomeSeen');
+
+    // Mostrar el onboarding completo
+    this.showOnboarding();
+  }
 }
 
 // ========================================
@@ -547,3 +571,5 @@ window.openFinChat = () => finWidget?.openChat();
 window.closeFinChat = () => finWidget?.closeChat();
 window.toggleFinWidget = () => finWidget?.toggle();
 window.resetFinWelcome = () => finWidget?.resetWelcome();
+
+window.showOnboardingAfterRegistration = () => finWidget?.showOnboardingAfterRegistration();

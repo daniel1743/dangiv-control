@@ -315,7 +315,8 @@ function declineTerms() {
 // ========================================
 window.termsManager = new TermsAcceptanceManager();
 
-// Auto-verificar al cargar
-window.termsManager.checkAndShow();
+// NO auto-mostrar para usuarios anónimos en landing page
+// El modal se mostrará solo cuando se intente registrar/login
+// window.termsManager.checkAndShow(); // COMENTADO: Ya no auto-show
 
 console.log('✅ Terms Acceptance Manager loaded');

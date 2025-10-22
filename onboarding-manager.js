@@ -62,6 +62,26 @@ class OnboardingManager {
   // INICIO DEL ONBOARDING
   // ========================================
   start() {
+    // NUEVO: NO iniciar onboarding para usuarios anónimos
+    // Verificar múltiples condiciones para asegurar que el usuario está autenticado
+    const isAnonymous = window.app && (window.app.currentUser === 'anonymous' || !window.app.currentUser);
+    const noFirebaseUser = !window.FB || !window.FB.auth || !window.FB.auth.currentUser;
+    const noLocalStorage = !localStorage.getItem('authToken') && !localStorage.getItem('currentUser');
+
+    if (isAnonymous || noFirebaseUser || noLocalStorage) {
+      console.log('⏭️ Onboarding bloqueado - Usuario no autenticado');
+
+      // Solo redirigir si estamos en onboarding.html
+      // Si ya estamos en index.html, simplemente no hacer nada
+      if (window.location.pathname.includes('onboarding.html')) {
+        console.log('📍 Redirigiendo a landing page...');
+        window.location.replace('index.html');
+      } else {
+        console.log('📍 Ya estamos en index.html - no se requiere redirección');
+      }
+      return;
+    }
+
     console.log('🚀 Iniciando onboarding...');
     this.showStep('welcome');
   }
@@ -109,6 +129,17 @@ class OnboardingManager {
   }
 
   // ========================================
+  // SALTAR ONBOARDING
+  // ========================================
+  skipOnboarding() {
+    console.log('⏭️ Usuario saltó el onboarding');
+
+    // Redirigir directamente a index.html
+    // Usar replace para que no se pueda volver atrás con el botón del navegador
+    window.location.replace('index.html');
+  }
+
+  // ========================================
   // LÓGICA DE CADA PASO
   // ========================================
   executeStepLogic(stepName) {
@@ -147,6 +178,19 @@ class OnboardingManager {
         continueBtn.addEventListener('click', () => {
           this.showStep('mode-selection');
         });
+        console.log('✅ Botón "Continuar" configurado');
+      }
+
+      // NUEVO: Botón para saltar onboarding
+      const skipBtn = document.getElementById('skipOnboardingBtn');
+      if (skipBtn) {
+        skipBtn.addEventListener('click', () => {
+          console.log('🔘 Click en botón Saltar detectado');
+          this.skipOnboarding();
+        });
+        console.log('✅ Botón "Saltar" configurado');
+      } else {
+        console.error('❌ Botón "Saltar" no encontrado en el DOM');
       }
     }, 100);
   }
@@ -765,12 +809,21 @@ Responde SOLO con este JSON (sin markdown, sin \`\`\`json, solo el objeto):
 // ========================================
 let onboardingManager;
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
+// Solo inicializar si estamos en la página de onboarding
+// Evita bucles infinitos cuando se incluye en index.html
+const isOnboardingPage = window.location.pathname.includes('onboarding.html') ||
+                         document.querySelector('#step-welcome') !== null;
+
+if (isOnboardingPage) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      onboardingManager = new OnboardingManager();
+      window.onboardingManager = onboardingManager;
+    });
+  } else {
     onboardingManager = new OnboardingManager();
     window.onboardingManager = onboardingManager;
-  });
+  }
 } else {
-  onboardingManager = new OnboardingManager();
-  window.onboardingManager = onboardingManager;
+  console.log('⏭️ OnboardingManager no se inicializa (no estamos en página de onboarding)');
 }
