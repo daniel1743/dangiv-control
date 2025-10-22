@@ -2874,7 +2874,10 @@ Escribe tu ingreso mensual aproximado (puedes redondearlo):`,
    */
   startReturningUserConversation(userName) {
     // Analizar datos del usuario para generar insights
-    const totalExpenses = this.expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+    const totalExpenses = this.expenses.reduce((sum, exp) => {
+      const amt = typeof exp.amount === 'number' ? exp.amount : parseFloat(exp.amount) || 0;
+      return sum + amt;
+    }, 0);
     const expenseCount = this.expenses.length;
     const goalCount = this.goals.length;
     const currentMonth = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
@@ -2885,7 +2888,10 @@ Escribe tu ingreso mensual aproximado (puedes redondearlo):`,
       const now = new Date();
       return expDate.getMonth() === now.getMonth() && expDate.getFullYear() === now.getFullYear();
     });
-    const monthlySpending = currentMonthExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+    const monthlySpending = currentMonthExpenses.reduce((sum, exp) => {
+      const amt = typeof exp.amount === 'number' ? exp.amount : parseFloat(exp.amount) || 0;
+      return sum + amt;
+    }, 0);
 
     // Categoría con más gastos
     const categoryTotals = {};
@@ -4689,10 +4695,10 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     let recommendations = [];
 
     if (this.expenses.length > 0) {
-      const totalExpenses = this.expenses.reduce(
-        (sum, exp) => sum + exp.amount,
-        0
-      );
+      const totalExpenses = this.expenses.reduce((sum, exp) => {
+        const amt = typeof exp.amount === 'number' ? exp.amount : parseFloat(exp.amount) || 0;
+        return sum + amt;
+      }, 0);
       const avgDailySpend = totalExpenses / Math.max(1, this.expenses.length);
 
       recommendations = [
@@ -5362,10 +5368,10 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
         transactionCount: demoStats.transactions,
       };
     } else {
-      const totalExpenses = this.expenses.reduce(
-        (sum, exp) => sum + exp.amount,
-        0
-      );
+      const totalExpenses = this.expenses.reduce((sum, exp) => {
+        const amt = typeof exp.amount === 'number' ? exp.amount : parseFloat(exp.amount) || 0;
+        return sum + amt;
+      }, 0);
       const totalSavings = this.goals.reduce(
         (sum, goal) => sum + goal.current,
         0
@@ -14913,8 +14919,11 @@ FinanceApp.prototype.showExpensesDetailModal = function () {
 
   console.log('Monthly expenses:', monthlyExpenses.length);
 
-  // Calcular total de gastos
-  const totalAmount = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+  // Calcular total de gastos - CONVERTIR A NÚMERO para evitar concatenación
+  const totalAmount = monthlyExpenses.reduce((sum, exp) => {
+    const amount = typeof exp.amount === 'number' ? exp.amount : parseFloat(exp.amount) || 0;
+    return sum + amount;
+  }, 0);
 
   // Actualizar período
   const monthNames = [
@@ -15052,14 +15061,14 @@ FinanceApp.prototype.analyzeNecessity = function (expenses, total) {
     unnecessary.includes(e.necessity)
   );
 
-  const necessaryAmount = necessaryExpenses.reduce(
-    (sum, e) => sum + e.amount,
-    0
-  );
-  const unnecessaryAmount = unnecessaryExpenses.reduce(
-    (sum, e) => sum + e.amount,
-    0
-  );
+  const necessaryAmount = necessaryExpenses.reduce((sum, e) => {
+    const amount = typeof e.amount === 'number' ? e.amount : parseFloat(e.amount) || 0;
+    return sum + amount;
+  }, 0);
+  const unnecessaryAmount = unnecessaryExpenses.reduce((sum, e) => {
+    const amount = typeof e.amount === 'number' ? e.amount : parseFloat(e.amount) || 0;
+    return sum + amount;
+  }, 0);
 
   return {
     necessaryAmount,
@@ -15076,7 +15085,10 @@ FinanceApp.prototype.getServicesPaid = function (expenses) {
   const services = expenses.filter((e) =>
     serviceCategories.includes(e.category)
   );
-  const amount = services.reduce((sum, e) => sum + e.amount, 0);
+  const amount = services.reduce((sum, e) => {
+    const amt = typeof e.amount === 'number' ? e.amount : parseFloat(e.amount) || 0;
+    return sum + amt;
+  }, 0);
 
   return {
     count: services.length,
@@ -15101,7 +15113,10 @@ FinanceApp.prototype.renderNecessityBars = function (expenses, total) {
   container.innerHTML = necessityLevels
     .map((level) => {
       const levelExpenses = expenses.filter((e) => e.necessity === level.name);
-      const levelAmount = levelExpenses.reduce((sum, e) => sum + e.amount, 0);
+      const levelAmount = levelExpenses.reduce((sum, e) => {
+        const amt = typeof e.amount === 'number' ? e.amount : parseFloat(e.amount) || 0;
+        return sum + amt;
+      }, 0);
       const percentage =
         total > 0 ? Math.round((levelAmount / total) * 100) : 0;
 
@@ -15167,7 +15182,8 @@ FinanceApp.prototype.renderCategoriesBreakdown = function (expenses) {
     if (!categoryTotals[expense.category]) {
       categoryTotals[expense.category] = { amount: 0, count: 0 };
     }
-    categoryTotals[expense.category].amount += expense.amount;
+    const amt = typeof expense.amount === 'number' ? expense.amount : parseFloat(expense.amount) || 0;
+    categoryTotals[expense.category].amount += amt;
     categoryTotals[expense.category].count++;
   });
 
