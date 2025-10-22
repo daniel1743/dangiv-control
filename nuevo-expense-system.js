@@ -68,7 +68,18 @@ console.log('📝 Inicializando nuevo sistema de gastos con personalización...'
 
   function setupCurrentUser() {
     const userSelect = document.getElementById('user');
-    if (userSelect && window.app && window.app.userProfile) {
+    if (!userSelect) return;
+
+    // CRÍTICO: Forzar que el select sea visible y funcional
+    // app.js intenta ocultarlo y crear un trigger modal, lo prevenimos aquí
+    userSelect.style.display = 'block';
+    userSelect.style.visibility = 'visible';
+    userSelect.style.position = 'relative';
+    userSelect.style.opacity = '1';
+    userSelect.style.pointerEvents = 'auto';
+
+    // Auto-seleccionar usuario actual si está logueado
+    if (window.app && window.app.userProfile) {
       const userName = window.app.userProfile.name;
       if (userName && userName !== 'Usuario') {
         // Buscar si existe una opción con ese nombre
@@ -81,6 +92,32 @@ console.log('📝 Inicializando nuevo sistema de gastos con personalización...'
         }
       }
     }
+
+    // Evento change para confirmar selección
+    userSelect.addEventListener('change', function() {
+      console.log('👤 Usuario seleccionado:', this.value);
+    });
+
+    // CRÍTICO: Observar cambios en el estilo del select y revertirlos
+    // app.js puede intentar ocultarlo después, lo prevenimos
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+          // Si app.js intenta ocultar el select, lo hacemos visible de nuevo
+          if (userSelect.style.opacity === '0' || userSelect.style.display === 'none') {
+            userSelect.style.display = 'block';
+            userSelect.style.visibility = 'visible';
+            userSelect.style.position = 'relative';
+            userSelect.style.opacity = '1';
+            userSelect.style.pointerEvents = 'auto';
+            console.log('🔒 Select de usuario protegido contra ocultamiento');
+          }
+        }
+      });
+    });
+
+    observer.observe(userSelect, { attributes: true, attributeFilter: ['style'] });
+    console.log('🛡️ Protección de select de usuario activada');
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -469,9 +506,10 @@ console.log('📝 Inicializando nuevo sistema de gastos con personalización...'
         return false;
       }
 
-      // CRÍTICO: Asegurar que el monto sea un número entero sin formato
-      // Esto previene que unformatNumber en app.js lo interprete mal
-      const cleanAmount = parseInt(amount) || 0;
+      // CRÍTICO: Limpiar el monto pero mantener el valor EXACTO
+      // Remover separadores de miles (puntos/comas) pero conservar el número completo
+      let cleanAmount = amount.replace(/[.,]/g, ''); // Remover puntos y comas
+      cleanAmount = parseInt(cleanAmount) || 0; // Ahora sí convertir a entero
       amountInput.value = cleanAmount.toString();
 
       console.log('✅ Todos los campos válidos');
