@@ -450,3 +450,25 @@
     transition: none !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   PROTECCIÓN ABSOLUTA DEL SELECT DE USUARIO
+   ═══════════════════════════════════════════════════════════ */
+
+#user {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  pointer-events: auto !important;
+  z-index: 1 !important;
+}
+
+/* Prevenir que cualquier código intente ocultar el select */
+#user[style*="opacity: 0"],
+#user[style*="display: none"],
+#user[style*="visibility: hidden"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}

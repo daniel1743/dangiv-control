@@ -66,58 +66,127 @@ console.log('📝 Inicializando nuevo sistema de gastos con personalización...'
     }
   }
 
+  // ═══════════════════════════════════════════════════════════
+  // SISTEMA COMPLETAMENTE NUEVO PARA SELECT DE USUARIO
+  // ═══════════════════════════════════════════════════════════
+
   function setupCurrentUser() {
     const userSelect = document.getElementById('user');
-    if (!userSelect) return;
+    if (!userSelect) {
+      console.error('❌ Select de usuario NO encontrado');
+      return;
+    }
 
-    // CRÍTICO: Forzar que el select sea visible y funcional
-    // app.js intenta ocultarlo y crear un trigger modal, lo prevenimos aquí
-    userSelect.style.display = 'block';
-    userSelect.style.visibility = 'visible';
-    userSelect.style.position = 'relative';
-    userSelect.style.opacity = '1';
-    userSelect.style.pointerEvents = 'auto';
+    console.log('🔍 Configurando select de usuario...');
+    console.log('📊 Estado inicial:', {
+      value: userSelect.value,
+      options: userSelect.options.length,
+      display: userSelect.style.display,
+      opacity: userSelect.style.opacity
+    });
 
-    // Auto-seleccionar usuario actual si está logueado
-    if (window.app && window.app.userProfile) {
-      const userName = window.app.userProfile.name;
-      if (userName && userName !== 'Usuario') {
-        // Buscar si existe una opción con ese nombre
-        const userOption = Array.from(userSelect.options).find(
-          opt => opt.value.toLowerCase() === userName.toLowerCase()
-        );
-        if (userOption) {
-          userSelect.value = userOption.value;
-          console.log('👤 Usuario establecido:', userOption.value);
-        }
+    // FUNCIÓN PARA FORZAR VISIBILIDAD ABSOLUTA
+    function forceVisible() {
+      userSelect.style.display = 'block';
+      userSelect.style.visibility = 'visible';
+      userSelect.style.position = 'relative';
+      userSelect.style.opacity = '1';
+      userSelect.style.pointerEvents = 'auto';
+      userSelect.style.zIndex = '1';
+
+      // Remover cualquier clase que pueda ocultar
+      userSelect.classList.remove('hidden', 'hide', 'invisible');
+
+      // Asegurar que el contenedor también sea visible
+      const container = userSelect.closest('.select-with-add');
+      if (container) {
+        container.style.display = 'flex';
+        container.style.visibility = 'visible';
+        container.style.opacity = '1';
       }
     }
 
-    // Evento change para confirmar selección
-    userSelect.addEventListener('change', function() {
-      console.log('👤 Usuario seleccionado:', this.value);
-    });
+    // APLICAR VISIBILIDAD INMEDIATAMENTE
+    forceVisible();
 
-    // CRÍTICO: Observar cambios en el estilo del select y revertirlos
-    // app.js puede intentar ocultarlo después, lo prevenimos
+    // PROTECCIÓN CON MUTATIONOBSERVER
     const observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-          // Si app.js intenta ocultar el select, lo hacemos visible de nuevo
-          if (userSelect.style.opacity === '0' || userSelect.style.display === 'none') {
-            userSelect.style.display = 'block';
-            userSelect.style.visibility = 'visible';
-            userSelect.style.position = 'relative';
-            userSelect.style.opacity = '1';
-            userSelect.style.pointerEvents = 'auto';
-            console.log('🔒 Select de usuario protegido contra ocultamiento');
+        if (mutation.type === 'attributes') {
+          const currentOpacity = userSelect.style.opacity;
+          const currentDisplay = userSelect.style.display;
+
+          if (currentOpacity === '0' || currentDisplay === 'none' || currentDisplay === '') {
+            console.warn('⚠️ Intento de ocultar select detectado - REVERTIENDO');
+            forceVisible();
           }
         }
       });
     });
 
-    observer.observe(userSelect, { attributes: true, attributeFilter: ['style'] });
-    console.log('🛡️ Protección de select de usuario activada');
+    // Observar cambios en style, class, y atributos
+    observer.observe(userSelect, {
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    });
+
+    // EVENTO CHANGE CON CONFIRMACIÓN VISUAL
+    userSelect.addEventListener('change', function() {
+      const selectedValue = this.value;
+      const selectedText = this.options[this.selectedIndex].text;
+
+      console.log('👤 USUARIO SELECCIONADO:');
+      console.log('  - Valor:', selectedValue);
+      console.log('  - Texto visible:', selectedText);
+
+      // Feedback visual
+      this.style.borderColor = '#10b981';
+      this.style.backgroundColor = '#f0fdf4';
+
+      // Verificar que el valor se guardó
+      setTimeout(() => {
+        if (this.value === selectedValue) {
+          console.log('✅ Valor confirmado después de 100ms:', this.value);
+        } else {
+          console.error('❌ Valor cambió después de selección!', this.value);
+        }
+      }, 100);
+    });
+
+    // AUTO-SELECCIONAR USUARIO SI ESTÁ LOGUEADO
+    if (window.app && window.app.userProfile) {
+      const userName = window.app.userProfile.name;
+      if (userName && userName !== 'Usuario' && userName !== 'anonymous') {
+        const userOption = Array.from(userSelect.options).find(
+          opt => opt.value.toLowerCase() === userName.toLowerCase()
+        );
+        if (userOption) {
+          userSelect.value = userOption.value;
+          userSelect.style.borderColor = '#10b981';
+          userSelect.style.backgroundColor = '#f0fdf4';
+          console.log('👤 Usuario auto-establecido:', userOption.value);
+        }
+      }
+    }
+
+    // VERIFICACIÓN CONTINUA CADA 500ms (solo las primeras 10 veces)
+    let verificationCount = 0;
+    const verificationInterval = setInterval(() => {
+      forceVisible();
+      verificationCount++;
+
+      if (verificationCount >= 10) {
+        clearInterval(verificationInterval);
+        console.log('✅ Verificación de visibilidad completada');
+      }
+    }, 500);
+
+    console.log('✅ Select de usuario configurado y protegido');
+    console.log('📊 Estado final:', {
+      value: userSelect.value,
+      visible: userSelect.style.opacity === '1',
+      display: userSelect.style.display
+    });
   }
 
   // ═══════════════════════════════════════════════════════════
