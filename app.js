@@ -7225,14 +7225,24 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     recentExpenses.forEach((expense) => {
       const transactionEl = document.createElement('div');
       transactionEl.className = 'transaction-item';
+
+      // Crear badge de usuario con icono
+      const userIcon = expense.user === 'Daniel' ? '👨' : expense.user === 'Givonik' ? '👨‍💼' : '👤';
+      const userName = expense.user || 'Sin asignar';
+      const userBadge = `<span class="user-badge user-badge-${expense.user?.toLowerCase() || 'default'}">${userIcon} ${userName}</span>`;
+
+      // Meta line sin el usuario (ya está en el badge)
       const metaLine = this.formatMetaLine([
         expense.date,
-        expense.user,
         expense.category,
       ]);
+
       transactionEl.innerHTML = `
         <div class="transaction-info">
-          <h4>${this.fixLegacyEncoding(expense.description)}</h4>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <h4 style="margin: 0;">${this.fixLegacyEncoding(expense.description)}</h4>
+            ${userBadge}
+          </div>
           <div class="transaction-meta">${metaLine}</div>
         </div>
         <div class="transaction-amount expense">-$${expense.amount}</div>
@@ -7363,15 +7373,25 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     sortedExpenses.forEach((expense) => {
       const expenseEl = document.createElement('div');
       expenseEl.className = 'transaction-item';
+
+      // Crear badge de usuario con icono
+      const userIcon = expense.user === 'Daniel' ? '👨' : expense.user === 'Givonik' ? '👨‍💼' : '👤';
+      const userName = expense.user || 'Sin asignar';
+      const userBadge = `<span class="user-badge user-badge-${expense.user?.toLowerCase() || 'default'}">${userIcon} ${userName}</span>`;
+
+      // Meta line sin el usuario (ya está en el badge)
       const metaLine = this.formatMetaLine([
         expense.date,
-        expense.user,
         expense.category,
         expense.necessity,
       ]);
+
       expenseEl.innerHTML = `
         <div class="transaction-info">
-          <h4>${this.fixLegacyEncoding(expense.description)}</h4>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <h4 style="margin: 0;">${this.fixLegacyEncoding(expense.description)}</h4>
+            ${userBadge}
+          </div>
           <div class="transaction-meta">${metaLine}</div>
         </div>
         <div style="display:flex; align-items:center; gap:12px;">
@@ -8670,14 +8690,24 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     unnecessary.forEach((expense) => {
       const expenseEl = document.createElement('div');
       expenseEl.className = 'unnecessary-expense';
+
+      // Crear badge de usuario con icono
+      const userIcon = expense.user === 'Daniel' ? '👨' : expense.user === 'Givonik' ? '👨‍💼' : '👤';
+      const userName = expense.user || 'Sin asignar';
+      const userBadge = `<span class="user-badge user-badge-${expense.user?.toLowerCase() || 'default'}">${userIcon} ${userName}</span>`;
+
+      // Meta line sin el usuario (ya está en el badge)
       const metaLine = this.formatMetaLine([
         expense.date,
-        expense.user,
         expense.necessity,
       ]);
+
       expenseEl.innerHTML = `
         <div class="unnecessary-info">
-          <h4>${this.fixLegacyEncoding(expense.description)}</h4>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <h4 style="margin: 0;">${this.fixLegacyEncoding(expense.description)}</h4>
+            ${userBadge}
+          </div>
           <div class="unnecessary-meta">${metaLine}</div>
         </div>
         <div class="unnecessary-amount">$${expense.amount}</div>

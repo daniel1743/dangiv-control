@@ -472,3 +472,57 @@
   visibility: visible !important;
   opacity: 1 !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   10. BADGE DE USUARIO EN REGISTROS DE GASTOS
+   ═══════════════════════════════════════════════════════════ */
+
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Badge para Daniel */
+.user-badge-daniel {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: 2px solid #1d4ed8;
+}
+
+/* Badge para Givonik */
+.user-badge-givonik {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border: 2px solid #6d28d9;
+}
+
+/* Badge por defecto (sin asignar u otro) */
+.user-badge-default,
+.user-badge-sin {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+  color: white;
+  border: 2px solid #475569;
+}
+
+/* Hover effect */
+.user-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive - hacer badges más pequeños en móvil */
+@media (max-width: 640px) {
+  .user-badge {
+    font-size: 12px;
+    padding: 3px 10px;
+    gap: 3px;
+  }
+}
