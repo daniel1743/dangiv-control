@@ -442,11 +442,13 @@ console.log('📝 Inicializando nuevo sistema de gastos con personalización...'
     const form = document.getElementById('expenseForm');
     if (!form) return;
 
+    // IMPORTANTE: Interceptar submit ANTES que app.js para asegurar valor correcto
     form.addEventListener('submit', function(e) {
       console.log('📤 Formulario de gasto enviado');
 
       // Validar campos requeridos
-      const amount = document.getElementById('amount').value;
+      const amountInput = document.getElementById('amount');
+      const amount = amountInput.value;
       const description = document.getElementById('description').value;
       const category = document.getElementById('category').value;
       const necessity = document.getElementById('necessity').value;
@@ -467,9 +469,15 @@ console.log('📝 Inicializando nuevo sistema de gastos con personalización...'
         return false;
       }
 
+      // CRÍTICO: Asegurar que el monto sea un número entero sin formato
+      // Esto previene que unformatNumber en app.js lo interprete mal
+      const cleanAmount = parseInt(amount) || 0;
+      amountInput.value = cleanAmount.toString();
+
       console.log('✅ Todos los campos válidos');
+      console.log('💰 Monto limpiado:', amount, '→', cleanAmount);
       console.log('Datos del gasto:', {
-        amount,
+        amount: cleanAmount,
         description,
         category,
         necessity,
@@ -477,8 +485,32 @@ console.log('📝 Inicializando nuevo sistema de gastos con personalización...'
         user: document.getElementById('user').value
       });
 
-      // El formulario se enviará normalmente y app.js lo procesará
+      // El formulario se enviará normalmente y app.js lo procesará con el valor correcto
+    }, true); // useCapture = true para ejecutar ANTES que app.js
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // FIX PARA MONTO: Evitar conversión incorrecta
+  // ═══════════════════════════════════════════════════════════
+
+  function setupAmountInputFix() {
+    const amountInput = document.getElementById('amount');
+    if (!amountInput) return;
+
+    // Prevenir que el navegador formatee automáticamente
+    amountInput.addEventListener('input', function(e) {
+      // Remover cualquier carácter que no sea dígito
+      let value = e.target.value.replace(/[^0-9]/g, '');
+      e.target.value = value;
     });
+
+    // Al hacer blur, asegurar que sea número entero
+    amountInput.addEventListener('blur', function(e) {
+      let value = parseInt(e.target.value) || 0;
+      e.target.value = value;
+    });
+
+    console.log('✅ Fix de monto configurado (solo números enteros)');
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -521,16 +553,19 @@ console.log('📝 Inicializando nuevo sistema de gastos con personalización...'
       initNewExpenseSystem();
       setupFormValidation();
       setupKeyboardSupport();
+      setupAmountInputFix();
     });
   } else {
     initNewExpenseSystem();
     setupFormValidation();
     setupKeyboardSupport();
+    setupAmountInputFix();
   }
 
   // También ejecutar después de un delay para asegurar que todo esté cargado
   setTimeout(() => {
     initNewExpenseSystem();
+    setupAmountInputFix();
   }, 1000);
 
   console.log('✅ Script de nuevo sistema de gastos cargado');
