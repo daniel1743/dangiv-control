@@ -1,0 +1,452 @@
+/* ═══════════════════════════════════════════════════════════
+   CSS PARA NUEVO SISTEMA DE GASTOS - PALETA DEL NAVBAR
+   Agregar al final de style.css
+
+   PALETA DE COLORES DEL NAVBAR:
+   - Primary: #21808D (teal oscuro)
+   - Primary Hover: #14b8a6 (teal brillante)
+   - Accent: #2DA6B2 (cyan)
+   - Success: #10b981 (verde)
+   - Background: #f0fdfa (teal muy claro)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════
+   1. SELECT NATIVO CON ESTILO MODERNO
+   ═══════════════════════════════════════════════════════════ */
+
+.form-select-native {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2321808D' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 40px !important;
+  cursor: pointer;
+  font-size: 16px !important; /* Evitar zoom en iOS */
+  min-height: 48px; /* Táctil friendly */
+  transition: all 0.3s ease;
+  border: 2px solid #e5e7eb;
+}
+
+.form-select-native:hover {
+  border-color: #21808D;
+  background-color: #f0fdfa;
+}
+
+.form-select-native:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+  outline: none;
+  background-color: #f0fdfa;
+}
+
+.form-select-native option {
+  padding: 12px;
+  font-size: 16px;
+  background-color: white;
+  color: #1f2937;
+}
+
+/* Select cuando tiene valor seleccionado */
+.form-select-native:valid:not([value=""]) {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+/* Deshabilitar apariencia de select en móviles para usar nativa */
+@media (max-width: 768px) {
+  .form-select-native {
+    font-size: 16px !important; /* Prevenir zoom en iOS */
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   2. CONTENEDOR DE SELECT CON BOTÓN AÑADIR
+   ═══════════════════════════════════════════════════════════ */
+
+.select-with-add {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.select-with-add select {
+  flex: 1;
+}
+
+.btn-add-option {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border: 2px solid #21808D;
+  background: linear-gradient(135deg, #21808D 0%, #2DA6B2 100%);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(33, 128, 141, 0.2);
+}
+
+.btn-add-option:hover {
+  background: linear-gradient(135deg, #14b8a6 0%, #21808D 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(33, 128, 141, 0.3);
+}
+
+.btn-add-option:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(33, 128, 141, 0.2);
+}
+
+.btn-add-option i {
+  font-size: 18px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3. MODALES PERSONALIZADOS PARA AÑADIR OPCIONES
+   ═══════════════════════════════════════════════════════════ */
+
+.custom-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease;
+}
+
+.custom-modal.show {
+  display: block;
+}
+
+.custom-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.custom-modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 2px solid #f0fdfa;
+  background: linear-gradient(135deg, #21808D 0%, #2DA6B2 100%);
+  border-radius: 16px 16px 0 0;
+}
+
+.custom-modal-header h3 {
+  margin: 0;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.custom-modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.custom-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.custom-modal-body {
+  padding: 24px;
+}
+
+.custom-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  background-color: #f9fafb;
+  border-radius: 0 0 16px 16px;
+}
+
+.btn-modal-cancel {
+  padding: 10px 20px;
+  border: 2px solid #d1d5db;
+  background: white;
+  color: #6b7280;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-modal-cancel:hover {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+}
+
+.btn-modal-save {
+  padding: 10px 20px;
+  border: none;
+  background: linear-gradient(135deg, #21808D 0%, #2DA6B2 100%);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(33, 128, 141, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-modal-save:hover {
+  background: linear-gradient(135deg, #14b8a6 0%, #21808D 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 128, 141, 0.4);
+}
+
+.btn-modal-save:active {
+  transform: translateY(0);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   4. SELECTOR DE EMOJIS
+   ═══════════════════════════════════════════════════════════ */
+
+.emoji-picker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.emoji-input {
+  text-align: center;
+  font-size: 24px !important;
+  padding: 12px !important;
+}
+
+.emoji-suggestions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+  gap: 8px;
+}
+
+.emoji-option {
+  font-size: 28px;
+  padding: 12px;
+  background: #f0fdfa;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.emoji-option:hover {
+  background: #ccfbf1;
+  border-color: #21808D;
+  transform: scale(1.1);
+}
+
+.emoji-option:active {
+  transform: scale(0.95);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   5. AJUSTES DE BOTONES DEL FORMULARIO CON PALETA NAVBAR
+   ═══════════════════════════════════════════════════════════ */
+
+.btn-expense-primary {
+  background: linear-gradient(135deg, #21808D 0%, #2DA6B2 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(33, 128, 141, 0.3) !important;
+}
+
+.btn-expense-primary:hover {
+  background: linear-gradient(135deg, #14b8a6 0%, #21808D 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(33, 128, 141, 0.4) !important;
+}
+
+.btn-expense-secondary {
+  border: 2px solid #21808D !important;
+  color: #21808D !important;
+  background: white !important;
+}
+
+.btn-expense-secondary:hover {
+  background: #f0fdfa !important;
+  border-color: #14b8a6 !important;
+  color: #14b8a6 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   6. RESPONSIVE DESIGN
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  .select-with-add {
+    gap: 6px;
+  }
+
+  .btn-add-option {
+    width: 44px;
+    height: 44px;
+  }
+
+  .custom-modal-content {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .custom-modal-header {
+    padding: 16px 20px;
+  }
+
+  .custom-modal-header h3 {
+    font-size: 16px;
+  }
+
+  .custom-modal-body {
+    padding: 20px;
+  }
+
+  .emoji-suggestions {
+    grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+  }
+
+  .emoji-option {
+    font-size: 24px;
+    padding: 10px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   7. ESTADOS DE VALIDACIÓN
+   ═══════════════════════════════════════════════════════════ */
+
+.form-select-native:invalid {
+  border-color: #d1d5db;
+}
+
+.form-select-native.error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+.form-select-native.success {
+  border-color: #10b981 !important;
+  background-color: #f0fdf4 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   8. ANIMACIONES
+   ═══════════════════════════════════════════════════════════ */
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.btn-add-option.saving {
+  animation: pulse 1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   9. ACCESIBILIDAD
+   ═══════════════════════════════════════════════════════════ */
+
+.btn-add-option:focus,
+.btn-modal-save:focus,
+.btn-modal-cancel:focus {
+  outline: 2px solid #14b8a6;
+  outline-offset: 2px;
+}
+
+.custom-modal-close:focus {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* Mejorar contraste para usuarios con visión reducida */
+@media (prefers-contrast: high) {
+  .btn-add-option {
+    border-width: 3px;
+  }
+
+  .form-select-native {
+    border-width: 3px;
+  }
+}
+
+/* Reducir movimiento para usuarios con sensibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .btn-add-option,
+  .custom-modal,
+  .custom-modal-content,
+  .emoji-option {
+    animation: none !important;
+    transition: none !important;
+  }
+}

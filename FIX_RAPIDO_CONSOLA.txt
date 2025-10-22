@@ -1,0 +1,132 @@
+═══════════════════════════════════════════════════════════
+  FIX RÁPIDO V2.0 - DROPDOWNS QUE NO ACTUALIZAN
+  Ejecutar en Consola del Navegador (F12)
+═══════════════════════════════════════════════════════════
+
+SÍNTOMAS:
+- Modal se abre ✓
+- Puedes hacer clic en una opción ✓
+- Modal se cierra ✓
+- PERO el botón sigue mostrando "Selecciona..." ✗
+
+SOLUCIÓN:
+Copia y pega ESTE CÓDIGO COMPLETO en la consola:
+
+───────────────────────────────────────────────────────────
+
+// FIX V2.0 - Actualización visual de dropdowns
+(function() {
+  console.log('🚀 Aplicando FIX V2.0...');
+
+  const categorySelect = document.getElementById('category');
+  const necessitySelect = document.getElementById('necessity');
+  const categoryContainer = document.getElementById('categoryTriggerContainer');
+  const necessityContainer = document.getElementById('necessityTriggerContainer');
+
+  if (!categorySelect || !necessitySelect || !categoryContainer || !necessityContainer) {
+    console.error('❌ Elementos no encontrados');
+    return;
+  }
+
+  function createTrigger(select, modalId, placeholder) {
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'modal-trigger-select';
+    trigger.style.cssText = 'width:100%;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;font-size:16px;background:#fff;color:#1f2937;cursor:pointer;display:flex;align-items:center;justify-content:space-between;min-height:48px;text-align:left;';
+
+    function updateText() {
+      const value = select.value;
+      const option = select.querySelector('option[value="' + value + '"]');
+      const text = option && value ? option.textContent : placeholder;
+      const color = !value ? '#9ca3af' : '#1f2937';
+      trigger.innerHTML = '<span style="flex:1;color:' + color + ';font-weight:' + (value ? '500' : '400') + '">' + text + '</span><i class="fas fa-chevron-down" style="color:#6b7280;margin-left:8px;"></i>';
+      console.log('✅ Actualizado:', select.id, '→', text);
+    }
+
+    updateText();
+
+    trigger.onclick = function(e) {
+      e.preventDefault();
+      window.openSelectModal(modalId, select.value);
+    };
+
+    trigger.onmouseenter = function() {
+      this.style.borderColor = '#14b8a6';
+      this.style.boxShadow = '0 0 0 3px rgba(20,184,166,0.1)';
+    };
+
+    trigger.onmouseleave = function() {
+      this.style.borderColor = '#e5e7eb';
+      this.style.boxShadow = 'none';
+    };
+
+    select.addEventListener('change', function() {
+      setTimeout(updateText, 50);
+    });
+
+    // Polling para forzar sincronización
+    let lastValue = select.value;
+    setInterval(function() {
+      if (select.value !== lastValue) {
+        lastValue = select.value;
+        updateText();
+      }
+    }, 500);
+
+    return trigger;
+  }
+
+  categoryContainer.innerHTML = '';
+  necessityContainer.innerHTML = '';
+
+  categoryContainer.appendChild(createTrigger(categorySelect, 'categoryModal', '🏷️ Selecciona una categoría'));
+  necessityContainer.appendChild(createTrigger(necessitySelect, 'necessityModal', '⭐ Selecciona nivel de necesidad'));
+
+  // Interceptar cierre de modal para forzar actualización
+  const originalClose = window.closeSelectModal;
+  window.closeSelectModal = function(modalId) {
+    originalClose(modalId);
+    setTimeout(function() {
+      if (modalId === 'categoryModal') {
+        categorySelect.dispatchEvent(new Event('change'));
+      }
+      if (modalId === 'necessityModal') {
+        necessitySelect.dispatchEvent(new Event('change'));
+      }
+    }, 100);
+  };
+
+  console.log('✅ FIX V2.0 APLICADO - Prueba ahora los dropdowns');
+})();
+
+───────────────────────────────────────────────────────────
+
+DESPUÉS DE EJECUTAR:
+
+1. Deberías ver: ✅ FIX V2.0 APLICADO
+2. Prueba hacer clic en Categoría
+3. Selecciona una opción
+4. AHORA el botón DEBE mostrar la opción seleccionada
+5. Repite con Prioridad/Necesidad
+
+SI SIGUE SIN FUNCIONAR:
+
+Ejecuta este comando adicional en consola:
+
+  document.getElementById('category').value = 'Alimentación';
+  document.getElementById('category').dispatchEvent(new Event('change'));
+
+Deberías ver el botón cambiar a "Alimentación".
+
+═══════════════════════════════════════════════════════════
+
+LOGS ESPERADOS:
+
+Cuando selecciones algo, deberías ver:
+  ✅ Actualizado: category → Alimentación
+  🔵 Abriendo modal: categoryModal
+  ✅ category actualizado a: Alimentación
+  ✅ Modal categoryModal cerrado
+  ✅ Actualizado: category → Alimentación
+
+═══════════════════════════════════════════════════════════

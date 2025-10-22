@@ -1,0 +1,181 @@
+═══════════════════════════════════════════════════════════
+  🔥 FIX DEFINITIVO - DROPDOWNS NO GUARDAN VALOR
+  EJECUTAR EN CONSOLA (F12) - COPIA TODO EL CÓDIGO
+═══════════════════════════════════════════════════════════
+
+PROBLEMA IDENTIFICADO:
+- Los <select> solo tienen 1 opción (la vacía)
+- Cuando seleccionas "Muy Indispensable", el <select> no tiene
+  esa opción, entonces el navegador lo resetea a ""
+- Por eso el trigger se actualiza pero luego vuelve a placeholder
+
+SOLUCIÓN:
+Crear las opciones dinámicamente cuando se seleccionan
+
+═══════════════════════════════════════════════════════════
+
+COPIA Y PEGA ESTE CÓDIGO COMPLETO:
+
+// 🔥 FIX DEFINITIVO - Crear opciones dinámicamente
+(function() {
+  console.log('🔥 Aplicando FIX DEFINITIVO...');
+
+  // Interceptar handleModalOptionClick
+  const originalHandle = window.handleModalOptionClick;
+
+  window.handleModalOptionClick = function(modalId, selectId, value) {
+    console.log('🎯 Interceptado:', selectId, '→', value);
+
+    // Casos especiales (añadir nuevo, etc.)
+    if (value === '__add_new__' || value === '__add_custom__') {
+      return originalHandle(modalId, selectId, value);
+    }
+
+    // Obtener el select
+    const select = document.getElementById(selectId);
+    if (!select) {
+      console.error('❌ Select no encontrado:', selectId);
+      return;
+    }
+
+    // CRÍTICO: Asegurar que la opción existe
+    let option = select.querySelector('option[value="' + value + '"]');
+
+    if (!option && value) {
+      // Crear la opción
+      option = document.createElement('option');
+      option.value = value;
+      option.textContent = value;
+      select.appendChild(option);
+      console.log('➕ Opción creada:', value);
+    }
+
+    // Asignar valor
+    select.value = value;
+    console.log('✅ Select.value =', select.value);
+
+    // Disparar evento change
+    const event = new Event('change', { bubbles: true });
+    select.dispatchEvent(event);
+
+    // Cerrar modal
+    if (typeof window.closeSelectModal === 'function') {
+      window.closeSelectModal(modalId);
+    }
+  };
+
+  console.log('✅ handleModalOptionClick interceptado');
+
+  // También recrear los triggers
+  const categorySelect = document.getElementById('category');
+  const necessitySelect = document.getElementById('necessity');
+  const categoryContainer = document.getElementById('categoryTriggerContainer');
+  const necessityContainer = document.getElementById('necessityTriggerContainer');
+
+  if (!categorySelect || !necessitySelect || !categoryContainer || !necessityContainer) {
+    console.error('❌ Elementos no encontrados');
+    return;
+  }
+
+  function createTrigger(select, modalId, placeholder) {
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.style.cssText = 'width:100%;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;font-size:16px;background:#fff;color:#1f2937;cursor:pointer;display:flex;align-items:center;justify-content:space-between;min-height:48px;text-align:left;transition:all 0.2s;';
+
+    function updateText() {
+      const value = select.value;
+      const option = select.querySelector('option[value="' + value + '"]');
+      const text = option && value ? option.textContent : placeholder;
+      const color = value ? '#1f2937' : '#9ca3af';
+      const weight = value ? '500' : '400';
+
+      trigger.innerHTML = '<span style="flex:1;color:' + color + ';font-weight:' + weight + '">' + text + '</span><i class="fas fa-chevron-down" style="color:#6b7280;margin-left:8px"></i>';
+
+      console.log('🔄', select.id, '→', text, '(value:', value, ')');
+    }
+
+    updateText();
+
+    trigger.onclick = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.openSelectModal(modalId, select.value);
+    };
+
+    trigger.onmouseenter = function() {
+      this.style.borderColor = '#14b8a6';
+      this.style.boxShadow = '0 0 0 3px rgba(20,184,166,0.1)';
+    };
+
+    trigger.onmouseleave = function() {
+      this.style.borderColor = '#e5e7eb';
+      this.style.boxShadow = 'none';
+    };
+
+    select.addEventListener('change', function() {
+      console.log('📢 Change en', select.id);
+      setTimeout(updateText, 50);
+    });
+
+    // Polling de seguridad
+    let lastValue = select.value;
+    setInterval(function() {
+      if (select.value !== lastValue) {
+        console.log('⏰ Polling:', select.id, lastValue, '→', select.value);
+        lastValue = select.value;
+        updateText();
+      }
+    }, 500);
+
+    return trigger;
+  }
+
+  categoryContainer.innerHTML = '';
+  necessityContainer.innerHTML = '';
+
+  categoryContainer.appendChild(createTrigger(categorySelect, 'categoryModal', '🏷️ Selecciona una categoría'));
+  necessityContainer.appendChild(createTrigger(necessitySelect, 'necessityModal', '⭐ Selecciona nivel de necesidad'));
+
+  console.log('✅ FIX DEFINITIVO APLICADO');
+  console.log('');
+  console.log('🎯 PRUEBA AHORA:');
+  console.log('1. Haz clic en Categoría o Necesidad');
+  console.log('2. Selecciona una opción');
+  console.log('3. El botón DEBE actualizarse');
+  console.log('');
+})();
+
+═══════════════════════════════════════════════════════════
+
+DESPUÉS DE EJECUTAR:
+
+Deberías ver:
+  ✅ handleModalOptionClick interceptado
+  ✅ FIX DEFINITIVO APLICADO
+
+Ahora prueba:
+1. Click en "Categoría"
+2. Selecciona "Alimentación"
+3. Verás estos logs:
+   🎯 Interceptado: category → Alimentación
+   ➕ Opción creada: Alimentación
+   ✅ Select.value = Alimentación
+   🔄 category → Alimentación (value: Alimentación)
+
+4. El botón DEBE mostrar "Alimentación"
+
+═══════════════════════════════════════════════════════════
+
+SI NO FUNCIONA, verifica:
+
+1. Que select.value se mantenga:
+   document.getElementById('category').value
+
+   Debe mostrar la opción seleccionada, no ""
+
+2. Que las opciones existan:
+   document.getElementById('category').options
+
+   Debe mostrar múltiples opciones, no solo 1
+
+═══════════════════════════════════════════════════════════

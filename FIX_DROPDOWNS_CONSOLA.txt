@@ -1,0 +1,125 @@
+═══════════════════════════════════════════════════════════
+  FIX INMEDIATO: EJECUTAR EN CONSOLA DEL NAVEGADOR (F12)
+═══════════════════════════════════════════════════════════
+
+PASO 1: Abre la consola del navegador (presiona F12)
+
+PASO 2: Copia y pega ESTE CÓDIGO COMPLETO:
+
+───────────────────────────────────────────────────────────
+
+// FIX: Crear triggers de dropdowns manualmente
+(function() {
+  console.log('🔧 Aplicando fix de dropdowns...');
+
+  const categorySelect = document.getElementById('category');
+  const necessitySelect = document.getElementById('necessity');
+  const categoryContainer = document.getElementById('categoryTriggerContainer');
+  const necessityContainer = document.getElementById('necessityTriggerContainer');
+
+  if (!categorySelect || !necessitySelect) {
+    console.error('❌ Selects no encontrados');
+    return;
+  }
+
+  if (!categoryContainer || !necessityContainer) {
+    console.error('❌ Contenedores no encontrados');
+    return;
+  }
+
+  function createTrigger(select, modalId, placeholder) {
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'modal-trigger-select';
+    trigger.style.cssText = `
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 16px;
+      background: #ffffff;
+      color: #1f2937;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      min-height: 48px;
+      text-align: left;
+    `;
+
+    function updateText() {
+      const value = select.value;
+      const selectedOption = select.querySelector('option[value="' + value + '"]');
+      const text = selectedOption && value ? selectedOption.textContent : placeholder;
+
+      trigger.innerHTML = '<span style="flex: 1; ' + (!value ? 'color: #9ca3af;' : '') + '">' + text + '</span><i class="fas fa-chevron-down" style="color: #6b7280; margin-left: 8px;"></i>';
+    }
+
+    updateText();
+
+    trigger.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log('🔵 Abriendo modal: ' + modalId);
+      window.openSelectModal(modalId, select.value);
+    });
+
+    trigger.addEventListener('mouseenter', function() {
+      this.style.borderColor = '#14b8a6';
+    });
+
+    trigger.addEventListener('mouseleave', function() {
+      this.style.borderColor = '#e5e7eb';
+    });
+
+    select.addEventListener('change', updateText);
+
+    return trigger;
+  }
+
+  // Limpiar y crear triggers
+  categoryContainer.innerHTML = '';
+  necessityContainer.innerHTML = '';
+
+  const categoryTrigger = createTrigger(categorySelect, 'categoryModal', '🏷️ Selecciona una categoría');
+  const necessityTrigger = createTrigger(necessitySelect, 'necessityModal', '⭐ Selecciona nivel de necesidad');
+
+  categoryContainer.appendChild(categoryTrigger);
+  necessityContainer.appendChild(necessityTrigger);
+
+  console.log('✅ Dropdowns arreglados! Ahora puedes seleccionar categoría y necesidad');
+})();
+
+───────────────────────────────────────────────────────────
+
+PASO 3: Presiona ENTER
+
+PASO 4: Deberías ver en consola:
+  ✅ Dropdowns arreglados! Ahora puedes seleccionar categoría y necesidad
+
+PASO 5: Prueba hacer clic en:
+  - El campo de Categoría
+  - El campo de Prioridad/Necesidad
+
+Los modales deberían abrirse correctamente.
+
+═══════════════════════════════════════════════════════════
+
+SI NO FUNCIONA, verifica:
+
+1. Que estés en la sección "Registro de Gastos"
+2. Que los modales existan ejecutando:
+
+   document.getElementById('categoryModal')
+   document.getElementById('necessityModal')
+
+   Deberían retornar elementos HTML, no null
+
+3. Que las funciones globales existan:
+
+   typeof window.openSelectModal
+   typeof window.handleModalOptionClick
+
+   Deberían retornar "function"
+
+═══════════════════════════════════════════════════════════

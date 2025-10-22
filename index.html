@@ -275,6 +275,9 @@
         ]
       }
     </script>
+
+    <!-- Nuevo sistema de gastos - CSS -->
+    <link rel="stylesheet" href="NUEVO_CSS_COMPLETO.css">
   </head>
   <body>
     <!-- Loading Spinner -->
@@ -2036,11 +2039,38 @@
         </div>
       </section>
 
-      <!-- Expense Registration Section - Premium Enterprise -->
+      <!-- ═══════════════════════════════════════════════════════════
+           ⚠️ CÓDIGO ANTERIOR COMENTADO - SISTEMA CON PROBLEMAS
+
+           PROBLEMA IDENTIFICADO:
+           El sistema de modales con triggers (fix-dropdowns-v2.js) causaba
+           que los valores seleccionados se resetearan inmediatamente después
+           de la selección.
+
+           CAUSA RAÍZ:
+           1. Los <select> ocultos solo tenían la opción placeholder
+           2. handleModalOptionClick() asignaba valores que no existían
+           3. El polling en fix-dropdowns-v2.js (línea 61) leía el valor
+              ANTES de que las opciones se poblaran
+           4. Al leer un valor inexistente, el browser reseteaba a ""
+           5. El trigger mostraba el placeholder en lugar del valor
+
+           DIAGNÓSTICO DEL USUARIO:
+           "fix-dropdowns-v2.js está restableciendo el valor a su estado
+           inicial (value: '') en la línea 61"
+
+           SOLUCIÓN:
+           Sistema completamente reescrito con selects nativos,
+           botones "Añadir" para personalización, y paleta del navbar.
+
+           FECHA: 2025-10-22
+           ═══════════════════════════════════════════════════════════ -->
+
+      <!-- NUEVO SISTEMA DE REGISTRO DE GASTOS -->
       <section id="expenses" class="section">
         <div class="section-header">
           <h2>💳 Registro de Gastos</h2>
-          <p>Sistema avanzado de registro con validación inteligente</p>
+          <p>Sistema simplificado con opciones personalizables</p>
         </div>
 
         <!-- Premium Expense Form Card -->
@@ -2104,37 +2134,54 @@
               </div>
             </div>
 
-            <!-- Grid Layout for Category and Necessity -->
-            <div class="form-grid-2">
-              <div class="form-group-premium">
-                <label class="form-label-premium">
-                  <i class="fas fa-tag" aria-hidden="true"></i>
-                  Categoría
-                </label>
-                <!-- Select oculto para almacenar el valor seleccionado -->
-                <select id="category" class="form-input-premium" style="display: none" required>
+            <!-- Category with Add Button -->
+            <div class="form-group-premium">
+              <label class="form-label-premium" for="category">
+                <i class="fas fa-tag" aria-hidden="true"></i>
+                Categoría
+              </label>
+              <div class="select-with-add">
+                <select id="category" class="form-input-premium form-select-native" required>
                   <option value="">Selecciona categoría</option>
+                  <option value="Alimentación">🍽️ Alimentación</option>
+                  <option value="Transporte">🚗 Transporte</option>
+                  <option value="Entretenimiento">🎬 Entretenimiento</option>
+                  <option value="Salud">🏥 Salud</option>
+                  <option value="Servicios">⚡ Servicios</option>
+                  <option value="Compras">🛍️ Compras</option>
+                  <option value="Otros">📦 Otros</option>
                 </select>
-                <!-- Contenedor del trigger visual para el modal -->
-                <div id="categoryTriggerContainer"></div>
+                <button type="button" class="btn-add-option" id="addCategoryBtn" title="Añadir categoría personalizada">
+                  <i class="fas fa-plus"></i>
+                </button>
               </div>
+            </div>
 
-              <div class="form-group-premium">
-                <label class="form-label-premium">
-                  <i class="fas fa-chart-line" aria-hidden="true"></i>
-                  Prioridad
-                </label>
-                <!-- Select oculto para almacenar el valor seleccionado -->
-                <select id="necessity" class="form-input-premium" style="display: none" required>
+            <!-- Necessity/Priority with Add Button -->
+            <div class="form-group-premium">
+              <label class="form-label-premium" for="necessity">
+                <i class="fas fa-chart-line" aria-hidden="true"></i>
+                Prioridad
+              </label>
+              <div class="select-with-add">
+                <select id="necessity" class="form-input-premium form-select-native" required>
                   <option value="">Nivel de necesidad</option>
+                  <option value="Muy Indispensable">⭐⭐⭐⭐⭐ Muy Indispensable</option>
+                  <option value="Muy Necesario">⭐⭐⭐⭐ Muy Necesario</option>
+                  <option value="Necesario">⭐⭐⭐ Necesario</option>
+                  <option value="Poco Necesario">⭐⭐ Poco Necesario</option>
+                  <option value="Nada Necesario">⭐ Nada Necesario</option>
+                  <option value="Malgasto">❌ Malgasto</option>
                 </select>
-                <!-- Contenedor del trigger visual para el modal -->
-                <div id="necessityTriggerContainer"></div>
+                <button type="button" class="btn-add-option" id="addNecessityBtn" title="Añadir nivel de necesidad personalizado">
+                  <i class="fas fa-plus"></i>
+                </button>
               </div>
             </div>
 
             <!-- Grid Layout for Date and User -->
             <div class="form-grid-2">
+              <!-- Date -->
               <div class="form-group-premium">
                 <label class="form-label-premium" for="date">
                   <i class="fas fa-calendar-alt"></i>
@@ -2148,45 +2195,22 @@
                 />
               </div>
 
+              <!-- User with Add Button -->
               <div class="form-group-premium">
                 <label class="form-label-premium" for="user">
                   <i class="fas fa-user"></i>
                   Usuario
                 </label>
-                <select
-                  id="user"
-                  class="form-input-premium form-select-premium native-mobile-select"
-                  data-native-dropdown="true"
-                  inputmode="none"
-                >
-                  <option value="">Sin asignar</option>
-                  <option value="__add_new__">+ Añadir usuario</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- New User Input (Hidden by default) -->
-            <div class="form-group-premium hidden" id="newUserGroup">
-              <label class="form-label-premium" for="newUserName">
-                <i class="fas fa-user-plus"></i>
-                Nombre del nuevo usuario
-              </label>
-              <div style="display: flex; gap: 8px; align-items: center">
-                <input
-                  type="text"
-                  id="newUserName"
-                  class="form-input-premium"
-                  placeholder="Nombre del usuario"
-                  style="flex: 1"
-                />
-                <button
-                  type="button"
-                  class="btn-icon-primary"
-                  id="saveNewUserBtn"
-                  title="Guardar usuario"
-                >
-                  <i class="fas fa-check"></i>
-                </button>
+                <div class="select-with-add">
+                  <select id="user" class="form-input-premium form-select-native">
+                    <option value="">Sin asignar</option>
+                    <option value="Daniel">👨 Daniel</option>
+                    <option value="Givonik">👨‍💼 Givonik</option>
+                  </select>
+                  <button type="button" class="btn-add-option" id="addUserBtn" title="Añadir usuario personalizado">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -5386,6 +5410,12 @@
     <script type="module" src="push-notifications.js"></script>
     <script type="module" src="app.js?v=4.2"></script>
 
+    <!-- ⚠️ SCRIPT PROBLEMÁTICO COMENTADO - Causaba reset de valores -->
+    <!-- <script src="fix-dropdowns-v2.js"></script> -->
+
+    <!-- Nuevo sistema de gastos con personalización -->
+    <script src="nuevo-expense-system.js"></script>
+
     <!-- Landing Page Animations -->
     <script src="landing-animations.js"></script>
 
@@ -5411,7 +5441,19 @@
          MODALES DE SELECCIÓN MÓVIL (NUEVO SISTEMA)
          ============================================ -->
 
-    <!-- Modal: Selección de Categoría -->
+    <!-- ⚠️ MODALES ANTIGUOS COMENTADOS - Ya no se usan en el nuevo sistema
+
+         Los siguientes modales usaban el sistema problemático con triggers
+         y handleModalOptionClick() que causaba el reset de valores.
+
+         Han sido reemplazados por los nuevos modales de personalización
+         ubicados al final del archivo (antes de </body>)
+         -->
+
+    <!--
+    MODALES ANTIGUOS - COMENTADOS
+
+    Modal: Selección de Categoría
     <div class="select-modal" id="categoryModal">
       <div class="select-modal-overlay"></div>
       <div class="select-modal-content">
@@ -5686,6 +5728,9 @@
       </div>
     </div>
 
+    FIN DE MODALES ANTIGUOS COMENTADOS
+    -->
+
     <!-- ============================================ -->
     <!-- MODAL DE PERMISO DE NOTIFICACIONES PUSH     -->
     <!-- ============================================ -->
@@ -5896,6 +5941,173 @@
               Potenciado por IA Gemini
             </span>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         MODALES PARA AÑADIR OPCIONES PERSONALIZADAS
+         ═══════════════════════════════════════════════════════════ -->
+
+    <!-- Modal para añadir categoría personalizada -->
+    <div class="custom-modal" id="addCategoryModal">
+      <div class="custom-modal-overlay"></div>
+      <div class="custom-modal-content">
+        <div class="custom-modal-header">
+          <h3><i class="fas fa-tag"></i> Añadir Categoría Personalizada</h3>
+          <button class="custom-modal-close" onclick="closeCustomModal('addCategoryModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="custom-modal-body">
+          <div class="form-group-premium">
+            <label class="form-label-premium">Nombre de la categoría</label>
+            <input
+              type="text"
+              id="newCategoryName"
+              class="form-input-premium"
+              placeholder="Ej: Mascotas, Educación..."
+              maxlength="30"
+            />
+          </div>
+          <div class="form-group-premium">
+            <label class="form-label-premium">Icono (emoji)</label>
+            <div class="emoji-picker-container">
+              <input
+                type="text"
+                id="newCategoryIcon"
+                class="form-input-premium emoji-input"
+                placeholder="🎯"
+                maxlength="2"
+              />
+              <div class="emoji-suggestions">
+                <span class="emoji-option" onclick="selectEmoji('newCategoryIcon', '🎯')">🎯</span>
+                <span class="emoji-option" onclick="selectEmoji('newCategoryIcon', '🐾')">🐾</span>
+                <span class="emoji-option" onclick="selectEmoji('newCategoryIcon', '📚')">📚</span>
+                <span class="emoji-option" onclick="selectEmoji('newCategoryIcon', '🎨')">🎨</span>
+                <span class="emoji-option" onclick="selectEmoji('newCategoryIcon', '💼')">💼</span>
+                <span class="emoji-option" onclick="selectEmoji('newCategoryIcon', '🏠')">🏠</span>
+                <span class="emoji-option" onclick="selectEmoji('newCategoryIcon', '✈️')">✈️</span>
+                <span class="emoji-option" onclick="selectEmoji('newCategoryIcon', '🎮')">🎮</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="custom-modal-footer">
+          <button class="btn-modal-cancel" onclick="closeCustomModal('addCategoryModal')">
+            Cancelar
+          </button>
+          <button class="btn-modal-save" onclick="saveNewCategory()">
+            <i class="fas fa-check"></i> Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para añadir necesidad personalizada -->
+    <div class="custom-modal" id="addNecessityModal">
+      <div class="custom-modal-overlay"></div>
+      <div class="custom-modal-content">
+        <div class="custom-modal-header">
+          <h3><i class="fas fa-chart-line"></i> Añadir Nivel de Necesidad</h3>
+          <button class="custom-modal-close" onclick="closeCustomModal('addNecessityModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="custom-modal-body">
+          <div class="form-group-premium">
+            <label class="form-label-premium">Nombre del nivel</label>
+            <input
+              type="text"
+              id="newNecessityName"
+              class="form-input-premium"
+              placeholder="Ej: Urgente, Opcional..."
+              maxlength="30"
+            />
+          </div>
+          <div class="form-group-premium">
+            <label class="form-label-premium">Icono (emoji o estrellas)</label>
+            <div class="emoji-picker-container">
+              <input
+                type="text"
+                id="newNecessityIcon"
+                class="form-input-premium emoji-input"
+                placeholder="⭐⭐"
+                maxlength="10"
+              />
+              <div class="emoji-suggestions">
+                <span class="emoji-option" onclick="selectEmoji('newNecessityIcon', '⭐⭐⭐⭐⭐⭐')">⭐⭐⭐⭐⭐⭐</span>
+                <span class="emoji-option" onclick="selectEmoji('newNecessityIcon', '🔥')">🔥</span>
+                <span class="emoji-option" onclick="selectEmoji('newNecessityIcon', '💎')">💎</span>
+                <span class="emoji-option" onclick="selectEmoji('newNecessityIcon', '✅')">✅</span>
+                <span class="emoji-option" onclick="selectEmoji('newNecessityIcon', '⚠️')">⚠️</span>
+                <span class="emoji-option" onclick="selectEmoji('newNecessityIcon', '🎯')">🎯</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="custom-modal-footer">
+          <button class="btn-modal-cancel" onclick="closeCustomModal('addNecessityModal')">
+            Cancelar
+          </button>
+          <button class="btn-modal-save" onclick="saveNewNecessity()">
+            <i class="fas fa-check"></i> Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para añadir usuario personalizado -->
+    <div class="custom-modal" id="addUserModal">
+      <div class="custom-modal-overlay"></div>
+      <div class="custom-modal-content">
+        <div class="custom-modal-header">
+          <h3><i class="fas fa-user-plus"></i> Añadir Usuario Personalizado</h3>
+          <button class="custom-modal-close" onclick="closeCustomModal('addUserModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="custom-modal-body">
+          <div class="form-group-premium">
+            <label class="form-label-premium">Nombre del usuario</label>
+            <input
+              type="text"
+              id="newUserName"
+              class="form-input-premium"
+              placeholder="Ej: María, Pedro..."
+              maxlength="30"
+            />
+          </div>
+          <div class="form-group-premium">
+            <label class="form-label-premium">Icono (emoji)</label>
+            <div class="emoji-picker-container">
+              <input
+                type="text"
+                id="newUserIcon"
+                class="form-input-premium emoji-input"
+                placeholder="👤"
+                maxlength="2"
+              />
+              <div class="emoji-suggestions">
+                <span class="emoji-option" onclick="selectEmoji('newUserIcon', '👨')">👨</span>
+                <span class="emoji-option" onclick="selectEmoji('newUserIcon', '👩')">👩</span>
+                <span class="emoji-option" onclick="selectEmoji('newUserIcon', '👦')">👦</span>
+                <span class="emoji-option" onclick="selectEmoji('newUserIcon', '👧')">👧</span>
+                <span class="emoji-option" onclick="selectEmoji('newUserIcon', '👶')">👶</span>
+                <span class="emoji-option" onclick="selectEmoji('newUserIcon', '👴')">👴</span>
+                <span class="emoji-option" onclick="selectEmoji('newUserIcon', '👵')">👵</span>
+                <span class="emoji-option" onclick="selectEmoji('newUserIcon', '👤')">👤</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="custom-modal-footer">
+          <button class="btn-modal-cancel" onclick="closeCustomModal('addUserModal')">
+            Cancelar
+          </button>
+          <button class="btn-modal-save" onclick="saveNewUser()">
+            <i class="fas fa-check"></i> Guardar
+          </button>
         </div>
       </div>
     </div>
