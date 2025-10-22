@@ -506,14 +506,20 @@ console.log('📝 Inicializando nuevo sistema de gastos con personalización...'
         return false;
       }
 
-      // CRÍTICO: Limpiar el monto pero mantener el valor EXACTO
-      // Remover separadores de miles (puntos/comas) pero conservar el número completo
-      let cleanAmount = amount.replace(/[.,]/g, ''); // Remover puntos y comas
-      cleanAmount = parseInt(cleanAmount) || 0; // Ahora sí convertir a entero
-      amountInput.value = cleanAmount.toString();
+      // CRÍTICO: El valor YA está limpio (solo dígitos) gracias a setupAmountInputFix
+      // Solo convertir a número para validar
+      const cleanAmount = parseInt(amount) || 0;
 
+      if (cleanAmount <= 0) {
+        e.preventDefault();
+        console.error('❌ Monto inválido:', cleanAmount);
+        showNotification('El monto debe ser mayor a 0', 'error');
+        return false;
+      }
+
+      // NO modificar el valor del input - mantenerlo exactamente como está
       console.log('✅ Todos los campos válidos');
-      console.log('💰 Monto limpiado:', amount, '→', cleanAmount);
+      console.log('💰 Monto a guardar:', amount, '(valor numérico:', cleanAmount, ')');
       console.log('Datos del gasto:', {
         amount: cleanAmount,
         description,
@@ -528,27 +534,43 @@ console.log('📝 Inicializando nuevo sistema de gastos con personalización...'
   }
 
   // ═══════════════════════════════════════════════════════════
-  // FIX PARA MONTO: Evitar conversión incorrecta
+  // CAMPO DE MONTO COMPLETAMENTE NUEVO Y SIMPLE
   // ═══════════════════════════════════════════════════════════
 
   function setupAmountInputFix() {
     const amountInput = document.getElementById('amount');
     if (!amountInput) return;
 
-    // Prevenir que el navegador formatee automáticamente
+    // SOLO permitir dígitos - nada más
     amountInput.addEventListener('input', function(e) {
-      // Remover cualquier carácter que no sea dígito
-      let value = e.target.value.replace(/[^0-9]/g, '');
+      // Guardar la posición del cursor
+      const cursorPos = e.target.selectionStart;
+      const oldLength = e.target.value.length;
+
+      // Remover TODO excepto números
+      let value = e.target.value.replace(/\D/g, '');
+
+      // Actualizar el campo
       e.target.value = value;
+
+      // Restaurar posición del cursor
+      const newLength = value.length;
+      const diff = newLength - oldLength;
+      e.target.setSelectionRange(cursorPos + diff, cursorPos + diff);
     });
 
-    // Al hacer blur, asegurar que sea número entero
+    // No hacer nada en blur - mantener el valor tal cual
     amountInput.addEventListener('blur', function(e) {
-      let value = parseInt(e.target.value) || 0;
-      e.target.value = value;
+      const value = e.target.value.trim();
+      if (value === '') {
+        e.target.value = '';
+      } else {
+        // Solo asegurar que sea número
+        e.target.value = value.replace(/\D/g, '');
+      }
     });
 
-    console.log('✅ Fix de monto configurado (solo números enteros)');
+    console.log('✅ Campo de monto configurado (solo dígitos 0-9)');
   }
 
   // ═══════════════════════════════════════════════════════════
