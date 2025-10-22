@@ -602,11 +602,14 @@
           </button>
 
           <button
-            id="mobileLogoutBtn"
-            class="icon-btn mobile-logout-btn"
-            title="Cerrar sesión"
+            id="mobileAuthBtn"
+            class="icon-btn mobile-auth-btn"
+            title="Iniciar sesión"
+            data-auth-state="logged-out"
+            style="display: none;"
           >
-            <i class="fas fa-sign-out-alt"></i>
+            <i class="fas fa-sign-in-alt"></i>
+            <span class="mobile-auth-text">Iniciar sesión</span>
           </button>
 
           <div id="notificationDropdown" class="notification-dropdown hidden">

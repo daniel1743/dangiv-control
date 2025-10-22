@@ -20,7 +20,18 @@ class FinanceApp {
       this._latinDecoder = null;
     }
 
-    const rawData = JSON.parse(localStorage.getItem('financiaProData')) || {};
+    // 🔒 SEGURIDAD: Limpiar datos sensibles al inicio si no hay usuario autenticado
+    const hasAuthenticatedUser = this.checkAuthenticationOnStartup();
+
+    let rawData;
+    if (!hasAuthenticatedUser) {
+      // Si no hay usuario autenticado, limpiar datos financieros sensibles
+      console.log('[Security] No authenticated user found - clearing sensitive data');
+      this.clearSensitiveDataOnStartup();
+      rawData = {}; // Iniciar con datos vacíos
+    } else {
+      rawData = JSON.parse(localStorage.getItem('financiaProData')) || {};
+    }
 
     const { cleaned: savedData, changed: hadEncodingIssues } =
       this.normalizePersistedData(rawData);
@@ -1603,7 +1614,7 @@ class FinanceApp {
     );
 
     FB.onAuthStateChanged(FB.auth, (user) => {
-      const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+      const mobileAuthBtn = document.getElementById('mobileAuthBtn');
       const mobileProfileBtn = document.getElementById('mobileProfileBtn');
       const navbarLoginBtn = document.getElementById('navbarLoginBtn');
       const footerLoginLink = document.getElementById('footerLoginLink');
@@ -1632,8 +1643,15 @@ class FinanceApp {
         if (navbarLoginBtn) navbarLoginBtn.style.display = 'none';
         if (profileMenuContainer) profileMenuContainer.style.display = 'block';
 
-        // Show mobile buttons (CSS handles responsive visibility)
-        if (mobileLogoutBtn) mobileLogoutBtn.classList.add('show');
+        // Show mobile buttons and update auth button to logout
+        if (mobileAuthBtn) {
+          mobileAuthBtn.style.display = 'flex';
+          mobileAuthBtn.setAttribute('data-auth-state', 'logged-in');
+          mobileAuthBtn.setAttribute('title', 'Cerrar sesión');
+          mobileAuthBtn.querySelector('i').className = 'fas fa-sign-out-alt';
+          const textSpan = mobileAuthBtn.querySelector('.mobile-auth-text');
+          if (textSpan) textSpan.textContent = 'Cerrar sesión';
+        }
         if (mobileProfileBtn) mobileProfileBtn.classList.add('show');
 
         // Footer: Ocultar link de login
@@ -1796,8 +1814,15 @@ class FinanceApp {
         if (navbarLoginBtn) navbarLoginBtn.style.display = 'inline-flex';
         if (profileMenuContainer) profileMenuContainer.style.display = 'none';
 
-        // Hide mobile buttons
-        if (mobileLogoutBtn) mobileLogoutBtn.classList.remove('show');
+        // Show login button, update auth button to login
+        if (mobileAuthBtn) {
+          mobileAuthBtn.style.display = 'flex';
+          mobileAuthBtn.setAttribute('data-auth-state', 'logged-out');
+          mobileAuthBtn.setAttribute('title', 'Iniciar sesión');
+          mobileAuthBtn.querySelector('i').className = 'fas fa-sign-in-alt';
+          const textSpan = mobileAuthBtn.querySelector('.mobile-auth-text');
+          if (textSpan) textSpan.textContent = 'Iniciar sesión';
+        }
         if (mobileProfileBtn) mobileProfileBtn.classList.remove('show');
 
         // Footer: Mostrar link de login
@@ -1952,11 +1977,22 @@ class FinanceApp {
       });
     }
 
-    // Mobile logout button
-    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
-    if (mobileLogoutBtn) {
-      mobileLogoutBtn.addEventListener('click', () => {
-        this.showLogoutConfirmModal();
+    // Mobile auth button (login/logout dinámico)
+    const mobileAuthBtn = document.getElementById('mobileAuthBtn');
+    if (mobileAuthBtn) {
+      mobileAuthBtn.addEventListener('click', () => {
+        const authState = mobileAuthBtn.getAttribute('data-auth-state');
+        if (authState === 'logged-in') {
+          // Usuario autenticado -> cerrar sesión
+          this.showLogoutConfirmModal();
+        } else {
+          // Usuario no autenticado -> abrir modal de login
+          this.showSection('landing');
+          setTimeout(() => {
+            const loginBtn = document.getElementById('heroCTA');
+            if (loginBtn) loginBtn.click();
+          }, 300);
+        }
       });
     }
   }
@@ -2095,6 +2131,57 @@ class FinanceApp {
         }
       }
     });
+  }
+
+  // 🔒 FUNCIÓN DE SEGURIDAD: Verificar si hay usuario autenticado al iniciar
+  checkAuthenticationOnStartup() {
+    // Verificar si hay sesión activa de Firebase
+    const FB = window.FB;
+    if (FB && FB.auth && FB.auth.currentUser) {
+      console.log('[Security] Authenticated Firebase user found');
+      return true;
+    }
+
+    // Verificar si hay usuario guardado que NO sea anónimo
+    const savedData = JSON.parse(localStorage.getItem('financiaProData')) || {};
+    if (savedData.currentUser && savedData.currentUser !== 'anonymous') {
+      // Hay un usuario guardado, pero necesitamos verificar si tiene sesión válida
+      // Si no hay sesión de Firebase, consideramos que no está autenticado
+      console.log('[Security] Saved user found but no Firebase session');
+      return false;
+    }
+
+    console.log('[Security] No authenticated user');
+    return false;
+  }
+
+  // 🔒 FUNCIÓN DE SEGURIDAD: Limpiar datos sensibles al iniciar sin autenticación
+  clearSensitiveDataOnStartup() {
+    console.log('[Security] Clearing sensitive financial data...');
+
+    // Limpiar solo los datos financieros sensibles del localStorage
+    const keysToRemove = [
+      'financiaProData',           // Datos principales de la app
+      'financia_expenses',         // Gastos
+      'financia_goals',            // Metas financieras
+      'financia_income',           // Ingresos
+      'financia_balance',          // Balance
+      'financia_savings',          // Ahorros
+      'financia_transactions',     // Transacciones
+      'financia_user_profile',     // Perfil de usuario
+      'customUsers_v2',            // Usuarios personalizados
+      'customCategories_v2',       // Categorías personalizadas
+      'customNecessities_v2',      // Necesidades personalizadas
+    ];
+
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key);
+    });
+
+    // Limpiar sessionStorage también
+    sessionStorage.clear();
+
+    console.log('[Security] Sensitive data cleared successfully');
   }
 
   clearUserData() {
