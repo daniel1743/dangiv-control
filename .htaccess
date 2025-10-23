@@ -1,0 +1,91 @@
+# ====================================
+# REDIRECCIONES 301 - FINANCIASUITE.COM
+# ====================================
+# Este archivo es para servidores Apache
+# Si usas Vercel, usa vercel.json en su lugar
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # ---------------------------------
+    # 1. FORZAR HTTPS (HTTP → HTTPS)
+    # ---------------------------------
+    # Redirige TODAS las peticiones HTTP a HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+    # ---------------------------------
+    # 2. ELIMINAR WWW (www → no-www)
+    # ---------------------------------
+    # Redirige www.financiasuite.com a financiasuite.com
+    RewriteCond %{HTTP_HOST} ^www\.financiasuite\.com$ [NC]
+    RewriteRule ^(.*)$ https://financiasuite.com/$1 [R=301,L]
+
+    # ---------------------------------
+    # 3. SPA - REDIRECCIÓN A INDEX.HTML
+    # ---------------------------------
+    # Todas las rutas que no sean archivos físicos van a index.html
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ /index.html [L]
+</IfModule>
+
+# ====================================
+# HEADERS DE SEGURIDAD
+# ====================================
+<IfModule mod_headers.c>
+    # Canonical URL en header
+    Header set Link "<https://financiasuite.com/>; rel=\"canonical\""
+
+    # HSTS - Forzar HTTPS por 1 año
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # Prevenir MIME sniffing
+    Header set X-Content-Type-Options "nosniff"
+
+    # Protección XSS
+    Header set X-XSS-Protection "1; mode=block"
+
+    # Prevenir clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+
+    # Referrer policy
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# ====================================
+# CACHE CONTROL
+# ====================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # HTML sin cache
+    ExpiresByType text/html "access plus 0 seconds"
+
+    # Assets estáticos - 1 año
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule>
+
+# ====================================
+# COMPRESIÓN GZIP
+# ====================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>

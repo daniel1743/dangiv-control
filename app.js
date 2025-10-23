@@ -385,7 +385,8 @@ class FinanceApp {
       },
     ];
     this.charts = {};
-    this.currentSection = 'dashboard';
+    // 🔒 SEGURIDAD: Iniciar en landing si no hay autenticación
+    this.currentSection = hasAuthenticatedUser ? 'dashboard' : 'landing';
     this.currentUser = 'anonymous'; // Â¡CORRECCIÃƒâ€œN APLICADA!
     this.userPlan = 'free'; // free or pro
     this.userProfile = savedData.userProfile || {
@@ -2048,6 +2049,16 @@ class FinanceApp {
         closeModal();
       }
     };
+  }
+
+  // 🔒 MODAL: Autenticación requerida para acceder a funcionalidades
+  showAuthRequiredModal() {
+    this.showToast('⚠️ Debes iniciar sesión para acceder a esta sección', 'warning');
+
+    // Mostrar modal de registro después de un momento
+    setTimeout(() => {
+      this.showRegisterPrompt();
+    }, 500);
   }
 
   showRegisterPrompt() {
@@ -4289,6 +4300,17 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
   }
 
   showSection(sectionId) {
+    // 🔒 AUTENTICACIÓN OBLIGATORIA: Bloquear todas las secciones excepto landing
+    const isAuthenticated = this.currentUser && this.currentUser !== 'anonymous' && this.firebaseUser;
+    const protectedSections = ['dashboard', 'expenses', 'goals', 'analysis', 'shopping', 'config', 'store', 'achievements', 'history'];
+
+    if (!isAuthenticated && protectedSections.includes(sectionId)) {
+      console.log('[Auth] Acceso bloqueado - Se requiere autenticación');
+      this.showAuthRequiredModal();
+      // Forzar a landing
+      sectionId = 'landing';
+    }
+
     // Update navigation
     document.querySelectorAll('.nav-item').forEach((item) => {
       item.classList.remove('active');
@@ -7359,6 +7381,14 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
   addExpense(e) {
     e.preventDefault();
 
+    // 🔒 BLOQUEO: Solo usuarios autenticados pueden agregar gastos
+    const isAuthenticated = this.currentUser && this.currentUser !== 'anonymous' && this.firebaseUser;
+    if (!isAuthenticated) {
+      console.log('[Auth] Intento de agregar gasto sin autenticación - bloqueado');
+      this.showAuthRequiredModal();
+      return;
+    }
+
     const description = document.getElementById('description').value.trim();
     const amountInput = document.getElementById('amount');
     const amount = this.unformatNumber(amountInput.value);
@@ -7511,6 +7541,14 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
   }
 
   deleteExpense(id) {
+    // 🔒 BLOQUEO: Solo usuarios autenticados pueden eliminar gastos
+    const isAuthenticated = this.currentUser && this.currentUser !== 'anonymous' && this.firebaseUser;
+    if (!isAuthenticated) {
+      console.log('[Auth] Intento de eliminar gasto sin autenticación - bloqueado');
+      this.showAuthRequiredModal();
+      return;
+    }
+
     const idx = this.expenses.findIndex((expense) => expense.id === id);
     if (idx === -1) {
       this.showToast('Gasto no encontrado', 'error');
@@ -7894,6 +7932,14 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
   // Goals Methods
   addGoal(e) {
     e.preventDefault();
+
+    // 🔒 BLOQUEO: Solo usuarios autenticados pueden agregar metas
+    const isAuthenticated = this.currentUser && this.currentUser !== 'anonymous' && this.firebaseUser;
+    if (!isAuthenticated) {
+      console.log('[Auth] Intento de agregar meta sin autenticación - bloqueado');
+      this.showAuthRequiredModal();
+      return;
+    }
 
     const name = document.getElementById('goalName').value.trim();
     const targetInput = document.getElementById('goalTarget');
@@ -8831,6 +8877,14 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
   addShoppingItem(e) {
     e.preventDefault();
 
+    // 🔒 BLOQUEO: Solo usuarios autenticados pueden agregar items de compras
+    const isAuthenticated = this.currentUser && this.currentUser !== 'anonymous' && this.firebaseUser;
+    if (!isAuthenticated) {
+      console.log('[Auth] Intento de agregar item de compra sin autenticación - bloqueado');
+      this.showAuthRequiredModal();
+      return;
+    }
+
     const product = document.getElementById('product').value.trim();
     const quantity = parseInt(document.getElementById('quantity').value);
     const necessary = document.getElementById('necessary').value;
@@ -8955,6 +9009,14 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
   updateIncome(e) {
     e.preventDefault();
 
+    // 🔒 BLOQUEO: Solo usuarios autenticados pueden actualizar ingresos
+    const isAuthenticated = this.currentUser && this.currentUser !== 'anonymous' && this.firebaseUser;
+    if (!isAuthenticated) {
+      console.log('[Auth] Intento de actualizar ingresos sin autenticación - bloqueado');
+      this.showAuthRequiredModal();
+      return;
+    }
+
     const incomeInput = document.getElementById('monthlyIncome');
     const income = this.unformatNumber(incomeInput.value);
 
@@ -8972,6 +9034,14 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
 
   // Additional Incomes Methods
   addAdditionalIncome() {
+    // 🔒 BLOQUEO: Solo usuarios autenticados pueden agregar ingresos adicionales
+    const isAuthenticated = this.currentUser && this.currentUser !== 'anonymous' && this.firebaseUser;
+    if (!isAuthenticated) {
+      console.log('[Auth] Intento de agregar ingreso adicional sin autenticación - bloqueado');
+      this.showAuthRequiredModal();
+      return;
+    }
+
     const descriptionInput = document.getElementById(
       'additionalIncomeDescription'
     );

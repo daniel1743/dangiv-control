@@ -6,7 +6,31 @@
   "trailingSlash": false,
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.financiasuite.com"
+        }
+      ],
+      "destination": "https://financiasuite.com/",
+      "permanent": true,
+      "statusCode": 301
+    },
+    {
+      "source": "/:path(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.financiasuite.com"
+        }
+      ],
+      "destination": "https://financiasuite.com/:path",
+      "permanent": true,
+      "statusCode": 301
+    },
+    {
+      "source": "/",
       "has": [
         {
           "type": "header",
@@ -14,25 +38,32 @@
           "value": "http"
         }
       ],
-      "destination": "https://financiasuite.com/:path*",
-      "permanent": true
+      "destination": "https://financiasuite.com/",
+      "permanent": true,
+      "statusCode": 301
     },
     {
-      "source": "/:path*",
+      "source": "/:path(.*)",
       "has": [
         {
-          "type": "host",
-          "value": "www.financiasuite.com"
+          "type": "header",
+          "key": "x-forwarded-proto",
+          "value": "http"
         }
       ],
-      "destination": "https://financiasuite.com/:path*",
-      "permanent": true
+      "destination": "https://financiasuite.com/:path",
+      "permanent": true,
+      "statusCode": 301
     }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
+        {
+          "key": "Link",
+          "value": "<https://financiasuite.com/>; rel=\"canonical\""
+        },
         {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
@@ -55,7 +86,7 @@
         },
         {
           "key": "Strict-Transport-Security",
-          "value": "max-age=31536000; includeSubDomains"
+          "value": "max-age=31536000; includeSubDomains; preload"
         },
         {
           "key": "Content-Security-Policy",
