@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEMO - Navbar con Nueva Paleta de Colores | Financia Suite</title>
+
+    <!-- Nueva paleta de colores -->
+    <link rel="stylesheet" href="NUEVA-PALETA-COLORES.css">
+
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--color-background);
+            color: var(--color-text);
+            min-height: 100vh;
+        }
+
+        /* ========================================
+           NAVBAR CON NUEVA PALETA
+           ======================================== */
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--navbar-height);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+            color: var(--color-text-inverse);
+            padding: 0 var(--space-24);
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transition: all var(--transition-base);
+        }
+
+        .navbar:hover {
+            box-shadow: var(--shadow-xl);
+        }
+
+        .navbar__container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: var(--space-12);
+        }
+
+        /* Logo */
+        .navbar__logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+            font-family: var(--font-display);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            cursor: pointer;
+            transition: transform var(--transition-base);
+        }
+
+        .navbar__logo:hover {
+            transform: scale(1.02);
+        }
+
+        .logo-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+            transition: all var(--transition-base);
+        }
+
+        .navbar__logo:hover .logo-icon {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(5deg);
+        }
+
+        .logo-icon i {
+            font-size: var(--font-size-2xl);
+            color: var(--color-text-inverse);
+        }
+
+        .brand-name {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-tagline {
+            font-size: var(--font-size-xs);
+            opacity: 0.9;
+            font-weight: var(--font-weight-normal);
+        }
+
+        /* Actions */
+        .navbar__actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+        }
+
+        /* Botones del navbar */
+        .navbar-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-4);
+            height: var(--button-height-md);
+            padding: 0 var(--space-16);
+            border: 2px solid transparent;
+            border-radius: var(--radius-lg);
+            font-family: var(--font-primary);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        /* Botón primary (blanco con hover sutil) */
+        .navbar-btn--primary {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--color-text-inverse);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-btn--primary:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar-btn--primary:active {
+            transform: translateY(0);
+        }
+
+        /* Botón secondary (outline blanco) */
+        .navbar-btn--secondary {
+            background: transparent;
+            border-color: rgba(255, 255, 255, 0.3);
+            color: var(--color-text-inverse);
+        }
+
+        .navbar-btn--secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Botón premium (gradiente púrpura) */
+        .navbar-btn--premium {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-purple-600) 100%);
+            color: var(--color-text-inverse);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .navbar-btn--premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .navbar-btn--premium:hover::before {
+            left: 100%;
+        }
+
+        .navbar-btn--premium:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+        }
+
+        /* Badge PRO */
+        .pro-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            background: var(--color-warning);
+            color: white;
+            font-size: 10px;
+            font-weight: var(--font-weight-bold);
+            border-radius: var(--radius-full);
+            margin-left: 4px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Profile Avatar */
+        .profile-avatar-container {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, var(--color-accent), var(--color-purple-400));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-lg);
+            transition: all var(--transition-base);
+        }
+
+        .profile-avatar:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: var(--color-text-inverse);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(180deg);
+        }
+
+        /* ========================================
+           DEMO CONTENT
+           ======================================== */
+
+        .demo-content {
+            margin-top: calc(var(--navbar-height) + var(--space-24));
+            padding: var(--space-24);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .demo-title {
+            font-family: var(--font-display);
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-extrabold);
+            color: var(--color-primary);
+            margin-bottom: var(--space-16);
+            text-align: center;
+        }
+
+        .demo-subtitle {
+            font-size: var(--font-size-xl);
+            color: var(--color-text-secondary);
+            text-align: center;
+            margin-bottom: var(--space-32);
+        }
+
+        .color-palette-section {
+            background: var(--color-surface);
+            border-radius: var(--radius-xl);
+            padding: var(--space-24);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-24);
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text);
+            margin-bottom: var(--space-16);
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: var(--space-12);
+        }
+
+        .color-swatch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .color-box {
+            width: 100%;
+            height: 80px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-base);
+            cursor: pointer;
+        }
+
+        .color-box:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .color-label {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-secondary);
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 var(--space-16);
+            }
+
+            .brand-tagline {
+                display: none;
+            }
+
+            .navbar-btn span {
+                display: none;
+            }
+
+            .navbar__actions {
+                gap: var(--space-8);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR CON NUEVA PALETA -->
+    <nav class="navbar">
+        <div class="navbar__container">
+            <!-- Logo -->
+            <div class="navbar__logo">
+                <div class="logo-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div>
+                    <div class="brand-name">Financia Suite</div>
+                    <div class="brand-tagline">Control Financiero Inteligente</div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="navbar__actions">
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" id="themeToggle" title="Cambiar tema">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <!-- Dashboard Button -->
+                <button class="navbar-btn navbar-btn--secondary">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </button>
+
+                <!-- Upgrade to Premium -->
+                <button class="navbar-btn navbar-btn--premium">
+                    <i class="fas fa-crown"></i>
+                    <span>Upgrade PRO</span>
+                    <span class="pro-badge">50% OFF</span>
+                </button>
+
+                <!-- Notifications -->
+                <button class="navbar-btn navbar-btn--primary">
+                    <i class="fas fa-bell"></i>
+                    <span>3</span>
+                </button>
+
+                <!-- Profile Avatar -->
+                <div class="profile-avatar-container">
+                    <div class="profile-avatar">DG</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- DEMO CONTENT -->
+    <main class="demo-content">
+        <h1 class="demo-title">🎨 Nueva Paleta de Colores Profesional</h1>
+        <p class="demo-subtitle">Sistema de diseño moderno para Financia Suite</p>
+
+        <!-- Primary Colors -->
+        <section class="color-palette-section">
+            <h2 class="section-title">🔵 Colores Primarios (Azul Profesional)</h2>
+            <div class="color-grid">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-blue-400);"></div>
+                    <div class="color-label">Blue 400</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-blue-500);"></div>
+                    <div class="color-label">Blue 500</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-blue-600);"></div>
+                    <div class="color-label">Blue 600 ⭐</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-blue-700);"></div>
+                    <div class="color-label">Blue 700</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-blue-800);"></div>
+                    <div class="color-label">Blue 800</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Secondary Colors -->
+        <section class="color-palette-section">
+            <h2 class="section-title">🟢 Colores Secundarios (Verde Éxito)</h2>
+            <div class="color-grid">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-green-400);"></div>
+                    <div class="color-label">Green 400</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-green-500);"></div>
+                    <div class="color-label">Green 500</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-green-600);"></div>
+                    <div class="color-label">Green 600 ⭐</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-green-700);"></div>
+                    <div class="color-label">Green 700</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Accent Colors -->
+        <section class="color-palette-section">
+            <h2 class="section-title">🟣 Colores de Acento (Púrpura Premium)</h2>
+            <div class="color-grid">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-purple-500);"></div>
+                    <div class="color-label">Purple 500</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-purple-600);"></div>
+                    <div class="color-label">Purple 600</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-purple-700);"></div>
+                    <div class="color-label">Purple 700 ⭐</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-purple-800);"></div>
+                    <div class="color-label">Purple 800</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Error/Warning Colors -->
+        <section class="color-palette-section">
+            <h2 class="section-title">⚠️ Alertas y Advertencias</h2>
+            <div class="color-grid">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-red-500);"></div>
+                    <div class="color-label">Red 500 (Error)</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-red-600);"></div>
+                    <div class="color-label">Red 600 ⭐</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-amber-500);"></div>
+                    <div class="color-label">Amber 500 ⭐</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--color-amber-600);"></div>
+                    <div class="color-label">Amber 600</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Toggle Dark Mode
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const icon = themeToggle.querySelector('i');
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            html.setAttribute('data-theme', newTheme);
+
+            if (newTheme === 'dark') {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+    </script>
+</body>
+</html>

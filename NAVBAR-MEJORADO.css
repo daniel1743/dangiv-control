@@ -1,0 +1,156 @@
+/* ============================================
+   NAVBAR MEJORADO CON NUEVA PALETA
+   Buscar en style.css la sección ".navbar {"
+   y reemplazar con esto
+   ============================================ */
+
+/* Header/Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  /* NUEVO: Gradiente azul profesional */
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  color: var(--color-white);
+  padding: 0 var(--space-24);
+  display: flex;
+  align-items: center;
+  /* NUEVO: Sombra más prominente */
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+/* NUEVO: Efecto hover del navbar completo */
+.navbar:hover {
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+}
+
+.navbar__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: var(--space-12);
+}
+
+/* Logo Mejorado */
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.navbar__logo:hover {
+  transform: scale(1.02);
+}
+
+/* NUEVO: Logo icon con glassmorphism */
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.navbar__logo:hover .logo-icon {
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(5deg);
+}
+
+.logo-svg,
+.logo-icon i {
+  width: 28px;
+  height: 28px;
+  color: var(--color-white);
+  transition: transform 0.3s ease;
+}
+
+/* Botones del navbar mejorados */
+.navbar .icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.navbar .icon-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+.navbar .icon-btn:active {
+  transform: translateY(0);
+}
+
+/* Profile avatar mejorado */
+.profile-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-purple-400));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-avatar:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive navbar */
+@media (max-width: 768px) {
+  .navbar {
+    display: none !important; /* Oculto en móvil (ya tienes mobile-profile-banner) */
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0 var(--space-12);
+  }
+
+  .navbar__logo span {
+    font-size: var(--font-size-md);
+    max-width: 160px;
+  }
+
+  .navbar__actions {
+    gap: var(--space-4);
+  }
+
+  .navbar .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+}

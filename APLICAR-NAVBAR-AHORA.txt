@@ -1,0 +1,89 @@
+═══════════════════════════════════════════════════════════════
+  APLICAR NUEVA PALETA AL NAVBAR - INSTRUCCIÓN RÁPIDA
+═══════════════════════════════════════════════════════════════
+
+PASO 1: Abre tu archivo "style.css" con tu editor de texto
+
+PASO 2: Busca (Ctrl+F) esta línea:
+   background-color: var(--color-primary);
+
+PASO 3: Reemplaza la sección del navbar (líneas 1517-1529) que dice:
+
+═══════════════════════════════════════════════════════════════
+CÓDIGO VIEJO (BORRAR):
+═══════════════════════════════════════════════════════════════
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background-color: var(--color-primary);
+  color: var(--color-btn-primary-text);
+  padding: 0 var(--space-24);
+  display: flex;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+}
+
+═══════════════════════════════════════════════════════════════
+CÓDIGO NUEVO (PEGAR):
+═══════════════════════════════════════════════════════════════
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  /* NUEVO: Gradiente azul profesional */
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  padding: 0 var(--space-24);
+  display: flex;
+  align-items: center;
+  /* NUEVO: Sombra más prominente */
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+/* NUEVO: Efecto hover del navbar */
+.navbar:hover {
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+}
+
+═══════════════════════════════════════════════════════════════
+
+PASO 4: GUARDA el archivo (Ctrl+S)
+
+PASO 5: Abre tu "index.html" en el navegador
+
+PASO 6: Refresca con Ctrl+F5 (para limpiar caché)
+
+═══════════════════════════════════════════════════════════════
+  ¿QUÉ VERÁS?
+═══════════════════════════════════════════════════════════════
+
+✅ Navbar AZUL PROFESIONAL (antes era teal/turquesa)
+✅ Gradiente sutil de azul claro a azul oscuro
+✅ Sombra más elegante
+✅ Cuando pasas el mouse, la sombra se intensifica
+
+═══════════════════════════════════════════════════════════════
+  COMPARACIÓN DE COLORES
+═══════════════════════════════════════════════════════════════
+
+ANTES:  Teal #21808D (turquesa verdoso)
+        [████████████████]
+
+DESPUÉS: Azul #2563EB → #1D4ED8 (azul profesional con gradiente)
+        [████████████████]
+
+═══════════════════════════════════════════════════════════════
+
+¡Listo! Después de ver cómo queda, dime si te gusta para
+aplicar el resto de la paleta en toda la aplicación.
+
+═══════════════════════════════════════════════════════════════

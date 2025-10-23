@@ -1713,6 +1713,11 @@ class FinanceApp {
               dashboardSection.classList.add('active');
             }
 
+            // 🔝 Scroll to top al mostrar dashboard después de login
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+
             // NUEVO: Mostrar botones Fin y + para usuarios autenticados
             this.showAuthRequiredButtons();
 
@@ -1784,6 +1789,11 @@ class FinanceApp {
               dashboardSection.classList.add('active');
             }
 
+            // 🔝 Scroll to top al mostrar dashboard después de login
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+
             // NUEVO: Mostrar botones Fin y + para usuarios autenticados
             this.showAuthRequiredButtons();
 
@@ -1844,6 +1854,11 @@ class FinanceApp {
         if (dashboardSection) {
           dashboardSection.classList.remove('active');
         }
+
+        // 🔝 Scroll to top al mostrar landing
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
 
         // NO renderizar dashboard ni stats para usuarios anónimos
         // Solo landing page con videos y contenido de marketing
@@ -3428,21 +3443,81 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
         this.updateUserSelectionDropdown();
         this.updateDefaultUserDropdown(); // Update settings dropdown too
 
-        // Seleccionar el usuario recién creado
+        // 🎯 FEEDBACK VISUAL INEQUÍVOCO - Paso 1: Seleccionar el usuario
         if (select) {
           select.value = newUserName;
+
+          // 🎯 Paso 2: ANIMACIÓN DE CONFIRMACIÓN en el select
+          select.style.animation = 'none';
+          setTimeout(() => {
+            select.style.animation = 'pulse-success 0.6s ease-in-out';
+            select.style.borderColor = '#10B981';
+            select.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.2)';
+          }, 10);
+
+          // Remover animación después
+          setTimeout(() => {
+            select.style.animation = '';
+            select.style.borderColor = '';
+            select.style.boxShadow = '';
+          }, 800);
         }
+
+        // 🎯 Paso 3: Ocultar input de agregar usuario
         group?.classList.add('hidden');
         if (input) {
           input.value = '';
         }
 
-        this.showToast(`Usuario "${newUserName}" añadido`, 'success');
-        console.log('User added successfully:', newUserName);
+        // 🎯 Paso 4: Toast de éxito MÁS VISIBLE
+        this.showToast(`✅ Usuario "${newUserName}" agregado y seleccionado`, 'success');
+
+        // 🎯 Paso 5: Mostrar mensaje temporal junto al select
+        const selectContainer = select?.parentElement;
+        if (selectContainer) {
+          const successMsg = document.createElement('div');
+          successMsg.className = 'user-added-success-message';
+          successMsg.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <span>"${newUserName}" agregado correctamente</span>
+          `;
+          successMsg.style.cssText = `
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 8px;
+            padding: 12px;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: slideInDown 0.3s ease-out;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            z-index: 1000;
+          `;
+
+          selectContainer.style.position = 'relative';
+          selectContainer.appendChild(successMsg);
+
+          // Remover mensaje después de 3 segundos
+          setTimeout(() => {
+            successMsg.style.animation = 'slideOutUp 0.3s ease-in';
+            setTimeout(() => {
+              successMsg.remove();
+            }, 300);
+          }, 3000);
+        }
+
+        console.log('✅ User added successfully:', newUserName);
       } else if (newUserName && this.customUsers.includes(newUserName)) {
-        this.showToast('Este usuario ya existe', 'error');
+        this.showToast('❌ Este usuario ya existe', 'error');
       } else {
-        this.showToast('Ingresa un nombre de usuario', 'error');
+        this.showToast('⚠️ Ingresa un nombre de usuario', 'error');
       }
     };
 
@@ -4333,12 +4408,19 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       targetSection.classList.add('active');
     }
 
-    // Scroll to top of page when changing sections
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'smooth',
-    });
+    // 🔝 SCROLL TO TOP: Asegurar que SIEMPRE comience desde arriba
+    // Método 1: Scroll inmediato (sin animación)
+    window.scrollTo(0, 0);
+
+    // Método 2: Scroll del body y html (fallback para navegadores)
+    document.body.scrollTop = 0; // Safari
+    document.documentElement.scrollTop = 0; // Chrome, Firefox, IE, Opera
+
+    // Método 3: Forzar scroll del contenedor principal si existe
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+      mainContent.scrollTop = 0;
+    }
 
     this.currentSection = sectionId;
 

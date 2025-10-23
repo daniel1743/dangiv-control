@@ -62,17 +62,29 @@ class OnboardingManager {
   // INICIO DEL ONBOARDING
   // ========================================
   start() {
-    // NUEVO: NO iniciar onboarding para usuarios anónimos
-    // Verificar múltiples condiciones para asegurar que el usuario está autenticado
-    const isAnonymous = window.app && (window.app.currentUser === 'anonymous' || !window.app.currentUser);
-    const noFirebaseUser = !window.FB || !window.FB.auth || !window.FB.auth.currentUser;
-    const noLocalStorage = !localStorage.getItem('authToken') && !localStorage.getItem('currentUser');
+    // MEJORADO: Verificación más inteligente de autenticación
+    // Prioridad 1: Verificar Firebase Auth (más confiable)
+    const hasFirebaseUser = window.FB && window.FB.auth && window.FB.auth.currentUser;
 
-    if (isAnonymous || noFirebaseUser || noLocalStorage) {
+    // Prioridad 2: Verificar localStorage como fallback
+    const hasLocalAuth = localStorage.getItem('authToken') || localStorage.getItem('currentUser');
+
+    // Prioridad 3: Verificar que NO sea usuario anónimo explícito
+    const isExplicitlyAnonymous = window.app && window.app.currentUser === 'anonymous';
+
+    // PERMITIR onboarding si:
+    // - Tiene Firebase Auth activo, O
+    // - Tiene auth en localStorage, Y
+    // - NO es explícitamente anónimo
+    const canStartOnboarding = hasFirebaseUser || (hasLocalAuth && !isExplicitlyAnonymous);
+
+    if (!canStartOnboarding) {
       console.log('⏭️ Onboarding bloqueado - Usuario no autenticado');
+      console.log('   Firebase User:', !!hasFirebaseUser);
+      console.log('   Local Auth:', !!hasLocalAuth);
+      console.log('   Is Anonymous:', isExplicitlyAnonymous);
 
       // Solo redirigir si estamos en onboarding.html
-      // Si ya estamos en index.html, simplemente no hacer nada
       if (window.location.pathname.includes('onboarding.html')) {
         console.log('📍 Redirigiendo a landing page...');
         window.location.replace('index.html');
@@ -83,6 +95,7 @@ class OnboardingManager {
     }
 
     console.log('🚀 Iniciando onboarding...');
+    console.log('   ✅ Autenticación verificada');
     this.showStep('welcome');
   }
 
@@ -104,10 +117,12 @@ class OnboardingManager {
     // Mostrar el paso actual
     const currentStepEl = document.getElementById(`step-${stepName}`);
     if (currentStepEl) {
+      // OPTIMIZADO: Reducido de 300ms a 50ms
+      // animateStepEntry() ya maneja su propia animación con delay interno
       setTimeout(() => {
         currentStepEl.classList.add('active');
         this.animateStepEntry(currentStepEl);
-      }, 300);
+      }, 50);
     }
 
     // Ejecutar lógica específica del paso
