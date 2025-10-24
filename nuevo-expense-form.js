@@ -18,23 +18,38 @@ function initNewExpenseForm() {
   const userSelect = document.getElementById('user');
   if (userSelect && window.app && window.app.userProfile) {
     const userName = window.app.userProfile.name;
+    console.log('🔍 Intentando establecer usuario:', userName);
+
     if (userName && userName !== 'Usuario') {
       // Buscar si existe una opción con ese nombre
-      const userOption = Array.from(userSelect.options).find(
-        opt => opt.value.toLowerCase() === userName.toLowerCase()
+      let userOption = Array.from(userSelect.options).find(
+        (opt) => opt.value.toLowerCase() === userName.toLowerCase()
       );
-      if (userOption) {
-        userSelect.value = userOption.value;
-        console.log('👤 Usuario establecido:', userOption.value);
+
+      // Si no existe, crear la opción automáticamente
+      if (!userOption) {
+        console.log('➕ Agregando usuario personalizado:', userName);
+        const newOption = document.createElement('option');
+        newOption.value = userName;
+        newOption.textContent = `👤 ${userName}`;
+        userSelect.appendChild(newOption);
+        userOption = newOption;
       }
+
+      // Establecer el valor seleccionado
+      userSelect.value = userOption.value;
+      console.log('✅ Usuario establecido:', userOption.value);
+
+      // Trigger change event para feedback visual
+      userSelect.dispatchEvent(new Event('change'));
     }
   }
 
   // Mejorar UX de los selects
   const selects = document.querySelectorAll('.form-select-premium');
-  selects.forEach(select => {
+  selects.forEach((select) => {
     // Evento change para feedback visual
-    select.addEventListener('change', function() {
+    select.addEventListener('change', function () {
       if (this.value) {
         this.style.borderColor = '#10b981';
         this.style.backgroundColor = '#f0fdf4';
@@ -46,12 +61,12 @@ function initNewExpenseForm() {
     });
 
     // Touch/click feedback
-    select.addEventListener('focus', function() {
+    select.addEventListener('focus', function () {
       this.style.borderColor = '#14b8a6';
       this.style.boxShadow = '0 0 0 3px rgba(20, 184, 166, 0.1)';
     });
 
-    select.addEventListener('blur', function() {
+    select.addEventListener('blur', function () {
       if (!this.value) {
         this.style.boxShadow = '';
       }
@@ -61,7 +76,7 @@ function initNewExpenseForm() {
   // Validación mejorada del formulario
   const form = document.getElementById('expenseForm');
   if (form) {
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
       console.log('📤 Formulario enviado');
 
       // Validar que todos los campos requeridos estén llenos
@@ -76,7 +91,10 @@ function initNewExpenseForm() {
         console.error('❌ Faltan campos obligatorios');
 
         if (window.app && window.app.showToast) {
-          window.app.showToast('Por favor completa todos los campos obligatorios', 'error');
+          window.app.showToast(
+            'Por favor completa todos los campos obligatorios',
+            'error'
+          );
         } else {
           alert('Por favor completa todos los campos obligatorios');
         }
@@ -90,7 +108,7 @@ function initNewExpenseForm() {
         category,
         necessity,
         date,
-        user: document.getElementById('user').value
+        user: document.getElementById('user').value,
       });
 
       // El formulario se enviará normalmente y app.js lo procesará

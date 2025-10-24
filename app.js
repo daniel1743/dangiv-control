@@ -1,4 +1,4 @@
-﻿// Financia Suite - Personal Finance Application
+// Financia Suite - Personal Finance Application
 // Main JavaScript file with all functionality
 
 class FinanceApp {
@@ -12155,7 +12155,15 @@ FinanceApp.prototype.setupUserSelectListener = function () {
     } else {
       group?.classList.add('hidden');
     }
+
+    if (typeof this.updateSelectedUserPreview === 'function') {
+      this.updateSelectedUserPreview(e.target);
+    }
   });
+
+  if (typeof this.updateSelectedUserPreview === 'function') {
+    this.updateSelectedUserPreview(newUserSelect);
+  }
 };
 
 FinanceApp.prototype.updateUserSelectionDropdown = function () {
@@ -12189,6 +12197,43 @@ FinanceApp.prototype.updateUserSelectionDropdown = function () {
 
   // ✅ RE-AGREGAR EL EVENT LISTENER DESPUÉS DE RECONSTRUIR EL HTML
   this.setupUserSelectListener();
+  if (typeof this.updateSelectedUserPreview === 'function') {
+    this.updateSelectedUserPreview(userSelect);
+  }
+};
+
+FinanceApp.prototype.updateSelectedUserPreview = function (selectElement) {
+  const previewContainer = document.getElementById('selectedUserPreview');
+  const previewValue = document.getElementById('selectedUserPreviewValue');
+  const select =
+    selectElement instanceof HTMLSelectElement
+      ? selectElement
+      : document.getElementById('user');
+
+  if (!previewContainer || !previewValue || !select) {
+    return;
+  }
+
+  const selectedValue = select.value;
+  const selectedOption =
+    select.selectedIndex >= 0 ? select.options[select.selectedIndex] : null;
+
+  if (!selectedValue) {
+    previewValue.textContent = 'Sin usuario asignado';
+    previewContainer.classList.add('selected-user-preview--empty');
+    return;
+  }
+
+  if (selectedValue === '__add_new__') {
+    previewValue.textContent = 'Agrega un nuevo usuario desde el botón +';
+    previewContainer.classList.add('selected-user-preview--empty');
+    return;
+  }
+
+  previewValue.textContent = selectedOption
+    ? selectedOption.textContent
+    : selectedValue;
+  previewContainer.classList.remove('selected-user-preview--empty');
 };
 
 FinanceApp.prototype.updateActivityLog = function () {
@@ -19237,3 +19282,5 @@ if (typeof window !== 'undefined') {
   // switchToLogin y switchToRegister ya se exportaron anteriormente
   // window.showAccountTypeSelection = showAccountTypeSelection; // DESHABILITADO
 }
+
+

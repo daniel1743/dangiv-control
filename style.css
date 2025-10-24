@@ -18115,3 +18115,32 @@ body.modal-open {
 select.form-input-premium[style*="animation"] {
   transition: all 0.3s ease;
 }
+
+.selected-user-preview {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(15, 118, 110, 0.2);
+  border-radius: 8px;
+  background: rgba(14, 116, 144, 0.06);
+  font-size: 14px;
+  line-height: 1.4;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: #0f172a;
+}
+
+.selected-user-preview__label {
+  font-weight: 600;
+  color: #0f766e;
+}
+
+.selected-user-preview--empty {
+  border-color: rgba(15, 23, 42, 0.1);
+  background: rgba(148, 163, 184, 0.08);
+  color: #475569;
+}
+
+.selected-user-preview--empty .selected-user-preview__label {
+  color: #64748b;
+}

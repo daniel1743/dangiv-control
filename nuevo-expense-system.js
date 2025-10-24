@@ -483,6 +483,9 @@ console.log('📝 Inicializando nuevo sistema de gastos con personalización...'
     // Seleccionar el nuevo usuario
     userSelect.value = name;
     userSelect.dispatchEvent(new Event('change'));
+    if (window.app && typeof window.app.updateSelectedUserPreview === 'function') {
+      window.app.updateSelectedUserPreview(userSelect);
+    }
 
     closeCustomModal('addUserModal');
     showNotification(`✅ Usuario "${name}" añadido correctamente`, 'success');
