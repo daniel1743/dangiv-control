@@ -119,6 +119,12 @@ class CustomDropdownMobile {
       }
     });
 
+    // Sync when the native select changes programmatically
+    this.selectElement.addEventListener('change', () => {
+      this.selectedIndex = this.selectElement.selectedIndex;
+      this.syncValue();
+    });
+
     // Cerrar al hacer scroll
     let scrollTimeout;
     window.addEventListener('scroll', () => {

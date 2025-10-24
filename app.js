@@ -7459,6 +7459,11 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
   addExpense(e) {
     e.preventDefault();
 
+    // Remover campos temporales de autocompletado antes de validar
+    if (window.smartAutoComplete && typeof window.smartAutoComplete.removeAllTemporaryFields === 'function') {
+      window.smartAutoComplete.removeAllTemporaryFields();
+    }
+
     // 🔒 BLOQUEO: Solo usuarios autenticados pueden agregar gastos
     const isAuthenticated = this.currentUser && this.currentUser !== 'anonymous' && this.firebaseUser;
     if (!isAuthenticated) {
@@ -19838,10 +19843,10 @@ IMPORTANTE:
 
     if (window.smartAutoComplete) {
       if (this.extractedData.category) {
-        window.smartAutoComplete.fillCategory(this.extractedData.category);
+        window.smartAutoComplete.fillCategory(this.extractedData.category, { force: true });
       }
       if (this.extractedData.priority) {
-        window.smartAutoComplete.fillNecessity(this.extractedData.priority);
+        window.smartAutoComplete.fillNecessity(this.extractedData.priority, { force: true });
       }
     }
 
@@ -20087,70 +20092,192 @@ class SmartAutoComplete {
     return matches / Math.max(descWords.length, keyWords.length);
   }
 
-  fillCategory(categoria) {
-    if (!this.categorySelect || !categoria) return;
+  fillCategory(categoria, { force = false } = {}) {
+    if (!this.categorySelect || !categoria) {
+      console.log('DEBUG fillCategory abortado:', { hasSelect: !!this.categorySelect, categoria });
+      return;
+    }
 
-    // Buscar la opción que coincida
+    // Buscar la opcion que coincida
     const options = Array.from(this.categorySelect.options);
     const target = this.normalizeText(categoria);
-    const matchingOption = options.find(opt => {
-      const valueNorm = this.normalizeText(opt.value);
-      const textNorm = this.normalizeText(opt.textContent);
-      return (
-        valueNorm === target ||
-        textNorm === target ||
-        textNorm.includes(target) ||
-        target.includes(textNorm)
-      );
+
+    console.log('DEBUG Buscando categoria:', {
+      categoriaOriginal: categoria,
+      targetNormalizado: target,
+      opcionesDisponibles: options.map(opt => ({
+        value: opt.value,
+        text: opt.textContent,
+        valueNorm: this.normalizeText(opt.value)
+      }))
     });
 
-    if (matchingOption && this.categorySelect.value === '') {
-      this.categorySelect.value = matchingOption.value;
+    const matchingOption = options.find(opt => {
+      // Saltar opciones vacias (placeholders)
+      if (!opt.value || opt.value.trim() === '') {
+        return false;
+      }
 
-      // Agregar animación visual
-      this.categorySelect.classList.add('auto-filled');
-      setTimeout(() => this.categorySelect.classList.remove('auto-filled'), 1000);
+      const valueNorm = this.normalizeText(opt.value);
+      const textNorm = this.normalizeText(opt.textContent);
+
+      // Matching mas estricto: primero buscar coincidencias exactas
+      const exactMatch = (valueNorm === target || textNorm === target);
+
+      // Si no hay match exacto, buscar coincidencias parciales pero solo en el value normalizado
+      const partialMatch = !exactMatch && (
+        valueNorm.includes(target) ||
+        target.includes(valueNorm)
+      );
+
+      return exactMatch || partialMatch;
+    });
+
+    console.log('DEBUG Resultado busqueda categoria:', {
+      encontrado: !!matchingOption,
+      matchValue: matchingOption?.value,
+      matchText: matchingOption?.textContent,
+      currentValue: this.categorySelect.value,
+      force: force
+    });
+
+    if (matchingOption && (force || !this.categorySelect.value)) {
+      // Forzar actualizacion via selectedIndex (mas confiable)
+      this.categorySelect.selectedIndex = Array.from(this.categorySelect.options).indexOf(matchingOption);
+
+      // Tambien establecer el value
+      this.categorySelect.value = matchingOption.value;
 
       // Disparar evento change
       const event = new Event('change', { bubbles: true });
       this.categorySelect.dispatchEvent(event);
 
-      console.log('✅ Categoría auto-rellenada:', matchingOption.value);
+      // Crear campo temporal visual
+      this.createTemporaryField(this.categorySelect, matchingOption.value, matchingOption.textContent);
+
+      console.log('?? Categoria auto-rellenada:', matchingOption.value);
+    } else if (!matchingOption) {
+      console.log('DEBUG No se encontro opcion matching para categoria:', categoria);
+    } else if (this.categorySelect.value && !force) {
+      console.log('DEBUG Campo categoria ya tiene valor y force=false:', this.categorySelect.value);
     }
   }
 
-  fillNecessity(prioridad) {
-    if (!this.necessitySelect || !prioridad) return;
+  fillNecessity(prioridad, { force = false } = {}) {
+    if (!this.necessitySelect || !prioridad) {
+      console.log('DEBUG fillNecessity abortado:', { hasSelect: !!this.necessitySelect, prioridad });
+      return;
+    }
 
-    // Buscar la opción que coincida
+    // Buscar la opcion que coincida
     const options = Array.from(this.necessitySelect.options);
     const target = this.normalizeText(prioridad);
-    const matchingOption = options.find(opt => {
-      const valueNorm = this.normalizeText(opt.value);
-      const textNorm = this.normalizeText(opt.textContent);
-      return (
-        valueNorm === target ||
-        textNorm === target ||
-        valueNorm.includes(target) ||
-        textNorm.includes(target) ||
-        target.includes(valueNorm) ||
-        target.includes(textNorm)
-      );
+
+    console.log('DEBUG Buscando prioridad:', {
+      prioridadOriginal: prioridad,
+      targetNormalizado: target,
+      opcionesDisponibles: options.map(opt => ({
+        value: opt.value,
+        text: opt.textContent,
+        valueNorm: this.normalizeText(opt.value),
+        textNorm: this.normalizeText(opt.textContent)
+      }))
     });
 
-    if (matchingOption && this.necessitySelect.value === '') {
-      this.necessitySelect.value = matchingOption.value;
+    const matchingOption = options.find(opt => {
+      // Saltar opciones vacias (placeholders)
+      if (!opt.value || opt.value.trim() === '') {
+        return false;
+      }
 
-      // Agregar animación visual
-      this.necessitySelect.classList.add('auto-filled');
-      setTimeout(() => this.necessitySelect.classList.remove('auto-filled'), 1000);
+      const valueNorm = this.normalizeText(opt.value);
+      const textNorm = this.normalizeText(opt.textContent);
+
+      // Matching mas estricto: primero buscar coincidencias exactas
+      const exactMatch = (valueNorm === target || textNorm === target);
+
+      // Si no hay match exacto, buscar coincidencias parciales pero solo en el value normalizado
+      const partialMatch = !exactMatch && (
+        valueNorm.includes(target) ||
+        target.includes(valueNorm)
+      );
+
+      const matches = exactMatch || partialMatch;
+
+      if (matches) {
+        console.log('DEBUG Match encontrado:', {
+          optionValue: opt.value,
+          optionText: opt.textContent,
+          valueNorm,
+          textNorm,
+          target,
+          exactMatch,
+          partialMatch
+        });
+      }
+
+      return matches;
+    });
+
+    console.log('DEBUG Resultado busqueda prioridad:', {
+      encontrado: !!matchingOption,
+      matchValue: matchingOption?.value,
+      matchText: matchingOption?.textContent,
+      currentValue: this.necessitySelect.value,
+      force: force
+    });
+
+    if (matchingOption && (force || !this.necessitySelect.value)) {
+      // Forzar actualizacion via selectedIndex (mas confiable)
+      this.necessitySelect.selectedIndex = Array.from(this.necessitySelect.options).indexOf(matchingOption);
+
+      // Tambien establecer el value
+      this.necessitySelect.value = matchingOption.value;
 
       // Disparar evento change
       const event = new Event('change', { bubbles: true });
       this.necessitySelect.dispatchEvent(event);
 
-      console.log('✅ Prioridad auto-rellenada:', matchingOption.value);
+      // Crear campo temporal visual
+      this.createTemporaryField(this.necessitySelect, matchingOption.value, matchingOption.textContent);
+
+      console.log('?? Prioridad auto-rellenada:', matchingOption.value);
+    } else if (!matchingOption) {
+      console.log('DEBUG No se encontro opcion matching para prioridad:', prioridad);
+    } else if (this.necessitySelect.value && !force) {
+      console.log('DEBUG Campo prioridad ya tiene valor y force=false:', this.necessitySelect.value);
     }
+  }
+
+  syncCustomDropdown(selectElement) {
+    if (!selectElement || typeof window === 'undefined') {
+      console.log('DEBUG syncCustomDropdown: sin elemento o window');
+      return;
+    }
+
+    const manager = window.customDropdownManager;
+    if (!manager || !(manager.dropdowns instanceof Map)) {
+      console.log('DEBUG syncCustomDropdown: sin manager o dropdowns Map');
+      return;
+    }
+
+    const dropdown = manager.dropdowns.get(selectElement);
+    if (!dropdown || typeof dropdown.syncValue !== 'function') {
+      console.log('DEBUG syncCustomDropdown: dropdown no encontrado o sin syncValue');
+      return;
+    }
+
+    console.log('DEBUG Sincronizando custom dropdown:', {
+      selectId: selectElement.id,
+      selectedIndex: selectElement.selectedIndex,
+      selectedValue: selectElement.value,
+      selectedText: selectElement.options[selectElement.selectedIndex]?.text
+    });
+
+    dropdown.selectedIndex = selectElement.selectedIndex;
+    dropdown.syncValue();
+
+    console.log('DEBUG Custom dropdown sincronizado exitosamente');
   }
 
   showAutoFillFeedback(match) {
@@ -20160,6 +20287,135 @@ class SmartAutoComplete {
     if (window.app && typeof window.app.showToast === 'function') {
       window.app.showToast(message, 'success');
     }
+
+    // Mostrar indicador visual temporal sobre los campos
+    this.showVisualIndicator('category', match.categoria);
+    this.showVisualIndicator('necessity', match.prioridad);
+  }
+
+  showVisualIndicator(fieldId, value) {
+    const field = document.getElementById(fieldId);
+    if (!field) return;
+
+    // Crear indicador temporal
+    const indicator = document.createElement('div');
+    indicator.className = 'auto-fill-indicator';
+    indicator.textContent = `✓ ${value}`;
+    indicator.style.cssText = `
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      background: #4CAF50;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      pointer-events: none;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    `;
+
+    // Posicionar relativo al campo
+    const parent = field.parentElement;
+    parent.style.position = 'relative';
+    parent.appendChild(indicator);
+
+    // Remover después de 3 segundos
+    setTimeout(() => {
+      indicator.style.animation = 'fadeOut 0.3s ease';
+      setTimeout(() => indicator.remove(), 300);
+    }, 3000);
+  }
+
+  createTemporaryField(selectElement, value, displayText) {
+    if (!selectElement) return;
+
+    const fieldId = selectElement.id;
+    const existingTemp = document.getElementById(`temp-${fieldId}`);
+
+    // Remover campo temporal anterior si existe
+    if (existingTemp) {
+      existingTemp.remove();
+    }
+
+    // Ocultar el select original
+    selectElement.style.display = 'none';
+
+    // Crear campo temporal que muestra el valor
+    const tempField = document.createElement('div');
+    tempField.id = `temp-${fieldId}`;
+    tempField.className = 'temporary-autocomplete-field';
+    tempField.innerHTML = `
+      <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        border: 2px solid #4CAF50;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        animation: slideIn 0.3s ease;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+        <span>
+          <i class="fas fa-robot" style="margin-right: 8px;"></i>
+          ${displayText}
+        </span>
+        <span style="
+          background: rgba(255,255,255,0.3);
+          padding: 4px 8px;
+          border-radius: 12px;
+          font-size: 11px;
+          font-weight: 700;
+        ">AUTO</span>
+      </div>
+    `;
+
+    // Insertar después del select original
+    selectElement.parentNode.insertBefore(tempField, selectElement.nextSibling);
+
+    // Al hacer clic en el campo temporal, permitir cambio manual
+    tempField.addEventListener('click', () => {
+      this.removeTemporaryField(selectElement);
+    });
+
+    console.log(`✅ Campo temporal creado para ${fieldId}:`, value);
+  }
+
+  removeTemporaryField(selectElement) {
+    if (!selectElement) return;
+
+    const fieldId = selectElement.id;
+    const tempField = document.getElementById(`temp-${fieldId}`);
+
+    if (tempField) {
+      tempField.remove();
+    }
+
+    // Mostrar el select original de nuevo
+    selectElement.style.display = '';
+    selectElement.focus();
+
+    console.log(`🗑️ Campo temporal removido para ${fieldId}`);
+  }
+
+  removeAllTemporaryFields() {
+    // Remover todos los campos temporales al registrar gasto
+    const tempFields = document.querySelectorAll('.temporary-autocomplete-field');
+    tempFields.forEach(field => field.remove());
+
+    // Mostrar todos los selects de nuevo
+    if (this.categorySelect) this.categorySelect.style.display = '';
+    if (this.necessitySelect) this.necessitySelect.style.display = '';
+
+    console.log('🗑️ Todos los campos temporales removidos');
   }
 
   normalizeText(text = '') {
@@ -20172,6 +20428,7 @@ class SmartAutoComplete {
       .replace(/\s+/g, ' ')
       .trim();
   }
+
   searchProduct(description) {
     if (!this.database) {
       console.warn('⚠️ Base de datos no cargada');

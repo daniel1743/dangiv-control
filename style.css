@@ -18892,3 +18892,35 @@ textarea.form-input-premium:focus {
     var(--color-cream-50) 100%);
 }
 
+
+
+/* Animaciones para campos temporales de autocompletado */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Campos temporales de autocompletado */
+.temporary-autocomplete-field {
+  margin-bottom: 16px;
+}
+
+.temporary-autocomplete-field:hover {
+  filter: brightness(1.05);
+}
