@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#6366f1" />
+    <meta name="theme-color" content="#00c2ff" />
 
     <!-- SEO Meta Tags -->
     <title>
@@ -103,8 +103,8 @@
     <link rel="manifest" href="site.webmanifest" />
 
     <!-- Meta tags adicionales para mejor indexación -->
-    <meta name="theme-color" content="#6366f1" />
-    <meta name="msapplication-TileColor" content="#6366f1" />
+    <meta name="theme-color" content="#00c2ff" />
+    <meta name="msapplication-TileColor" content="#00c2ff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
@@ -2262,6 +2262,81 @@
               </div>
             </div>
 
+            <!-- Receipt Scanner Section -->
+            <div class="receipt-scanner-section">
+              <button type="button" id="receiptScanBtn" class="btn-receipt-scan">
+                <i class="fas fa-camera"></i>
+                <span>Escanear Recibo</span>
+              </button>
+              <p class="receipt-scan-hint">
+                <i class="fas fa-info-circle"></i>
+                Toma una foto del recibo para rellenar automáticamente
+              </p>
+            </div>
+
+            <!-- Receipt Scanner Modal -->
+            <div id="receiptScannerModal" class="modal-receipt-scanner hidden">
+              <div class="modal-receipt-content">
+                <div class="modal-receipt-header">
+                  <h3><i class="fas fa-receipt"></i> Escanear Recibo</h3>
+                  <button type="button" class="btn-close-receipt" id="closeReceiptModal">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+
+                <!-- Desktop Warning -->
+                <div class="desktop-warning" id="desktopWarning">
+                  <i class="fas fa-mobile-alt"></i>
+                  <p><strong>Recomendación:</strong> Esta función funciona mejor desde un dispositivo móvil con cámara.</p>
+                </div>
+
+                <div class="modal-receipt-body">
+                  <!-- Capture Options -->
+                  <div class="receipt-capture-options">
+                    <input
+                      type="file"
+                      id="receiptImageInput"
+                      accept="image/*"
+                      capture="environment"
+                      style="display: none;"
+                    />
+                    <button type="button" class="btn-capture-option btn-camera" id="btnTakePhoto">
+                      <i class="fas fa-camera"></i>
+                      <span>Tomar Foto</span>
+                    </button>
+                    <button type="button" class="btn-capture-option btn-upload" id="btnUploadImage">
+                      <i class="fas fa-upload"></i>
+                      <span>Cargar Imagen</span>
+                    </button>
+                  </div>
+
+                  <!-- Image Preview -->
+                  <div class="receipt-preview hidden" id="receiptPreview">
+                    <img id="receiptPreviewImage" src="" alt="Vista previa del recibo" />
+                    <button type="button" class="btn-remove-image" id="btnRemoveImage">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+
+                  <!-- Processing Status -->
+                  <div class="receipt-processing hidden" id="receiptProcessing">
+                    <div class="spinner-receipt"></div>
+                    <p>Analizando recibo con IA...</p>
+                    <small>Esto puede tomar unos segundos</small>
+                  </div>
+
+                  <!-- Extracted Data Preview -->
+                  <div class="receipt-data-preview hidden" id="receiptDataPreview">
+                    <h4><i class="fas fa-check-circle"></i> Datos Extraídos</h4>
+                    <div class="extracted-data-list" id="extractedDataList"></div>
+                    <button type="button" class="btn-primary" id="btnApplyData">
+                      Aplicar Datos al Formulario
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Description with Autocomplete -->
             <div class="form-group-premium">
               <label class="form-label-premium" for="description">
@@ -4328,7 +4403,7 @@
                       />
                       <stop
                         offset="100%"
-                        style="stop-color: #0d9488; stop-opacity: 1"
+                        style="stop-color: #00a9e0; stop-opacity: 1"
                       />
                     </linearGradient>
                   </defs>
@@ -4996,7 +5071,7 @@
       <button class="fab-menu-item" id="quickActionConversationalExpense">
         <div
           class="fab-menu-icon"
-          style="background: linear-gradient(135deg, #6366f1, #4f46e5)"
+          style="background: linear-gradient(135deg, #00c2ff, #00a9e0)"
         >
           <i class="fas fa-robot"></i>
         </div>

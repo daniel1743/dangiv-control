@@ -62,40 +62,26 @@ class OnboardingManager {
   // INICIO DEL ONBOARDING
   // ========================================
   start() {
-    // MEJORADO: Verificación más inteligente de autenticación
-    // Prioridad 1: Verificar Firebase Auth (más confiable)
-    const hasFirebaseUser = window.FB && window.FB.auth && window.FB.auth.currentUser;
+    // DESACTIVADO: Onboarding automático
+    // El usuario debe iniciar manualmente desde el menú
+    console.log('ℹ️ Onboarding disponible (inicio manual desde menú)');
 
-    // Prioridad 2: Verificar localStorage como fallback
-    const hasLocalAuth = localStorage.getItem('authToken') || localStorage.getItem('currentUser');
+    // NO redirigir, NO bloquear, NO mostrar nada automáticamente
+    // El onboarding se activa solo cuando el usuario hace click en "Comenzar guía"
+    return;
+  }
 
-    // Prioridad 3: Verificar que NO sea usuario anónimo explícito
-    const isExplicitlyAnonymous = window.app && window.app.currentUser === 'anonymous';
+  // NUEVO: Método para iniciar onboarding manualmente
+  startManual() {
+    console.log('🚀 Onboarding iniciado manualmente por el usuario');
 
-    // PERMITIR onboarding si:
-    // - Tiene Firebase Auth activo, O
-    // - Tiene auth en localStorage, Y
-    // - NO es explícitamente anónimo
-    const canStartOnboarding = hasFirebaseUser || (hasLocalAuth && !isExplicitlyAnonymous);
-
-    if (!canStartOnboarding) {
-      console.log('⏭️ Onboarding bloqueado - Usuario no autenticado');
-      console.log('   Firebase User:', !!hasFirebaseUser);
-      console.log('   Local Auth:', !!hasLocalAuth);
-      console.log('   Is Anonymous:', isExplicitlyAnonymous);
-
-      // Solo redirigir si estamos en onboarding.html
-      if (window.location.pathname.includes('onboarding.html')) {
-        console.log('📍 Redirigiendo a landing page...');
-        window.location.replace('index.html');
-      } else {
-        console.log('📍 Ya estamos en index.html - no se requiere redirección');
-      }
+    // Verificar si estamos en la página correcta
+    if (!window.location.pathname.includes('onboarding.html')) {
+      // Redirigir a la página de onboarding
+      window.location.href = 'onboarding.html';
       return;
     }
 
-    console.log('🚀 Iniciando onboarding...');
-    console.log('   ✅ Autenticación verificada');
     this.showStep('welcome');
   }
 
@@ -769,7 +755,7 @@ Responde SOLO con este JSON (sin markdown, sin \`\`\`json, solo el objeto):
   }
 
   showFullScreenConfetti() {
-    const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b'];
+    const colors = ['#0e2a47', '#103155', '#f093fb', '#4facfe', '#43e97b'];
 
     for (let i = 0; i < 100; i++) {
       setTimeout(() => {

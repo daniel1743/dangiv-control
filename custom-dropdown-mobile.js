@@ -449,7 +449,7 @@ function injectCustomDropdownStyles() {
 
     .custom-dropdown-trigger-mobile:active,
     .custom-dropdown-trigger-mobile.active {
-      border-color: #6366f1;
+      border-color: #00c2ff;
       background-color: #ffffff;
       box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
     }
@@ -479,7 +479,7 @@ function injectCustomDropdownStyles() {
       left: 0;
       right: 0;
       background: #ffffff;
-      border: 2px solid #6366f1;
+      border: 2px solid #00c2ff;
       border-radius: 10px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
       overflow-y: auto;
@@ -537,7 +537,7 @@ function injectCustomDropdownStyles() {
 
     .custom-dropdown-option-mobile:hover {
       background-color: #f3f4f6;
-      color: #6366f1;
+      color: #00c2ff;
     }
 
     .custom-dropdown-option-mobile:active {
@@ -547,7 +547,7 @@ function injectCustomDropdownStyles() {
 
     .custom-dropdown-option-mobile.selected {
       background-color: #eef2ff;
-      color: #4f46e5;
+      color: #00a9e0;
       font-weight: 600;
     }
 
@@ -562,7 +562,7 @@ function injectCustomDropdownStyles() {
     }
 
     .custom-dropdown-option-mobile .option-check {
-      color: #4f46e5;
+      color: #00a9e0;
       font-size: 18px;
       margin-left: auto;
     }

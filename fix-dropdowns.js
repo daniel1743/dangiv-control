@@ -72,7 +72,7 @@ function initDropdownFix() {
 
     // Efectos visuales
     trigger.addEventListener('mouseenter', function() {
-      this.style.borderColor = '#14b8a6';
+      this.style.borderColor = '#00c2ff';
     });
 
     trigger.addEventListener('mouseleave', function() {

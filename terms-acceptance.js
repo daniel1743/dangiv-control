@@ -189,7 +189,7 @@ class TermsAcceptanceManager {
         align-items: center;
         justify-content: center;
         height: 100vh;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0e2a47 0%, #103155 100%);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         text-align: center;
         color: white;
@@ -206,7 +206,7 @@ class TermsAcceptanceManager {
             style="
               padding: 15px 30px;
               background: white;
-              color: #667eea;
+              color: #0e2a47;
               border: none;
               border-radius: 25px;
               font-size: 1.1em;

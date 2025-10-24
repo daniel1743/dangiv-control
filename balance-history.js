@@ -296,18 +296,18 @@ function createBalanceChart(data) {
         {
           label: 'Balance Disponible',
           data: balanceData,
-          borderColor: '#21808D',
+          borderColor: '#103155',
           backgroundColor: 'rgba(33, 128, 141, 0.1)',
           borderWidth: 3,
           fill: true,
           tension: 0.4,
           pointRadius: 6,
           pointHoverRadius: 10,
-          pointBackgroundColor: '#21808D',
+          pointBackgroundColor: '#103155',
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointHoverBackgroundColor: '#fff',
-          pointHoverBorderColor: '#21808D',
+          pointHoverBorderColor: '#103155',
           pointHoverBorderWidth: 3
         },
         {

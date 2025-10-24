@@ -375,7 +375,7 @@ class FinanceApp {
         id: 'subscription',
         name: 'Suscripción',
         icon: 'fas fa-star',
-        color: '#6366f1',
+        color: '#00c2ff',
       },
       {
         id: 'other',
@@ -404,7 +404,7 @@ class FinanceApp {
     this.defaultAvatars = [
       'https://ui-avatars.com/api/?name=U1&background=21808D&color=fff&size=128&font-size=0.6', // Teal 500
       'https://ui-avatars.com/api/?name=U2&background=1D7480&color=fff&size=128&font-size=0.6', // Teal 600
-      'https://ui-avatars.com/api/?name=U3&background=2DA6B2&color=fff&size=128&font-size=0.6', // Teal 400
+      'https://ui-avatars.com/api/?name=U3&background=00A9E0&color=fff&size=128&font-size=0.6', // Teal 400
       'https://ui-avatars.com/api/?name=U4&background=32B8C6&color=fff&size=128&font-size=0.6', // Teal 300
       'https://ui-avatars.com/api/?name=U5&background=1A6873&color=fff&size=128&font-size=0.6', // Teal 700
       'https://ui-avatars.com/api/?name=U6&background=E68161&color=fff&size=128&font-size=0.6', // Orange 400
@@ -881,7 +881,7 @@ class FinanceApp {
 
     const colors = {
       morning: '#f59e0b',
-      night: '#6366f1',
+      night: '#00c2ff',
       welcome: '#10b981',
       general: '#8b5cf6',
     };
@@ -1040,7 +1040,7 @@ class FinanceApp {
 
       const colors = {
         morning: '#f59e0b',
-        night: '#6366f1',
+        night: '#00c2ff',
         welcome: '#10b981',
         general: '#8b5cf6',
       };
@@ -1750,21 +1750,17 @@ class FinanceApp {
             this.updateNotifications();
 
             // === MOSTRAR MODAL DE BIENVENIDA DE FIN (SOLO SI NO SE HA VISTO) ===
-            // Solo mostrar si el usuario está autenticado y no ha visto el modal
             const finWelcomeShown = localStorage.getItem('finWelcomeShown');
-            const wasNewUser = sessionStorage.getItem('wasNewUser') === 'true'; // Detectar si acaba de registrarse
+            const wasNewUser = sessionStorage.getItem('wasNewUser') === 'true';
 
             if (!finWelcomeShown && this.currentUser !== 'anonymous') {
               console.log('🎉 Primera vez usando Fin - Mostrando modal de bienvenida');
 
-              // Esperar un poco para que se cargue la UI completamente
-              // Menos tiempo si es usuario nuevo que acaba de registrarse
               const delay = wasNewUser ? 800 : 1500;
 
               setTimeout(() => {
                 this.showFinWelcomeModal();
 
-                // Limpiar la bandera después de mostrar el modal
                 if (wasNewUser) {
                   sessionStorage.removeItem('wasNewUser');
                 }
@@ -8191,10 +8187,10 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
             label: 'Gastos por Usuario',
             data: Object.values(userData),
             backgroundColor: [
-              '#21808D',
+              '#103155',
               '#E68161',
               '#C0152F',
-              '#2DA6B2',
+              '#00a9e0',
               '#A84B2F',
               '#32B8C6',
             ],
@@ -8786,7 +8782,7 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
 
         <div style="margin-bottom: 20px;">
           <button onclick="window.app.autoDistributeToGoals(); document.getElementById('savingsModalOverlay').remove();"
-                  style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; margin-bottom: 12px;">
+                  style="width: 100%; padding: 12px; background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-600) 100%); color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; margin-bottom: 12px;">
             ⚡ Distribuir Automáticamente
           </button>
           <p style="font-size: 0.85rem; color: #666; margin: 0;">Distribuye proporcionalmente entre todas las metas activas</p>
@@ -18988,8 +18984,8 @@ FinanceApp.prototype.createModalTrigger = function(select, modalId, placeholder)
 
   // Evento focus/active para feedback visual
   trigger.addEventListener('mousedown', function() {
-    this.style.borderColor = 'var(--color-primary, #14b8a6)';
-    this.style.boxShadow = '0 0 0 3px rgba(20, 184, 166, 0.1)';
+    this.style.borderColor = 'var(--color-primary, #0e2a47)';
+    this.style.boxShadow = '0 0 0 3px rgba(0, 194, 255, 0.18)';
   });
 
   trigger.addEventListener('mouseup', function() {
@@ -19311,6 +19307,406 @@ if (typeof window !== 'undefined') {
   // window.selectAccountType = selectAccountType; // DESHABILITADO
   // switchToLogin y switchToRegister ya se exportaron anteriormente
   // window.showAccountTypeSelection = showAccountTypeSelection; // DESHABILITADO
+}
+
+// ========================================
+// RECEIPT SCANNER MODULE
+// ========================================
+class ReceiptScanner {
+  constructor() {
+    this.modal = null;
+    this.imageInput = null;
+    this.currentImageData = null;
+    this.extractedData = null;
+    this.init();
+  }
+
+  init() {
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.setupEventListeners());
+    } else {
+      this.setupEventListeners();
+    }
+  }
+
+  setupEventListeners() {
+    // Get DOM elements
+    this.modal = document.getElementById('receiptScannerModal');
+    this.imageInput = document.getElementById('receiptImageInput');
+
+    const scanBtn = document.getElementById('receiptScanBtn');
+    const closeBtn = document.getElementById('closeReceiptModal');
+    const takePhotoBtn = document.getElementById('btnTakePhoto');
+    const uploadBtn = document.getElementById('btnUploadImage');
+    const removeBtn = document.getElementById('btnRemoveImage');
+    const applyDataBtn = document.getElementById('btnApplyData');
+
+    if (!this.modal || !this.imageInput) {
+      console.error('❌ Receipt scanner elements not found');
+      return;
+    }
+
+    // Open modal
+    if (scanBtn) {
+      scanBtn.addEventListener('click', () => this.openModal());
+    }
+
+    // Close modal
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => this.closeModal());
+    }
+
+    // Close on backdrop click
+    this.modal.addEventListener('click', (e) => {
+      if (e.target === this.modal) {
+        this.closeModal();
+      }
+    });
+
+    // Take photo (mobile)
+    if (takePhotoBtn) {
+      takePhotoBtn.addEventListener('click', () => {
+        this.imageInput.setAttribute('capture', 'environment');
+        this.imageInput.click();
+      });
+    }
+
+    // Upload image (desktop)
+    if (uploadBtn) {
+      uploadBtn.addEventListener('click', () => {
+        this.imageInput.removeAttribute('capture');
+        this.imageInput.click();
+      });
+    }
+
+    // Handle image selection
+    this.imageInput.addEventListener('change', (e) => this.handleImageSelect(e));
+
+    // Remove image
+    if (removeBtn) {
+      removeBtn.addEventListener('click', () => this.removeImage());
+    }
+
+    // Apply data to form
+    if (applyDataBtn) {
+      applyDataBtn.addEventListener('click', () => this.applyDataToForm());
+    }
+
+    console.log('✅ Receipt scanner initialized');
+  }
+
+  openModal() {
+    if (this.modal) {
+      this.modal.classList.remove('hidden');
+      this.resetModal();
+    }
+  }
+
+  closeModal() {
+    if (this.modal) {
+      this.modal.classList.add('hidden');
+      this.resetModal();
+    }
+  }
+
+  resetModal() {
+    // Hide all sections
+    document.getElementById('receiptPreview')?.classList.add('hidden');
+    document.getElementById('receiptProcessing')?.classList.add('hidden');
+    document.getElementById('receiptDataPreview')?.classList.add('hidden');
+
+    // Show capture options
+    document.querySelector('.receipt-capture-options')?.classList.remove('hidden');
+
+    // Reset data
+    this.currentImageData = null;
+    this.extractedData = null;
+    this.imageInput.value = '';
+  }
+
+  removeImage() {
+    document.getElementById('receiptPreview')?.classList.add('hidden');
+    document.getElementById('receiptDataPreview')?.classList.add('hidden');
+    document.querySelector('.receipt-capture-options')?.classList.remove('hidden');
+    this.currentImageData = null;
+    this.extractedData = null;
+    this.imageInput.value = '';
+  }
+
+  async handleImageSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      this.showToast('Por favor selecciona un archivo de imagen válido', 'error');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      this.showToast('La imagen es demasiado grande. Máximo 5MB', 'error');
+      return;
+    }
+
+    try {
+      // Read image as base64
+      const base64 = await this.fileToBase64(file);
+      this.currentImageData = base64;
+
+      // Show preview
+      this.showPreview(base64);
+
+      // Hide capture options
+      document.querySelector('.receipt-capture-options')?.classList.add('hidden');
+
+      // Process image with AI
+      await this.processReceiptWithAI(base64);
+
+    } catch (error) {
+      console.error('❌ Error processing image:', error);
+      this.showToast('Error al procesar la imagen', 'error');
+    }
+  }
+
+  fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  showPreview(base64) {
+    const preview = document.getElementById('receiptPreview');
+    const previewImg = document.getElementById('receiptPreviewImage');
+
+    if (preview && previewImg) {
+      previewImg.src = base64;
+      preview.classList.remove('hidden');
+    }
+  }
+
+  async processReceiptWithAI(base64Image) {
+    const processingEl = document.getElementById('receiptProcessing');
+    const dataPreviewEl = document.getElementById('receiptDataPreview');
+
+    try {
+      // Show processing
+      if (processingEl) processingEl.classList.remove('hidden');
+      if (dataPreviewEl) dataPreviewEl.classList.add('hidden');
+
+      // Get Gemini API key
+      const apiKey = window.FB?.geminiApiKey;
+      if (!apiKey) {
+        throw new Error('API key de Gemini no configurada');
+      }
+
+      // Remove data:image/...;base64, prefix
+      const base64Data = base64Image.split(',')[1];
+
+      // Call Gemini Vision API
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                {
+                  text: `Analiza este recibo de compra y extrae la siguiente información en formato JSON:
+{
+  "amount": "monto total (solo número, sin símbolos)",
+  "description": "descripción breve de la compra o nombre del establecimiento",
+  "category": "una de estas categorías: Alimentación, Transporte, Entretenimiento, Salud, Servicios, Compras, Otros",
+  "date": "fecha en formato YYYY-MM-DD",
+  "items": ["lista de items comprados si están visibles"]
+}
+
+Si no puedes determinar algún valor con certeza, usa null. Responde SOLO con el JSON, sin texto adicional.`
+                },
+                {
+                  inline_data: {
+                    mime_type: 'image/jpeg',
+                    data: base64Data
+                  }
+                }
+              ]
+            }]
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('📄 Gemini response:', result);
+
+      // Extract text from response
+      const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) {
+        throw new Error('No se pudo extraer información del recibo');
+      }
+
+      // Parse JSON from response
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No se pudo parsear la respuesta de la IA');
+      }
+
+      this.extractedData = JSON.parse(jsonMatch[0]);
+      console.log('✅ Extracted data:', this.extractedData);
+
+      // Show extracted data
+      this.displayExtractedData();
+
+    } catch (error) {
+      console.error('❌ Error processing receipt with AI:', error);
+      this.showToast(`Error al analizar el recibo: ${error.message}`, 'error');
+    } finally {
+      // Hide processing
+      if (processingEl) processingEl.classList.add('hidden');
+    }
+  }
+
+  displayExtractedData() {
+    const dataPreviewEl = document.getElementById('receiptDataPreview');
+    const dataListEl = document.getElementById('extractedDataList');
+
+    if (!dataPreviewEl || !dataListEl || !this.extractedData) return;
+
+    // Clear previous data
+    dataListEl.innerHTML = '';
+
+    // Build data items
+    const dataItems = [
+      {
+        label: 'Monto',
+        icon: 'fa-dollar-sign',
+        value: this.extractedData.amount ? `$${this.extractedData.amount}` : 'No detectado',
+        highlight: !!this.extractedData.amount
+      },
+      {
+        label: 'Descripción',
+        icon: 'fa-align-left',
+        value: this.extractedData.description || 'No detectada',
+        highlight: false
+      },
+      {
+        label: 'Categoría',
+        icon: 'fa-tag',
+        value: this.extractedData.category || 'No detectada',
+        highlight: false
+      },
+      {
+        label: 'Fecha',
+        icon: 'fa-calendar',
+        value: this.extractedData.date || 'No detectada',
+        highlight: false
+      }
+    ];
+
+    // Add items if available
+    if (this.extractedData.items && this.extractedData.items.length > 0) {
+      dataItems.push({
+        label: 'Items',
+        icon: 'fa-list',
+        value: this.extractedData.items.join(', '),
+        highlight: false
+      });
+    }
+
+    // Render data items
+    dataItems.forEach(item => {
+      const itemEl = document.createElement('div');
+      itemEl.className = 'extracted-data-item';
+      itemEl.innerHTML = `
+        <div class="extracted-data-label">
+          <i class="fas ${item.icon}"></i>
+          ${item.label}
+        </div>
+        <div class="extracted-data-value ${item.highlight ? 'highlight' : ''}">
+          ${item.value}
+        </div>
+      `;
+      dataListEl.appendChild(itemEl);
+    });
+
+    // Show data preview
+    dataPreviewEl.classList.remove('hidden');
+  }
+
+  applyDataToForm() {
+    if (!this.extractedData) {
+      this.showToast('No hay datos para aplicar', 'error');
+      return;
+    }
+
+    // Fill form fields
+    if (this.extractedData.amount) {
+      const amountInput = document.getElementById('amount');
+      if (amountInput) {
+        amountInput.value = this.extractedData.amount;
+      }
+    }
+
+    if (this.extractedData.description) {
+      const descInput = document.getElementById('description');
+      if (descInput) {
+        descInput.value = this.extractedData.description;
+      }
+    }
+
+    if (this.extractedData.category) {
+      const categorySelect = document.getElementById('category');
+      if (categorySelect) {
+        // Find matching option (case insensitive)
+        const options = Array.from(categorySelect.options);
+        const matchingOption = options.find(opt =>
+          opt.value.toLowerCase() === this.extractedData.category.toLowerCase()
+        );
+        if (matchingOption) {
+          categorySelect.value = matchingOption.value;
+        }
+      }
+    }
+
+    if (this.extractedData.date) {
+      const dateInput = document.getElementById('date');
+      if (dateInput) {
+        dateInput.value = this.extractedData.date;
+      }
+    }
+
+    // Close modal
+    this.closeModal();
+
+    // Show success message
+    this.showToast('✅ Datos aplicados al formulario. Verifica y completa el campo de usuario.', 'success');
+  }
+
+  showToast(message, type = 'info') {
+    // Use existing toast system if available
+    if (window.app && typeof window.app.showToast === 'function') {
+      window.app.showToast(message, type);
+    } else {
+      // Fallback to alert
+      alert(message);
+    }
+  }
+}
+
+// Initialize receipt scanner when DOM is ready
+if (typeof window !== 'undefined') {
+  window.receiptScanner = new ReceiptScanner();
+  console.log('📸 Receipt Scanner module loaded');
 }
 
 

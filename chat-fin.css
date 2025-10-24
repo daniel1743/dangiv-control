@@ -3,9 +3,9 @@
    ======================================== */
 :root {
     /* Colores principales */
-    --primary-color: #4f46e5;
+    --primary-color: #0e2a47;
     --primary-hover: #4338ca;
-    --primary-light: #818cf8;
+    --primary-light: #66d9ff;
     --secondary-color: #10b981;
     --accent-color: #f59e0b;
 
@@ -22,7 +22,7 @@
     --text-white: #ffffff;
 
     /* Colores de mensajes */
-    --user-message-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --user-message-bg: linear-gradient(135deg, #0e2a47 0%, #103155 100%);
     --bot-message-bg: #ffffff;
     --bot-message-border: #e5e7eb;
 
@@ -72,7 +72,7 @@ body {
     font-family: var(--font-family);
     font-size: var(--font-size-base);
     color: var(--text-primary);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0e2a47 0%, #103155 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -104,7 +104,7 @@ body {
    ENCABEZADO DEL CHAT
    ======================================== */
 .chat-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0e2a47 0%, #103155 100%);
     color: var(--text-white);
     padding: var(--spacing-lg);
     display: flex;
@@ -171,7 +171,7 @@ body {
     height: 14px;
     border-radius: 50%;
     background: var(--secondary-color);
-    border: 3px solid #667eea;
+    border: 3px solid #103155;
     box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
 }
 
@@ -670,7 +670,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0e2a47 0%, #103155 100%);
     color: var(--text-white);
     border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
 }

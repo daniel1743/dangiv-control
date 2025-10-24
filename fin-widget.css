@@ -9,7 +9,7 @@
     right: 24px; /* Alineado con FAB principal */
     width: 56px; /* Mismo tamaño que FAB para consistencia */
     height: 56px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0e2a47 0%, #103155 100%);
     border-radius: 50%;
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
     cursor: pointer;
@@ -236,7 +236,7 @@
     width: 90px;
     height: 90px;
     margin: 0 auto 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0e2a47 0%, #103155 100%);
     border-radius: 50%;
     padding: 6px;
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
@@ -271,7 +271,7 @@
     padding: 18px;
     background: #f9fafb;
     border-radius: 12px;
-    border-left: 3px solid #667eea;
+    border-left: 3px solid #0e2a47;
     text-align: left;
 }
 
@@ -314,7 +314,7 @@
 }
 
 .fin-welcome-btn.primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0e2a47 0%, #103155 100%);
     color: white;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
@@ -454,14 +454,14 @@
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    color: #667eea;
+    color: #0e2a47;
 }
 
 .fin-loading-spinner {
     width: 50px;
     height: 50px;
     border: 4px solid #e5e7eb;
-    border-top-color: #667eea;
+    border-top-color: #0e2a47;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 16px;

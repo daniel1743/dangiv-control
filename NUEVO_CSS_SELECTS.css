@@ -19,7 +19,7 @@
 }
 
 .form-select-premium:focus {
-  border-color: var(--color-primary, #14b8a6);
+  border-color: var(--color-primary, #00c2ff);
   box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
   outline: none;
 }
@@ -31,7 +31,7 @@
 
 /* Hover effect */
 .form-select-premium:hover {
-  border-color: var(--color-primary, #14b8a6);
+  border-color: var(--color-primary, #00c2ff);
 }
 
 /* Deshabilitar apariencia de select en móviles para usar nativa */

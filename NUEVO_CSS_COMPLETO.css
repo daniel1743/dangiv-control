@@ -3,9 +3,9 @@
    Agregar al final de style.css
 
    PALETA DE COLORES DEL NAVBAR:
-   - Primary: #21808D (teal oscuro)
-   - Primary Hover: #14b8a6 (teal brillante)
-   - Accent: #2DA6B2 (cyan)
+   - Primary: #103155 (teal oscuro)
+   - Primary Hover: #00c2ff (teal brillante)
+   - Accent: #00a9e0 (cyan)
    - Success: #10b981 (verde)
    - Background: #f0fdfa (teal muy claro)
    ═══════════════════════════════════════════════════════════ */
@@ -18,7 +18,7 @@
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2321808D' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23103155' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 12px;
@@ -31,12 +31,12 @@
 }
 
 .form-select-native:hover {
-  border-color: #21808D;
+  border-color: #103155;
   background-color: #f0fdfa;
 }
 
 .form-select-native:focus {
-  border-color: #14b8a6;
+  border-color: #00c2ff;
   box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
   outline: none;
   background-color: #f0fdfa;
@@ -80,8 +80,8 @@
   flex-shrink: 0;
   width: 48px;
   height: 48px;
-  border: 2px solid #21808D;
-  background: linear-gradient(135deg, #21808D 0%, #2DA6B2 100%);
+  border: 2px solid #103155;
+  background: linear-gradient(135deg, #103155 0%, #00a9e0 100%);
   color: white;
   border-radius: 8px;
   cursor: pointer;
@@ -94,7 +94,7 @@
 }
 
 .btn-add-option:hover {
-  background: linear-gradient(135deg, #14b8a6 0%, #21808D 100%);
+  background: linear-gradient(135deg, #00c2ff 0%, #103155 100%);
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(33, 128, 141, 0.3);
 }
@@ -174,7 +174,7 @@
   align-items: center;
   padding: 20px 24px;
   border-bottom: 2px solid #f0fdfa;
-  background: linear-gradient(135deg, #21808D 0%, #2DA6B2 100%);
+  background: linear-gradient(135deg, #103155 0%, #00a9e0 100%);
   border-radius: 16px 16px 0 0;
 }
 
@@ -241,7 +241,7 @@
 .btn-modal-save {
   padding: 10px 20px;
   border: none;
-  background: linear-gradient(135deg, #21808D 0%, #2DA6B2 100%);
+  background: linear-gradient(135deg, #103155 0%, #00a9e0 100%);
   color: white;
   border-radius: 8px;
   cursor: pointer;
@@ -255,7 +255,7 @@
 }
 
 .btn-modal-save:hover {
-  background: linear-gradient(135deg, #14b8a6 0%, #21808D 100%);
+  background: linear-gradient(135deg, #00c2ff 0%, #103155 100%);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(33, 128, 141, 0.4);
 }
@@ -300,7 +300,7 @@
 
 .emoji-option:hover {
   background: #ccfbf1;
-  border-color: #21808D;
+  border-color: #103155;
   transform: scale(1.1);
 }
 
@@ -313,27 +313,27 @@
    ═══════════════════════════════════════════════════════════ */
 
 .btn-expense-primary {
-  background: linear-gradient(135deg, #21808D 0%, #2DA6B2 100%) !important;
+  background: linear-gradient(135deg, #103155 0%, #00a9e0 100%) !important;
   border: none !important;
   box-shadow: 0 4px 12px rgba(33, 128, 141, 0.3) !important;
 }
 
 .btn-expense-primary:hover {
-  background: linear-gradient(135deg, #14b8a6 0%, #21808D 100%) !important;
+  background: linear-gradient(135deg, #00c2ff 0%, #103155 100%) !important;
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(33, 128, 141, 0.4) !important;
 }
 
 .btn-expense-secondary {
-  border: 2px solid #21808D !important;
-  color: #21808D !important;
+  border: 2px solid #103155 !important;
+  color: #103155 !important;
   background: white !important;
 }
 
 .btn-expense-secondary:hover {
   background: #f0fdfa !important;
-  border-color: #14b8a6 !important;
-  color: #14b8a6 !important;
+  border-color: #00c2ff !important;
+  color: #00c2ff !important;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -420,7 +420,7 @@
 .btn-add-option:focus,
 .btn-modal-save:focus,
 .btn-modal-cancel:focus {
-  outline: 2px solid #14b8a6;
+  outline: 2px solid #00c2ff;
   outline-offset: 2px;
 }
 
