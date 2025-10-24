@@ -2365,36 +2365,43 @@
                 />
               </div>
 
-              <!-- User with Add Button -->
+              <!-- Usuario con selección personalizada -->
               <div class="form-group-premium">
-                <label class="form-label-premium" for="user">
+                <label class="form-label-premium" for="selectedUserField">
                   <i class="fas fa-user"></i>
-                  Usuario
+                  Usuario seleccionado
                 </label>
-                <div class="select-with-add">
-                  <select
-                    id="user"
-                    class="form-input-premium form-select-native"
+                <div class="user-selection-row">
+                  <div
+                    id="selectedUserField"
+                    class="form-input-premium selected-user-field selected-user-field--empty"
+                    role="button"
+                    aria-live="polite"
+                    aria-label="Seleccionar usuario"
+                    tabindex="0"
                   >
-                    <option value="">Sin asignar</option>
-                    <option value="Daniel">👨 Daniel</option>
-                    <option value="Givonik">👨‍💼 Givonik</option>
-                  </select>
+                    Sin usuario asignado
+                  </div>
                   <button
                     type="button"
                     class="btn-add-option"
                     id="addUserBtn"
                     title="Añadir usuario personalizado"
+                    aria-label="Añadir usuario personalizado"
                   >
                     <i class="fas fa-plus"></i>
                   </button>
                 </div>
-                <div class="selected-user-preview selected-user-preview--empty" id="selectedUserPreview">
-                  <span class="selected-user-preview__label">Usuario seleccionado:</span>
-                  <span class="selected-user-preview__value" id="selectedUserPreviewValue">
-                    Sin usuario asignado
-                  </span>
-                </div>
+                <select
+                  id="user"
+                  class="form-input-premium form-select-native user-hidden-select"
+                  aria-hidden="true"
+                  tabindex="-1"
+                >
+                  <option value="">Sin asignar</option>
+                  <option value="Daniel">👤 Daniel</option>
+                  <option value="Givonik">🤖 Givonik</option>
+                </select>
               </div>
             </div>
 
@@ -6511,3 +6518,4 @@
     </div>
   </body>
 </html>
+

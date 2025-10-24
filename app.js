@@ -12203,14 +12203,13 @@ FinanceApp.prototype.updateUserSelectionDropdown = function () {
 };
 
 FinanceApp.prototype.updateSelectedUserPreview = function (selectElement) {
-  const previewContainer = document.getElementById('selectedUserPreview');
-  const previewValue = document.getElementById('selectedUserPreviewValue');
+  const selectedUserField = document.getElementById('selectedUserField');
   const select =
     selectElement instanceof HTMLSelectElement
       ? selectElement
       : document.getElementById('user');
 
-  if (!previewContainer || !previewValue || !select) {
+  if (!selectedUserField || !select) {
     return;
   }
 
@@ -12218,22 +12217,36 @@ FinanceApp.prototype.updateSelectedUserPreview = function (selectElement) {
   const selectedOption =
     select.selectedIndex >= 0 ? select.options[select.selectedIndex] : null;
 
+  selectedUserField.classList.remove('selected-user-field--active');
+
   if (!selectedValue) {
-    previewValue.textContent = 'Sin usuario asignado';
-    previewContainer.classList.add('selected-user-preview--empty');
+    selectedUserField.textContent = 'Sin usuario asignado';
+    selectedUserField.classList.add('selected-user-field--empty');
+    selectedUserField.setAttribute(
+      'aria-label',
+      'Seleccionar usuario (sin asignar)'
+    );
     return;
   }
 
   if (selectedValue === '__add_new__') {
-    previewValue.textContent = 'Agrega un nuevo usuario desde el botón +';
-    previewContainer.classList.add('selected-user-preview--empty');
+    selectedUserField.textContent =
+      'Agrega un nuevo usuario desde el botón +';
+    selectedUserField.classList.add('selected-user-field--empty');
+    selectedUserField.setAttribute(
+      'aria-label',
+      'Seleccionar usuario (agregar nuevo)'
+    );
     return;
   }
 
-  previewValue.textContent = selectedOption
-    ? selectedOption.textContent
-    : selectedValue;
-  previewContainer.classList.remove('selected-user-preview--empty');
+  const userText = selectedOption ? selectedOption.textContent : selectedValue;
+  selectedUserField.textContent = userText;
+  selectedUserField.classList.remove('selected-user-field--empty');
+  selectedUserField.setAttribute(
+    'aria-label',
+    `Seleccionar usuario (${userText.trim()})`
+  );
 };
 
 FinanceApp.prototype.updateActivityLog = function () {
@@ -18885,22 +18898,39 @@ FinanceApp.prototype.setupSelectModalTriggers = function() {
     }
   }
 
-  // User select
+  // User select (hidden; interaction handled by selectedUserField)
   const userSelect = document.getElementById('user');
+  const userField = document.getElementById('selectedUserField');
   if (userSelect) {
     userSelect.style.position = 'absolute';
     userSelect.style.opacity = '0';
     userSelect.style.pointerEvents = 'none';
+    userSelect.style.height = '0';
+  }
 
-    const userTrigger = this.createModalTrigger(
-      userSelect,
-      'userModal',
-      '👤 Selecciona usuario'
-    );
+  if (userField && userSelect) {
+    const openUserModal = () => {
+      const currentValue = userSelect.value || '';
+      openSelectModal('userModal', currentValue);
+    };
 
-    if (userTrigger) {
-      userSelect.parentNode.insertBefore(userTrigger, userSelect);
-    }
+    userField.addEventListener('click', () => {
+      userField.classList.add('selected-user-field--active');
+      openUserModal();
+      setTimeout(() => userField.classList.remove('selected-user-field--active'), 200);
+    });
+
+    userField.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        userField.classList.add('selected-user-field--active');
+        openUserModal();
+        setTimeout(
+          () => userField.classList.remove('selected-user-field--active'),
+          200
+        );
+      }
+    });
   }
 
   console.log('✅ Triggers de modales configurados');
