@@ -2594,6 +2594,15 @@ body.sidebar-collapsed .main-content {
   margin-bottom: var(--space-24);
 }
 
+.dashboard-grid .card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-grid .card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
 /* Hide cards when their content is empty */
 .card:has(.card__body:empty),
 .card:has(#aiRecommendations:empty),
@@ -18771,6 +18780,64 @@ select.form-input-premium[style*="animation"] {
 
   .receipt-preview img {
     max-height: 300px;
+  }
+}
+
+/* ========================================
+   SMART AUTO-COMPLETE STYLES
+   ======================================== */
+
+/* Animación cuando un campo es auto-rellenado */
+.auto-filled {
+  animation: autoFillPulse 1s ease;
+  border-color: var(--color-accent) !important;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary-soft) 0%,
+    rgba(var(--color-accent-rgb), 0.1) 50%,
+    var(--color-primary-soft) 100%
+  ) !important;
+  box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.15) !important;
+}
+
+@keyframes autoFillPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb), 0.4);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 8px rgba(var(--color-accent-rgb), 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb), 0);
+  }
+}
+
+/* Indicador de IA trabajando */
+.ai-analyzing {
+  position: relative;
+}
+
+.ai-analyzing::after {
+  content: "🤖";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  animation: aiPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes aiPulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translateY(-50%) scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
   }
 }
 

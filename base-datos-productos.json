@@ -1,0 +1,298 @@
+{
+  "productosChile": [
+    {
+      "nombre": "Pan",
+      "categoria": "Alimentación",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["pan", "marraqueta", "hallulla", "baguette"]
+    },
+    {
+      "nombre": "Arroz",
+      "categoria": "Alimentación",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["arroz", "grano", "cereal"]
+    },
+    {
+      "nombre": "Leche",
+      "categoria": "Alimentación",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["leche", "lácteo", "descremada", "entera"]
+    },
+    {
+      "nombre": "Huevos",
+      "categoria": "Alimentación",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["huevos", "huevo", "docena"]
+    },
+    {
+      "nombre": "Carne",
+      "categoria": "Alimentación",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["carne", "pollo", "vacuno", "cerdo", "pavo", "bistec", "chuleta"]
+    },
+    {
+      "nombre": "Verduras",
+      "categoria": "Alimentación",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["lechuga", "tomate", "cebolla", "zanahoria", "papa", "papas", "apio", "palta", "avocado"]
+    },
+    {
+      "nombre": "Frutas",
+      "categoria": "Alimentación",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["manzana", "plátano", "naranja", "uva", "pera", "kiwi", "frutilla"]
+    },
+    {
+      "nombre": "Agua",
+      "categoria": "Alimentación",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["agua", "mineral", "bidón", "botella"]
+    },
+    {
+      "nombre": "Bebida energética",
+      "categoria": "Entretenimiento",
+      "prioridad": "Necesario",
+      "palabras_clave": ["gatorade", "powerade", "red bull", "monster", "energética"]
+    },
+    {
+      "nombre": "Gaseosa",
+      "categoria": "Entretenimiento",
+      "prioridad": "Poco Necesario",
+      "palabras_clave": ["coca cola", "pepsi", "fanta", "sprite", "bebida", "gaseosa"]
+    },
+    {
+      "nombre": "Jugo",
+      "categoria": "Alimentación",
+      "prioridad": "Necesario",
+      "palabras_clave": ["jugo", "néctar", "watts", "jumex"]
+    },
+    {
+      "nombre": "Café",
+      "categoria": "Alimentación",
+      "prioridad": "Necesario",
+      "palabras_clave": ["café", "nescafé", "cappuccino", "espresso"]
+    },
+    {
+      "nombre": "Té",
+      "categoria": "Alimentación",
+      "prioridad": "Necesario",
+      "palabras_clave": ["té", "infusión", "manzanilla", "boldo"]
+    },
+    {
+      "nombre": "Bencina",
+      "categoria": "Transporte",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["bencina", "combustible", "gasolina", "petróleo"]
+    },
+    {
+      "nombre": "Micro",
+      "categoria": "Transporte",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["micro", "bus", "transantiago", "red"]
+    },
+    {
+      "nombre": "Metro",
+      "categoria": "Transporte",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["metro", "subte", "tren"]
+    },
+    {
+      "nombre": "Taxi/Uber",
+      "categoria": "Transporte",
+      "prioridad": "Necesario",
+      "palabras_clave": ["taxi", "uber", "cabify", "didi", "beat"]
+    },
+    {
+      "nombre": "Estacionamiento",
+      "categoria": "Transporte",
+      "prioridad": "Necesario",
+      "palabras_clave": ["estacionamiento", "parking", "parquímetro"]
+    },
+    {
+      "nombre": "Detergente",
+      "categoria": "Compras",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["detergente", "lavaloza", "quix", "magistral"]
+    },
+    {
+      "nombre": "Papel higiénico",
+      "categoria": "Compras",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["papel higiénico", "confort", "elite", "noble"]
+    },
+    {
+      "nombre": "Shampoo",
+      "categoria": "Compras",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["shampoo", "champú", "cabello", "head", "shoulders"]
+    },
+    {
+      "nombre": "Jabón",
+      "categoria": "Compras",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["jabón", "protex", "palmolive", "lux"]
+    },
+    {
+      "nombre": "Pasta dental",
+      "categoria": "Compras",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["pasta dental", "colgate", "oral-b", "sensodyne"]
+    },
+    {
+      "nombre": "Desodorante",
+      "categoria": "Compras",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["desodorante", "rexona", "dove", "old spice"]
+    },
+    {
+      "nombre": "Medicamentos",
+      "categoria": "Salud",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["paracetamol", "ibuprofeno", "aspirina", "medicamento", "pastilla", "jarabe"]
+    },
+    {
+      "nombre": "Vitaminas",
+      "categoria": "Salud",
+      "prioridad": "Necesario",
+      "palabras_clave": ["vitamina", "suplemento", "centrum", "redoxon"]
+    },
+    {
+      "nombre": "Preservativos",
+      "categoria": "Salud",
+      "prioridad": "Necesario",
+      "palabras_clave": ["preservativo", "condón", "durex", "control"]
+    },
+    {
+      "nombre": "Celular",
+      "categoria": "Compras",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["celular", "teléfono", "smartphone", "iphone", "samsung", "móvil"]
+    },
+    {
+      "nombre": "Cargador",
+      "categoria": "Compras",
+      "prioridad": "Necesario",
+      "palabras_clave": ["cargador", "cable", "usb", "adaptador"]
+    },
+    {
+      "nombre": "Auriculares",
+      "categoria": "Compras",
+      "prioridad": "Necesario",
+      "palabras_clave": ["auriculares", "audífonos", "headphones", "airpods"]
+    },
+    {
+      "nombre": "Netflix",
+      "categoria": "Entretenimiento",
+      "prioridad": "Poco Necesario",
+      "palabras_clave": ["netflix", "streaming", "suscripción", "disney", "prime"]
+    },
+    {
+      "nombre": "Cine",
+      "categoria": "Entretenimiento",
+      "prioridad": "Poco Necesario",
+      "palabras_clave": ["cine", "película", "cinemark", "hoyts"]
+    },
+    {
+      "nombre": "Restaurante",
+      "categoria": "Entretenimiento",
+      "prioridad": "Poco Necesario",
+      "palabras_clave": ["restaurante", "comida rápida", "mcdonalds", "burger king", "kfc"]
+    },
+    {
+      "nombre": "Bar",
+      "categoria": "Entretenimiento",
+      "prioridad": "Poco Necesario",
+      "palabras_clave": ["bar", "copete", "cerveza", "pisco", "vino", "alcohol"]
+    },
+    {
+      "nombre": "Comida para mascotas",
+      "categoria": "Compras",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["comida perro", "comida gato", "alimento mascota", "pedigree", "whiskas"]
+    },
+    {
+      "nombre": "Veterinario",
+      "categoria": "Salud",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["veterinario", "vacuna mascota", "consulta veterinaria"]
+    },
+    {
+      "nombre": "Luz",
+      "categoria": "Servicios",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["luz", "electricidad", "enel", "cgf"]
+    },
+    {
+      "nombre": "Agua",
+      "categoria": "Servicios",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["agua potable", "aguas andinas", "esval"]
+    },
+    {
+      "nombre": "Gas",
+      "categoria": "Servicios",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["gas", "gasco", "lipigas", "abastible"]
+    },
+    {
+      "nombre": "Internet",
+      "categoria": "Servicios",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["internet", "wifi", "movistar", "entel", "vtr", "claro"]
+    },
+    {
+      "nombre": "Teléfono",
+      "categoria": "Servicios",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["plan celular", "recarga", "minutos", "datos"]
+    },
+    {
+      "nombre": "Arriendo",
+      "categoria": "Servicios",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["arriendo", "renta", "alquiler", "departamento", "casa"]
+    },
+    {
+      "nombre": "Gastos comunes",
+      "categoria": "Servicios",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["gastos comunes", "expensas", "administración"]
+    },
+    {
+      "nombre": "Libros",
+      "categoria": "Compras",
+      "prioridad": "Necesario",
+      "palabras_clave": ["libro", "cuaderno", "lápiz", "útiles escolares"]
+    },
+    {
+      "nombre": "Curso online",
+      "categoria": "Compras",
+      "prioridad": "Necesario",
+      "palabras_clave": ["curso", "capacitación", "udemy", "coursera"]
+    },
+    {
+      "nombre": "Herramientas",
+      "categoria": "Compras",
+      "prioridad": "Necesario",
+      "palabras_clave": ["martillo", "destornillador", "taladro", "tornillo", "clavo"]
+    },
+    {
+      "nombre": "Pintura",
+      "categoria": "Compras",
+      "prioridad": "Necesario",
+      "palabras_clave": ["pintura", "brocha", "rodillo", "barniz"]
+    },
+    {
+      "nombre": "Ropa",
+      "categoria": "Compras",
+      "prioridad": "Necesario",
+      "palabras_clave": ["camisa", "pantalón", "zapatos", "polera", "vestido", "falda"]
+    },
+    {
+      "nombre": "Ropa interior",
+      "categoria": "Compras",
+      "prioridad": "Muy Necesario",
+      "palabras_clave": ["calzoncillo", "boxer", "sostén", "ropa interior"]
+    }
+  ]
+}

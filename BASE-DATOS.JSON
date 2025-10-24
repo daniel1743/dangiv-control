@@ -1,0 +1,685 @@
+
+
+
+const baseDatosComprasChile = {
+  "productosChile": [
+    {
+      "nombre": "Pan",
+      "categoria": "Alimentación",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "pan",
+        "marraqueta",
+        "hallulla",
+        "baguette"
+      ]
+    },
+    {
+      "nombre": "Arroz",
+      "categoria": "Alimentación",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "arroz",
+        "grano",
+        "cereal"
+      ]
+    },
+    {
+      "nombre": "Leche",
+      "categoria": "Alimentación",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "leche",
+        "lácteo",
+        "descremada",
+        "entera"
+      ]
+    },
+    {
+      "nombre": "Huevos",
+      "categoria": "Alimentación",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "huevos",
+        "huevo",
+        "docena"
+      ]
+    },
+    {
+      "nombre": "Carne",
+      "categoria": "Alimentación",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "carne",
+        "pollo",
+        "vacuno",
+        "cerdo",
+        "pavo",
+        "bistec",
+        "chuleta"
+      ]
+    },
+    {
+      "nombre": "Verduras",
+      "categoria": "Alimentación",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "lechuga",
+        "tomate",
+        "cebolla",
+        "zanahoria",
+        "papa",
+        "papas",
+        "apio",
+        "palta",
+        "avocado"
+      ]
+    },
+    {
+      "nombre": "Frutas",
+      "categoria": "Alimentación",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "manzana",
+        "plátano",
+        "naranja",
+        "uva",
+        "pera",
+        "kiwi",
+        "frutilla"
+      ]
+    },
+    {
+      "nombre": "Agua",
+      "categoria": "Bebida",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "agua",
+        "mineral",
+        "bidón",
+        "botella"
+      ]
+    },
+    {
+      "nombre": "Bebida energética",
+      "categoria": "Bebida",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "gatorade",
+        "powerade",
+        "red bull",
+        "monster",
+        "energética"
+      ]
+    },
+    {
+      "nombre": "Gaseosa",
+      "categoria": "Bebida",
+      "prioridad": "Poco necesario",
+      "palabras_clave": [
+        "coca cola",
+        "pepsi",
+        "fanta",
+        "sprite",
+        "bebida",
+        "gaseosa"
+      ]
+    },
+    {
+      "nombre": "Jugo",
+      "categoria": "Bebida",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "jugo",
+        "néctar",
+        "watts",
+        "jumex"
+      ]
+    },
+    {
+      "nombre": "Café",
+      "categoria": "Bebida",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "café",
+        "nescafé",
+        "cappuccino",
+        "espresso"
+      ]
+    },
+    {
+      "nombre": "Té",
+      "categoria": "Bebida",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "té",
+        "infusión",
+        "manzanilla",
+        "boldo"
+      ]
+    },
+    {
+      "nombre": "Bencina",
+      "categoria": "Transporte",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "bencina",
+        "combustible",
+        "gasolina",
+        "petróleo"
+      ]
+    },
+    {
+      "nombre": "Micro",
+      "categoria": "Transporte",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "micro",
+        "bus",
+        "transantiago",
+        "red"
+      ]
+    },
+    {
+      "nombre": "Metro",
+      "categoria": "Transporte",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "metro",
+        "subte",
+        "tren"
+      ]
+    },
+    {
+      "nombre": "Taxi/Uber",
+      "categoria": "Transporte",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "taxi",
+        "uber",
+        "cabify",
+        "didi",
+        "beat"
+      ]
+    },
+    {
+      "nombre": "Estacionamiento",
+      "categoria": "Transporte",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "estacionamiento",
+        "parking",
+        "parquímetro"
+      ]
+    },
+    {
+      "nombre": "Detergente",
+      "categoria": "Limpieza",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "detergente",
+        "lavaloza",
+        "quix",
+        "magistral"
+      ]
+    },
+    {
+      "nombre": "Papel higiénico",
+      "categoria": "Limpieza",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "papel higiénico",
+        "confort",
+        "elite",
+        "noble"
+      ]
+    },
+    {
+      "nombre": "Shampoo",
+      "categoria": "Limpieza",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "shampoo",
+        "champú",
+        "cabello",
+        "head",
+        "shoulders"
+      ]
+    },
+    {
+      "nombre": "Jabón",
+      "categoria": "Limpieza",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "jabón",
+        "protex",
+        "palmolive",
+        "lux"
+      ]
+    },
+    {
+      "nombre": "Pasta dental",
+      "categoria": "Limpieza",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "pasta dental",
+        "colgate",
+        "oral-b",
+        "sensodyne"
+      ]
+    },
+    {
+      "nombre": "Desodorante",
+      "categoria": "Limpieza",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "desodorante",
+        "rexona",
+        "dove",
+        "old spice"
+      ]
+    },
+    {
+      "nombre": "Medicamentos",
+      "categoria": "Salud",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "paracetamol",
+        "ibuprofeno",
+        "aspirina",
+        "medicamento",
+        "pastilla",
+        "jarabe"
+      ]
+    },
+    {
+      "nombre": "Vitaminas",
+      "categoria": "Salud",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "vitamina",
+        "suplemento",
+        "centrum",
+        "redoxon"
+      ]
+    },
+    {
+      "nombre": "Preservativos",
+      "categoria": "Salud",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "preservativo",
+        "condón",
+        "durex",
+        "control"
+      ]
+    },
+    {
+      "nombre": "Celular",
+      "categoria": "Tecnología",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "celular",
+        "teléfono",
+        "smartphone",
+        "iphone",
+        "samsung",
+        "móvil"
+      ]
+    },
+    {
+      "nombre": "Cargador",
+      "categoria": "Tecnología",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "cargador",
+        "cable",
+        "usb",
+        "adaptador"
+      ]
+    },
+    {
+      "nombre": "Auriculares",
+      "categoria": "Tecnología",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "auriculares",
+        "audífonos",
+        "headphones",
+        "airpods"
+      ]
+    },
+    {
+      "nombre": "Netflix",
+      "categoria": "Ocio",
+      "prioridad": "Poco necesario",
+      "palabras_clave": [
+        "netflix",
+        "streaming",
+        "suscripción",
+        "disney",
+        "prime"
+      ]
+    },
+    {
+      "nombre": "Cine",
+      "categoria": "Ocio",
+      "prioridad": "Poco necesario",
+      "palabras_clave": [
+        "cine",
+        "película",
+        "cinemark",
+        "hoyts"
+      ]
+    },
+    {
+      "nombre": "Restaurante",
+      "categoria": "Ocio",
+      "prioridad": "Poco necesario",
+      "palabras_clave": [
+        "restaurante",
+        "comida rápida",
+        "mcdonalds",
+        "burger king",
+        "kfc"
+      ]
+    },
+    {
+      "nombre": "Bar",
+      "categoria": "Ocio",
+      "prioridad": "Poco necesario",
+      "palabras_clave": [
+        "bar",
+        "copete",
+        "cerveza",
+        "pisco",
+        "vino",
+        "alcohol"
+      ]
+    },
+    {
+      "nombre": "Comida para mascotas",
+      "categoria": "Mascotas",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "comida perro",
+        "comida gato",
+        "alimento mascota",
+        "pedigree",
+        "whiskas"
+      ]
+    },
+    {
+      "nombre": "Veterinario",
+      "categoria": "Mascotas",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "veterinario",
+        "vacuna mascota",
+        "consulta veterinaria"
+      ]
+    },
+    {
+      "nombre": "Luz",
+      "categoria": "Servicios básicos",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "luz",
+        "electricidad",
+        "enel",
+        "cgf"
+      ]
+    },
+    {
+      "nombre": "Agua",
+      "categoria": "Servicios básicos",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "agua potable",
+        "aguas andinas",
+        "esval"
+      ]
+    },
+    {
+      "nombre": "Gas",
+      "categoria": "Servicios básicos",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "gas",
+        "gasco",
+        "lipigas",
+        "abastible"
+      ]
+    },
+    {
+      "nombre": "Internet",
+      "categoria": "Servicios básicos",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "internet",
+        "wifi",
+        "movistar",
+        "entel",
+        "vtr",
+        "claro"
+      ]
+    },
+    {
+      "nombre": "Teléfono",
+      "categoria": "Servicios básicos",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "plan celular",
+        "recarga",
+        "minutos",
+        "datos"
+      ]
+    },
+    {
+      "nombre": "Arriendo",
+      "categoria": "Vivienda",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "arriendo",
+        "renta",
+        "alquiler",
+        "departamento",
+        "casa"
+      ]
+    },
+    {
+      "nombre": "Gastos comunes",
+      "categoria": "Vivienda",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "gastos comunes",
+        "expensas",
+        "administración"
+      ]
+    },
+    {
+      "nombre": "Libros",
+      "categoria": "Educación",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "libro",
+        "cuaderno",
+        "lápiz",
+        "útiles escolares"
+      ]
+    },
+    {
+      "nombre": "Curso online",
+      "categoria": "Educación",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "curso",
+        "capacitación",
+        "udemy",
+        "coursera"
+      ]
+    },
+    {
+      "nombre": "Herramientas",
+      "categoria": "Ferretería",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "martillo",
+        "destornillador",
+        "taladro",
+        "tornillo",
+        "clavo"
+      ]
+    },
+    {
+      "nombre": "Pintura",
+      "categoria": "Ferretería",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "pintura",
+        "brocha",
+        "rodillo",
+        "barniz"
+      ]
+    },
+    {
+      "nombre": "Ropa",
+      "categoria": "Ropa",
+      "prioridad": "Necesario",
+      "palabras_clave": [
+        "camisa",
+        "pantalón",
+        "zapatos",
+        "polera",
+        "vestido",
+        "falda"
+      ]
+    },
+    {
+      "nombre": "Ropa interior",
+      "categoria": "Ropa",
+      "prioridad": "Muy necesario",
+      "palabras_clave": [
+        "calzoncillo",
+        "boxer",
+        "sostén",
+        "ropa interior"
+      ]
+    }
+  ],
+  "categorias": [
+    "Alimentación",
+    "Bebida",
+    "Transporte",
+    "Limpieza",
+    "Salud",
+    "Tecnología",
+    "Ocio",
+    "Mascotas",
+    "Servicios básicos",
+    "Vivienda",
+    "Educación",
+    "Ferretería",
+    "Ropa",
+    "Otros"
+  ],
+  "prioridades": [
+    "Muy necesario",
+    "Necesario",
+    "Poco necesario"
+  ]
+};
+
+// Función para buscar categoria y prioridad basada en descripción
+function buscarProducto(descripcion) {
+    const desc = descripcion.toLowerCase();
+
+    for (const producto of baseDatosComprasChile.productosChile) {
+        for (const palabra of producto.palabras_clave) {
+            if (desc.includes(palabra.toLowerCase())) {
+                return {
+                    categoria: producto.categoria,
+                    prioridad: producto.prioridad,
+                    nombre: producto.nombre,
+                    coincidencia: palabra
+                };
+            }
+        }
+    }
+
+    // Si no encuentra coincidencia, devuelve valores por defecto
+    return {
+        categoria: "Otros",
+        prioridad: "Necesario",
+        nombre: "Producto no identificado",
+        coincidencia: null
+    };
+}
+
+// Función para obtener todas las categorías disponibles
+function obtenerCategorias() {
+    return baseDatosComprasChile.categorias;
+}
+
+// Función para obtener todas las prioridades disponibles  
+function obtenerPrioridades() {
+    return baseDatosComprasChile.prioridades;
+}
+
+// Función para agregar nuevo producto a la base de datos
+function agregarProducto(nombre, categoria, prioridad, palabrasClave) {
+    const nuevoProducto = {
+        nombre: nombre,
+        categoria: categoria,
+        prioridad: prioridad,
+        palabras_clave: palabrasClave
+    };
+
+    baseDatosComprasChile.productosChile.push(nuevoProducto);
+    return nuevoProducto;
+}
+
+// Función de ejemplo para registrar un gasto usando la IA
+function registrarGastoConIA(descripcion, monto, fecha = new Date().toISOString().split('T')[0]) {
+    const resultado = buscarProducto(descripcion);
+
+    const gasto = {
+        id: Date.now().toString(), // ID simple basado en timestamp
+        descripcion: descripcion,
+        categoria: resultado.categoria,
+        prioridad: resultado.prioridad,
+        monto: monto,
+        fecha: fecha,
+        usuario: "Usuario", // Cambiar según tu sistema de usuarios
+        ubicacion: "",
+        metodoPago: "",
+        comercio: "",
+        estado: "Registrado",
+        unidad: "",
+        cantidad: 1,
+        archivoAdjunto: null,
+        comentarios: "",
+        fuente: "IA",
+        recomendacionIA: resultado.categoria === "Otros" ? "Revisa la categoría asignada" : "",
+        historialCambios: []
+    };
+
+    return gasto;
+}
+
+// Ejemplo de uso:
+// const nuevoGasto = registrarGastoConIA("Gatorade 500ml", 1500);
+// console.log(nuevoGasto);
+// Resultado: categoria: "Bebida", prioridad: "Necesario"
+
+// Exportar para uso en módulos (opcional)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        baseDatosComprasChile,
+        buscarProducto,
+        obtenerCategorias,
+        obtenerPrioridades,
+        agregarProducto,
+        registrarGastoConIA
+    };
+}

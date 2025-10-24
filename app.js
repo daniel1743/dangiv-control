@@ -12169,12 +12169,17 @@ FinanceApp.prototype.updateUserSelectionDropdown = function () {
   // Limpiar y agregar opciones base
   userSelect.innerHTML = '<option value="">Sin usuario asignado</option>';
 
+  // Variable para guardar el usuario por defecto
+  let defaultUserValue = '';
+
   // Agregar usuario del perfil si existe
   if (this.userProfile.name && this.userProfile.name !== 'Usuario') {
     const option = document.createElement('option');
     option.value = this.userProfile.name;
     option.textContent = this.userProfile.name;
     userSelect.appendChild(option);
+    // Este será el usuario por defecto
+    defaultUserValue = this.userProfile.name;
   }
 
   // Agregar usuarios personalizados
@@ -12190,6 +12195,12 @@ FinanceApp.prototype.updateUserSelectionDropdown = function () {
   addNewOption.value = '__add_new__';
   addNewOption.textContent = '+ Añadir nuevo usuario';
   userSelect.appendChild(addNewOption);
+
+  // ✅ ESTABLECER EL USUARIO POR DEFECTO (usuario autenticado)
+  if (defaultUserValue) {
+    userSelect.value = defaultUserValue;
+    console.log(`✅ Usuario por defecto establecido: ${defaultUserValue}`);
+  }
 
   // ✅ RE-AGREGAR EL EVENT LISTENER DESPUÉS DE RECONSTRUIR EL HTML
   this.setupUserSelectListener();
@@ -12237,7 +12248,23 @@ FinanceApp.prototype.updateSelectedUserPreview = function (selectElement) {
   }
 
   const userText = selectedOption ? selectedOption.textContent : selectedValue;
-  selectedUserField.textContent = userText;
+
+  // Verificar si es el usuario autenticado
+  const isAuthenticatedUser = selectedValue === this.userProfile.name;
+
+  if (isAuthenticatedUser) {
+    selectedUserField.innerHTML = `
+      <span>${userText}</span>
+      <i class="fas fa-exchange-alt" style="color: var(--color-accent);" title="Click para cambiar usuario"></i>
+      <span style="color: var(--color-accent); font-size: 11px; font-weight: 600; margin-left: 8px;">TÚ</span>
+    `;
+  } else {
+    selectedUserField.innerHTML = `
+      <span>${userText}</span>
+      <i class="fas fa-exchange-alt" style="color: var(--color-accent);" title="Click para cambiar usuario"></i>
+    `;
+  }
+
   selectedUserField.classList.remove('selected-user-field--empty');
   selectedUserField.setAttribute(
     'aria-label',
@@ -18651,7 +18678,7 @@ window.saveNewUserFromModal = function() {
 
 /**
  * Puebla el modal de usuarios con las opciones dinámicas
- * Solo agrega los usuarios personalizados, ya que Daniel y Givonik están en el HTML
+ * Agrega el usuario autenticado y usuarios personalizados
  */
 window.populateUserModal = function() {
   const modal = document.getElementById('userModal');
@@ -18660,7 +18687,10 @@ window.populateUserModal = function() {
   const modalBody = modal.querySelector('.select-modal-body');
   if (!modalBody) return;
 
-  // Obtener usuarios personalizados
+  // Obtener usuario autenticado y usuarios personalizados
+  const authenticatedUser = (window.financeApp && window.financeApp.userProfile.name && window.financeApp.userProfile.name !== 'Usuario')
+    ? window.financeApp.userProfile.name
+    : null;
   const customUsers = (window.financeApp && window.financeApp.customUsers) ? window.financeApp.customUsers : [];
 
   // Encontrar el elemento de Givonik para insertar después de él
@@ -18670,14 +18700,35 @@ window.populateUserModal = function() {
     return;
   }
 
-  // Eliminar usuarios personalizados anteriores (para evitar duplicados)
-  const existingCustomUsers = modalBody.querySelectorAll('.custom-user-option');
-  existingCustomUsers.forEach(el => el.remove());
+  // Eliminar usuarios dinámicos anteriores (para evitar duplicados)
+  const existingDynamicUsers = modalBody.querySelectorAll('.custom-user-option, .authenticated-user-option');
+  existingDynamicUsers.forEach(el => el.remove());
 
-  // Agregar usuarios personalizados después de Givonik
   let lastUserOption = givonikOption;
 
+  // Agregar usuario autenticado primero (si existe y no es Daniel ni Givonik)
+  if (authenticatedUser && authenticatedUser !== 'Daniel' && authenticatedUser !== 'Givonik') {
+    const authUserOption = document.createElement('div');
+    authUserOption.className = 'select-modal-option authenticated-user-option';
+    authUserOption.setAttribute('data-value', authenticatedUser);
+    authUserOption.onclick = () => handleModalOptionClick('userModal', 'user', authenticatedUser);
+
+    authUserOption.innerHTML = `
+      <div class="option-icon">👤</div>
+      <div class="option-text">${authenticatedUser} <span style="color: var(--color-accent); font-size: 11px; font-weight: 600;">TÚ</span></div>
+      <div class="option-check"><i class="fas fa-check"></i></div>
+    `;
+
+    lastUserOption.insertAdjacentElement('afterend', authUserOption);
+    lastUserOption = authUserOption;
+    console.log(`✅ Usuario autenticado agregado al modal: ${authenticatedUser}`);
+  }
+
+  // Agregar usuarios personalizados
   customUsers.forEach(user => {
+    // Evitar duplicar el usuario autenticado
+    if (user === authenticatedUser) return;
+
     const userOption = document.createElement('div');
     userOption.className = 'select-modal-option custom-user-option';
     userOption.setAttribute('data-value', user);
@@ -18689,12 +18740,11 @@ window.populateUserModal = function() {
       <div class="option-check"><i class="fas fa-check"></i></div>
     `;
 
-    // Insertar después del último usuario agregado
     lastUserOption.insertAdjacentElement('afterend', userOption);
-    lastUserOption = userOption; // Actualizar referencia para el siguiente
+    lastUserOption = userOption;
   });
 
-  console.log('✅ Modal de usuarios actualizado - Usuarios personalizados:', customUsers.length);
+  console.log('✅ Modal de usuarios actualizado - Autenticado:', authenticatedUser, '- Personalizados:', customUsers.length);
 };
 
 /**
@@ -19317,7 +19367,29 @@ class ReceiptScanner {
     this.modal = null;
     this.imageInput = null;
     this.currentImageData = null;
+    this.currentImageMime = 'image/jpeg';
     this.extractedData = null;
+    this.storageKeys = {
+      image: 'receiptScanner.image',
+      data: 'receiptScanner.data',
+      mime: 'receiptScanner.mime',
+    };
+    this.geminiEndpoint =
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
+    this.geminiApiKey = '';
+
+    try {
+      const FB = window.parent?.FB || window.FB;
+      if (FB) {
+        this.geminiApiKey = FB.geminiApiKey || '';
+      }
+    } catch (error) {
+      console.warn(
+        'No fue posible obtener la API key de Gemini desde Firebase',
+        error
+      );
+    }
+
     this.init();
   }
 
@@ -19400,6 +19472,7 @@ class ReceiptScanner {
     if (this.modal) {
       this.modal.classList.remove('hidden');
       this.resetModal();
+      this.restoreFromStorage();
     }
   }
 
@@ -19407,6 +19480,7 @@ class ReceiptScanner {
     if (this.modal) {
       this.modal.classList.add('hidden');
       this.resetModal();
+      this.clearStorage();
     }
   }
 
@@ -19421,19 +19495,21 @@ class ReceiptScanner {
 
     // Reset data
     this.currentImageData = null;
+    this.currentImageMime = 'image/jpeg';
     this.extractedData = null;
     this.imageInput.value = '';
-  }
 
+  }
   removeImage() {
     document.getElementById('receiptPreview')?.classList.add('hidden');
     document.getElementById('receiptDataPreview')?.classList.add('hidden');
     document.querySelector('.receipt-capture-options')?.classList.remove('hidden');
     this.currentImageData = null;
+    this.currentImageMime = 'image/jpeg';
     this.extractedData = null;
     this.imageInput.value = '';
+    this.clearStorage();
   }
-
   async handleImageSelect(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -19455,7 +19531,13 @@ class ReceiptScanner {
       const base64 = await this.fileToBase64(file);
       this.currentImageData = base64;
 
-      // Show preview
+      this.currentImageMime = file.type || 'image/jpeg';
+      this.saveImageToStorage(base64);
+      try {
+        localStorage.removeItem(this.storageKeys.data);
+      } catch (error) {
+        console.warn('No se pudo limpiar el borrador de datos del recibo', error);
+      }
       this.showPreview(base64);
 
       // Hide capture options
@@ -19499,17 +19581,22 @@ class ReceiptScanner {
       if (dataPreviewEl) dataPreviewEl.classList.add('hidden');
 
       // Get Gemini API key
-      const apiKey = window.FB?.geminiApiKey;
+      const apiKey =
+        this.geminiApiKey ||
+        window.parent?.FB?.geminiApiKey ||
+        window.FB?.geminiApiKey ||
+        '';
       if (!apiKey) {
         throw new Error('API key de Gemini no configurada');
       }
+      this.geminiApiKey = apiKey;
 
       // Remove data:image/...;base64, prefix
       const base64Data = base64Image.split(',')[1];
 
       // Call Gemini Vision API
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        `${this.geminiEndpoint}?key=${apiKey}`,
         {
           method: 'POST',
           headers: {
@@ -19532,7 +19619,7 @@ Si no puedes determinar algún valor con certeza, usa null. Responde SOLO con el
                 },
                 {
                   inline_data: {
-                    mime_type: 'image/jpeg',
+                    mime_type: this.currentImageMime || 'image/jpeg',
                     data: base64Data
                   }
                 }
@@ -19563,6 +19650,7 @@ Si no puedes determinar algún valor con certeza, usa null. Responde SOLO con el
 
       this.extractedData = JSON.parse(jsonMatch[0]);
       console.log('✅ Extracted data:', this.extractedData);
+      this.saveDataToStorage(this.extractedData);
 
       // Show extracted data
       this.displayExtractedData();
@@ -19643,6 +19731,68 @@ Si no puedes determinar algún valor con certeza, usa null. Responde SOLO con el
     dataPreviewEl.classList.remove('hidden');
   }
 
+  saveImageToStorage(base64) {
+    try {
+      localStorage.setItem(this.storageKeys.image, base64);
+      localStorage.setItem(this.storageKeys.mime, this.currentImageMime || 'image/jpeg');
+    } catch (error) {
+      console.warn('No se pudo guardar la imagen en el almacenamiento local', error);
+    }
+  }
+
+  saveDataToStorage(data) {
+    try {
+      localStorage.setItem(this.storageKeys.data, JSON.stringify(data));
+    } catch (error) {
+      console.warn('No se pudieron guardar los datos extraídos del recibo', error);
+    }
+  }
+
+  restoreFromStorage() {
+    try {
+      const storedImage = localStorage.getItem(this.storageKeys.image);
+      const storedMime = localStorage.getItem(this.storageKeys.mime);
+      const storedData = localStorage.getItem(this.storageKeys.data);
+
+      if (storedMime) {
+        this.currentImageMime = storedMime;
+      }
+
+      if (storedImage) {
+        this.currentImageData = storedImage;
+        this.showPreview(storedImage);
+        document.querySelector('.receipt-capture-options')?.classList.add('hidden');
+      }
+
+      if (storedData) {
+        try {
+          this.extractedData = JSON.parse(storedData);
+          this.displayExtractedData();
+        } catch (error) {
+          console.warn('No se pudieron restaurar los datos del recibo almacenados', error);
+        }
+      }
+    } catch (error) {
+      console.warn('Error restaurando el estado del escáner desde localStorage', error);
+    }
+  }
+
+  clearStorage() {
+    try {
+      localStorage.removeItem(this.storageKeys.image);
+      localStorage.removeItem(this.storageKeys.mime);
+      localStorage.removeItem(this.storageKeys.data);
+    } catch (error) {
+      console.warn('No se pudo limpiar el almacenamiento local del escáner', error);
+    }
+    if (this.imageInput) {
+      this.imageInput.value = '';
+    }
+    this.currentImageData = null;
+    this.currentImageMime = 'image/jpeg';
+    this.extractedData = null;
+  }
+
   applyDataToForm() {
     if (!this.extractedData) {
       this.showToast('No hay datos para aplicar', 'error');
@@ -19709,4 +19859,250 @@ if (typeof window !== 'undefined') {
   console.log('📸 Receipt Scanner module loaded');
 }
 
+// ========================================
+// SMART AUTO-COMPLETE SYSTEM
+// Sistema de autocompletado inteligente con base de datos
+// ========================================
+class SmartAutoComplete {
+  constructor() {
+    this.database = null;
+    this.descriptionInput = null;
+    this.categorySelect = null;
+    this.necessitySelect = null;
+    this.isLoadingDatabase = false;
+    this.init();
+  }
 
+  async init() {
+    try {
+      // Load database
+      await this.loadDatabase();
+
+      // Wait for DOM
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => this.setupListeners());
+      } else {
+        this.setupListeners();
+      }
+    } catch (error) {
+      console.error('❌ Error initializing SmartAutoComplete:', error);
+    }
+  }
+
+  async loadDatabase() {
+    if (this.isLoadingDatabase || this.database) return;
+
+    this.isLoadingDatabase = true;
+
+    try {
+      // Intentar cargar base de datos mejorada primero
+      let response = await fetch('./base-datos-productos-mejorada.json');
+
+      // Fallback a base original si falla
+      if (!response.ok) {
+        console.log('⚠️ Base mejorada no encontrada, intentando con base original...');
+        response = await fetch('./base-datos-productos.json');
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      this.database = data.productosChile || [];
+
+      const totalKeywords = this.database.reduce((sum, p) => sum + p.palabras_clave.length, 0);
+      console.log(`✅ Base de datos cargada: ${this.database.length} productos`);
+      console.log(`📊 Palabras clave totales: ${totalKeywords}`);
+    } catch (error) {
+      console.error('❌ Error cargando base de datos:', error);
+      // Fallback: usar base de datos interna mínima
+      this.database = this.getMinimalDatabase();
+      console.log('⚠️ Usando base de datos mínima de respaldo');
+    } finally {
+      this.isLoadingDatabase = false;
+    }
+  }
+
+  getMinimalDatabase() {
+    // Base de datos mínima de respaldo
+    return [
+      { nombre: "Pan", categoria: "Alimentación", prioridad: "Muy Necesario", palabras_clave: ["pan", "marraqueta"] },
+      { nombre: "Leche", categoria: "Alimentación", prioridad: "Muy Necesario", palabras_clave: ["leche"] },
+      { nombre: "Bencina", categoria: "Transporte", prioridad: "Muy Necesario", palabras_clave: ["bencina", "combustible"] },
+      { nombre: "Netflix", categoria: "Entretenimiento", prioridad: "Poco Necesario", palabras_clave: ["netflix"] }
+    ];
+  }
+
+  setupListeners() {
+    this.descriptionInput = document.getElementById('description');
+    this.categorySelect = document.getElementById('category');
+    this.necessitySelect = document.getElementById('necessity');
+
+    if (!this.descriptionInput) {
+      console.warn('⚠️ Campo de descripción no encontrado');
+      return;
+    }
+
+    // Listener para autocompletado mientras escribe
+    this.descriptionInput.addEventListener('input', (e) => this.handleInput(e));
+
+    // Listener para cuando termina de escribir (blur)
+    this.descriptionInput.addEventListener('blur', () => {
+      setTimeout(() => this.analyzeAndFill(), 200);
+    });
+
+    console.log('✅ Smart AutoComplete initialized');
+  }
+
+  handleInput(event) {
+    const value = event.target.value;
+
+    // Analizar después de 3 caracteres
+    if (value.length >= 3) {
+      // Debounce: esperar 500ms después de que el usuario deja de escribir
+      clearTimeout(this.inputTimeout);
+      this.inputTimeout = setTimeout(() => {
+        this.analyzeAndFill();
+      }, 500);
+    }
+  }
+
+  analyzeAndFill() {
+    if (!this.database || !this.descriptionInput) return;
+
+    const description = this.descriptionInput.value.trim().toLowerCase();
+    if (description.length < 2) return;
+
+    // Buscar coincidencia en la base de datos
+    const match = this.findMatch(description);
+
+    if (match) {
+      console.log('🤖 Coincidencia encontrada:', match);
+
+      // Auto-rellenar campos
+      this.fillCategory(match.categoria);
+      this.fillNecessity(match.prioridad);
+
+      // Mostrar feedback visual
+      this.showAutoFillFeedback(match);
+    }
+  }
+
+  findMatch(description) {
+    let bestMatch = null;
+    let highestScore = 0;
+
+    for (const producto of this.database) {
+      for (const palabra of producto.palabras_clave) {
+        const palabraLower = palabra.toLowerCase();
+
+        // Coincidencia exacta (máxima prioridad)
+        if (description === palabraLower) {
+          return producto;
+        }
+
+        // Coincidencia parcial
+        if (description.includes(palabraLower) || palabraLower.includes(description)) {
+          const score = this.calculateMatchScore(description, palabraLower);
+          if (score > highestScore) {
+            highestScore = score;
+            bestMatch = producto;
+          }
+        }
+      }
+    }
+
+    // Solo retornar si el score es suficientemente alto
+    return highestScore > 0.5 ? bestMatch : null;
+  }
+
+  calculateMatchScore(description, keyword) {
+    // Calcular similitud entre strings
+    if (description === keyword) return 1.0;
+    if (description.includes(keyword)) return 0.9;
+    if (keyword.includes(description)) return 0.8;
+
+    // Coincidencia de palabras
+    const descWords = description.split(' ');
+    const keyWords = keyword.split(' ');
+    const matches = descWords.filter(word => keyWords.includes(word)).length;
+
+    return matches / Math.max(descWords.length, keyWords.length);
+  }
+
+  fillCategory(categoria) {
+    if (!this.categorySelect || !categoria) return;
+
+    // Buscar la opción que coincida
+    const options = Array.from(this.categorySelect.options);
+    const matchingOption = options.find(opt =>
+      opt.value.toLowerCase() === categoria.toLowerCase() ||
+      opt.textContent.toLowerCase().includes(categoria.toLowerCase())
+    );
+
+    if (matchingOption && this.categorySelect.value === '') {
+      this.categorySelect.value = matchingOption.value;
+
+      // Agregar animación visual
+      this.categorySelect.classList.add('auto-filled');
+      setTimeout(() => this.categorySelect.classList.remove('auto-filled'), 1000);
+
+      // Disparar evento change
+      const event = new Event('change', { bubbles: true });
+      this.categorySelect.dispatchEvent(event);
+
+      console.log('✅ Categoría auto-rellenada:', matchingOption.value);
+    }
+  }
+
+  fillNecessity(prioridad) {
+    if (!this.necessitySelect || !prioridad) return;
+
+    // Buscar la opción que coincida
+    const options = Array.from(this.necessitySelect.options);
+    const matchingOption = options.find(opt =>
+      opt.value.toLowerCase().includes(prioridad.toLowerCase()) ||
+      opt.textContent.toLowerCase().includes(prioridad.toLowerCase())
+    );
+
+    if (matchingOption && this.necessitySelect.value === '') {
+      this.necessitySelect.value = matchingOption.value;
+
+      // Agregar animación visual
+      this.necessitySelect.classList.add('auto-filled');
+      setTimeout(() => this.necessitySelect.classList.remove('auto-filled'), 1000);
+
+      // Disparar evento change
+      const event = new Event('change', { bubbles: true });
+      this.necessitySelect.dispatchEvent(event);
+
+      console.log('✅ Prioridad auto-rellenada:', matchingOption.value);
+    }
+  }
+
+  showAutoFillFeedback(match) {
+    // Mostrar toast con la información autocompletada
+    const message = `🤖 Auto-completado: ${match.nombre} → ${match.categoria} (${match.prioridad})`;
+
+    if (window.app && typeof window.app.showToast === 'function') {
+      window.app.showToast(message, 'success');
+    }
+  }
+
+  // Método público para buscar producto manualmente
+  searchProduct(description) {
+    if (!this.database) {
+      console.warn('⚠️ Base de datos no cargada');
+      return null;
+    }
+
+    return this.findMatch(description.toLowerCase());
+  }
+}
+
+// Inicializar autocompletado inteligente
+if (typeof window !== 'undefined') {
+  window.smartAutoComplete = new SmartAutoComplete();
+  console.log('🤖 Smart AutoComplete module loaded');
+}
