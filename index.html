@@ -2480,6 +2480,44 @@
               </div>
             </div>
 
+            <!-- Items List (Productos de la factura) -->
+            <div class="form-group-premium">
+              <label class="form-label-premium" for="items">
+                <i class="fas fa-shopping-basket" aria-hidden="true"></i>
+                Items de la compra
+                <span class="field-optional">(Opcional)</span>
+              </label>
+              <textarea
+                id="items"
+                class="form-input-premium form-textarea"
+                placeholder="Ejemplo: Azúcar 1kg, Leche 1L, Aceite 2L"
+                rows="3"
+              ></textarea>
+              <small class="field-hint">
+                <i class="fas fa-info-circle"></i>
+                Productos individuales de la factura (automático con escaneo)
+              </small>
+            </div>
+
+            <!-- Notas adicionales (Info de la factura) -->
+            <div class="form-group-premium">
+              <label class="form-label-premium" for="notes">
+                <i class="fas fa-sticky-note" aria-hidden="true"></i>
+                Notas adicionales
+                <span class="field-optional">(Opcional)</span>
+              </label>
+              <textarea
+                id="notes"
+                class="form-input-premium form-textarea"
+                placeholder="Información adicional: lugar, método de pago, etc."
+                rows="2"
+              ></textarea>
+              <small class="field-hint">
+                <i class="fas fa-info-circle"></i>
+                Lugar de compra, tarjeta usada, número de boleta, etc.
+              </small>
+            </div>
+
             <!-- Budget Impact Alert -->
             <div class="budget-impact-alert hidden" id="budgetImpactAlert">
               <i class="fas fa-exclamation-triangle"></i>
@@ -5962,10 +6000,10 @@
             />
           </div>
           <div class="form-group-modal">
-            <label for="newCategoryIcon">Icono (emoji)</label>
+            <label for="newCategoryIconModal">Icono (emoji)</label>
             <input
               type="text"
-              id="newCategoryIcon"
+              id="newCategoryIconModal"
               class="modal-input"
               placeholder="🐕 🎓 💼 ..."
               maxlength="2"
@@ -6352,7 +6390,7 @@
             <div class="emoji-picker-container">
               <input
                 type="text"
-                id="newCategoryIcon"
+                id="newCategoryIconForm"
                 class="form-input-premium emoji-input"
                 placeholder="🎯"
                 maxlength="2"
@@ -6360,42 +6398,42 @@
               <div class="emoji-suggestions">
                 <span
                   class="emoji-option"
-                  onclick="selectEmoji('newCategoryIcon', '🎯')"
+                  onclick="selectEmoji('newCategoryIconForm', '🎯')"
                   >🎯</span
                 >
                 <span
                   class="emoji-option"
-                  onclick="selectEmoji('newCategoryIcon', '🐾')"
+                  onclick="selectEmoji('newCategoryIconForm', '🐾')"
                   >🐾</span
                 >
                 <span
                   class="emoji-option"
-                  onclick="selectEmoji('newCategoryIcon', '📚')"
+                  onclick="selectEmoji('newCategoryIconForm', '📚')"
                   >📚</span
                 >
                 <span
                   class="emoji-option"
-                  onclick="selectEmoji('newCategoryIcon', '🎨')"
+                  onclick="selectEmoji('newCategoryIconForm', '🎨')"
                   >🎨</span
                 >
                 <span
                   class="emoji-option"
-                  onclick="selectEmoji('newCategoryIcon', '💼')"
+                  onclick="selectEmoji('newCategoryIconForm', '💼')"
                   >💼</span
                 >
                 <span
                   class="emoji-option"
-                  onclick="selectEmoji('newCategoryIcon', '🏠')"
+                  onclick="selectEmoji('newCategoryIconForm', '🏠')"
                   >🏠</span
                 >
                 <span
                   class="emoji-option"
-                  onclick="selectEmoji('newCategoryIcon', '✈️')"
+                  onclick="selectEmoji('newCategoryIconForm', '✈️')"
                   >✈️</span
                 >
                 <span
                   class="emoji-option"
-                  onclick="selectEmoji('newCategoryIcon', '🎮')"
+                  onclick="selectEmoji('newCategoryIconForm', '🎮')"
                   >🎮</span
                 >
               </div>
@@ -6593,4 +6631,3 @@
     </div>
   </body>
 </html>
-

@@ -2623,9 +2623,7 @@ body.sidebar-collapsed .main-content {
   color: var(--color-text);
 }
 
-.card__body {
-  /* No specific styles needed, inherits from card */
-}
+.card__body { display: block; }
 
 /* Quick Access Card Styles */
 .greeting {
@@ -18839,5 +18837,58 @@ select.form-input-premium[style*="animation"] {
     opacity: 1;
     transform: translateY(-50%) scale(1.1);
   }
+}
+
+/* ========================================
+   ITEMS & NOTES FIELDS STYLES
+   ======================================== */
+
+.form-textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.6;
+  padding: 12px 16px;
+}
+
+.field-optional {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-subtle);
+  margin-left: 8px;
+}
+
+.field-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--color-text-subtle);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.field-hint i {
+  color: var(--color-accent);
+  font-size: 11px;
+}
+
+/* Textarea focus state */
+textarea.form-input-premium:focus {
+  border-color: var(--color-accent);
+  box-shadow: var(--focus-ring), var(--shadow-md);
+  outline: none;
+}
+
+/* Items field with shopping basket icon */
+#items {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Notes field with sticky note styling */
+#notes {
+  background: linear-gradient(to bottom,
+    var(--color-surface) 0%,
+    var(--color-cream-50) 100%);
 }
 

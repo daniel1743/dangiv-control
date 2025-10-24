@@ -360,7 +360,7 @@ console.log('📝 Inicializando nuevo sistema de gastos con personalización...'
 
   function saveNewCategory() {
     const nameInput = document.getElementById('newCategoryName');
-    const iconInput = document.getElementById('newCategoryIcon');
+    const iconInput = document.getElementById('newCategoryIconForm') || document.getElementById('newCategoryIcon');
 
     const name = nameInput.value.trim();
     const icon = iconInput.value.trim() || '📦';

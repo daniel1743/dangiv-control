@@ -7474,6 +7474,8 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     const necessity = document.getElementById('necessity').value;
     const date = document.getElementById('date').value;
     const user = document.getElementById('user').value;
+    const items = document.getElementById('items')?.value.trim() || '';
+    const notes = document.getElementById('notes')?.value.trim() || '';
 
     if (
       !description ||
@@ -7498,6 +7500,8 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       necessity: necessity,
       date: date,
       user: user || 'Sin usuario',
+      items: items, // Nuevo campo: lista de productos
+      notes: notes, // Nuevo campo: notas adicionales
       protected: false,
     };
 
@@ -18188,6 +18192,9 @@ FinanceApp.prototype.hideAppLoading = function () {
   const loader = document.getElementById('loader-wrapper');
   if (loader) {
     loader.classList.add('hidden');
+    setTimeout(() => {
+      loader.style.display = 'none';
+    }, 600);
   }
 };
 
@@ -19063,7 +19070,7 @@ FinanceApp.prototype.createModalTrigger = function(select, modalId, placeholder)
  */
 window.saveNewCategoryFromModal = function() {
   const input = document.getElementById('newCategoryInput');
-  const iconInput = document.getElementById('newCategoryIcon');
+  const iconInput = document.getElementById('newCategoryIconModal') || document.getElementById('newCategoryIcon');
 
   if (!input || !iconInput) {
     console.error('❌ Inputs de categoría no encontrados');
@@ -19465,6 +19472,8 @@ class ReceiptScanner {
       applyDataBtn.addEventListener('click', () => this.applyDataToForm());
     }
 
+    this.restoreFromStorage();
+
     console.log('✅ Receipt scanner initialized');
   }
 
@@ -19606,16 +19615,25 @@ class ReceiptScanner {
             contents: [{
               parts: [
                 {
-                  text: `Analiza este recibo de compra y extrae la siguiente información en formato JSON:
+                  text: `Analiza este recibo/boleta de compra en detalle y extrae la siguiente información en formato JSON:
 {
-  "amount": "monto total (solo número, sin símbolos)",
+  "amount": "monto total (solo número, sin símbolos ni puntos)",
   "description": "descripción breve de la compra o nombre del establecimiento",
   "category": "una de estas categorías: Alimentación, Transporte, Entretenimiento, Salud, Servicios, Compras, Otros",
   "date": "fecha en formato YYYY-MM-DD",
-  "items": ["lista de items comprados si están visibles"]
+  "items": ["lista COMPLETA de productos con cantidades, ejemplo: Azúcar 1kg, Leche 1L, Aceite 2L"],
+  "store_name": "nombre del comercio/tienda",
+  "store_location": "dirección o comuna si está visible",
+  "payment_method": "método de pago si se menciona (ej: Tarjeta débito, efectivo, etc)",
+  "card_last_digits": "últimos 4 dígitos de tarjeta si aparecen",
+  "receipt_number": "número de boleta o factura si es visible"
 }
 
-Si no puedes determinar algún valor con certeza, usa null. Responde SOLO con el JSON, sin texto adicional.`
+IMPORTANTE:
+- En "items" incluye TODOS los productos que veas con sus cantidades
+- En "description" usa el nombre del establecimiento
+- Si no puedes determinar algún valor, usa null
+- Responde SOLO con el JSON, sin texto adicional`
                 },
                 {
                   inline_data: {
@@ -19814,17 +19832,16 @@ Si no puedes determinar algún valor con certeza, usa null. Responde SOLO con el
       }
     }
 
-    if (this.extractedData.category) {
-      const categorySelect = document.getElementById('category');
-      if (categorySelect) {
-        // Find matching option (case insensitive)
-        const options = Array.from(categorySelect.options);
-        const matchingOption = options.find(opt =>
-          opt.value.toLowerCase() === this.extractedData.category.toLowerCase()
-        );
-        if (matchingOption) {
-          categorySelect.value = matchingOption.value;
-        }
+    if (window.smartAutoComplete && typeof window.smartAutoComplete.analyzeAndFill === 'function') {
+      window.smartAutoComplete.analyzeAndFill();
+    }
+
+    if (window.smartAutoComplete) {
+      if (this.extractedData.category) {
+        window.smartAutoComplete.fillCategory(this.extractedData.category);
+      }
+      if (this.extractedData.priority) {
+        window.smartAutoComplete.fillNecessity(this.extractedData.priority);
       }
     }
 
@@ -19832,6 +19849,45 @@ Si no puedes determinar algún valor con certeza, usa null. Responde SOLO con el
       const dateInput = document.getElementById('date');
       if (dateInput) {
         dateInput.value = this.extractedData.date;
+      }
+    }
+
+    // Fill items field
+    if (this.extractedData.items && Array.isArray(this.extractedData.items) && this.extractedData.items.length > 0) {
+      const itemsInput = document.getElementById('items');
+      if (itemsInput) {
+        // Join items with line breaks for better readability
+        itemsInput.value = this.extractedData.items.join('\n');
+      }
+    }
+
+    // Fill notes field with additional information
+    const notesInput = document.getElementById('notes');
+    if (notesInput) {
+      const notesParts = [];
+
+      if (this.extractedData.store_name) {
+        notesParts.push(`📍 Compra realizada en: ${this.extractedData.store_name}`);
+      }
+
+      if (this.extractedData.store_location) {
+        notesParts.push(`📌 Ubicación: ${this.extractedData.store_location}`);
+      }
+
+      if (this.extractedData.payment_method) {
+        notesParts.push(`💳 Método de pago: ${this.extractedData.payment_method}`);
+      }
+
+      if (this.extractedData.card_last_digits) {
+        notesParts.push(`🔢 Tarjeta terminada en: ${this.extractedData.card_last_digits}`);
+      }
+
+      if (this.extractedData.receipt_number) {
+        notesParts.push(`📄 Boleta/Factura N°: ${this.extractedData.receipt_number}`);
+      }
+
+      if (notesParts.length > 0) {
+        notesInput.value = notesParts.join('\n');
       }
     }
 
@@ -19971,7 +20027,7 @@ class SmartAutoComplete {
   analyzeAndFill() {
     if (!this.database || !this.descriptionInput) return;
 
-    const description = this.descriptionInput.value.trim().toLowerCase();
+    const description = this.normalizeText(this.descriptionInput.value);
     if (description.length < 2) return;
 
     // Buscar coincidencia en la base de datos
@@ -19995,7 +20051,7 @@ class SmartAutoComplete {
 
     for (const producto of this.database) {
       for (const palabra of producto.palabras_clave) {
-        const palabraLower = palabra.toLowerCase();
+        const palabraLower = this.normalizeText(palabra);
 
         // Coincidencia exacta (máxima prioridad)
         if (description === palabraLower) {
@@ -20036,10 +20092,17 @@ class SmartAutoComplete {
 
     // Buscar la opción que coincida
     const options = Array.from(this.categorySelect.options);
-    const matchingOption = options.find(opt =>
-      opt.value.toLowerCase() === categoria.toLowerCase() ||
-      opt.textContent.toLowerCase().includes(categoria.toLowerCase())
-    );
+    const target = this.normalizeText(categoria);
+    const matchingOption = options.find(opt => {
+      const valueNorm = this.normalizeText(opt.value);
+      const textNorm = this.normalizeText(opt.textContent);
+      return (
+        valueNorm === target ||
+        textNorm === target ||
+        textNorm.includes(target) ||
+        target.includes(textNorm)
+      );
+    });
 
     if (matchingOption && this.categorySelect.value === '') {
       this.categorySelect.value = matchingOption.value;
@@ -20061,10 +20124,19 @@ class SmartAutoComplete {
 
     // Buscar la opción que coincida
     const options = Array.from(this.necessitySelect.options);
-    const matchingOption = options.find(opt =>
-      opt.value.toLowerCase().includes(prioridad.toLowerCase()) ||
-      opt.textContent.toLowerCase().includes(prioridad.toLowerCase())
-    );
+    const target = this.normalizeText(prioridad);
+    const matchingOption = options.find(opt => {
+      const valueNorm = this.normalizeText(opt.value);
+      const textNorm = this.normalizeText(opt.textContent);
+      return (
+        valueNorm === target ||
+        textNorm === target ||
+        valueNorm.includes(target) ||
+        textNorm.includes(target) ||
+        target.includes(valueNorm) ||
+        target.includes(textNorm)
+      );
+    });
 
     if (matchingOption && this.necessitySelect.value === '') {
       this.necessitySelect.value = matchingOption.value;
@@ -20090,7 +20162,16 @@ class SmartAutoComplete {
     }
   }
 
-  // Método público para buscar producto manualmente
+  normalizeText(text = '') {
+    return text
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^\w\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
   searchProduct(description) {
     if (!this.database) {
       console.warn('⚠️ Base de datos no cargada');
