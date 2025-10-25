@@ -12209,6 +12209,16 @@ FinanceApp.prototype.updateUserSelectionDropdown = function () {
   if (defaultUserValue) {
     userSelect.value = defaultUserValue;
     console.log(`✅ Usuario por defecto establecido: ${defaultUserValue}`);
+
+    // Crear campo temporal para mostrar el usuario por defecto
+    if (window.smartAutoComplete && typeof window.smartAutoComplete.createTemporaryField === 'function') {
+      const selectedOption = userSelect.options[userSelect.selectedIndex];
+      window.smartAutoComplete.createTemporaryField(
+        userSelect,
+        defaultUserValue,
+        `${selectedOption.textContent} (TÚ)`
+      );
+    }
   }
 
   // ✅ RE-AGREGAR EL EVENT LISTENER DESPUÉS DE RECONSTRUIR EL HTML
@@ -20306,7 +20316,7 @@ class SmartAutoComplete {
       top: 50%;
       right: 10px;
       transform: translateY(-50%);
-      background: #4CAF50;
+      background: var(--color-accent);
       color: white;
       padding: 4px 12px;
       border-radius: 12px;
@@ -20348,18 +20358,18 @@ class SmartAutoComplete {
     tempField.id = `temp-${fieldId}`;
     tempField.className = 'temporary-autocomplete-field';
     tempField.innerHTML = `
-      <div style="
+      <div class="temp-field-inner" style="
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 12px 16px;
-        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-        border: 2px solid #4CAF50;
+        background: var(--color-accent);
+        border: 2px solid var(--color-accent);
         border-radius: 8px;
-        color: white;
+        color: var(--color-surface);
         font-weight: 600;
         font-size: 14px;
-        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.3);
         animation: slideIn 0.3s ease;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -20369,7 +20379,8 @@ class SmartAutoComplete {
           ${displayText}
         </span>
         <span style="
-          background: rgba(255,255,255,0.3);
+          background: rgba(0,0,0,0.2);
+          color: var(--color-surface);
           padding: 4px 8px;
           border-radius: 12px;
           font-size: 11px;
@@ -20414,6 +20425,9 @@ class SmartAutoComplete {
     // Mostrar todos los selects de nuevo
     if (this.categorySelect) this.categorySelect.style.display = '';
     if (this.necessitySelect) this.necessitySelect.style.display = '';
+
+    const userSelect = document.getElementById('user');
+    if (userSelect) userSelect.style.display = '';
 
     console.log('🗑️ Todos los campos temporales removidos');
   }

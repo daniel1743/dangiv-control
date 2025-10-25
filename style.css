@@ -2454,7 +2454,8 @@ body {
 .mobile-username {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text);
+  color: var(--color-text-inverted);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
   margin: 0 0 var(--space-8) 0;
 }
 
@@ -8786,12 +8787,24 @@ select.form-control {
 
 /* Auto-fill indicators */
 .auto-filled {
-  background: rgba(var(--color-info-rgb), 0.05) !important;
-  border-color: var(--color-info) !important;
+  background: linear-gradient(
+    120deg,
+    rgba(var(--color-accent-rgb), 0.18) 0%,
+    rgba(var(--color-primary-rgb), 0.14) 48%,
+    rgba(var(--color-accent-rgb), 0.22) 100%
+  ) !important;
+  border-color: var(--color-accent-600) !important;
+  color: var(--color-primary-600) !important;
+  font-weight: 600;
+  box-shadow: 0 12px 24px rgba(var(--color-accent-rgb), 0.12);
 }
 
-.auto-filled .input-icon {
-  color: var(--color-info) !important;
+.auto-filled .input-icon,
+.auto-filled .select-icon,
+.auto-filled .select-value,
+.auto-filled .select-value strong,
+.auto-filled option {
+  color: var(--color-primary-700) !important;
 }
 
 /* Hidden user selector for personal accounts */
@@ -18788,14 +18801,16 @@ select.form-input-premium[style*="animation"] {
 /* Animación cuando un campo es auto-rellenado */
 .auto-filled {
   animation: autoFillPulse 1s ease;
-  border-color: var(--color-accent) !important;
+  border-color: var(--color-accent-600) !important;
   background: linear-gradient(
-    90deg,
-    var(--color-primary-soft) 0%,
-    rgba(var(--color-accent-rgb), 0.1) 50%,
-    var(--color-primary-soft) 100%
+    125deg,
+    rgba(var(--color-accent-rgb), 0.22) 0%,
+    rgba(var(--color-primary-rgb), 0.16) 52%,
+    rgba(var(--color-accent-rgb), 0.26) 100%
   ) !important;
-  box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.15) !important;
+  color: var(--color-primary-600) !important;
+  font-weight: 600;
+  box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.18) !important;
 }
 
 @keyframes autoFillPulse {
