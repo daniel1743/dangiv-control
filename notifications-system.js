@@ -11,9 +11,83 @@ class NotificationsSystem {
     this.notifications = [];
     this.unreadCount = 0;
     this.geminiApiKey = window.FB?.geminiApiKey || null;
+    this.dropdownEl = null;
+    this.dropdownListEl = null;
+    this.dropdownEmptyEl = null;
+    this.dropdownBadgeEl = null;
+    this.bannerBadgeEl = null;
+    this.markAllButtonEl = null;
+    this.bellButtonEl = null;
+    this.bannerButtonEl = null;
+    this.mainBellIcon = null;
+    this.bannerBellIcon = null;
+    this.dropdownListBound = false;
 
     this.loadNotifications();
     this.checkDailyNotification();
+  }
+
+  configureDropdownUI(options = {}) {
+    const defaults = {
+      dropdownId: 'notificationDropdown',
+      listId: 'notificationList',
+      emptyStateId: 'notificationEmpty',
+      badgeId: 'notificationCount',
+      markAllId: 'markAllReadBtn',
+      mobileBadgeId: 'bannerNotificationCount',
+      bellButtonId: 'notificationArea',
+      bannerButtonId: 'bannerNotificationArea',
+      mainBellIconId: 'notificationBell',
+      mobileBellIconId: 'bannerNotificationBell',
+    };
+
+    const config = { ...defaults, ...options };
+
+    this.dropdownEl = document.getElementById(config.dropdownId);
+    this.dropdownListEl = document.getElementById(config.listId);
+    this.dropdownEmptyEl = document.getElementById(config.emptyStateId);
+    this.dropdownBadgeEl = document.getElementById(config.badgeId);
+    this.bannerBadgeEl = document.getElementById(config.mobileBadgeId);
+    this.markAllButtonEl = document.getElementById(config.markAllId);
+    this.bellButtonEl = document.getElementById(config.bellButtonId);
+    if (this.bellButtonEl && this.bellButtonEl.tagName !== 'BUTTON') {
+      const candidate = this.bellButtonEl.querySelector('button');
+      if (candidate) this.bellButtonEl = candidate;
+    }
+    this.bannerButtonEl = document.getElementById(config.bannerButtonId);
+    if (this.bannerButtonEl && this.bannerButtonEl.tagName !== 'BUTTON') {
+      const candidate = this.bannerButtonEl.querySelector('button');
+      if (candidate) this.bannerButtonEl = candidate;
+    }
+    this.mainBellIcon =
+      document.getElementById(config.mainBellIconId) ||
+      this.bellButtonEl?.querySelector('i');
+    this.bannerBellIcon =
+      document.getElementById(config.mobileBellIconId) ||
+      this.bannerButtonEl?.querySelector('i');
+
+    if (this.dropdownListEl && !this.dropdownListBound) {
+      this.dropdownListEl.addEventListener('click', (event) => {
+        const item = event.target.closest('[data-notification-id]');
+        if (!item) return;
+        event.preventDefault();
+        const notificationId = item.dataset.notificationId;
+        this.markAsRead(notificationId);
+      });
+      this.dropdownListBound = true;
+    }
+
+    if (this.markAllButtonEl && !this.markAllButtonEl.__notificationsBound) {
+      this.markAllButtonEl.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.markAllAsRead();
+      });
+      this.markAllButtonEl.__notificationsBound = true;
+    }
+
+    this.updateBellIcon();
+    this.renderDropdown();
   }
 
   // ========================================
@@ -217,6 +291,7 @@ RESPONDE SOLO CON EL MENSAJE (sin comillas ni formato extra):`;
     this.updateUnreadCount();
     this.saveNotifications();
     this.updateBellIcon();
+    this.renderDropdown();
 
     // Mostrar toast
     this.showNotificationToast(notification);
@@ -232,6 +307,7 @@ RESPONDE SOLO CON EL MENSAJE (sin comillas ni formato extra):`;
     }
     this.updateUnreadCount();
     this.updateBellIcon();
+    this.renderDropdown();
   }
 
   saveNotifications() {
@@ -249,18 +325,52 @@ RESPONDE SOLO CON EL MENSAJE (sin comillas ni formato extra):`;
   // ACTUALIZAR ICONO DE CAMPANITA
   // ========================================
   updateBellIcon() {
-    const bellIcon = document.querySelector('.notification-bell');
-    const badge = document.querySelector('.notification-badge');
+    const hasUnread = this.unreadCount > 0;
+    const countText = this.unreadCount > 9 ? '9+' : String(this.unreadCount);
 
-    if (bellIcon && badge) {
-      if (this.unreadCount > 0) {
-        badge.textContent = this.unreadCount > 9 ? '9+' : this.unreadCount;
+    const badge =
+      this.dropdownBadgeEl ||
+      document.querySelector('.notification-badge');
+    if (badge) {
+      if (hasUnread) {
+        badge.textContent = countText;
         badge.style.display = 'flex';
-        bellIcon.classList.add('has-notifications');
       } else {
+        badge.textContent = '';
         badge.style.display = 'none';
-        bellIcon.classList.remove('has-notifications');
       }
+    }
+
+    const bellButton =
+      this.bellButtonEl || document.querySelector('.notification-bell');
+    if (bellButton) {
+      bellButton.classList.toggle('has-notifications', hasUnread);
+    }
+
+    const mainIcon =
+      this.mainBellIcon ||
+      document.querySelector('#notificationBell') ||
+      bellButton?.querySelector('i');
+    if (mainIcon) {
+      mainIcon.classList.toggle('has-notifications', hasUnread);
+    }
+
+    if (this.bannerBadgeEl) {
+      if (hasUnread) {
+        this.bannerBadgeEl.textContent = countText;
+        this.bannerBadgeEl.style.display = 'flex';
+      } else {
+        this.bannerBadgeEl.textContent = '';
+        this.bannerBadgeEl.style.display = 'none';
+      }
+    }
+
+    if (this.bannerButtonEl) {
+      this.bannerButtonEl.classList.toggle('has-notifications', hasUnread);
+    }
+
+    if (this.bannerBellIcon) {
+      this.bannerBellIcon.classList.toggle('has-notifications', hasUnread);
     }
   }
 
@@ -372,6 +482,117 @@ RESPONDE SOLO CON EL MENSAJE (sin comillas ni formato extra):`;
         ${!notification.read ? '<span class="unread-dot"></span>' : ''}
       </div>
     `).join('');
+
+    this.renderDropdown();
+  }
+
+  renderDropdown() {
+    if (!this.dropdownListEl) return;
+
+    if (!this.notifications.length) {
+      this.dropdownListEl.innerHTML = '';
+      if (this.dropdownEmptyEl) this.dropdownEmptyEl.classList.remove('hidden');
+      if (this.markAllButtonEl) this.markAllButtonEl.disabled = true;
+      return;
+    }
+
+    if (this.dropdownEmptyEl) this.dropdownEmptyEl.classList.add('hidden');
+    if (this.markAllButtonEl) this.markAllButtonEl.disabled = false;
+
+    this.dropdownListEl.innerHTML = this.notifications
+      .map((notification) => this.buildDropdownItem(notification))
+      .join('');
+  }
+
+  handleDropdownOpen() {
+    if (this.dropdownBadgeEl) {
+      this.dropdownBadgeEl.style.display = 'none';
+    }
+    if (this.bannerBadgeEl) {
+      this.bannerBadgeEl.style.display = 'none';
+    }
+  }
+
+  buildDropdownItem(notification) {
+    const meta = this.getNotificationMeta(notification.type);
+    const classes = ['notification-item', notification.read ? 'read' : 'unread']
+      .join(' ')
+      .trim();
+
+    return `
+      <div class="${classes}" data-notification-id="${notification.id}">
+        <div class="notification-icon" style="background: ${meta.background}">
+          <i class="fas ${meta.icon}"></i>
+        </div>
+        <div class="notification-content">
+          <div class="notification-title-row">
+            <h4>${this.escapeHTML(notification.title || meta.title)}</h4>
+            <span class="notification-time">${this.formatTime(notification.timestamp)}</span>
+          </div>
+          <p>${this.escapeHTML(notification.message)}</p>
+          <span class="notification-type-label">${meta.label}</span>
+        </div>
+        ${!notification.read ? '<span class="unread-dot"></span>' : ''}
+      </div>
+    `;
+  }
+
+  getNotificationMeta(type = 'default') {
+    const map = {
+      daily: {
+        icon: 'fa-star',
+        label: 'Mensaje diario',
+        background: 'rgba(255, 215, 0, 0.18)',
+        title: 'Mensaje diario',
+      },
+      motivation: {
+        icon: 'fa-heart',
+        label: 'Motivación',
+        background: 'rgba(59, 130, 246, 0.18)',
+        title: 'Motivación',
+      },
+      tips: {
+        icon: 'fa-lightbulb',
+        label: 'Consejo',
+        background: 'rgba(251, 191, 36, 0.18)',
+        title: 'Consejo financiero',
+      },
+      reminders: {
+        icon: 'fa-clock',
+        label: 'Recordatorio',
+        background: 'rgba(14, 116, 144, 0.18)',
+        title: 'Recordatorio',
+      },
+      celebrations: {
+        icon: 'fa-trophy',
+        label: 'Logro',
+        background: 'rgba(16, 185, 129, 0.18)',
+        title: '¡Logro!',
+      },
+      alerts: {
+        icon: 'fa-triangle-exclamation',
+        label: 'Alerta',
+        background: 'rgba(239, 68, 68, 0.18)',
+        title: 'Alerta',
+      },
+      default: {
+        icon: 'fa-bell',
+        label: 'Notificación',
+        background: 'rgba(37, 99, 235, 0.18)',
+        title: 'Notificación',
+      },
+    };
+
+    return map[type] || map.default;
+  }
+
+  escapeHTML(string = '') {
+    return string
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
   // ========================================

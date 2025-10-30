@@ -288,6 +288,24 @@
       <p>Cargando datos...</p>
     </div>
 
+    <!-- Error Screen (DESACTIVADO - Causaba falsos positivos)
+    <div id="error-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); z-index: 10000; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+      <div style="background: white; padding: 3rem; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; max-width: 500px;">
+        <div style="font-size: 64px; margin-bottom: 1rem;">⚠️</div>
+        <h1 style="color: #667eea; margin: 0 0 1rem 0; font-size: 1.8rem;">Error al Cargar</h1>
+        <p style="color: #555; margin: 0 0 2rem 0; line-height: 1.6;">
+          La aplicación no pudo iniciarse correctamente. Por favor, recarga la página o verifica tu conexión a internet.
+        </p>
+        <button onclick="location.reload()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 1rem 2rem; border-radius: 10px; font-size: 1rem; cursor: pointer; font-weight: 600; transition: transform 0.2s;">
+          🔄 Recargar Página
+        </button>
+        <p style="color: #999; margin-top: 1.5rem; font-size: 0.85rem;">
+          Si el problema persiste, contacta a soporte
+        </p>
+      </div>
+    </div>
+    -->
+
     <!-- SEO Landing Section (Hidden after load, visible to crawlers) -->
     <noscript>
       <div
@@ -585,7 +603,6 @@
             id="notificationArea"
             class="notifications icon-btn notification-bell"
             style="position: relative"
-            onclick="window.notificationsSystem?.openNotificationsPanel()"
           >
             <i id="notificationBell" class="fas fa-bell"></i>
             <span
@@ -809,7 +826,6 @@
               id="bannerNotificationCount"
               style="display: none"
             >
-              <i class="fas fa-exclamation"></i>
             </span>
           </button>
         </div>
@@ -6798,3 +6814,127 @@
     </div>
   </body>
 </html>
+
+<script>
+  // Sistema de ocultación del loader con protección contra bucles infinitos
+  let loaderHidden = false;
+  let appReady = false;
+  let errorCount = 0;
+
+  function hideLoader() {
+    if (loaderHidden) return;
+
+    const loader = document.getElementById("loader-wrapper");
+    if (loader) {
+      loader.classList.add("hidden");
+      loader.style.display = "none";
+      loaderHidden = true;
+      console.log("✅ Loader ocultado correctamente");
+    }
+  }
+
+  function showErrorScreen() {
+    hideLoader();
+    // DESACTIVADO - Causaba falsos positivos
+    // const errorScreen = document.getElementById("error-screen");
+    // if (errorScreen) {
+    //   errorScreen.style.display = "flex";
+    //   console.error("❌ Pantalla de error mostrada");
+    // }
+    console.warn("⚠️ Se detectaron múltiples errores pero se permite continuar");
+  }
+
+  // Opción 1: Ocultar cuando la página cargue completamente
+  window.addEventListener("load", () => {
+    console.log("📄 Página cargada");
+    hideLoader();
+  });
+
+  // Opción 2: Ocultar cuando la app esté lista
+  document.addEventListener("app:ready", () => {
+    console.log("🚀 App lista y funcionando");
+    appReady = true;
+    hideLoader();
+  });
+
+  // Opción 3: TIMEOUT DE SEGURIDAD - Ocultar loader después de 6 segundos máximo
+  setTimeout(() => {
+    if (!appReady) {
+      console.warn("⚠️ App no se inicializó en 6 segundos - ocultando loader de todas formas");
+      hideLoader();
+    }
+  }, 6000);
+
+  // Opción 4: Detectar errores críticos (solo los que impiden que la app funcione)
+  window.addEventListener("error", (event) => {
+    const errorMsg = event.error?.message || event.message || '';
+
+    // Ignorar errores conocidos que no son críticos
+    const nonCriticalErrors = [
+      'ResizeObserver',
+      'Non-Error promise rejection',
+      'Firebase session',
+      'No authenticated user',
+      'Security',
+      'chunk',
+      'Failed to fetch'
+    ];
+
+    const isNonCritical = nonCriticalErrors.some(msg =>
+      errorMsg.toLowerCase().includes(msg.toLowerCase())
+    );
+
+    if (isNonCritical) {
+      console.warn("⚠️ Error no crítico ignorado:", errorMsg);
+      return;
+    }
+
+    errorCount++;
+    console.error("❌ Error crítico detectado:", event.error);
+
+    // Registrar errores pero NO mostrar pantalla de error (demasiados falsos positivos)
+    if (errorCount >= 5) {
+      console.error("❌ Múltiples errores críticos detectados:", errorCount);
+    }
+
+    // Siempre ocultar loader en caso de error
+    if (!loaderHidden) {
+      setTimeout(hideLoader, 1000);
+    }
+  });
+
+  // Opción 5: Detectar promesas rechazadas críticas
+  window.addEventListener("unhandledrejection", (event) => {
+    const reason = event.reason?.message || event.reason || '';
+
+    // Ignorar rechazos no críticos
+    const nonCriticalReasons = [
+      'Firebase',
+      'auth',
+      'session',
+      'Network'
+    ];
+
+    const isNonCritical = nonCriticalReasons.some(msg =>
+      String(reason).toLowerCase().includes(msg.toLowerCase())
+    );
+
+    if (isNonCritical) {
+      console.warn("⚠️ Promesa rechazada no crítica:", reason);
+      return;
+    }
+
+    errorCount++;
+    console.error("❌ Promesa crítica rechazada:", event.reason);
+
+    // Registrar pero NO mostrar pantalla de error
+    if (errorCount >= 5) {
+      console.error("❌ Múltiples promesas rechazadas:", errorCount);
+    }
+
+    // Siempre ocultar loader
+    if (!loaderHidden) {
+      setTimeout(hideLoader, 1000);
+    }
+  });
+</script>

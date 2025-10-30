@@ -554,13 +554,17 @@
     }
   }
 
-  // ============================================
+    // ============================================
   // INICIALIZACIÓN
   // ============================================
-  function init() {
-    if (typeof window.app === 'undefined') {
-      console.warn('⚠️ Esperando a que window.app esté disponible...');
-      setTimeout(init, 100);
+  function startGame() {
+    if (window.userDetectiveGame) {
+      console.log('? User Detective Game ya está inicializado');
+      return;
+    }
+
+    if (!window.app) {
+      console.warn('?? User Detective Game: window.app no disponible aún');
       return;
     }
 
@@ -570,41 +574,57 @@
     // Integrar con el escáner de recibos
     integrateWithReceiptScanner(game);
 
-    console.log('✅ User Detective Game iniciado');
+    console.log('✅ User Detective Game iniciado correctamente');
+  }
+
+  // Usar evento 'app:ready' en lugar de polling infinito
+  function initializeGame() {
+    // Intentar inicializar inmediatamente si ya está disponible
+    if (window.app && window.app.initialized) {
+      startGame();
+      return;
+    }
+
+    // Si no, esperar al evento 'app:ready'
+    console.log('? User Detective Game esperando evento app:ready...');
+
+    document.addEventListener('app:ready', () => {
+      console.log('? User Detective Game recibió evento app:ready');
+      startGame();
+    }, { once: true }); // { once: true } para que solo se ejecute una vez
   }
 
   // ============================================
   // INTEGRACIÓN CON ESCÁNER DE RECIBOS
   // ============================================
   function integrateWithReceiptScanner(game) {
-    // Interceptar la función applyDataToForm
     if (window.receiptScanner) {
       const originalApply = window.receiptScanner.applyDataToForm.bind(window.receiptScanner);
 
-      window.receiptScanner.applyDataToForm = function() {
-        // Aplicar datos normalmente
+      window.receiptScanner.applyDataToForm = function () {
         originalApply();
 
-        // Mostrar modal de detective DESPUÉS
         setTimeout(() => {
           game.show({
             amount: this.extractedData?.amount || 0,
             description: this.extractedData?.description || '',
             store_name: this.extractedData?.store_name || '',
-            category: this.extractedData?.category || ''
+            category: this.extractedData?.category || '',
           });
         }, 500);
       };
 
-      console.log('✅ Integración con Receipt Scanner completada');
+      console.log('? Integración con Receipt Scanner completada');
     }
   }
 
-  // Iniciar cuando DOM esté listo
+  const kickoff = () => waitForApp();
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', kickoff);
   } else {
-    init();
+    kickoff();
   }
 
+  document.addEventListener('app:ready', startGame);
 })();

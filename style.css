@@ -1672,6 +1672,12 @@ body {
   gap: var(--space-16);
 }
 
+@media (min-width: 769px) {
+  .navbar__actions .mobile-auth-btn {
+    display: none !important;
+  }
+}
+
 /* === PROFILE MENU COMPONENTS === */
 .profile-menu-container {
   position: relative;
@@ -7200,6 +7206,35 @@ select.form-control {
 .notification-item.priority-high {
   border-left: 4px solid #ef4444;
   background: linear-gradient(90deg, rgba(239, 68, 68, 0.05), transparent);
+}
+
+.notification-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.notification-title-row h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.notification-type-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.12);
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-top: var(--space-4);
 }
 
 .notification-item.priority-medium {

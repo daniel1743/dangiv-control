@@ -175,39 +175,68 @@
     app.setupNewUserField = function() {
       const userDisplay = document.getElementById('selectedUserField');
       const userSelect = document.getElementById('user');
+      const addUserBtn = document.getElementById('addUserBtn');
 
       if (!userDisplay || !userSelect) {
         console.warn('⚠️ Campos de usuario no encontrados');
         return;
       }
 
+      const openUserSelector = () => {
+        if (typeof this.showUserSelectionModal === 'function') {
+          this.showUserSelectionModal();
+        } else if (typeof window.openSelectModal === 'function') {
+          window.openSelectModal('userModal');
+        }
+      };
+
       // Click en el campo visual
-      userDisplay.addEventListener('click', () => {
-        this.showUserSelectionModal();
-      });
+      userDisplay.addEventListener('click', openUserSelector);
 
       // Tecla Enter/Space
       userDisplay.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          this.showUserSelectionModal();
+          openUserSelector();
         }
       });
 
       // Sincronizar cuando cambia el select oculto
       userSelect.addEventListener('change', () => {
-        const selectedValue = userSelect.value;
-        userDisplay.textContent = selectedValue || 'Sin asignar';
-
-        // Aplicar estilos
-        if (selectedValue) {
-          userDisplay.style.color = 'var(--color-primary, #0e2a47)';
-          userDisplay.style.fontWeight = '600';
+        if (typeof this.updateSelectedUserPreview === 'function') {
+          this.updateSelectedUserPreview(userSelect);
         } else {
-          userDisplay.style.color = 'var(--color-text-subtle, #4b5c6b)';
-          userDisplay.style.fontWeight = '400';
+          const selectedValue = userSelect.value;
+          userDisplay.textContent = selectedValue || 'Sin asignar';
+          userDisplay.style.color = selectedValue
+            ? 'var(--color-primary, #0e2a47)'
+            : 'var(--color-text-subtle, #4b5c6b)';
+          userDisplay.style.fontWeight = selectedValue ? '600' : '400';
         }
       });
+
+      // Estado inicial
+      if (typeof this.updateSelectedUserPreview === 'function') {
+        this.updateSelectedUserPreview(userSelect);
+      } else {
+        const initialValue = userSelect.value;
+        userDisplay.textContent = initialValue || 'Sin asignar';
+        userDisplay.style.color = initialValue
+          ? 'var(--color-primary, #0e2a47)'
+          : 'var(--color-text-subtle, #4b5c6b)';
+        userDisplay.style.fontWeight = initialValue ? '600' : '400';
+      }
+
+      // Botón agregar usuario
+      if (addUserBtn) {
+        addUserBtn.addEventListener('click', () => {
+          if (typeof window.openSelectModal === 'function') {
+            window.openSelectModal('addUserModal');
+          } else if (typeof window.openCustomModal === 'function') {
+            window.openCustomModal('addUserModal');
+          }
+        });
+      }
 
       console.log('✅ Campo de usuario configurado');
     };
@@ -226,8 +255,11 @@
       this.setupCurrentDate();
 
       // Limpiar campo visual de usuario
+      const userSelect = document.getElementById('user');
       const userDisplay = document.getElementById('selectedUserField');
-      if (userDisplay) {
+      if (typeof this.updateSelectedUserPreview === 'function') {
+        this.updateSelectedUserPreview(userSelect || undefined);
+      } else if (userDisplay) {
         userDisplay.textContent = 'Sin asignar';
         userDisplay.style.color = 'var(--color-text-subtle, #4b5c6b)';
         userDisplay.style.fontWeight = '400';
