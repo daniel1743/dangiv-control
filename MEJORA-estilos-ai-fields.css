@@ -1,0 +1,94 @@
+/* ========================================
+   ESTILOS PARA CAMPOS LLENADOS POR IA
+   Agregar al final de style.css
+   ======================================== */
+
+/* Feedback visual para campos llenados automáticamente por IA */
+.field-filled-by-ai {
+  background-color: #f0f9ff !important; /* Azul muy claro */
+  border-color: #00c2ff !important; /* Azul cyan */
+  border-width: 2px !important;
+  position: relative;
+  animation: fieldPulse 1.5s ease-in-out;
+}
+
+/* Animación sutil de pulso */
+@keyframes fieldPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 194, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(0, 194, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 194, 255, 0);
+  }
+}
+
+/* Indicador visual con icono de IA */
+.field-filled-by-ai::before {
+  content: '🤖';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: linear-gradient(135deg, #00c2ff 0%, #00a9e0 100%);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(0, 194, 255, 0.3);
+  z-index: 10;
+}
+
+/* Para inputs de texto y textareas */
+input.field-filled-by-ai,
+textarea.field-filled-by-ai {
+  transition: all 0.3s ease;
+}
+
+input.field-filled-by-ai:focus,
+textarea.field-filled-by-ai:focus {
+  background-color: #ffffff !important;
+  border-color: #00a9e0 !important;
+  box-shadow: 0 0 0 4px rgba(0, 194, 255, 0.15);
+}
+
+/* Para selects */
+select.field-filled-by-ai {
+  background-color: #f0f9ff !important;
+  border-color: #00c2ff !important;
+}
+
+/* Para el campo visual del usuario */
+.selected-user-field.field-filled-by-ai {
+  background-color: #f0f9ff !important;
+  border-color: #00c2ff !important;
+  border-width: 2px !important;
+}
+
+/* Remover el indicador cuando el usuario edita */
+input.field-filled-by-ai:not(:focus):valid::after,
+textarea.field-filled-by-ai:not(:focus):valid::after {
+  content: '✓ Verificado';
+  position: absolute;
+  bottom: -20px;
+  right: 0;
+  font-size: 11px;
+  color: #00a9e0;
+  font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .field-filled-by-ai::before {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    top: -8px;
+    right: -8px;
+  }
+}

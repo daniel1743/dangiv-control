@@ -243,7 +243,10 @@ class FinWidget {
     // Escuchar cuando el onboarding se complete
     window.addEventListener('message', (event) => {
       if (event.data && event.data.type === 'ONBOARDING_COMPLETED') {
-        console.log('✅ Onboarding completado:', event.data.payload);
+        const payload = event.data.payload || {};
+        const completionStatus = payload.status || 'completed';
+
+        console.log('? Onboarding completado:', payload);
 
         // Cerrar modal de onboarding
         onboardingModal.classList.remove('active');
@@ -254,15 +257,17 @@ class FinWidget {
 
         // Marcar que ya vio la bienvenida
         localStorage.setItem('finWelcomeSeen', 'true');
+        localStorage.setItem('onboardingCompleted', 'true');
         this.hasSeenWelcome = true;
 
-        // Opcional: Abrir el chat para continuar la conversaci�n
-        setTimeout(() => {
-          this.openChat();
-        }, 500);
+        // Opcional: Abrir el chat para continuar la conversaci?n
+        if (completionStatus !== 'skipped') {
+          setTimeout(() => {
+            this.openChat();
+          }, 500);
+        }
       }
     });
-
     // Enviar configuraci�n de Firebase al iframe del onboarding
     const iframe = document.getElementById('finOnboardingIframe');
     if (iframe) {
@@ -573,3 +578,4 @@ window.toggleFinWidget = () => finWidget?.toggle();
 window.resetFinWelcome = () => finWidget?.resetWelcome();
 
 window.showOnboardingAfterRegistration = () => finWidget?.showOnboardingAfterRegistration();
+

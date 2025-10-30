@@ -74,11 +74,6 @@ class FinanceApp {
     // Historial Unificado de Transacciones
     this.transactionHistory = savedData.transactionHistory || []; // Array unificado de todos los movimientos
     this.auditLogMigrated = savedData.auditLogMigrated || false; // Flag para saber si ya se migró
-    this.monthlyArchives = savedData.monthlyArchives || []; // Historial mensual archivado
-    this.lastMonthlyReset = savedData.lastMonthlyReset || null;
-    this.monthlyResetCompletion = savedData.monthlyResetCompletion || {};
-    this.currentHistoryTab = 'transactions';
-    this.monthlyResetPromptState = this.loadMonthlyResetPromptState();
 
     // Sistema de ahorro para metas
     this.availableBalance = savedData.availableBalance || 0; // Balance acumulado disponible
@@ -710,9 +705,6 @@ class FinanceApp {
       extraIncomeHistory: this.extraIncomeHistory,
       transactionHistory: this.transactionHistory,
       auditLogMigrated: this.auditLogMigrated,
-      monthlyArchives: this.monthlyArchives,
-      lastMonthlyReset: this.lastMonthlyReset,
-      monthlyResetCompletion: this.monthlyResetCompletion,
       availableBalance: this.availableBalance,
       freeBalance: this.freeBalance,
       lastBalanceUpdate: this.lastBalanceUpdate,
@@ -2885,12 +2877,6 @@ class FinanceApp {
     this.setupInstagramQuickActions(); // Instagram-style quick actions (mobile)
     this.setupMobileBannerListeners(); // Mobile banner and avatar listeners
     this.setupHistoryFilters(); // Filtros del historial
-    this.setupHistoryTabs(); // Tabs entre transacciones y meses archivados
-    this.setupMonthlyResetButtons(); // Botones de reinicio mensual
-    this.setupMonthlyResetPromptUI(); // Eventos del modal de recordatorio
-    this.updateMonthlyResetUI(); // Actualizar etiquetas del botón
-    this.setupMonthlyResetMaximizeControls(); // Control de maximizar tarjeta mensual
-    this.renderMonthlyArchives(); // Render inicial de historial mensual
     this.setupPremiumSettings(); // Premium Settings Navigation
     this.checkMonthlyReset();
     // Forzar normalización de datos existentes al inicio
@@ -4645,8 +4631,6 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     this.renderAIRecommendations();
     this.renderRecentTransactions();
     this.updateNotifications();
-    this.updateMonthlyResetUI();
-    this.setupMonthlyResetMaximizeControls();
   }
 
   // NEW DASHBOARD FUNCTIONS
@@ -7471,118 +7455,6 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     }
   }
 
-  // ============================================
-  // VALIDACIÓN MEJORADA DE FORMULARIO DE GASTOS
-  // ============================================
-  validateExpenseForm() {
-    const errors = [];
-    const fields = {
-      amount: {
-        element: document.getElementById('amount'),
-        name: 'Monto',
-        validators: [
-          (val) => val && val.trim() !== '' ? null : 'El monto es obligatorio',
-          (val) => {
-            const num = this.unformatNumber(val);
-            return num > 0 ? null : 'El monto debe ser mayor a 0';
-          }
-        ]
-      },
-      description: {
-        element: document.getElementById('description'),
-        name: 'Descripción',
-        validators: [
-          (val) => val && val.trim() !== '' ? null : 'La descripción es obligatoria',
-          (val) => val.trim().length >= 3 ? null : 'La descripción debe tener al menos 3 caracteres'
-        ]
-      },
-      category: {
-        element: document.getElementById('category'),
-        name: 'Categoría',
-        validators: [
-          (val) => val && val !== '' ? null : 'Debes seleccionar una categoría'
-        ]
-      },
-      necessity: {
-        element: document.getElementById('necessity'),
-        name: 'Nivel de necesidad',
-        validators: [
-          (val) => val && val !== '' ? null : 'Debes seleccionar un nivel de necesidad'
-        ]
-      },
-      date: {
-        element: document.getElementById('date'),
-        name: 'Fecha',
-        validators: [
-          (val) => val && val !== '' ? null : 'La fecha es obligatoria'
-        ]
-      }
-    };
-
-    // Remover errores previos
-    Object.values(fields).forEach(field => {
-      if (field.element) {
-        field.element.classList.remove('field-error');
-        // Remover mensaje de error previo si existe
-        const prevError = field.element.parentElement?.querySelector('.field-error-message');
-        if (prevError) prevError.remove();
-      }
-    });
-
-    // Validar cada campo
-    let firstErrorField = null;
-    Object.entries(fields).forEach(([fieldId, fieldConfig]) => {
-      const element = fieldConfig.element;
-      if (!element) return;
-
-      const value = element.value;
-
-      // Ejecutar validadores
-      for (const validator of fieldConfig.validators) {
-        const error = validator(value);
-        if (error) {
-          errors.push({
-            field: fieldId,
-            fieldName: fieldConfig.name,
-            message: error,
-            element: element
-          });
-
-          // Marcar el campo con error
-          element.classList.add('field-error');
-
-          // Agregar mensaje de error debajo del campo
-          const errorMsg = document.createElement('div');
-          errorMsg.className = 'field-error-message';
-          errorMsg.textContent = error;
-          element.parentElement?.appendChild(errorMsg);
-
-          // Guardar referencia al primer campo con error
-          if (!firstErrorField) {
-            firstErrorField = element;
-          }
-
-          break; // Solo mostrar el primer error de cada campo
-        }
-      }
-    });
-
-    // Si hay errores, hacer scroll al primero
-    if (firstErrorField) {
-      firstErrorField.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
-      firstErrorField.focus();
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors: errors,
-      firstError: errors[0] || null
-    };
-  }
-
   // Expense Methods
   addExpense(e) {
     e.preventDefault();
@@ -7600,21 +7472,6 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       return;
     }
 
-    // ============================================
-    // VALIDACIÓN MEJORADA
-    // ============================================
-    const validation = this.validateExpenseForm();
-    if (!validation.isValid) {
-      // Mostrar toast con el primer error
-      this.showToast(
-        `❌ ${validation.firstError.message}`,
-        'error'
-      );
-      console.log('❌ Errores de validación:', validation.errors);
-      return;
-    }
-
-    // Obtener valores validados
     const description = document.getElementById('description').value.trim();
     const amountInput = document.getElementById('amount');
     const amount = this.unformatNumber(amountInput.value);
@@ -7624,6 +7481,21 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     const user = document.getElementById('user').value;
     const items = document.getElementById('items')?.value.trim() || '';
     const notes = document.getElementById('notes')?.value.trim() || '';
+
+    if (
+      !description ||
+      !amount ||
+      amount <= 0 ||
+      !category ||
+      !necessity ||
+      !date
+    ) {
+      this.showToast(
+        'Por favor completa todos los campos correctamente',
+        'error'
+      );
+      return;
+    }
 
     const expense = {
       id: Date.now(),
@@ -18568,780 +18440,6 @@ FinanceApp.prototype.applyHistoryFilters = function () {
   this.renderHistory(filters);
 };
 
-/* ========================================
-   MONTHLY ARCHIVE & RESET SYSTEM
-   ======================================== */
-
-FinanceApp.prototype.setupHistoryTabs = function () {
-  const tabsContainer = document.getElementById('historyTabs');
-  if (!tabsContainer) return;
-
-  const buttons = Array.from(
-    tabsContainer.querySelectorAll('[data-history-tab]')
-  );
-  if (!buttons.length) return;
-
-  buttons.forEach((button) => {
-    if (button.dataset.resetTabBound === 'true') return;
-    button.addEventListener('click', () => {
-      const target = button.getAttribute('data-history-tab') || 'transactions';
-      this.setHistoryTab(target);
-    });
-    button.dataset.resetTabBound = 'true';
-  });
-
-  this.setHistoryTab(this.currentHistoryTab || 'transactions');
-};
-
-FinanceApp.prototype.setHistoryTab = function (tab) {
-  this.currentHistoryTab = tab;
-
-  const tabsContainer = document.getElementById('historyTabs');
-  if (tabsContainer) {
-    tabsContainer.querySelectorAll('[data-history-tab]').forEach((btn) => {
-      const target = btn.getAttribute('data-history-tab');
-      btn.classList.toggle('active', target === tab);
-    });
-  }
-
-  const transactionsPanel = document.getElementById(
-    'historyTransactionsPanel'
-  );
-  const monthlyPanel = document.getElementById('monthlyArchivePanel');
-
-  if (transactionsPanel) {
-    transactionsPanel.style.display = tab === 'transactions' ? '' : 'none';
-  }
-
-  if (monthlyPanel) {
-    monthlyPanel.style.display = tab === 'monthly' ? '' : 'none';
-    if (tab === 'monthly') {
-      this.renderMonthlyArchives();
-    }
-  }
-
-  if (tab === 'transactions') {
-    this.renderHistory();
-  }
-};
-
-FinanceApp.prototype.renderMonthlyArchives = function () {
-  const container = document.getElementById('monthlyArchiveList');
-  if (!container) return;
-
-  if (!this.monthlyArchives || this.monthlyArchives.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state monthly-archive-empty">
-        <i class="fas fa-folder-open"></i>
-        <h3>No hay meses archivados</h3>
-        <p class="empty-state-hint">
-          Cuando reinicies el mes con el botón <strong>Comenzar</strong>, guardaremos aquí un resumen completo.
-        </p>
-      </div>
-    `;
-    return;
-  }
-
-  container.innerHTML = this.monthlyArchives
-    .map((archive) => {
-      const summary = archive.summary || {};
-      const totalExpenses =
-        typeof summary.totalExpenses === 'number'
-          ? summary.totalExpenses
-          : (archive.data?.expenses || []).reduce(
-              (sum, expense) => sum + Number(expense.amount || 0),
-              0
-            );
-      const totalTransactions =
-        summary.totalTransactions ??
-        (archive.data?.transactionHistory || []).length;
-      const totalAdditionalIncome =
-        typeof summary.totalAdditionalIncome === 'number'
-          ? summary.totalAdditionalIncome
-          : (archive.data?.additionalIncomes || []).reduce(
-              (sum, income) => sum + Number(income.amount || 0),
-              0
-            );
-      const salary = summary.monthlyIncome ?? Number(this.monthlyIncome || 0);
-      const extraIncome =
-        typeof summary.extraIncome === 'number'
-          ? summary.extraIncome
-          : Number(this.extraIncome || 0);
-      const archivedBalance =
-        typeof summary.archivedBalance === 'number'
-          ? summary.archivedBalance
-          : Number(this.availableBalance || 0);
-      const archivedDate = archive.archivedAt
-        ? new Date(archive.archivedAt).toLocaleDateString('es-ES')
-        : '';
-
-      const expensesPreview = (archive.data?.expenses || [])
-        .slice(0, 5)
-        .map(
-          (expense) => `
-            <li>
-              <span>${this.fixLegacyEncoding(expense.description || 'Gasto')}</span>
-              <span>$${this.formatCurrency(Number(expense.amount || 0))}</span>
-            </li>
-          `
-        )
-        .join('');
-      const moreExpenses =
-        (archive.data?.expenses || []).length > 5
-          ? `<li class="more-items">... y ${
-              (archive.data?.expenses || []).length - 5
-            } gastos más</li>`
-          : '';
-
-      const transactionsPreview = (archive.data?.transactionHistory || [])
-        .slice(0, 5)
-        .map(
-          (tx) => `
-            <li>
-              <span>${this.fixLegacyEncoding(tx.description || 'Movimiento')}</span>
-              <span>$${this.formatCurrency(Number(tx.amount || 0))}</span>
-            </li>
-          `
-        )
-        .join('');
-      const moreTransactions =
-        (archive.data?.transactionHistory || []).length > 5
-          ? `<li class="more-items">... y ${
-              (archive.data?.transactionHistory || []).length - 5
-            } movimientos más</li>`
-          : '';
-
-      return `
-        <article class="monthly-archive-item">
-          <header class="monthly-archive-header">
-            <div>
-              <h3>${archive.monthName || 'Mes guardado'}</h3>
-              <p>
-                Guardado el ${archivedDate || '—'} · Nuevo mes: ${
-        archive.nextMonthName || ''
-      }
-              </p>
-            </div>
-            <span class="monthly-archive-badge">
-              <i class="fas fa-list"></i> ${totalTransactions} movimientos
-            </span>
-          </header>
-          <dl class="monthly-archive-summary">
-            <div>
-              <dt>Gastos registrados</dt>
-              <dd>$${this.formatCurrency(totalExpenses)}</dd>
-            </div>
-            <div>
-              <dt>Ingresos adicionales</dt>
-              <dd>$${this.formatCurrency(totalAdditionalIncome)}</dd>
-            </div>
-            <div>
-              <dt>Ingreso base</dt>
-              <dd>$${this.formatCurrency(salary)}</dd>
-            </div>
-            <div>
-              <dt>Extras acumulados</dt>
-              <dd>$${this.formatCurrency(extraIncome)}</dd>
-            </div>
-            <div>
-              <dt>Balance guardado</dt>
-              <dd>$${this.formatCurrency(archivedBalance)}</dd>
-            </div>
-          </dl>
-          <details class="monthly-archive-details">
-            <summary>Ver extracto rápido</summary>
-            <div class="monthly-archive-details-content">
-              <section>
-                <h4>Gastos destacados</h4>
-                <ul>
-                  ${expensesPreview || '<li>Sin gastos registrados</li>'}
-                  ${moreExpenses}
-                </ul>
-              </section>
-              <section>
-                <h4>Movimientos</h4>
-                <ul>
-                  ${transactionsPreview || '<li>Sin movimientos registrados</li>'}
-                  ${moreTransactions}
-                </ul>
-              </section>
-            </div>
-          </details>
-        </article>
-      `;
-    })
-    .join('');
-
-  const counter = document.getElementById('monthlyArchiveCount');
-  if (counter) {
-    counter.textContent = this.monthlyArchives.length;
-  }
-};
-
-FinanceApp.prototype.getMonthlyResetInfo = function () {
-  const now = new Date();
-  const currentMonthKey = this.getCurrentMonthKey();
-  const currentMonthName = this.getMonthName(currentMonthKey);
-  const useNextMonth = now.getDate() >= 28;
-  const targetDate = new Date(
-    now.getFullYear(),
-    now.getMonth() + (useNextMonth ? 1 : 0),
-    1
-  );
-  const targetMonthKey = `${targetDate.getFullYear()}-${String(
-    targetDate.getMonth() + 1
-  ).padStart(2, '0')}`;
-  const targetMonthName = this.getMonthName(targetMonthKey);
-
-  return {
-    currentMonthKey,
-    currentMonthName,
-    targetMonthKey,
-    targetMonthName,
-  };
-};
-
-FinanceApp.prototype.updateMonthlyResetUI = function () {
-  const info = this.getMonthlyResetInfo();
-
-  document.querySelectorAll('.monthly-reset-label').forEach((label) => {
-    label.textContent = `Comenzar ${info.targetMonthName}`;
-  });
-
-  document
-    .querySelectorAll('[data-month-label="current"]')
-    .forEach((el) => (el.textContent = info.currentMonthName));
-
-  document
-    .querySelectorAll('[data-month-label="next"]')
-    .forEach((el) => (el.textContent = info.targetMonthName));
-
-  const lastResetEl = document.getElementById('monthlyResetLastDate');
-  if (lastResetEl) {
-    lastResetEl.textContent = this.lastMonthlyReset
-      ? new Date(this.lastMonthlyReset).toLocaleDateString('es-ES')
-      : 'Nunca';
-  }
-
-  const counter = document.getElementById('monthlyArchiveCount');
-  if (counter) {
-    counter.textContent = this.monthlyArchives?.length || 0;
-  }
-
-  const miniLabel = document.querySelector(
-    '#monthlyResetMiniButton .mini-label'
-  );
-  if (miniLabel) {
-    miniLabel.textContent = `Comenzar ${info.targetMonthName}`;
-  }
-
-  const navMaximizeButton = document.getElementById(
-    'monthlyResetMaximizeNav'
-  );
-  if (navMaximizeButton) {
-    const navLabel = navMaximizeButton.querySelector('.label');
-    const navDefaultText = `Comenzar ${info.targetMonthName}`;
-    navMaximizeButton.dataset.defaultLabel = navDefaultText;
-
-    if (navLabel && navMaximizeButton.getAttribute('aria-pressed') !== 'true') {
-      navLabel.textContent = navDefaultText;
-    }
-
-    if (navMaximizeButton.getAttribute('aria-pressed') !== 'true') {
-      const navIcon = navMaximizeButton.querySelector('i');
-      if (navIcon) {
-        navIcon.className = 'fas fa-expand';
-      }
-    }
-  }
-
-  const monthlyResetCard = document.querySelector('.monthly-reset-card');
-  const monthlyResetButton = monthlyResetCard
-    ? monthlyResetCard.querySelector('[data-action="monthly-reset"]')
-    : null;
-  const monthlyResetOverlay = document.getElementById(
-    'monthlyResetMaximizeOverlay'
-  );
-
-  const completionMap = this.monthlyResetCompletion || {};
-  const resetCompletedForTarget = !!completionMap[info.targetMonthKey];
-
-  if (monthlyResetCard) {
-    const shouldHide = resetCompletedForTarget;
-    monthlyResetCard.classList.toggle('monthly-reset-hidden', shouldHide);
-    if (shouldHide) {
-      monthlyResetCard.classList.remove('expanded');
-      monthlyResetCard.setAttribute('aria-expanded', 'false');
-    }
-  }
-
-  if (monthlyResetButton) {
-    monthlyResetButton.disabled = resetCompletedForTarget;
-    monthlyResetButton.setAttribute(
-      'aria-disabled',
-      resetCompletedForTarget ? 'true' : 'false'
-    );
-  }
-
-  if (resetCompletedForTarget && monthlyResetOverlay) {
-    monthlyResetOverlay.classList.remove('active');
-    monthlyResetOverlay.hidden = true;
-  }
-
-  if (resetCompletedForTarget) {
-    document.body.classList.remove('monthly-reset-expanded');
-  }
-
-  if (navMaximizeButton) {
-    navMaximizeButton.style.display = resetCompletedForTarget ? 'none' : '';
-    navMaximizeButton.setAttribute('aria-pressed', 'false');
-  }
-
-  const miniButton = document.getElementById('monthlyResetMiniButton');
-  if (miniButton) {
-    if (resetCompletedForTarget) {
-      miniButton.classList.remove('visible');
-      miniButton.style.display = 'none';
-      miniButton.setAttribute('aria-hidden', 'true');
-    } else {
-      const isVisible = miniButton.classList.contains('visible');
-      miniButton.style.display = isVisible ? 'inline-flex' : 'none';
-      miniButton.setAttribute('aria-hidden', isVisible ? 'false' : 'true');
-    }
-  }
-
-  // Re-evaluar estados del recordatorio tras actualizar textos
-  this.initializeMonthlyResetPrompt();
-};
-
-FinanceApp.prototype.setupMonthlyResetMaximizeControls = function () {
-  const card = document.querySelector('.monthly-reset-card');
-  const navButton = document.getElementById('monthlyResetMaximizeNav');
-  const cardButton = card ? card.querySelector('.monthly-reset-maximize') : null;
-
-  if (!card || (!navButton && !cardButton)) {
-    return;
-  }
-
-  let overlay = document.getElementById('monthlyResetMaximizeOverlay');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = 'monthlyResetMaximizeOverlay';
-    overlay.className = 'monthly-reset-overlay';
-    overlay.hidden = true;
-    document.body.appendChild(overlay);
-  }
-
-  const ensureDefaultNavLabel = () => {
-    if (!navButton) return;
-    const navLabel = navButton.querySelector('.label');
-    if (navLabel && !navButton.dataset.defaultLabel) {
-      navButton.dataset.defaultLabel = navLabel.textContent.trim();
-    }
-  };
-
-  ensureDefaultNavLabel();
-
-  const applyState = (expanded) => {
-    card.classList.toggle('expanded', expanded);
-    card.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-
-    if (expanded) {
-      overlay.hidden = false;
-      overlay.classList.add('active');
-      document.body.classList.add('monthly-reset-expanded');
-    } else {
-      overlay.hidden = true;
-      overlay.classList.remove('active');
-      document.body.classList.remove('monthly-reset-expanded');
-    }
-
-    if (cardButton) {
-      cardButton.setAttribute(
-        'aria-label',
-        expanded
-          ? 'Restaurar tarjeta de inicio de mes'
-          : 'Maximizar tarjeta de inicio de mes'
-      );
-      const icon = cardButton.querySelector('i');
-      if (icon) {
-        icon.className = expanded ? 'fas fa-compress' : 'fas fa-expand';
-      }
-    }
-
-    if (navButton) {
-      navButton.setAttribute('aria-pressed', expanded ? 'true' : 'false');
-      const navIcon = navButton.querySelector('i');
-      if (navIcon) {
-        navIcon.className = expanded ? 'fas fa-compress' : 'fas fa-expand';
-      }
-
-      const navLabel = navButton.querySelector('.label');
-      if (navLabel) {
-        const defaultLabel =
-          navButton.dataset.defaultLabel || navLabel.textContent.trim();
-        if (!navButton.dataset.defaultLabel) {
-          navButton.dataset.defaultLabel = defaultLabel;
-        }
-        navLabel.textContent = expanded
-          ? 'Restaurar vista'
-          : navButton.dataset.defaultLabel;
-      }
-    }
-  };
-
-  const close = () => applyState(false);
-  const open = () => {
-    applyState(true);
-    requestAnimationFrame(() => {
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
-  };
-
-  const toggle = () => {
-    const isExpanded = card.classList.contains('expanded');
-    if (isExpanded) {
-      close();
-    } else {
-      open();
-    }
-  };
-
-  if (cardButton && cardButton.dataset.maximizeBound !== 'true') {
-    cardButton.addEventListener('click', toggle);
-    cardButton.dataset.maximizeBound = 'true';
-  }
-
-  if (navButton && navButton.dataset.maximizeBound !== 'true') {
-    navButton.addEventListener('click', toggle);
-    navButton.dataset.maximizeBound = 'true';
-  }
-
-  if (overlay.dataset.maximizeBound !== 'true') {
-    overlay.addEventListener('click', close);
-    overlay.dataset.maximizeBound = 'true';
-  }
-
-  if (!this._monthlyResetMaximizeKeyListener) {
-    this._monthlyResetMaximizeKeyListener = (event) => {
-      if (event.key === 'Escape' && card.classList.contains('expanded')) {
-        close();
-      }
-    };
-    document.addEventListener('keydown', this._monthlyResetMaximizeKeyListener);
-  }
-
-  applyState(card.classList.contains('expanded'));
-};
-
-FinanceApp.prototype.loadMonthlyResetPromptState = function () {
-  try {
-    const raw = localStorage.getItem('financia_monthly_reset_prompt');
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    if (parsed && typeof parsed === 'object') {
-      return parsed;
-    }
-  } catch (error) {
-    console.warn(
-      '[MonthlyReset] No se pudo cargar el estado del recordatorio',
-      error
-    );
-  }
-  return {};
-};
-
-FinanceApp.prototype.saveMonthlyResetPromptState = function (state) {
-  this.monthlyResetPromptState = state || {};
-  try {
-    localStorage.setItem(
-      'financia_monthly_reset_prompt',
-      JSON.stringify(this.monthlyResetPromptState)
-    );
-  } catch (error) {
-    console.warn(
-      '[MonthlyReset] No se pudo guardar el estado del recordatorio',
-      error
-    );
-  }
-};
-
-FinanceApp.prototype.setupMonthlyResetPromptUI = function () {
-  const hideButton = document.getElementById('monthlyResetModalHide');
-  if (hideButton && hideButton.dataset.resetBound !== 'true') {
-    hideButton.addEventListener('click', () =>
-      this.setMonthlyResetPromptStatus('hidden')
-    );
-    hideButton.dataset.resetBound = 'true';
-  }
-
-  const minimizeButton = document.getElementById(
-    'monthlyResetModalMinimize'
-  );
-  if (minimizeButton && minimizeButton.dataset.resetBound !== 'true') {
-    minimizeButton.addEventListener('click', () =>
-      this.setMonthlyResetPromptStatus('minimized')
-    );
-    minimizeButton.dataset.resetBound = 'true';
-  }
-
-  const closeActionButton = document.getElementById(
-    'monthlyResetModalClose'
-  );
-  if (closeActionButton && closeActionButton.dataset.resetBound !== 'true') {
-    closeActionButton.addEventListener('click', () =>
-      this.setMonthlyResetPromptStatus('hidden')
-    );
-    closeActionButton.dataset.resetBound = 'true';
-  }
-
-  const modalOverlay = document.getElementById('monthlyResetModalOverlay');
-  if (modalOverlay && modalOverlay.dataset.resetBound !== 'true') {
-    modalOverlay.addEventListener('click', () =>
-      this.setMonthlyResetPromptStatus('hidden')
-    );
-    modalOverlay.dataset.resetBound = 'true';
-  }
-
-  const miniButton = document.getElementById('monthlyResetMiniButton');
-  if (miniButton && miniButton.dataset.resetBound !== 'true') {
-    miniButton.addEventListener('click', () =>
-      this.setMonthlyResetPromptStatus('open')
-    );
-    miniButton.dataset.resetBound = 'true';
-  }
-
-  const modalStartButton = document.getElementById('monthlyResetModalStart');
-  if (modalStartButton && modalStartButton.dataset.resetBound !== 'true') {
-    modalStartButton.addEventListener('click', () => this.handleMonthlyReset());
-    modalStartButton.dataset.resetBound = 'true';
-  }
-};
-
-FinanceApp.prototype.initializeMonthlyResetPrompt = function () {
-  const info = this.getMonthlyResetInfo();
-  const today = new Date();
-  const day = today.getDate();
-  let promptState = { ...(this.monthlyResetPromptState || {}) };
-  let shouldSave = false;
-
-  if (
-    promptState.lastPromptMonth &&
-    promptState.lastPromptMonth !== info.currentMonthKey
-  ) {
-    promptState = {};
-    shouldSave = true;
-  }
-
-  if (day >= 28) {
-    if (promptState.lastPromptMonth !== info.currentMonthKey) {
-      promptState = {
-        lastPromptMonth: info.currentMonthKey,
-        status: 'open',
-        lastPromptDate: today.toISOString(),
-      };
-      shouldSave = true;
-    }
-  }
-
-  if (shouldSave) {
-    this.saveMonthlyResetPromptState(promptState);
-  }
-
-  this.applyMonthlyResetPromptUI();
-};
-
-FinanceApp.prototype.applyMonthlyResetPromptUI = function () {
-  const modal = document.getElementById('monthlyResetModal');
-  const miniButton = document.getElementById('monthlyResetMiniButton');
-  const status = this.monthlyResetPromptState?.status || 'idle';
-
-  if (modal) {
-    if (status === 'open') {
-      modal.classList.add('show');
-      modal.setAttribute('aria-hidden', 'false');
-    } else {
-      modal.classList.remove('show');
-      modal.setAttribute('aria-hidden', 'true');
-    }
-  }
-
-  if (miniButton) {
-    const isMinimized = status === 'minimized';
-    miniButton.classList.toggle('visible', isMinimized);
-    miniButton.setAttribute('aria-hidden', isMinimized ? 'false' : 'true');
-    miniButton.style.display = isMinimized ? 'inline-flex' : 'none';
-  }
-};
-
-FinanceApp.prototype.setMonthlyResetPromptStatus = function (status) {
-  const validStatuses = ['open', 'minimized', 'hidden', 'idle'];
-  if (!validStatuses.includes(status)) {
-    console.warn('[MonthlyReset] Estado no reconocido:', status);
-    return;
-  }
-
-  const info = this.getMonthlyResetInfo();
-  const currentState = { ...(this.monthlyResetPromptState || {}) };
-  const nextState = {
-    ...currentState,
-    lastPromptMonth: currentState.lastPromptMonth || info.currentMonthKey,
-    status,
-    lastInteraction: new Date().toISOString(),
-  };
-
-  if (status === 'hidden' || status === 'idle') {
-    nextState.status = status;
-    nextState.lastDismissed = new Date().toISOString();
-  }
-
-  this.saveMonthlyResetPromptState(nextState);
-  this.applyMonthlyResetPromptUI();
-};
-
-FinanceApp.prototype.setupMonthlyResetButtons = function () {
-  const buttons = document.querySelectorAll('[data-action="monthly-reset"]');
-  if (!buttons.length) return;
-
-  buttons.forEach((button) => {
-    if (button.dataset.resetBound === 'true') return;
-    button.addEventListener('click', () => this.handleMonthlyReset());
-    button.dataset.resetBound = 'true';
-  });
-};
-
-FinanceApp.prototype.handleMonthlyReset = function () {
-  const info = this.getMonthlyResetInfo();
-
-  const confirmed = confirm(
-    `¿Seguro que quieres reiniciar y comenzar ${info.targetMonthName}?` +
-      `\n\nGuardaremos los datos completos de ${info.currentMonthName} en Historial de Mes.` +
-      `\nEl contador del sistema volverá a cero para que empieces ${info.targetMonthName}.`
-  );
-
-  if (!confirmed) {
-    return;
-  }
-
-  this.archiveCurrentMonth(info);
-  this.resetCurrentMonthData();
-  this.lastMonthlyReset = new Date().toISOString();
-  this.monthlyResetCompletion = this.monthlyResetCompletion || {};
-  this.monthlyResetCompletion[info.targetMonthKey] = true;
-
-  this.saveData();
-  this.renderDashboard();
-  this.renderExpenses();
-  this.renderHistory();
-  this.renderAdditionalIncomes();
-  this.renderMonthlyArchives();
-  this.updateMonthlyResetUI();
-  this.setupMonthlyResetMaximizeControls();
-  this.setMonthlyResetPromptStatus('hidden');
-
-  this.showToast(
-    `Datos de ${info.currentMonthName} guardados. ¡${info.targetMonthName} listo para comenzar!`,
-    'success'
-  );
-};
-
-FinanceApp.prototype.archiveCurrentMonth = function (info) {
-  if (!info || !info.currentMonthKey) return;
-
-  const clone = (data) => JSON.parse(JSON.stringify(data || []));
-  const expensesSnapshot = clone(this.expenses);
-  const transactionsSnapshot = clone(this.transactionHistory);
-  const additionalSnapshot = clone(this.additionalIncomes);
-  const extraHistorySnapshot = clone(this.extraIncomeHistory);
-  const savingsSnapshot = JSON.parse(JSON.stringify(this.savingsAccounts || []));
-  const budgetSnapshot = this.budgets
-    ? JSON.parse(JSON.stringify(this.budgets[info.currentMonthKey] || null))
-    : null;
-
-  const summary = {
-    totalExpenses: expensesSnapshot.reduce(
-      (sum, expense) => sum + Number(expense.amount || 0),
-      0
-    ),
-    totalTransactions: transactionsSnapshot.length,
-    totalAdditionalIncome: additionalSnapshot.reduce(
-      (sum, income) => sum + Number(income.amount || 0),
-      0
-    ),
-    monthlyIncome: Number(this.monthlyIncome || 0),
-    extraIncome: Number(this.extraIncome || 0),
-    archivedBalance: Number(this.availableBalance || 0),
-  };
-
-  const archiveEntry = {
-    id: `archive-${info.currentMonthKey}-${Date.now()}`,
-    monthKey: info.currentMonthKey,
-    monthName: info.currentMonthName,
-    nextMonthKey: info.targetMonthKey,
-    nextMonthName: info.targetMonthName,
-    archivedAt: new Date().toISOString(),
-    summary,
-    data: {
-      expenses: expensesSnapshot,
-      transactionHistory: transactionsSnapshot,
-      additionalIncomes: additionalSnapshot,
-      extraIncomeHistory: extraHistorySnapshot,
-      savingsAccounts: savingsSnapshot,
-      budget: budgetSnapshot,
-    },
-  };
-
-  if (!Array.isArray(this.monthlyArchives)) {
-    this.monthlyArchives = [];
-  }
-
-  this.monthlyArchives.unshift(archiveEntry);
-
-  // Mantener máximo 36 meses (3 años) para evitar saturar el almacenamiento
-  if (this.monthlyArchives.length > 36) {
-    this.monthlyArchives = this.monthlyArchives.slice(0, 36);
-  }
-};
-
-FinanceApp.prototype.resetCurrentMonthData = function () {
-  this.expenses = [];
-  this.transactionHistory = [];
-  this.additionalIncomes = [];
-  this.extraIncomeHistory = [];
-  this.extraIncome = 0;
-  this.monthlyIncome = 0;
-  this.lastSalaryDate = null;
-  this.availableBalance = 0;
-  this.freeBalance = 0;
-  this.lastBalanceUpdate = null;
-
-  const currentMonth = this.getCurrentMonthKey();
-  if (this.budgets && this.budgets[currentMonth]) {
-    const budget = this.budgets[currentMonth];
-
-    if (budget.categories) {
-      Object.keys(budget.categories).forEach((category) => {
-        if (budget.categories[category]) {
-          budget.categories[category].spent = 0;
-        }
-      });
-    }
-
-    if (budget.leisureItems) {
-      budget.leisureItems.forEach((item) => {
-        if (item) {
-          item.used = false;
-          item.usedDate = null;
-        }
-      });
-      budget.totalSpent = 0;
-    }
-  }
-
-  this.checkMonthlyReset();
-  this.setMonthlyResetPromptStatus('hidden');
-};
-
 /* ============================================
    INTELLIGENT DROPDOWN POSITIONING FOR MOBILE
    ============================================ */
@@ -19464,11 +18562,6 @@ window.openSelectModal = function(modalId, currentValue) {
   // Agregar clase show para mostrar el modal
   modal.classList.add('show');
 
-  // Actualizar estado aria-expanded en los triggers relacionados
-  document.querySelectorAll(`[data-modal-id="${modalId}"]`).forEach(trigger => {
-    trigger.setAttribute('aria-expanded', 'true');
-  });
-
   // Prevenir scroll del body
   document.body.classList.add('modal-open');
 
@@ -19497,11 +18590,6 @@ window.closeSelectModal = function(modalId) {
 
   // Remover clase show para ocultar el modal
   modal.classList.remove('show');
-
-  // Actualizar estado aria-expanded en los triggers relacionados
-  document.querySelectorAll(`[data-modal-id="${modalId}"]`).forEach(trigger => {
-    trigger.setAttribute('aria-expanded', 'false');
-  });
 
   // Restaurar scroll del body
   document.body.classList.remove('modal-open');
@@ -19886,42 +18974,31 @@ FinanceApp.prototype.setupSelectModalTriggers = function() {
     userSelect.style.opacity = '0';
     userSelect.style.pointerEvents = 'none';
     userSelect.style.height = '0';
-    userSelect.setAttribute('aria-hidden', 'true');
-    userSelect.setAttribute('tabindex', '-1');
   }
 
   if (userField && userSelect) {
-    if (!userField.dataset.modalId) {
-      userField.dataset.modalId = 'userModal';
-    }
-    if (!userField.dataset.selectId) {
-      userField.dataset.selectId = 'user';
-    }
-    userField.setAttribute('aria-controls', 'userModal');
-    userField.setAttribute('aria-haspopup', 'dialog');
-    if (!userField.hasAttribute('aria-expanded')) {
-      userField.setAttribute('aria-expanded', 'false');
-    }
-
     const openUserModal = () => {
       const currentValue = userSelect.value || '';
-      userField.classList.add('selected-user-field--active');
       openSelectModal('userModal', currentValue);
-      setTimeout(() => userField.classList.remove('selected-user-field--active'), 200);
     };
 
     userField.addEventListener('click', () => {
+      userField.classList.add('selected-user-field--active');
       openUserModal();
+      setTimeout(() => userField.classList.remove('selected-user-field--active'), 200);
     });
 
-    if (userField.tagName !== 'BUTTON') {
-      userField.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          openUserModal();
-        }
-      });
-    }
+    userField.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        userField.classList.add('selected-user-field--active');
+        openUserModal();
+        setTimeout(
+          () => userField.classList.remove('selected-user-field--active'),
+          200
+        );
+      }
+    });
   }
 
   console.log('✅ Triggers de modales configurados');
@@ -19939,11 +19016,6 @@ FinanceApp.prototype.createModalTrigger = function(select, modalId, placeholder)
   trigger.className = 'modal-trigger-select';
   trigger.dataset.modalId = modalId;
   trigger.dataset.selectId = select.id;
-  trigger.setAttribute('role', 'button');
-  trigger.setAttribute('tabindex', '0');
-  trigger.setAttribute('aria-controls', modalId);
-  trigger.setAttribute('aria-haspopup', 'dialog');
-  trigger.setAttribute('aria-expanded', 'false');
 
   // Estilo del trigger (similar a un select)
   trigger.style.cssText = `
@@ -19980,14 +19052,6 @@ FinanceApp.prototype.createModalTrigger = function(select, modalId, placeholder)
   trigger.addEventListener('click', function() {
     const currentValue = select.value;
     openSelectModal(modalId, currentValue);
-  });
-
-  trigger.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      const currentValue = select.value;
-      openSelectModal(modalId, currentValue);
-    }
   });
 
   // Evento focus/active para feedback visual
@@ -20764,211 +19828,61 @@ IMPORTANTE:
 
   applyDataToForm() {
     if (!this.extractedData) {
-      this.showToast('No hay datos extraídos para aplicar', 'error');
+      this.showToast('No hay datos para aplicar', 'error');
       return;
     }
 
-    console.log('📊 Aplicando datos extraídos:', this.extractedData);
-
-    // ============================================
-    // FIX CRÍTICO: Remover temporalmente 'required'
-    // para evitar error "An invalid form control is not focusable"
-    // ============================================
-    const form = document.getElementById('expenseForm');
-    const requiredFields = [];
-
-    if (form) {
-      const allRequiredInputs = form.querySelectorAll('[required]');
-      allRequiredInputs.forEach(input => {
-        requiredFields.push(input);
-        input.removeAttribute('required');
-        console.log('🔓 Required removido temporalmente de:', input.id || input.name);
-      });
-    }
-
-    let fieldsApplied = 0;
-
-    // ============================================
-    // 1. AMOUNT - Monto del gasto
-    // ============================================
+    // Fill form fields
     if (this.extractedData.amount) {
       const amountInput = document.getElementById('amount');
       if (amountInput) {
         amountInput.value = this.extractedData.amount;
-        amountInput.classList.add('field-filled-by-ai');
-        fieldsApplied++;
-        console.log('✅ Amount aplicado:', this.extractedData.amount);
       }
     }
 
-    // ============================================
-    // 2. DESCRIPTION - Descripción del gasto
-    // ============================================
     if (this.extractedData.description) {
       const descInput = document.getElementById('description');
       if (descInput) {
         descInput.value = this.extractedData.description;
-        descInput.classList.add('field-filled-by-ai');
-        fieldsApplied++;
-        console.log('✅ Description aplicado:', this.extractedData.description);
       }
     }
 
-    // ============================================
-    // 3. CATEGORY - Categoría del gasto
-    // ============================================
-    if (this.extractedData.category) {
-      if (window.smartAutoComplete && typeof window.smartAutoComplete.fillCategory === 'function') {
-        // Usar smartAutoComplete para llenar categoría
+    if (window.smartAutoComplete && typeof window.smartAutoComplete.analyzeAndFill === 'function') {
+      window.smartAutoComplete.analyzeAndFill();
+    }
+
+    if (window.smartAutoComplete) {
+      if (this.extractedData.category) {
         window.smartAutoComplete.fillCategory(this.extractedData.category, { force: true });
-        console.log('✅ Category aplicado via smartAutoComplete:', this.extractedData.category);
-
-        // Asegurar que el select nativo también se actualice
-        const categorySelect = document.getElementById('category');
-        if (categorySelect) {
-          const mappedCategory = this.mapCategory(this.extractedData.category);
-          if (mappedCategory) {
-            categorySelect.value = mappedCategory;
-            categorySelect.classList.add('field-filled-by-ai');
-            console.log('✅ Select nativo de category actualizado:', mappedCategory);
-          }
-        }
-        fieldsApplied++;
-      } else {
-        // Fallback si smartAutoComplete no está disponible
-        const categorySelect = document.getElementById('category');
-        if (categorySelect) {
-          const mappedCategory = this.mapCategory(this.extractedData.category);
-          if (mappedCategory) {
-            categorySelect.value = mappedCategory;
-            categorySelect.classList.add('field-filled-by-ai');
-            fieldsApplied++;
-            console.log('✅ Category aplicado (fallback):', mappedCategory);
-          }
-        }
+      }
+      if (this.extractedData.priority) {
+        window.smartAutoComplete.fillNecessity(this.extractedData.priority, { force: true });
       }
     }
 
-    // ============================================
-    // 4. NECESSITY - Nivel de necesidad
-    // ============================================
-    if (this.extractedData.priority || this.extractedData.necessity) {
-      const necessityValue = this.extractedData.priority || this.extractedData.necessity;
-
-      if (window.smartAutoComplete && typeof window.smartAutoComplete.fillNecessity === 'function') {
-        // Usar smartAutoComplete para llenar necesidad
-        window.smartAutoComplete.fillNecessity(necessityValue, { force: true });
-        console.log('✅ Necessity aplicado via smartAutoComplete:', necessityValue);
-
-        // Asegurar que el select nativo también se actualice
-        const necessitySelect = document.getElementById('necessity');
-        if (necessitySelect) {
-          const mappedNecessity = this.mapNecessity(necessityValue);
-          if (mappedNecessity) {
-            necessitySelect.value = mappedNecessity;
-            necessitySelect.classList.add('field-filled-by-ai');
-            console.log('✅ Select nativo de necessity actualizado:', mappedNecessity);
-          }
-        }
-        fieldsApplied++;
-      } else {
-        // Fallback si smartAutoComplete no está disponible
-        const necessitySelect = document.getElementById('necessity');
-        if (necessitySelect) {
-          const mappedNecessity = this.mapNecessity(necessityValue);
-          if (mappedNecessity) {
-            necessitySelect.value = mappedNecessity;
-            necessitySelect.classList.add('field-filled-by-ai');
-            fieldsApplied++;
-            console.log('✅ Necessity aplicado (fallback):', mappedNecessity);
-          }
-        }
-      }
-    }
-
-    // ============================================
-    // 5. DATE - Fecha del gasto
-    // ============================================
     if (this.extractedData.date) {
       const dateInput = document.getElementById('date');
       if (dateInput) {
         dateInput.value = this.extractedData.date;
-        dateInput.classList.add('field-filled-by-ai');
-        fieldsApplied++;
-        console.log('✅ Date aplicado:', this.extractedData.date);
       }
     }
 
-    // ============================================
-    // 6. USER - CORRECCIÓN CRÍTICA: Auto-asignar usuario
-    // ============================================
-    let assignedUser = null;
-
-    // Prioridad 1: Usuario autenticado
-    if (this.userProfile && this.userProfile.name && this.userProfile.name !== 'Usuario') {
-      assignedUser = this.userProfile.name;
-      console.log('👤 Usuario asignado desde perfil:', assignedUser);
-    }
-    // Prioridad 2: Usuario por defecto
-    else if (this.defaultUser) {
-      assignedUser = this.defaultUser;
-      console.log('👤 Usuario asignado desde defaultUser:', assignedUser);
-    }
-    // Prioridad 3: Primer usuario personalizado
-    else if (this.customUsers && this.customUsers.length > 0) {
-      assignedUser = this.customUsers[0];
-      console.log('👤 Usuario asignado desde customUsers[0]:', assignedUser);
-    }
-    // Prioridad 4: Valor por defecto "Sin asignar"
-    else {
-      assignedUser = 'Sin asignar';
-      console.log('👤 Usuario asignado por defecto:', assignedUser);
-    }
-
-    // Aplicar usuario al select oculto
-    const userSelect = document.getElementById('user');
-    if (userSelect && assignedUser) {
-      userSelect.value = assignedUser;
-      userSelect.classList.add('field-filled-by-ai');
-      fieldsApplied++;
-      console.log('✅ User aplicado:', assignedUser);
-
-      // CRÍTICO: Sincronizar con campo visual
-      const selectedUserField = document.getElementById('selectedUserField');
-      if (selectedUserField) {
-        selectedUserField.textContent = assignedUser;
-        selectedUserField.classList.add('field-filled-by-ai');
-        console.log('✅ Campo visual de usuario sincronizado:', assignedUser);
-      }
-
-      // Llamar a la función de actualización si existe
-      if (typeof this.updateSelectedUserPreview === 'function') {
-        this.updateSelectedUserPreview();
-      }
-    }
-
-    // ============================================
-    // 7. ITEMS - Lista de productos (opcional)
-    // ============================================
+    // Fill items field
     if (this.extractedData.items && Array.isArray(this.extractedData.items) && this.extractedData.items.length > 0) {
       const itemsInput = document.getElementById('items');
       if (itemsInput) {
+        // Join items with line breaks for better readability
         itemsInput.value = this.extractedData.items.join('\n');
-        itemsInput.classList.add('field-filled-by-ai');
-        fieldsApplied++;
-        console.log('✅ Items aplicados:', this.extractedData.items.length);
       }
     }
 
-    // ============================================
-    // 8. NOTES - Notas adicionales (opcional)
-    // ============================================
+    // Fill notes field with additional information
     const notesInput = document.getElementById('notes');
     if (notesInput) {
       const notesParts = [];
 
       if (this.extractedData.store_name) {
-        notesParts.push(`📍 Lugar: ${this.extractedData.store_name}`);
+        notesParts.push(`📍 Compra realizada en: ${this.extractedData.store_name}`);
       }
 
       if (this.extractedData.store_location) {
@@ -20976,129 +19890,27 @@ IMPORTANTE:
       }
 
       if (this.extractedData.payment_method) {
-        notesParts.push(`💳 Pago: ${this.extractedData.payment_method}`);
+        notesParts.push(`💳 Método de pago: ${this.extractedData.payment_method}`);
       }
 
       if (this.extractedData.card_last_digits) {
-        notesParts.push(`🔢 Tarjeta: ${this.extractedData.card_last_digits}`);
+        notesParts.push(`🔢 Tarjeta terminada en: ${this.extractedData.card_last_digits}`);
       }
 
       if (this.extractedData.receipt_number) {
-        notesParts.push(`📄 N° ${this.extractedData.receipt_number}`);
+        notesParts.push(`📄 Boleta/Factura N°: ${this.extractedData.receipt_number}`);
       }
 
       if (notesParts.length > 0) {
         notesInput.value = notesParts.join('\n');
-        notesInput.classList.add('field-filled-by-ai');
-        fieldsApplied++;
-        console.log('✅ Notes aplicadas');
       }
     }
 
-    // ============================================
-    // RESTAURAR 'required' después de un delay
-    // ============================================
-    setTimeout(() => {
-      requiredFields.forEach(input => {
-        input.setAttribute('required', '');
-        console.log('🔒 Required restaurado en:', input.id || input.name);
-      });
-      console.log('📊 Estado final de campos required restaurado');
-    }, 500);
-
-    // ============================================
-    // Cerrar modal y mostrar confirmación
-    // ============================================
+    // Close modal
     this.closeModal();
 
-    // Mensaje de éxito con contador de campos
-    const successMessage = `✅ ${fieldsApplied} campos rellenados por IA`;
-    this.showToast(successMessage, 'success');
-    console.log(`📊 Total de campos aplicados: ${fieldsApplied}`);
-
-    // Remover clase de animación después de 3 segundos
-    setTimeout(() => {
-      document.querySelectorAll('.field-filled-by-ai').forEach(field => {
-        field.classList.remove('field-filled-by-ai');
-      });
-    }, 3000);
-  }
-
-  // ============================================
-  // FUNCIONES AUXILIARES DE MAPEO
-  // ============================================
-
-  mapCategory(extractedCategory) {
-    if (!extractedCategory) return null;
-
-    const categoryMap = {
-      'alimentacion': 'Alimentación',
-      'food': 'Alimentación',
-      'comida': 'Alimentación',
-      'supermercado': 'Alimentación',
-      'restaurant': 'Alimentación',
-      'groceries': 'Alimentación',
-
-      'transporte': 'Transporte',
-      'transport': 'Transporte',
-      'uber': 'Transporte',
-      'taxi': 'Transporte',
-      'combustible': 'Transporte',
-      'gas': 'Transporte',
-
-      'entretenimiento': 'Entretenimiento',
-      'entertainment': 'Entretenimiento',
-      'cine': 'Entretenimiento',
-      'movies': 'Entretenimiento',
-
-      'salud': 'Salud',
-      'health': 'Salud',
-      'farmacia': 'Salud',
-      'pharmacy': 'Salud',
-      'medico': 'Salud',
-
-      'servicios': 'Servicios',
-      'services': 'Servicios',
-      'utilities': 'Servicios',
-      'internet': 'Servicios',
-
-      'compras': 'Compras',
-      'shopping': 'Compras',
-      'ropa': 'Compras',
-      'clothes': 'Compras'
-    };
-
-    const normalized = extractedCategory.toLowerCase().trim();
-    return categoryMap[normalized] || 'Otros';
-  }
-
-  mapNecessity(extractedNecessity) {
-    if (!extractedNecessity) return null;
-
-    const necessityMap = {
-      'muy indispensable': 'Muy Indispensable',
-      'indispensable': 'Muy Indispensable',
-      'critical': 'Muy Indispensable',
-
-      'muy necesario': 'Muy Necesario',
-      'essential': 'Muy Necesario',
-
-      'necesario': 'Necesario',
-      'necessary': 'Necesario',
-
-      'poco necesario': 'Poco Necesario',
-      'optional': 'Poco Necesario',
-
-      'nada necesario': 'Nada Necesario',
-      'unnecessary': 'Nada Necesario',
-
-      'malgasto': 'Malgasto',
-      'waste': 'Malgasto',
-      'impulse': 'Malgasto'
-    };
-
-    const normalized = extractedNecessity.toLowerCase().trim();
-    return necessityMap[normalized] || 'Necesario';
+    // Show success message
+    this.showToast('✅ Datos aplicados al formulario. Verifica y completa el campo de usuario.', 'success');
   }
 
   showToast(message, type = 'info') {

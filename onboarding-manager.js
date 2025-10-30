@@ -68,7 +68,9 @@ class OnboardingManager {
 
     // NO redirigir, NO bloquear, NO mostrar nada automáticamente
     // El onboarding se activa solo cuando el usuario hace click en "Comenzar guía"
-    return;
+    if (window.location.pathname.includes('onboarding.html')) {
+      this.showStep('welcome');
+    }
   }
 
   // NUEVO: Método para iniciar onboarding manualmente
@@ -133,11 +135,23 @@ class OnboardingManager {
   // SALTAR ONBOARDING
   // ========================================
   skipOnboarding() {
-    console.log('⏭️ Usuario saltó el onboarding');
+    console.log('?? Usuario salto el onboarding');
 
-    // Redirigir directamente a index.html
-    // Usar replace para que no se pueda volver atrás con el botón del navegador
-    window.location.replace('index.html');
+    localStorage.setItem('onboardingCompleted', 'true');
+
+    if (window.parent !== window) {
+      window.parent.postMessage(
+        {
+          type: 'ONBOARDING_COMPLETED',
+          payload: { status: 'skipped' }
+        },
+        '*'
+      );
+    } else {
+      // Redirigir directamente a index.html
+      // Usar replace para que no se pueda volver atras con el boton del navegador
+      window.location.replace('index.html');
+    }
   }
 
   // ========================================
@@ -828,3 +842,4 @@ if (isOnboardingPage) {
 } else {
   console.log('⏭️ OnboardingManager no se inicializa (no estamos en página de onboarding)');
 }
+

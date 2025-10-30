@@ -1,0 +1,571 @@
+/* ============================================
+   🎮 SISTEMA DE GAMIFICACIÓN - DETECTOR DE USUARIOS
+   Modal interactivo para asignar usuario a gastos
+   Con avatares, animaciones y sistema de puntos
+   ============================================ */
+
+/* ============================================
+   OVERLAY Y MODAL BASE
+   ============================================ */
+
+.detective-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(14, 42, 71, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.detective-modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.detective-modal {
+  background: var(--color-surface, #ffffff);
+  border-radius: 24px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.detective-modal-overlay.active .detective-modal {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* ============================================
+   HEADER DEL MODAL
+   ============================================ */
+
+.detective-header {
+  padding: 32px 32px 24px;
+  text-align: center;
+  background: linear-gradient(135deg,
+    rgba(0, 194, 255, 0.05) 0%,
+    rgba(0, 194, 255, 0.02) 100%);
+  border-bottom: 2px solid var(--color-border-light, #e4ebf4);
+  position: relative;
+}
+
+.detective-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  animation: detectiveFloat 3s ease-in-out infinite;
+}
+
+@keyframes detectiveFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.detective-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary, #0e2a47);
+  margin: 0 0 8px;
+}
+
+.detective-subtitle {
+  font-size: 15px;
+  color: var(--color-text-subtle, #4b5c6b);
+  margin: 0;
+}
+
+.detective-expense-info {
+  margin-top: 16px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg,
+    rgba(31, 219, 139, 0.08) 0%,
+    rgba(31, 219, 139, 0.04) 100%);
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.detective-expense-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-success, #1fdb8b);
+  margin: 0;
+}
+
+.detective-expense-details {
+  font-size: 14px;
+  color: var(--color-text-subtle, #4b5c6b);
+  margin: 4px 0 0;
+}
+
+.btn-close-detective {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: var(--color-text-subtle, #4b5c6b);
+  font-size: 18px;
+}
+
+.btn-close-detective:hover {
+  background: rgba(255, 92, 92, 0.1);
+  color: var(--color-error, #ff5c5c);
+  transform: rotate(90deg);
+}
+
+/* ============================================
+   CONTENEDOR DE AVATARES
+   ============================================ */
+
+.detective-body {
+  padding: 32px;
+}
+
+.avatars-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+/* Para 2 usuarios (Daniel + Givonik) */
+.avatars-container.two-users {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Para 3+ usuarios */
+.avatars-container.many-users {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+/* ============================================
+   TARJETA DE AVATAR
+   ============================================ */
+
+.avatar-card {
+  position: relative;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--color-surface, #ffffff);
+  border: 3px solid var(--color-border, #d3dfea);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  overflow: hidden;
+}
+
+.avatar-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, var(--color-accent, #00c2ff) 0%, var(--color-success, #1fdb8b) 100%);
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.avatar-card:hover {
+  transform: translateY(-8px) scale(1.05);
+  border-color: transparent;
+  box-shadow: 0 12px 32px rgba(0, 194, 255, 0.3);
+}
+
+.avatar-card:hover::before {
+  opacity: 1;
+}
+
+.avatar-card:active {
+  transform: translateY(-4px) scale(1.02);
+}
+
+.avatar-card.selected {
+  border-color: transparent;
+  animation: avatarSelected 0.6s ease;
+}
+
+.avatar-card.selected::before {
+  opacity: 1;
+}
+
+@keyframes avatarSelected {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* ============================================
+   CÍRCULO DEL AVATAR
+   ============================================ */
+
+.avatar-circle {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-accent, #00c2ff) 0%, #00a9e0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 194, 255, 0.3);
+}
+
+.avatar-card:hover .avatar-circle {
+  animation: avatarBounce 0.6s ease;
+}
+
+@keyframes avatarBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.1); }
+}
+
+/* Avatar con imagen */
+.avatar-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Avatar con iniciales */
+.avatar-initials {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+}
+
+/* Avatar con icono */
+.avatar-circle i {
+  font-size: 36px;
+  color: white;
+}
+
+/* Reacción del avatar (emoji) */
+.avatar-reaction {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 28px;
+  background: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: reactionPop 0.5s ease;
+}
+
+@keyframes reactionPop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.avatar-card:hover .avatar-reaction {
+  animation: reactionWiggle 0.5s ease infinite;
+}
+
+@keyframes reactionWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-15deg); }
+  75% { transform: rotate(15deg); }
+}
+
+/* ============================================
+   NOMBRE Y ESTADÍSTICAS
+   ============================================ */
+
+.avatar-name {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-primary, #0e2a47);
+  margin-bottom: 8px;
+}
+
+.avatar-stats {
+  font-size: 12px;
+  color: var(--color-text-subtle, #4b5c6b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.avatar-level {
+  background: linear-gradient(135deg, #ffc857 0%, #f4a261 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ============================================
+   TARJETA ESPECIAL "AMBOS"
+   ============================================ */
+
+.avatar-card.both-option {
+  background: linear-gradient(135deg,
+    rgba(0, 194, 255, 0.05) 0%,
+    rgba(31, 219, 139, 0.05) 100%);
+  border-style: dashed;
+}
+
+.avatar-card.both-option .avatar-circle {
+  background: linear-gradient(135deg, #00c2ff 0%, #1fdb8b 100%);
+}
+
+.both-users-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--color-text-subtle, #4b5c6b);
+}
+
+.both-users-preview i {
+  color: var(--color-accent, #00c2ff);
+}
+
+/* ============================================
+   TARJETA ESPECIAL "NO LO SÉ"
+   ============================================ */
+
+.avatar-card.mystery {
+  background: linear-gradient(135deg,
+    rgba(107, 114, 128, 0.05) 0%,
+    rgba(107, 114, 128, 0.02) 100%);
+  border-style: dashed;
+  border-color: var(--color-text-subtle, #4b5c6b);
+}
+
+.avatar-card.mystery .avatar-circle {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5c6b 100%);
+}
+
+/* ============================================
+   PUNTOS Y RECOMPENSAS
+   ============================================ */
+
+.detective-rewards {
+  background: linear-gradient(135deg,
+    rgba(255, 200, 87, 0.08) 0%,
+    rgba(255, 200, 87, 0.04) 100%);
+  border: 2px solid rgba(255, 200, 87, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  margin-top: 24px;
+}
+
+.reward-text {
+  font-size: 14px;
+  color: var(--color-text, #0f172a);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.reward-points {
+  color: #ffc857;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* ============================================
+   ANIMACIONES DE ENTRADA
+   ============================================ */
+
+.avatar-card {
+  animation: avatarSlideIn 0.5s ease forwards;
+  opacity: 0;
+}
+
+.avatar-card:nth-child(1) { animation-delay: 0.1s; }
+.avatar-card:nth-child(2) { animation-delay: 0.2s; }
+.avatar-card:nth-child(3) { animation-delay: 0.3s; }
+.avatar-card:nth-child(4) { animation-delay: 0.4s; }
+.avatar-card:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes avatarSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================
+   NOTIFICACIÓN DE SELECCIÓN
+   ============================================ */
+
+.selection-feedback {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 32px 48px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  z-index: 10001;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.selection-feedback.active {
+  opacity: 1;
+  pointer-events: all;
+  animation: feedbackPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes feedbackPop {
+  0% { transform: translate(-50%, -50%) scale(0.8); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+.feedback-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  animation: feedbackSpin 0.8s ease;
+}
+
+@keyframes feedbackSpin {
+  0% { transform: rotate(0deg) scale(0); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.feedback-message {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary, #0e2a47);
+  margin: 0 0 8px;
+}
+
+.feedback-submessage {
+  font-size: 14px;
+  color: var(--color-text-subtle, #4b5c6b);
+  margin: 0;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .detective-modal {
+    width: 95%;
+    max-width: none;
+  }
+
+  .detective-header {
+    padding: 24px 20px 20px;
+  }
+
+  .detective-title {
+    font-size: 20px;
+  }
+
+  .detective-expense-amount {
+    font-size: 24px;
+  }
+
+  .detective-body {
+    padding: 24px 20px;
+  }
+
+  .avatars-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .avatars-container.many-users {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .avatar-circle {
+    width: 64px;
+    height: 64px;
+  }
+
+  .avatar-initials {
+    font-size: 24px;
+  }
+
+  .avatar-name {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .avatars-container {
+    grid-template-columns: 1fr;
+  }
+
+  .avatars-container.two-users {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   EFECTOS DE PARTÍCULAS (OPCIONAL)
+   ============================================ */
+
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: #ffc857;
+  position: absolute;
+  animation: confettiFall 3s linear;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
