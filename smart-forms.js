@@ -8,7 +8,7 @@ class SmartDropdown {
       searchable: true,
       customizable: true,
       placeholder: 'Seleccionar...',
-      addNewText: '+ Agregar nueva opción',
+      addNewText: 'Agregar nueva opción',
       ...options
     };
 
@@ -161,7 +161,7 @@ class SmartDropdown {
       const addNew = document.createElement('div');
       addNew.className = 'custom-dropdown-option add-new';
       addNew.innerHTML = `
-        <span class="option-icon">➕</span>
+        <span class="option-icon"><i class="fas fa-plus-circle"></i></span>
         <span class="option-text">${this.options.addNewText}</span>
       `;
 
@@ -767,7 +767,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (categorySelect && !categorySelect.dataset.smartDropdown) {
       new SmartDropdown(categorySelect, {
         placeholder: 'Selecciona categoría',
-        addNewText: '➕ Agregar categoría personalizada'
+        addNewText: 'Agregar categoría personalizada'
       });
       categorySelect.dataset.smartDropdown = 'true';
     }
@@ -775,7 +775,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (necessitySelect && !necessitySelect.dataset.smartDropdown) {
       new SmartDropdown(necessitySelect, {
         placeholder: 'Nivel de necesidad',
-        addNewText: '➕ Agregar prioridad personalizada'
+        addNewText: 'Agregar prioridad personalizada'
       });
       necessitySelect.dataset.smartDropdown = 'true';
     }
