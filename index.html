@@ -673,27 +673,6 @@
             </div>
           </div>
           <button
-            id="monthlyResetMiniButton"
-            class="icon-btn monthly-reset-mini"
-            type="button"
-            title="Recordatorio de reinicio de mes"
-            style="display: none"
-            aria-hidden="true"
-          >
-            <i class="fas fa-sync-alt"></i>
-            <span class="mini-label">Comenzar mes</span>
-          </button>
-          <button
-            id="monthlyResetMaximizeNav"
-            class="icon-btn monthly-reset-maximize-nav"
-            type="button"
-            aria-label="Maximizar tarjeta de inicio de mes"
-            title="Inicio de mes (maximizar)"
-          >
-            <i class="fas fa-expand"></i>
-            <span class="label">Comenzar mes</span>
-          </button>
-          <button
             class="icon-btn"
             id="themeToggle"
             aria-label="Cambiar a modo oscuro"
@@ -1191,28 +1170,6 @@
             </p>
           </div>
 
-          <div class="settings-card">
-            <div class="settings-card-header">
-              <h3><i class="fas fa-history"></i> Reinicio mensual</h3>
-              <p>Archiva el mes actual y vuelve a cero en un clic</p>
-            </div>
-            <div class="settings-card-body monthly-reset-settings">
-              <p>
-                El botón <strong>Comenzar</strong> guardará los datos de
-                <strong data-month-label="current">mes actual</strong> en el
-                Historial de Mes y reiniciará los contadores para
-                <strong data-month-label="next">mes siguiente</strong>.
-              </p>
-              <button
-                class="btn btn-primary monthly-reset-button"
-                data-action="monthly-reset"
-              >
-                <i class="fas fa-sync-alt"></i>
-                <span class="monthly-reset-label">Comenzar mes</span>
-              </button>
-            </div>
-          </div>
-
           <div class="benefits-grid">
             <div
               class="benefit-card hover-card fade-in-up"
@@ -1606,46 +1563,6 @@
         <div class="section-header">
           <h2>¡Bienvenido a tu asistente financiero!</h2>
           <p>Gestiona tus finanzas de manera inteligente y alcanza tus metas</p>
-        </div>
-        <div class="card monthly-reset-card" aria-expanded="false">
-          <button
-            class="icon-btn monthly-reset-maximize"
-            type="button"
-            aria-label="Maximizar tarjeta de inicio de mes"
-          >
-            <i class="fas fa-expand" aria-hidden="true"></i>
-          </button>
-          <div class="monthly-reset-info">
-            <h3>
-              <i class="fas fa-redo"></i>
-              Reiniciar mes
-            </h3>
-            <p>
-              Guardaremos los datos de
-              <strong data-month-label="current">mes actual</strong>
-              y prepararemos el sistema para
-              <strong data-month-label="next">mes siguiente</strong>.
-            </p>
-            <p class="monthly-reset-meta">
-              <span class="meta-item">
-                <i class="fas fa-clock"></i>
-                Último reinicio:
-                <strong id="monthlyResetLastDate">Nunca</strong>
-              </span>
-              <span class="meta-item">
-                <i class="fas fa-archive"></i>
-                Meses archivados:
-                <strong id="monthlyArchiveCount">0</strong>
-              </span>
-            </p>
-          </div>
-          <button
-            class="btn btn-primary monthly-reset-button"
-            data-action="monthly-reset"
-          >
-            <i class="fas fa-sync-alt"></i>
-            <span class="monthly-reset-label">Comenzar mes</span>
-          </button>
         </div>
         <!-- Financial Summary -->
         <div class="stats-grid">
@@ -6585,70 +6502,5 @@
       </div>
     </div>
 
-    <!-- Modal Recordatorio de Reinicio Mensual -->
-    <div class="monthly-reset-modal" id="monthlyResetModal" aria-hidden="true">
-      <div
-        class="monthly-reset-modal__overlay"
-        id="monthlyResetModalOverlay"
-      ></div>
-      <div
-        class="monthly-reset-modal__dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="monthlyResetModalTitle"
-      >
-        <button
-          class="monthly-reset-modal__close"
-          id="monthlyResetModalHide"
-          aria-label="Ocultar recordatorio"
-        >
-          <i class="fas fa-times"></i>
-        </button>
-        <header class="monthly-reset-modal__header">
-          <span class="monthly-reset-modal__badge">
-            <i class="fas fa-calendar-day"></i> 28 del mes
-          </span>
-          <h3 id="monthlyResetModalTitle">
-            Preparar <span data-month-label="next">mes siguiente</span>
-          </h3>
-          <p>
-            Guarda los datos de
-            <strong data-month-label="current">mes actual</strong> y comienza
-            <strong data-month-label="next">mes siguiente</strong> con todo en
-            cero.
-          </p>
-        </header>
-        <div class="monthly-reset-modal__body">
-          <ul class="monthly-reset-modal__list">
-            <li>
-              <i class="fas fa-save"></i>
-              Archiva el resumen de
-              <strong data-month-label="current">mes actual</strong> en
-              Historial de Mes.
-            </li>
-            <li>
-              <i class="fas fa-sync-alt"></i>
-              Reinicia gastos, ingresos extra y balances en un clic.
-            </li>
-            <li>
-              <i class="fas fa-bell"></i>
-              Puedes hacerlo luego desde Configuración si prefieres.
-            </li>
-          </ul>
-        </div>
-        <div class="monthly-reset-modal__actions">
-          <button class="btn btn-secondary" id="monthlyResetModalClose">
-            <i class="fas fa-eye-slash"></i> Ocultar
-          </button>
-          <button class="btn btn-outline" id="monthlyResetModalMinimize">
-            <i class="fas fa-minus-circle"></i> Minimizar
-          </button>
-          <button class="btn btn-primary" id="monthlyResetModalStart">
-            <i class="fas fa-sync"></i>
-            <span class="monthly-reset-label">Comenzar mes</span>
-          </button>
-        </div>
-      </div>
-    </div>
   </body>
 </html>
