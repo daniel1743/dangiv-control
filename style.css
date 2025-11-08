@@ -2199,6 +2199,23 @@ body {
   z-index: 900;
 }
 
+/* Landing: ocultar menú lateral para evitar desbordes en portada */
+body.landing-mode .sidebar {
+  display: none;
+}
+
+body.landing-mode .main-content {
+  margin-left: 0;
+}
+
+body.landing-mode .overlay {
+  display: none !important;
+}
+
+body.landing-mode .navbar .icon-btn.hamburger-menu {
+  display: none !important;
+}
+
 /* Mobile Profile Banner */
 .mobile-profile-banner {
   display: none;

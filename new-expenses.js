@@ -209,9 +209,9 @@
     // FUNCI├ôN 3: CONFIGURAR CAMPO DE USUARIO
     // ============================================
     app.setupNewUserField = function() {
-      const userDisplay = document.getElementById(''selectedUserField'');
-      const userSelect = document.getElementById(''user'');
-      const addUserBtn = document.getElementById(''addUserBtn'');
+      const userDisplay = document.getElementById('selectedUserField');
+      const userSelect = document.getElementById('user');
+      const addUserBtn = document.getElementById('addUserBtn');
 
       if (!userDisplay || !userSelect) {
         console.warn('⚠️ Campos de usuario no encontrados');
@@ -219,7 +219,7 @@
       }
 
       const label =
-        userDisplay.querySelector(''.selected-user-placeholder'') || userDisplay;
+        userDisplay.querySelector('.selected-user-placeholder') || userDisplay;
 
       const applyValue = () => {
         const selectedValue = userSelect.value;

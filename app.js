@@ -64,7 +64,6 @@ class FinanceApp {
 
     this.expenses = savedData.expenses || [];
     this.goals = savedData.goals || [];
-    this.shoppingItems = savedData.shoppingItems || [];
     this.monthlyIncome = savedData.monthlyIncome || 2500;
     this.lastSalaryDate = savedData.lastSalaryDate || null; // Fecha del último sueldo registrado
     this.additionalIncomes = savedData.additionalIncomes || []; // Nuevos ingresos adicionales
@@ -506,7 +505,6 @@ class FinanceApp {
       const currentData = {
         expenses: this.expenses,
         goals: this.goals,
-        shoppingItems: this.shoppingItems,
         monthlyIncome: this.monthlyIncome,
         securityPasswords: this.securityPasswords,
       };
@@ -520,7 +518,6 @@ class FinanceApp {
         );
         this.expenses = normalizedData.expenses || [];
         this.goals = normalizedData.goals || [];
-        this.shoppingItems = normalizedData.shoppingItems || [];
         this.monthlyIncome = normalizedData.monthlyIncome || 2500;
         this.securityPasswords =
           normalizedData.securityPasswords || this.securityPasswords;
@@ -699,7 +696,6 @@ class FinanceApp {
       recurringPayments: this.recurringPayments,
       expenses: this.expenses,
       goals: this.goals,
-      shoppingItems: this.shoppingItems,
       monthlyIncome: this.monthlyIncome,
       lastSalaryDate: this.lastSalaryDate,
       additionalIncomes: this.additionalIncomes,
@@ -1664,6 +1660,7 @@ class FinanceApp {
 
         // Marcar como autenticado
         localStorage.setItem('financia_auth_status', 'authenticated');
+        this.updateAppLayout(true);
 
         // Show profile menu, hide login button
         if (navbarLoginBtn) navbarLoginBtn.style.display = 'none';
@@ -1841,6 +1838,7 @@ class FinanceApp {
 
         // Marcar como no autenticado
         localStorage.removeItem('financia_auth_status');
+        this.updateAppLayout(false);
 
         // Show login button, hide profile menu
         if (navbarLoginBtn) navbarLoginBtn.style.display = 'inline-flex';
@@ -2237,7 +2235,6 @@ class FinanceApp {
     // Clear all user-specific data from memory
     this.expenses = [];
     this.goals = [];
-    this.shoppingItems = [];
     this.monthlyIncome = 2500;
     this.additionalIncomes = [];
     this.budgets = {};
@@ -2269,6 +2266,7 @@ class FinanceApp {
     this.motivationalMessages = [];
     this.lastMessageUpdate = null;
     this.firebaseUser = null;
+    this.updateAppLayout(false);
 
     // Clear localStorage except tour completion and theme
     const tourCompleted = localStorage.getItem('financia_tour_completed');
@@ -2596,7 +2594,6 @@ class FinanceApp {
 
             this.expenses = cloudData.expenses || [];
             this.goals = cloudData.goals || [];
-            this.shoppingItems = cloudData.shoppingItems || [];
             this.monthlyIncome = cloudData.monthlyIncome || 2500;
             this.additionalIncomes = cloudData.additionalIncomes || [];
             this.extraIncome = cloudData.extraIncome || 0;
@@ -2644,7 +2641,6 @@ class FinanceApp {
             }
             this.renderExpenses();
             this.renderGoals();
-            this.renderShoppingList();
             this.renderConfig();
             this.updateProfileDisplay();
             this.updateUserSelectionDropdown();
@@ -3626,14 +3622,6 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       });
     }
 
-    const shoppingForm = document.getElementById('shoppingForm');
-    if (shoppingForm) {
-      shoppingForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        this.addShoppingItem(e);
-      });
-    }
-
     const incomeForm = document.getElementById('incomeForm');
     if (incomeForm) {
       incomeForm.addEventListener('submit', (e) => {
@@ -3916,14 +3904,6 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     }
 
     // === ACCIONES ESPECÃFICAS ===
-    const generateListBtn = document.getElementById('generateList');
-    if (generateListBtn) {
-      generateListBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.generateShoppingList();
-      });
-    }
-
     // Inicializar la fecha en el formulario de gastos
     this.setupCurrentDate();
   }
@@ -4401,7 +4381,7 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
   showSection(sectionId) {
     // 🔒 AUTENTICACIÓN OBLIGATORIA: Bloquear todas las secciones excepto landing
     const isAuthenticated = this.currentUser && this.currentUser !== 'anonymous' && this.firebaseUser;
-    const protectedSections = ['dashboard', 'expenses', 'goals', 'analysis', 'shopping', 'config', 'store', 'achievements', 'history'];
+    const protectedSections = ['dashboard', 'expenses', 'goals', 'analysis', 'config', 'store', 'achievements', 'history'];
 
     if (!isAuthenticated && protectedSections.includes(sectionId)) {
       console.log('[Auth] Acceso bloqueado - Se requiere autenticación');
@@ -4483,6 +4463,32 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
         this.renderHistory();
       }
     }, 100);
+  }
+
+  updateAppLayout(isAuthenticated) {
+    const body = document.body;
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.overlay');
+
+    if (!body) return;
+
+    if (isAuthenticated) {
+      body.classList.remove('landing-mode');
+      body.classList.add('app-mode');
+      if (sidebar) {
+        sidebar.setAttribute('aria-hidden', 'false');
+      }
+    } else {
+      body.classList.add('landing-mode');
+      body.classList.remove('app-mode');
+      if (sidebar) {
+        sidebar.classList.remove('open');
+        sidebar.setAttribute('aria-hidden', 'true');
+      }
+      if (overlay) {
+        overlay.classList.remove('active');
+      }
+    }
   }
 
   /**
@@ -9100,138 +9106,6 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     container.appendChild(summaryEl);
   }
 
-  // Shopping List Methods
-  addShoppingItem(e) {
-    e.preventDefault();
-
-    // 🔒 BLOQUEO: Solo usuarios autenticados pueden agregar items de compras
-    const isAuthenticated = this.currentUser && this.currentUser !== 'anonymous' && this.firebaseUser;
-    if (!isAuthenticated) {
-      console.log('[Auth] Intento de agregar item de compra sin autenticación - bloqueado');
-      this.showAuthRequiredModal();
-      return;
-    }
-
-    const product = document.getElementById('product').value.trim();
-    const quantity = parseInt(document.getElementById('quantity').value);
-    const necessary = document.getElementById('necessary').value;
-
-    if (!product || !quantity || quantity <= 0 || necessary === '') {
-      this.showToast(
-        'Por favor completa todos los campos correctamente',
-        'error'
-      );
-      return;
-    }
-
-    const item = {
-      id: Date.now(),
-      product: product,
-      quantity: quantity,
-      necessary: necessary === 'true',
-      selected: false,
-    };
-
-    this.shoppingItems.push(item);
-
-    // Registrar en auditoría
-    this.logAudit(
-      'shopping_added',
-      'added',
-      `Producto añadido: ${product} (x${quantity})`,
-      '',
-      { product, quantity, necessary: necessary === 'true' }
-    );
-
-    this.saveData();
-    this.renderShoppingList();
-    this.showToast('Producto agregado a la lista', 'success');
-    document.getElementById('shoppingForm').reset();
-  }
-
-  renderShoppingList() {
-    const container = document.getElementById('shoppingList');
-    if (!container) return;
-
-    container.innerHTML = '';
-
-    if (this.shoppingItems.length === 0) {
-      container.innerHTML =
-        '<div class="empty-state"><i class="fas fa-shopping-cart"></i><h3>Lista vacÃ­a</h3><p>Agrega productos a tu lista de compras</p></div>';
-      return;
-    }
-
-    this.shoppingItems.forEach((item, index) => {
-      const itemEl = document.createElement('div');
-      itemEl.className = 'shopping-item';
-      itemEl.innerHTML = `
-        <input type="checkbox" class="shopping-checkbox" ${
-          item.selected ? 'checked' : ''
-        } data-index="${index}">
-        <div class="shopping-content">
-          <div class="shopping-product">${this.fixLegacyEncoding(
-            item.product
-          )}</div>
-          <div class="shopping-details">
-            <span>Cantidad: ${item.quantity}</span>
-            <span class="shopping-separator">•</span>
-            <span class="necessity-badge ${
-              item.necessary ? 'necessary' : 'not-necessary'
-            }">
-              ${item.necessary ? 'Necesario' : 'No Necesario'}
-            </span>
-          </div>
-        </div>
-      `;
-      container.appendChild(itemEl);
-
-      const checkbox = itemEl.querySelector('.shopping-checkbox');
-      checkbox.addEventListener('change', () => {
-        this.toggleShoppingItem(index);
-      });
-    });
-  }
-
-  toggleShoppingItem(index) {
-    if (this.shoppingItems[index]) {
-      this.shoppingItems[index].selected = !this.shoppingItems[index].selected;
-      this.saveData();
-    }
-  }
-
-  generateShoppingList() {
-    const selectedItems = this.shoppingItems.filter((item) => item.selected);
-
-    if (selectedItems.length === 0) {
-      this.showToast('Selecciona al menos un producto', 'error');
-      return;
-    }
-
-    let listContent = 'LISTA DE COMPRAS - Financia Suite\n';
-    listContent += '===================================\n\n';
-
-    selectedItems.forEach((item) => {
-      const cleanProduct = this.fixLegacyEncoding(item.product);
-      listContent += `• ${cleanProduct} (${item.quantity})\n`;
-    });
-
-    listContent += '\n===================================\n';
-    listContent += `Total de productos: ${selectedItems.length}\n`;
-    listContent += `Generado: ${new Date().toLocaleDateString('es-ES')}`;
-
-    const blob = new Blob([listContent], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `lista-compras-${new Date().toISOString().split('T')[0]}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-
-    this.showToast('Lista de compras descargada', 'success');
-  }
-
   // Configuration Methods
   updateIncome(e) {
     e.preventDefault();
@@ -12802,13 +12676,6 @@ FinanceApp.prototype.setupOnboardingTour = function () {
       position: 'bottom',
     },
     {
-      element: '[data-section="shopping"]',
-      title: '🛒 Lista de Compras',
-      description:
-        'Crea listas de compras inteligentes. Marca productos como necesarios o por impulso para tomar mejores decisiones.',
-      position: 'bottom',
-    },
-    {
       element: '[data-section="audit"]',
       title: '📋 Historial de Cambios',
       description:
@@ -14441,7 +14308,6 @@ FinanceApp.prototype.joinSharedAccountWithInvite = async function (
     this.accountUsers = accountData.accountUsers;
     this.expenses = accountData.expenses || [];
     this.goals = accountData.goals || [];
-    this.shoppingItems = accountData.shoppingItems || [];
     this.monthlyIncome = accountData.monthlyIncome || 2500;
     this.inviteCodes = accountData.inviteCodes || {};
     this.currentInviteLink = accountData.currentInviteLink || null;
@@ -14458,7 +14324,6 @@ FinanceApp.prototype.joinSharedAccountWithInvite = async function (
         accountUsers: this.accountUsers,
         expenses: this.expenses,
         goals: this.goals,
-        shoppingItems: this.shoppingItems,
         monthlyIncome: this.monthlyIncome,
         inviteCodes: this.inviteCodes,
         currentInviteLink: this.currentInviteLink,
@@ -17988,7 +17853,6 @@ FinanceApp.prototype.exportDataAsJSON = function () {
   const dataToExport = {
     expenses: this.expenses,
     goals: this.goals,
-    shoppingItems: this.shoppingItems,
     monthlyIncome: this.monthlyIncome,
     budgets: this.budgets,
     expenseTemplates: this.expenseTemplates,
@@ -18070,8 +17934,6 @@ FinanceApp.prototype.importDataFromJSON = function (file) {
       // Import data
       if (importedData.expenses) this.expenses = importedData.expenses;
       if (importedData.goals) this.goals = importedData.goals;
-      if (importedData.shoppingItems)
-        this.shoppingItems = importedData.shoppingItems;
       if (importedData.monthlyIncome)
         this.monthlyIncome = importedData.monthlyIncome;
       if (importedData.budgets) this.budgets = importedData.budgets;
