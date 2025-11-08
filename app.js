@@ -2278,7 +2278,11 @@ class FinanceApp {
     // Clear localStorage except tour completion and theme
     const tourCompleted = localStorage.getItem('financia_tour_completed');
     const themePreference = localStorage.getItem('financia_theme');
-    const cookieConsent = localStorage.getItem('cookieConsent');
+    const cookieConsentKey = 'cookie_consent';
+    const legacyCookieConsentKey = 'cookieConsent';
+    const cookieConsent =
+      localStorage.getItem(cookieConsentKey) ||
+      localStorage.getItem(legacyCookieConsentKey);
 
     console.log('[Logout] Limpiando localStorage...');
     localStorage.clear();
@@ -2291,7 +2295,7 @@ class FinanceApp {
       localStorage.setItem('financia_theme', themePreference);
     }
     if (cookieConsent) {
-      localStorage.setItem('cookieConsent', cookieConsent);
+      localStorage.setItem(cookieConsentKey, cookieConsent);
     }
 
     // Clear sessionStorage
@@ -9961,50 +9965,167 @@ Responde de forma natural y conversacional:`;
 class CookieConsent {
   constructor() {
     this.consentKey = 'cookie_consent';
+    this.defaultPreferences = {
+      essential: true,
+      analytics: false,
+      functional: false,
+      responded: false,
+      status: 'pending',
+      timestamp: null,
+    };
     this.preferences = this.loadPreferences();
+    this.banner = null;
+    this.modal = null;
+    this.updateHtmlConsentState();
     this.init();
+    if (this.hasConsent()) {
+      this.applyConsent();
+      this.hideBanner(true);
+    }
   }
 
   loadPreferences() {
+    const parsePreferences = (raw, sourceLabel) => {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          const inferredResponded =
+            parsed.responded ??
+            parsed.accepted ??
+            (parsed.timestamp !== null && parsed.timestamp !== undefined);
+          const inferredStatus = parsed.status
+            ? parsed.status
+            : inferredResponded
+            ? parsed.analytics && parsed.functional
+              ? 'accepted'
+              : !parsed.analytics && !parsed.functional
+              ? 'rejected'
+              : 'custom'
+            : 'pending';
+          return {
+            ...this.defaultPreferences,
+            ...parsed,
+            responded: Boolean(inferredResponded),
+            status: inferredStatus,
+          };
+        }
+
+        if (parsed === true) {
+          return {
+            ...this.defaultPreferences,
+            responded: true,
+            status: 'accepted',
+            analytics: true,
+            functional: true,
+            timestamp: Date.now(),
+          };
+        }
+
+        if (parsed === false) {
+          return {
+            ...this.defaultPreferences,
+            responded: true,
+            status: 'rejected',
+            analytics: false,
+            functional: false,
+            timestamp: Date.now(),
+          };
+        }
+
+        console.warn(
+          `Preferencias de cookies en formato inesperado (${sourceLabel}), se restablecerán.`,
+        );
+      } catch (error) {
+        console.warn(`Preferencias de cookies inválidas (${sourceLabel}), se restablecerán.`, error);
+      }
+      return null;
+    };
+
     const saved = localStorage.getItem(this.consentKey);
     if (saved) {
-      return JSON.parse(saved);
+      const parsed = parsePreferences(saved, 'actual');
+      if (parsed) {
+        return parsed;
+      }
+      localStorage.removeItem(this.consentKey);
     }
-    return {
-      essential: true, // Siempre true
-      analytics: false,
-      functional: false,
-      timestamp: null,
-    };
+
+    const legacyKey = 'cookieConsent';
+    const legacyValue = localStorage.getItem(legacyKey);
+    if (legacyValue) {
+      const parsedLegacy = parsePreferences(legacyValue, 'legacy');
+      localStorage.removeItem(legacyKey);
+      if (parsedLegacy) {
+        localStorage.setItem(this.consentKey, JSON.stringify(parsedLegacy));
+        return parsedLegacy;
+      }
+    }
+
+    return { ...this.defaultPreferences };
   }
 
   savePreferences() {
     this.preferences.timestamp = Date.now();
     localStorage.setItem(this.consentKey, JSON.stringify(this.preferences));
+    this.updateHtmlConsentState();
   }
 
   hasConsent() {
-    return this.preferences.timestamp !== null;
+    return Boolean(this.preferences.responded);
+  }
+
+  shouldShowBanner() {
+    const isAuthenticated =
+      localStorage.getItem('financia_auth_status') === 'authenticated';
+    return !this.hasConsent() && !isAuthenticated;
+  }
+
+  updateHtmlConsentState() {
+    const root = document.documentElement;
+    if (!root) return;
+
+    const state = this.hasConsent()
+      ? this.preferences.status || 'responded'
+      : 'pending';
+    root.setAttribute('data-cookie-consent', state);
+  }
+
+  syncBannerVisibility() {
+    if (!this.banner) return;
+
+    if (this.shouldShowBanner()) {
+      this.showBanner();
+    } else {
+      this.hideBanner(true);
+    }
+  }
+
+  showBanner() {
+    if (!this.banner) return;
+
+    this.banner.style.removeProperty('display');
+    this.banner.setAttribute('aria-hidden', 'false');
+    this.banner.dataset.state = 'visible';
+    requestAnimationFrame(() => {
+      this.banner.classList.remove('hidden');
+    });
+  }
+
+  hideBanner(permanent = false) {
+    if (!this.banner) return;
+
+    this.banner.classList.add('hidden');
+    this.banner.dataset.state = 'hidden';
+    this.banner.setAttribute('aria-hidden', 'true');
+    if (permanent) {
+      this.banner.style.display = 'none';
+    }
   }
 
   init() {
-    const banner = document.getElementById('cookieBanner');
-    const modal = document.getElementById('cookieModal');
-
-    // Verificar si el usuario está autenticado
-    const isAuthenticated =
-      localStorage.getItem('financia_auth_status') === 'authenticated';
-
-    // SOLUCIÓN: Ocultar banner por defecto y solo mostrar si corresponde
-    if (banner) {
-      // Siempre empezar con el banner oculto
-      banner.classList.add('hidden');
-
-      // Mostrar solo si no hay consentimiento Y no está autenticado
-      if (!this.hasConsent() && !isAuthenticated) {
-        banner.classList.remove('hidden');
-      }
-    }
+    this.banner = document.getElementById('cookieBanner');
+    this.modal = document.getElementById('cookieModal');
+    this.syncBannerVisibility();
 
     // Botones del banner
     document.getElementById('cookieAccept')?.addEventListener('click', () => {
@@ -10051,13 +10172,17 @@ class CookieConsent {
 
   acceptAll() {
     this.preferences = {
+      ...this.preferences,
       essential: true,
       analytics: true,
       functional: true,
+      responded: true,
+      status: 'accepted',
       timestamp: Date.now(),
     };
     this.savePreferences();
-    this.hideBanner();
+    this.hideBanner(true);
+    this.syncBannerVisibility();
     this.applyConsent();
 
     const app = window.app;
@@ -10068,13 +10193,17 @@ class CookieConsent {
 
   rejectAll() {
     this.preferences = {
+      ...this.preferences,
       essential: true,
       analytics: false,
       functional: false,
+      responded: true,
+      status: 'rejected',
       timestamp: Date.now(),
     };
     this.savePreferences();
-    this.hideBanner();
+    this.hideBanner(true);
+    this.syncBannerVisibility();
     this.applyConsent();
 
     const app = window.app;
@@ -10085,13 +10214,17 @@ class CookieConsent {
 
   saveCustomPreferences() {
     this.preferences = {
+      ...this.preferences,
       essential: true,
       analytics: document.getElementById('cookieAnalytics')?.checked || false,
       functional: document.getElementById('cookieFunctional')?.checked || false,
+      responded: true,
+      status: 'custom',
       timestamp: Date.now(),
     };
     this.savePreferences();
-    this.hideBanner();
+    this.hideBanner(true);
+    this.syncBannerVisibility();
     this.closeModal();
     this.applyConsent();
 
@@ -10114,24 +10247,15 @@ class CookieConsent {
   }
 
   openModal() {
-    const modal = document.getElementById('cookieModal');
-    if (modal) {
+    if (this.modal) {
       this.loadModalState();
-      modal.classList.remove('hidden');
+      this.modal.classList.remove('hidden');
     }
   }
 
   closeModal() {
-    const modal = document.getElementById('cookieModal');
-    if (modal) {
-      modal.classList.add('hidden');
-    }
-  }
-
-  hideBanner() {
-    const banner = document.getElementById('cookieBanner');
-    if (banner) {
-      banner.classList.add('hidden');
+    if (this.modal) {
+      this.modal.classList.add('hidden');
     }
   }
 
