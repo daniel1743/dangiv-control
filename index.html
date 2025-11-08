@@ -288,6 +288,21 @@
       <p>Cargando datos...</p>
     </div>
 
+    <!-- 🛡️ Script de emergencia para loading infinito -->
+    <script>
+      (function() {
+        setTimeout(function() {
+          const loader = document.getElementById('loader-wrapper');
+          if (loader && loader.style.display !== 'none' && !loader.classList.contains('hidden')) {
+            console.warn('[Emergency] Ocultando loader por timeout de emergencia (15s)');
+            loader.style.display = 'none';
+            const landing = document.getElementById('landing');
+            if (landing) landing.classList.add('active');
+          }
+        }, 15000); // 15 segundos
+      })();
+    </script>
+
     <!-- SEO Landing Section (Hidden after load, visible to crawlers) -->
     <noscript>
       <div

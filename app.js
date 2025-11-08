@@ -1615,6 +1615,28 @@ class FinanceApp {
 
   // === INICIO DE SECCIÃƒâ€œN: LÃƒâ€œGICA DE AUTENTICACIÃƒâ€œN DE FIREBASE ===
   setupAuth() {
+    // 🛡️ TIMEOUT DE SEGURIDAD: Ocultar loading después de 10 segundos máximo
+    this.safetyTimeout = setTimeout(() => {
+      console.warn('[Safety] Loading timeout alcanzado (10s) - forzando hide');
+      this.hideAppLoading();
+
+      this.showToast(
+        'Conexión lenta detectada. Usando modo local.',
+        'warning',
+        5000
+      );
+
+      // Mostrar landing si nada está visible
+      const landingSection = document.getElementById('landing');
+      const dashboardSection = document.getElementById('dashboard');
+      const isAnyVisible = landingSection?.classList.contains('active') ||
+                           dashboardSection?.classList.contains('active');
+
+      if (!isAnyVisible && landingSection) {
+        landingSection.classList.add('active');
+      }
+    }, 10000);
+
     const FB = window.FB;
     if (!FB?.auth) return;
 
@@ -18332,6 +18354,12 @@ FinanceApp.prototype.getTotalIncome = function () {
 // LOADING SPINNER METHODS
 // ========================================
 FinanceApp.prototype.hideAppLoading = function () {
+  // 🛡️ Limpiar timeout de seguridad si existe
+  if (this.safetyTimeout) {
+    clearTimeout(this.safetyTimeout);
+    this.safetyTimeout = null;
+  }
+
   const loader = document.getElementById('loader-wrapper');
   if (loader) {
     loader.classList.add('hidden');
@@ -18339,6 +18367,8 @@ FinanceApp.prototype.hideAppLoading = function () {
       loader.style.display = 'none';
     }, 600);
   }
+
+  console.log('[Loading] Loader ocultado exitosamente');
 };
 
 // ========================================
