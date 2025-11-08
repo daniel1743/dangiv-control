@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Gastos - Sistema Profesional</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="header-title">💰 Registro de Gastos</h1>
+                <p class="header-subtitle">Registra tus gastos de forma rápida y sencilla</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- AI Scanner Button -->
+            <div class="ai-scanner-section">
+                <button type="button" class="btn-ai-scanner" id="aiScannerBtn">
+                    <span class="btn-icon">📷</span>
+                    <span class="btn-text">Escanear Recibo con IA</span>
+                </button>
+                <div class="ai-loader" id="aiLoader">
+                    <span class="loader-text">Analizando recibo</span>
+                    <div class="loading-dots">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expense Form -->
+            <form class="expense-form" id="expenseForm">
+                <div class="form-grid">
+                    <!-- Amount Field -->
+                    <div class="form-group">
+                        <label class="form-label" for="amount">Monto <span class="required">*</span></label>
+                        <div class="input-with-prefix">
+                            <span class="input-prefix">$</span>
+                            <input type="text" class="form-control" id="amount" placeholder="0.00" inputmode="decimal">
+                        </div>
+                        <span class="error-message" id="amountError"></span>
+                    </div>
+
+                    <!-- Description Field -->
+                    <div class="form-group">
+                        <label class="form-label" for="description">Descripción <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="description" placeholder="¿En qué gastaste?">
+                        <span class="error-message" id="descriptionError"></span>
+                    </div>
+
+                    <!-- Category Dropdown -->
+                    <div class="form-group">
+                        <label class="form-label" for="category">Categoría <span class="required">*</span></label>
+                        <div class="custom-dropdown" id="categoryDropdown">
+                            <button type="button" class="dropdown-toggle" id="categoryToggle">
+                                <span class="dropdown-value" id="categoryValue">
+                                    <span class="category-icon" id="selectedCategoryIcon"></span>
+                                    <span id="selectedCategoryText">Seleccionar categoría</span>
+                                </span>
+                                <span class="dropdown-arrow">▼</span>
+                            </button>
+                            <div class="dropdown-menu" id="categoryMenu">
+                                <div class="dropdown-search">
+                                    <input type="text" class="search-input" placeholder="Buscar categoría..." id="categorySearch">
+                                </div>
+                                <div class="dropdown-items" id="categoryItems"></div>
+                            </div>
+                        </div>
+                        <span class="error-message" id="categoryError"></span>
+                    </div>
+
+                    <!-- Necessity Level -->
+                    <div class="form-group">
+                        <label class="form-label">Nivel de Necesidad <span class="required">*</span></label>
+                        <div class="necessity-selector">
+                            <button type="button" class="necessity-btn" data-level="baja" data-color="success">
+                                <span class="necessity-label">Baja</span>
+                            </button>
+                            <button type="button" class="necessity-btn" data-level="media" data-color="warning">
+                                <span class="necessity-label">Media</span>
+                            </button>
+                            <button type="button" class="necessity-btn" data-level="alta" data-color="error">
+                                <span class="necessity-label">Alta</span>
+                            </button>
+                            <button type="button" class="necessity-btn" data-level="critica" data-color="critical">
+                                <span class="necessity-label">Crítica</span>
+                            </button>
+                        </div>
+                        <span class="error-message" id="necessityError"></span>
+                    </div>
+
+                    <!-- Date Picker -->
+                    <div class="form-group">
+                        <label class="form-label" for="date">Fecha <span class="required">*</span></label>
+                        <div class="input-with-icon">
+                            <span class="input-icon">📅</span>
+                            <input type="date" class="form-control" id="date">
+                        </div>
+                        <span class="error-message" id="dateError"></span>
+                    </div>
+
+                    <!-- User Selector -->
+                    <div class="form-group">
+                        <label class="form-label" for="user">Usuario <span class="required">*</span></label>
+                        <div class="custom-dropdown" id="userDropdown">
+                            <button type="button" class="dropdown-toggle" id="userToggle">
+                                <span class="dropdown-value" id="userValue">
+                                    <span class="user-emoji" id="selectedUserEmoji"></span>
+                                    <span id="selectedUserText">Seleccionar usuario</span>
+                                </span>
+                                <span class="dropdown-arrow">▼</span>
+                            </button>
+                            <div class="dropdown-menu" id="userMenu">
+                                <div class="dropdown-items" id="userItems"></div>
+                                <div class="dropdown-divider"></div>
+                                <button type="button" class="dropdown-add-btn" id="addUserBtn">
+                                    <span class="add-icon">+</span>
+                                    <span>Añadir usuario personalizado</span>
+                                </button>
+                            </div>
+                        </div>
+                        <span class="error-message" id="userError"></span>
+                    </div>
+                </div>
+
+                <!-- Optional Fields -->
+                <div class="form-optional">
+                    <h3 class="optional-title">Información Adicional (Opcional)</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="items">Items de Compra</label>
+                        <textarea class="form-control" id="items" rows="3" placeholder="Azúcar 1kg, Leche 1L, Aceite 2L..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="notes">Notas Adicionales</label>
+                        <textarea class="form-control" id="notes" rows="3" placeholder="Lugar, método de pago, número de boleta..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="clearBtn">
+                        <span class="btn-icon">🔄</span>
+                        <span>Limpiar</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span class="btn-icon">✅</span>
+                        <span>Registrar Gasto</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Expense History -->
+            <section class="expense-history">
+                <h2 class="history-title">📋 Historial de Gastos</h2>
+                <div class="history-content" id="historyContent">
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon">📅</div>
+                        <p class="empty-text">No hay gastos registrados</p>
+                        <p class="empty-subtext">Comienza agregando tu primer gasto usando el formulario</p>
+                    </div>
+                    <div class="history-list" id="historyList"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Add User Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="addUserModal">
+            <div class="modal-header">
+                <h3 class="modal-title">Añadir Usuario Personalizado</h3>
+                <button type="button" class="modal-close" id="modalCloseBtn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="newUserName">Nombre del Usuario</label>
+                    <input type="text" class="form-control" id="newUserName" placeholder="Ingresa el nombre">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Selecciona un Emoji</label>
+                    <div class="emoji-selector" id="emojiSelector"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="modalCancelBtn">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="modalSaveBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">✅</div>
+        <div class="toast-content">
+            <p class="toast-title">¡Éxito!</p>
+            <p class="toast-message" id="toastMessage">¡Gasto registrado exitosamente!</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

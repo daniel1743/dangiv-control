@@ -2305,291 +2305,157 @@
            Creada desde cero - Código limpio y funcional
            Paleta de colores: #0e2a47, #00c2ff, #1fdb8b
            ============================================ -->
-      <section id="expenses" class="section new-expenses-section">
-        <div class="section-header">
-          <h2><i class="fas fa-wallet"></i> Registro de Gastos</h2>
-          <p>Registra tus gastos de forma rápida y sencilla</p>
+      <section id="expenses" class="section expenses-modern">
+        <div class="expenses-modern__header">
+          <div>
+            <h2 class="expenses-modern__title"><i class="fas fa-wallet"></i> Registro de Gastos</h2>
+            <p class="expenses-modern__subtitle">Registra tus movimientos con una interfaz moderna y mantiene la funcionalidad actual.</p>
+          </div>
+          <div class="expenses-modern__stats">
+            <div class="expenses-modern__stat">
+              <span class="stat-label">Gastos hoy</span>
+              <span class="stat-value" id="todayExpensesCount">0</span>
+            </div>
+            <div class="expenses-modern__stat">
+              <span class="stat-label">Total hoy</span>
+              <span class="stat-value" id="todayExpensesTotal">$0</span>
+            </div>
+            <div class="expenses-modern__stat">
+              <span class="stat-label">Mes actual</span>
+              <span class="stat-value" id="monthExpensesTotal">$0</span>
+            </div>
+          </div>
         </div>
 
-        <!-- FORMULARIO NUEVO LIMPIO -->
-        <div class="new-expense-form-card">
-          <form id="expenseForm" class="new-expense-form" novalidate>
-
-            <!-- BOTÓN DE ESCÁNER (ARRIBA) -->
-            <div class="scanner-section">
-              <button type="button" id="receiptScanBtn" class="btn-scanner">
-                <i class="fas fa-camera"></i>
-                <span>Escanear Recibo con IA</span>
-                <small>Rellena automáticamente los campos</small>
+        <div class="expenses-modern__grid">
+          <div class="expenses-modern__form-card">
+            <div class="expenses-modern__ai">
+              <button type="button" id="receiptScanBtn" class="expenses-modern__ai-btn">
+                <span class="ai-icon">IA</span>
+                <span class="ai-content">
+                  <strong>Escanear recibo con IA</strong>
+                  <small>Completa los campos automáticamente desde una imagen</small>
+                </span>
+                <span class="ai-chev"><i class="fas fa-arrow-right"></i></span>
               </button>
+              <div class="expenses-modern__ai-loader" id="aiLoader" hidden>
+                <span class="loader-title">Analizando recibo</span>
+                <span class="loader-dots"><span></span><span></span><span></span></span>
+              </div>
             </div>
 
-            <!-- CAMPOS DEL FORMULARIO -->
-            <div class="form-fields">
-
-              <!-- MONTO -->
-              <div class="form-field">
-                <label for="amount">
-                  <i class="fas fa-dollar-sign"></i>
-                  Monto
-                </label>
-                <div class="input-wrapper">
-                  <span class="currency-symbol">$</span>
-                  <input
-                    type="text"
-                    id="amount"
-                    class="form-input"
-                    placeholder="15000"
-                    inputmode="numeric"
-                    autocomplete="off"
-                  />
+            <form id="expenseForm" class="expenses-modern__form" novalidate>
+              <div class="expenses-modern__field expenses-modern__field--amount">
+                <label class="field-label" for="amount">Monto <span>*</span></label>
+                <div class="amount-input">
+                  <span class="currency">$</span>
+                  <input type="text" id="amount" placeholder="0.00" inputmode="decimal" autocomplete="off" />
                 </div>
               </div>
 
-              <!-- DESCRIPCIÓN -->
-              <div class="form-field">
-                <label for="description">
-                  <i class="fas fa-align-left"></i>
-                  Descripción
-                </label>
-                <input
-                  type="text"
-                  id="description"
-                  class="form-input"
-                  placeholder="¿En qué gastaste?"
-                  autocomplete="off"
-                />
-                <!-- Autocomplete dropdown (mantenido para compatibilidad) -->
+              <div class="expenses-modern__field">
+                <label class="field-label" for="description">Descripción <span>*</span></label>
+                <input type="text" id="description" placeholder="¿En qué gastaste?" autocomplete="off" />
                 <div id="descriptionAutocomplete" class="autocomplete-dropdown hidden"></div>
               </div>
 
-              <!-- FILA: CATEGORÍA + NECESIDAD -->
-              <div class="form-row">
-                <!-- CATEGORÍA -->
-                <div class="form-field">
-                  <label for="category">
-                    <i class="fas fa-tag"></i>
-                    Categoría
-                  </label>
-                  <div class="select-wrapper">
-                    <select id="category" class="form-select">
+              <div class="expenses-modern__row">
+                <div class="expenses-modern__field">
+                  <label class="field-label" for="category">Categoría <span>*</span></label>
+                  <div class="custom-select">
+                    <select id="category">
                       <option value="">Seleccionar</option>
-                      <option value="Alimentación">🍽️ Alimentación</option>
-                      <option value="Transporte">🚗 Transporte</option>
-                      <option value="Entretenimiento">🎬 Entretenimiento</option>
-                      <option value="Salud">🏥 Salud</option>
-                      <option value="Servicios">⚡ Servicios</option>
-                      <option value="Compras">🛍️ Compras</option>
-                      <option value="Otros">📦 Otros</option>
+                      <option value="Alimentación">Alimentación</option>
+                      <option value="Transporte">Transporte</option>
+                      <option value="Entretenimiento">Entretenimiento</option>
+                      <option value="Salud">Salud</option>
+                      <option value="Servicios">Servicios</option>
+                      <option value="Compras">Compras</option>
+                      <option value="Otros">Otros</option>
                     </select>
-                    <button type="button" class="btn-add-custom" id="addCategoryBtn" title="Añadir categoría">
+                    <button type="button" class="custom-select__add" id="addCategoryBtn" title="Añadir categoría personalizada">
                       <i class="fas fa-plus"></i>
                     </button>
                   </div>
                 </div>
-
-                <!-- NIVEL DE NECESIDAD -->
-                <div class="form-field">
-                  <label for="necessity">
-                    <i class="fas fa-star"></i>
-                    Necesidad
-                  </label>
-                  <div class="select-wrapper">
-                    <select id="necessity" class="form-select">
+                <div class="expenses-modern__field">
+                  <label class="field-label" for="necessity">Necesidad <span>*</span></label>
+                  <div class="custom-select">
+                    <select id="necessity">
                       <option value="">Seleccionar</option>
-                      <option value="Muy Indispensable">⭐⭐⭐⭐⭐ Muy Indispensable</option>
-                      <option value="Muy Necesario">⭐⭐⭐⭐ Muy Necesario</option>
-                      <option value="Necesario">⭐⭐⭐ Necesario</option>
-                      <option value="Poco Necesario">⭐⭐ Poco Necesario</option>
-                      <option value="Nada Necesario">⭐ Nada Necesario</option>
-                      <option value="Malgasto">❌ Malgasto</option>
+                      <option value="Muy Indispensable">Muy Indispensable</option>
+                      <option value="Muy Necesario">Muy Necesario</option>
+                      <option value="Necesario">Necesario</option>
+                      <option value="Poco Necesario">Poco Necesario</option>
+                      <option value="Nada Necesario">Nada Necesario</option>
+                      <option value="Malgasto">Malgasto</option>
                     </select>
-                    <button type="button" class="btn-add-custom" id="addNecessityBtn" title="Añadir necesidad">
+                    <button type="button" class="custom-select__add" id="addNecessityBtn" title="Añadir nivel personalizado">
                       <i class="fas fa-plus"></i>
                     </button>
                   </div>
                 </div>
               </div>
 
-              <!-- FILA: FECHA + USUARIO -->
-              <div class="form-row">
-                <!-- FECHA -->
-                <div class="form-field">
-                  <label for="date">
-                    <i class="fas fa-calendar"></i>
-                    Fecha
-                  </label>
-                  <input type="date" id="date" class="form-input" />
+              <div class="expenses-modern__row">
+                <div class="expenses-modern__field">
+                  <label class="field-label" for="date">Fecha <span>*</span></label>
+                  <input type="date" id="date" autocomplete="off" />
                 </div>
-
-                <!-- USUARIO -->
-                <div class="form-field">
-                  <label for="selectedUserField">
-                    <i class="fas fa-user"></i>
-                    Usuario
-                  </label>
-                  <div class="select-wrapper user-select-wrapper">
-                    <button
-                      type="button"
-                      id="selectedUserField"
-                      class="selected-user-field selected-user-field--empty"
-                      data-modal-id="userModal"
-                      data-select-id="user"
-                      aria-haspopup="dialog"
-                      aria-controls="userModal"
-                      aria-expanded="false"
-                    >
-                      Sin usuario asignado
-                    </button>
-                    <select
-                      id="user"
-                      class="user-hidden-select user-select-hidden"
-                      aria-hidden="true"
-                      tabindex="-1"
-                    >
-                      <option value="">Sin asignar</option>
-                      <option value="Daniel">👤 Daniel</option>
-                      <option value="Givonik">🤖 Givonik</option>
+                <div class="expenses-modern__field">
+                  <label class="field-label" for="user">Usuario</label>
+                  <div class="custom-select">
+                    <select id="user">
+                      <option value="">Sin usuario asignado</option>
+                      <option value="Daniel">Daniel</option>
+                      <option value="Givonik">Givonik</option>
                     </select>
-                    <button type="button" class="btn-add-custom" id="addUserBtn" title="Añadir usuario">
+                    <button type="button" class="custom-select__add" id="addUserBtn" title="Añadir usuario personalizado">
                       <i class="fas fa-plus"></i>
                     </button>
+                  </div>
+                  <div class="selected-user-display" id="selectedUserField" tabindex="0" role="button" aria-haspopup="dialog" aria-expanded="false">
+                    <span class="selected-user-placeholder">Sin asignar</span>
+                    <i class="fas fa-chevron-down"></i>
                   </div>
                 </div>
               </div>
 
-              <!-- ITEMS (OPCIONAL) -->
-              <div class="form-field">
-                <label for="items">
-                  <i class="fas fa-shopping-basket"></i>
-                  Items de la compra <span class="optional">(Opcional)</span>
-                </label>
-                <textarea
-                  id="items"
-                  class="form-textarea"
-                  placeholder="Azúcar 1kg, Leche 1L, Aceite 2L..."
-                  rows="2"
-                ></textarea>
+              <div class="expenses-modern__field">
+                <label class="field-label" for="items">Items de compra (opcional)</label>
+                <textarea id="items" rows="3" placeholder="Ej: Arroz 1kg, Leche 2L, Aceite 1L"></textarea>
               </div>
 
-              <!-- NOTAS (OPCIONAL) -->
-              <div class="form-field">
-                <label for="notes">
-                  <i class="fas fa-sticky-note"></i>
-                  Notas adicionales <span class="optional">(Opcional)</span>
-                </label>
-                <textarea
-                  id="notes"
-                  class="form-textarea"
-                  placeholder="Lugar, método de pago, número de boleta..."
-                  rows="2"
-                ></textarea>
+              <div class="expenses-modern__field">
+                <label class="field-label" for="notes">Notas adicionales (opcional)</label>
+                <textarea id="notes" rows="3" placeholder="Método de pago, tienda, número de recibo..."></textarea>
               </div>
 
-            </div>
-
-            <!-- BOTONES DE ACCIÓN -->
-            <div class="form-actions">
-              <button type="button" id="clearExpenseForm" class="btn-clear">
-                <i class="fas fa-eraser"></i>
-                Limpiar
-              </button>
-              <button type="submit" class="btn-submit">
-                <i class="fas fa-check-circle"></i>
-                Registrar Gasto
-              </button>
-            </div>
-
-            <!-- ESTADÍSTICAS RÁPIDAS -->
-            <div class="form-stats">
-              <div class="stat-item">
-                <i class="fas fa-calendar-day"></i>
-                <div class="stat-content">
-                  <span id="todayExpensesCount" class="stat-value">0</span>
-                  <span class="stat-label">gastos hoy</span>
-                </div>
-              </div>
-              <div class="stat-item">
-                <i class="fas fa-money-bill-wave"></i>
-                <div class="stat-content">
-                  <span id="todayExpensesTotal" class="stat-value">$0</span>
-                  <span class="stat-label">total hoy</span>
-                </div>
-              </div>
-              <div class="stat-item">
-                <i class="fas fa-calendar-alt"></i>
-                <div class="stat-content">
-                  <span id="monthExpensesTotal" class="stat-value">$0</span>
-                  <span class="stat-label">este mes</span>
-                </div>
-              </div>
-            </div>
-
-          </form>
-        </div>
-
-        <!-- MODAL DEL ESCÁNER (MANTENIDO IGUAL) -->
-        <div id="receiptScannerModal" class="modal-receipt-scanner hidden">
-          <div class="modal-receipt-content">
-            <div class="modal-receipt-header">
-              <h3><i class="fas fa-receipt"></i> Escanear Recibo</h3>
-              <button type="button" class="btn-close-receipt" id="closeReceiptModal">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-
-            <div class="desktop-warning" id="desktopWarning">
-              <i class="fas fa-mobile-alt"></i>
-              <p><strong>Recomendación:</strong> Esta función funciona mejor desde un dispositivo móvil.</p>
-            </div>
-
-            <div class="modal-receipt-body">
-              <div class="receipt-capture-options">
-                <input type="file" id="receiptImageInput" accept="image/*" capture="environment" style="display: none;" />
-                <button type="button" class="btn-capture-option btn-camera" id="btnTakePhoto">
-                  <i class="fas fa-camera"></i>
-                  <span>Tomar Foto</span>
+              <div class="expenses-modern__actions">
+                <button type="button" class="btn-secondary" id="clearExpenseForm">
+                  <i class="fas fa-eraser"></i>
+                  Limpiar formulario
                 </button>
-                <button type="button" class="btn-capture-option btn-upload" id="btnUploadImage">
-                  <i class="fas fa-upload"></i>
-                  <span>Cargar Imagen</span>
+                <button type="submit" class="btn-primary">
+                  <i class="fas fa-plus-circle"></i>
+                  Registrar gasto
                 </button>
               </div>
+            </form>
+          </div>
 
-              <div class="receipt-preview hidden" id="receiptPreview">
-                <img id="receiptPreviewImage" src="" alt="Vista previa del recibo" />
-                <button type="button" class="btn-remove-image" id="btnRemoveImage">
-                  <i class="fas fa-trash"></i>
-                </button>
+          <div class="expenses-modern__history">
+            <header class="history-header">
+              <div>
+                <h3><i class="fas fa-receipt"></i> Historial de gastos</h3>
+                <p>Los movimientos que registres aparecerán aquí.</p>
               </div>
-
-              <div class="receipt-processing hidden" id="receiptProcessing">
-                <div class="spinner-receipt"></div>
-                <p>Analizando recibo con IA...</p>
-                <small>Esto puede tomar unos segundos</small>
-              </div>
-
-              <div class="receipt-data-preview hidden" id="receiptDataPreview">
-                <h4><i class="fas fa-check-circle"></i> Datos Extraídos</h4>
-                <div class="extracted-data-list" id="extractedDataList"></div>
-                <button type="button" class="btn-primary" id="btnApplyData">
-                  Aplicar Datos al Formulario
-                </button>
-              </div>
+            </header>
+            <div class="history-body">
+              <div id="expenseList" class="history-list"></div>
             </div>
           </div>
         </div>
-
-        <!-- LISTA DE GASTOS -->
-        <div class="expenses-list-card">
-          <div class="card-header">
-            <h3><i class="fas fa-history"></i> Historial de Gastos</h3>
-          </div>
-          <div class="card-body">
-            <div id="expenseList"></div>
-          </div>
-        </div>
-
       </section>
 
       <!-- Goals Section -->
