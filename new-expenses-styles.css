@@ -5,13 +5,13 @@
 #expenses.expenses-modern {
   --exp-bg: #f4f6fb;
   --exp-card: #ffffff;
-  --exp-border: #d9e2f3;
-  --exp-primary: #1d7480;
-  --exp-primary-dark: #155661;
-  --exp-accent: #00b7ff;
+  --exp-border: rgba(var(--color-primary-rgb), 0.12);
+  --exp-primary: var(--color-primary);
+  --exp-primary-dark: var(--color-primary-dark);
+  --exp-accent: var(--color-primary-light);
   --exp-success: #1fdb8b;
-  --exp-text: #18304a;
-  --exp-text-soft: #5d6f84;
+  --exp-text: var(--color-primary);
+  --exp-text-soft: rgba(var(--color-primary-rgb), 0.62);
   --exp-error: #ff5c5c;
   padding: 24px 0 48px;
   background: var(--exp-bg);
@@ -51,8 +51,8 @@
   background: rgba(255,255,255,0.7);
   padding: 16px 20px;
   border-radius: 16px;
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 10px 30px rgba(14,42,71,0.08);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.08);
+  box-shadow: 0 10px 30px rgba(var(--color-primary-rgb), 0.08);
 }
 
 .expenses-modern__stat {
@@ -85,7 +85,7 @@
   background: var(--exp-card);
   border-radius: 24px;
   border: 1px solid var(--exp-border);
-  box-shadow: 0 20px 45px rgba(13, 39, 80, 0.08);
+  box-shadow: 0 20px 45px rgba(var(--color-primary-rgb), 0.08);
   overflow: hidden;
 }
 
@@ -107,19 +107,19 @@
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  background: linear-gradient(135deg,#00b7ff 0%,#00a1e0 100%);
+  background: linear-gradient(135deg, var(--exp-primary) 0%, var(--exp-primary-dark) 100%);
   border: none;
   color: #fff;
   padding: 18px 22px;
   border-radius: 18px;
   cursor: pointer;
-  box-shadow: 0 14px 36px rgba(0,183,255,0.28);
+  box-shadow: 0 14px 36px rgba(var(--color-primary-rgb), 0.28);
   transition: transform .25s ease, box-shadow .25s ease;
 }
 
 .expenses-modern__ai-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 18px 42px rgba(0,183,255,0.35);
+  box-shadow: 0 18px 42px rgba(var(--color-primary-rgb), 0.35);
 }
 
 .ai-icon {
@@ -150,7 +150,7 @@
   gap: 12px;
   padding: 12px 16px;
   border-radius: 14px;
-  background: rgba(29,116,128,0.08);
+  background: rgba(var(--color-primary-rgb), 0.1);
   color: var(--exp-primary);
 }
 
@@ -206,7 +206,7 @@
   align-items: center;
   gap: 12px;
   background: #f8faff;
-  border: 1px solid rgba(24,48,74,0.12);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.12);
   border-radius: 14px;
   padding: 14px 16px;
 }
@@ -232,7 +232,7 @@
 .custom-select select {
   width: 100%;
   background: #f8faff;
-  border: 1px solid rgba(24,48,74,0.12);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.12);
   border-radius: 14px;
   padding: 14px 16px;
   color: var(--exp-text);
@@ -251,8 +251,8 @@
 .custom-select select:focus,
 .amount-input:focus-within {
   outline: none;
-  border-color: rgba(0,183,255,0.7);
-  box-shadow: 0 0 0 4px rgba(0,183,255,0.18);
+  border-color: rgba(var(--color-primary-rgb), 0.55);
+  box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb), 0.15);
 }
 
 .expenses-modern__row {
@@ -276,7 +276,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(24,48,74,0.08);
+  background: rgba(var(--color-primary-rgb), 0.08);
   color: var(--exp-primary);
   border: none;
   border-radius: 12px;
@@ -286,7 +286,7 @@
 }
 
 .custom-select__add:hover {
-  background: rgba(24,48,74,0.16);
+  background: rgba(var(--color-primary-rgb), 0.16);
 }
 
 .selected-user-display {
@@ -295,8 +295,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  background: #f1f6ff;
-  border: 1px dashed rgba(24,48,74,0.25);
+  background: rgba(var(--color-primary-rgb), 0.08);
+  border: 1px dashed rgba(var(--color-primary-rgb), 0.25);
   border-radius: 12px;
   padding: 10px 12px;
   cursor: pointer;
@@ -306,8 +306,8 @@
 
 .selected-user-display:focus {
   outline: none;
-  border-color: rgba(0,183,255,0.7);
-  box-shadow: 0 0 0 3px rgba(0,183,255,0.18);
+  border-color: rgba(var(--color-primary-rgb), 0.55);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
 }
 
 .expenses-modern__actions {
@@ -331,18 +331,18 @@
 }
 
 .expenses-modern__actions .btn-primary {
-  background: linear-gradient(135deg,#1d7480 0%,#155661 100%);
+  background: linear-gradient(135deg, var(--exp-primary) 0%, var(--exp-primary-dark) 100%);
   color: #fff;
-  box-shadow: 0 12px 30px rgba(21,86,97,0.28);
+  box-shadow: 0 12px 30px rgba(var(--color-primary-rgb), 0.28);
 }
 
 .expenses-modern__actions .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 36px rgba(21,86,97,0.34);
+  box-shadow: 0 16px 36px rgba(var(--color-primary-rgb), 0.34);
 }
 
 .expenses-modern__actions .btn-secondary {
-  background: rgba(24,48,74,0.08);
+  background: rgba(var(--color-primary-rgb), 0.08);
   color: var(--exp-primary);
 }
 
@@ -379,8 +379,8 @@
 }
 
 #expenseList .transaction-item {
-  background: #f8fbff;
-  border: 1px solid rgba(24,48,74,0.08);
+  background: rgba(var(--color-primary-rgb), 0.04);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.1);
   border-radius: 18px;
   padding: 18px 20px;
   display: flex;
@@ -391,7 +391,7 @@
 
 #expenseList .transaction-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 36px rgba(13,39,80,0.12);
+  box-shadow: 0 16px 36px rgba(var(--color-primary-rgb), 0.12);
 }
 
 #expenseList .transaction-info {
@@ -416,7 +416,7 @@
 }
 
 #expenseList .user-badge {
-  background: rgba(0,183,255,0.15);
+  background: rgba(var(--color-primary-rgb), 0.12);
   color: var(--exp-primary);
   padding: 4px 10px;
   border-radius: 999px;
@@ -472,9 +472,9 @@
 
 /* === ESTILOS ADICIONALES NUEVO FORM === */
 /* ============================================
-   ­ƒåò ESTILOS NUEVOS PARA ├üREA DE REGISTRO DE GASTOS
-   Versi├│n 2.0 - Creado desde cero
-   Paleta: #0e2a47 (primary), #00c2ff (accent), #1fdb8b (success)
+   ⚙️ ESTILOS NUEVOS PARA ÁREA DE REGISTRO DE GASTOS
+   Versión 2.0 - Creado desde cero
+   Paleta: --color-primary (navbar), tonos complementarios suaves, #1fdb8b (éxito)
    Autor: Claude Code
    Fecha: 2025-10-25
    ============================================ */
@@ -778,14 +778,14 @@
 }
 
 .user-display:hover {
-  border-color: var(--color-accent, #00c2ff);
-  background: rgba(0, 194, 255, 0.03);
+  border-color: var(--exp-accent);
+  background: rgba(var(--color-primary-rgb, 14, 42, 71), 0.06);
 }
 
 .user-display:focus {
   outline: none;
-  border-color: var(--color-accent, #00c2ff);
-  box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.15);
+  border-color: var(--exp-accent);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 14, 42, 71), 0.18);
 }
 
 .user-select-hidden {
@@ -868,14 +868,18 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(0, 194, 255, 0.05) 0%, rgba(0, 194, 255, 0.02) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(var(--color-primary-rgb, 14, 42, 71), 0.08) 0%,
+    rgba(var(--color-primary-rgb, 14, 42, 71), 0.03) 100%
+  );
   border-radius: 10px;
-  border: 1px solid rgba(0, 194, 255, 0.1);
+  border: 1px solid rgba(var(--color-primary-rgb, 14, 42, 71), 0.12);
 }
 
 .stat-item i {
   font-size: 24px;
-  color: var(--color-accent, #00c2ff);
+  color: var(--exp-accent);
 }
 
 .stat-content {
@@ -931,7 +935,7 @@
 }
 
 .expenses-list-card .card-header h3 i {
-  color: var(--color-accent, #00c2ff);
+  color: var(--exp-accent);
 }
 
 .expenses-list-card .card-body {
@@ -944,21 +948,30 @@
 
 .field-filled-by-ai {
   position: relative;
-  background: linear-gradient(135deg, rgba(0, 194, 255, 0.08) 0%, rgba(0, 194, 255, 0.04) 100%) !important;
-  border-color: var(--color-accent, #00c2ff) !important;
-  box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.15), 0 4px 12px rgba(0, 194, 255, 0.2) !important;
+  background: linear-gradient(
+      135deg,
+      rgba(var(--color-primary-rgb, 14, 42, 71), 0.12) 0%,
+      rgba(var(--color-primary-rgb, 14, 42, 71), 0.06) 100%
+    )
+    !important;
+  border-color: var(--exp-accent) !important;
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 14, 42, 71), 0.18),
+    0 4px 12px rgba(var(--color-primary-rgb, 14, 42, 71), 0.22) !important;
   animation: aiFieldPulse 1.5s ease-in-out;
 }
 
 @keyframes aiFieldPulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(0, 194, 255, 0.4), 0 4px 12px rgba(0, 194, 255, 0.2);
+    box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb, 14, 42, 71), 0.4),
+      0 4px 12px rgba(var(--color-primary-rgb, 14, 42, 71), 0.2);
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(0, 194, 255, 0.15), 0 4px 12px rgba(0, 194, 255, 0.3);
+    box-shadow: 0 0 0 6px rgba(var(--color-primary-rgb, 14, 42, 71), 0.18),
+      0 4px 12px rgba(var(--color-primary-rgb, 14, 42, 71), 0.3);
   }
   100% {
-    box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.15), 0 4px 12px rgba(0, 194, 255, 0.2);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 14, 42, 71), 0.18),
+      0 4px 12px rgba(var(--color-primary-rgb, 14, 42, 71), 0.2);
   }
 }
 
@@ -968,14 +981,18 @@
   top: -8px;
   right: -8px;
   font-size: 18px;
-  background: linear-gradient(135deg, var(--color-accent, #00c2ff) 0%, #00a9e0 100%);
+  background: linear-gradient(
+    135deg,
+    var(--exp-accent) 0%,
+    var(--exp-primary) 100%
+  );
   width: 32px;
   height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 194, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb, 14, 42, 71), 0.28);
   animation: aiIconBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   z-index: 10;
 }
