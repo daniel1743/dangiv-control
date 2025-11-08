@@ -12484,15 +12484,6 @@ FinanceApp.prototype.updateUserSelectionDropdown = function () {
     userSelect.value = defaultUserValue;
     console.log(`✅ Usuario por defecto establecido: ${defaultUserValue}`);
 
-    // Crear campo temporal para mostrar el usuario por defecto
-    if (window.smartAutoComplete && typeof window.smartAutoComplete.createTemporaryField === 'function') {
-      const selectedOption = userSelect.options[userSelect.selectedIndex];
-      window.smartAutoComplete.createTemporaryField(
-        userSelect,
-        defaultUserValue,
-        `${selectedOption.textContent} (TÚ)`
-      );
-    }
   }
 
   // ✅ RE-AGREGAR EL EVENT LISTENER DESPUÉS DE RECONSTRUIR EL HTML

@@ -469,3 +469,617 @@
     align-items: flex-start;
   }
 }
+
+/* === ESTILOS ADICIONALES NUEVO FORM === */
+/* ============================================
+   ­ƒåò ESTILOS NUEVOS PARA ├üREA DE REGISTRO DE GASTOS
+   Versi├│n 2.0 - Creado desde cero
+   Paleta: #0e2a47 (primary), #00c2ff (accent), #1fdb8b (success)
+   Autor: Claude Code
+   Fecha: 2025-10-25
+   ============================================ */
+
+/* ============================================
+   SECCI├ôN PRINCIPAL
+   ============================================ */
+
+.new-expenses-section {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.new-expenses-section .section-header h2 {
+  color: var(--color-primary, #0e2a47);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.new-expenses-section .section-header h2 i {
+  color: var(--color-primary, #0e2a47);
+}
+
+.new-expenses-section .section-header p {
+  color: var(--color-text-subtle, #4b5c6b);
+  font-size: 15px;
+  margin: 0;
+}
+
+/* ============================================
+   TARJETA DEL FORMULARIO
+   ============================================ */
+
+.new-expense-form-card {
+  background: var(--color-surface, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(14, 42, 71, 0.08);
+  padding: 32px;
+  margin-bottom: 32px;
+  border: 1px solid var(--color-border-light, #e4ebf4);
+}
+
+/* ============================================
+   BOT├ôN DE ESC├üNER (DESTACADO)
+   ============================================ */
+
+.scanner-section {
+  margin-bottom: 32px;
+}
+
+.btn-scanner {
+  width: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, #0e2a47) 0%,
+    var(--color-primary-600, #103155) 100%
+  );
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 194, 255, 0.3);
+}
+
+.btn-scanner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(var(--color-primary-rgb, 14, 42, 71), 0.35);
+}
+
+.btn-scanner:active {
+  transform: translateY(0);
+}
+
+.btn-scanner i {
+  font-size: 28px;
+}
+
+.btn-scanner span {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.btn-scanner small {
+  font-size: 13px;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+/* ============================================
+   CAMPOS DEL FORMULARIO
+   ============================================ */
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-field label {
+  color: var(--color-primary, #0e2a47);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-field label i {
+  color: var(--color-primary, #0e2a47);
+  font-size: 16px;
+}
+
+.optional {
+  color: var(--color-text-subtle, #4b5c6b);
+  font-weight: 400;
+  font-size: 13px;
+}
+
+/* ============================================
+   INPUTS Y TEXTAREAS
+   ============================================ */
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--color-border, #d3dfea);
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--color-text, #0f172a);
+  background: var(--color-surface, #ffffff);
+  transition: all 0.3s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary, #0e2a47);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 14, 42, 71), 0.18);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--color-text-subtle, #4b5c6b);
+  opacity: 0.6;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.form-select {
+  padding-right: 48px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--color-surface, #ffffff);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='currentColor' d='M1.41 0L6 4.59 10.59 0 12 1.41 6 7.41 0 1.41z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px;
+}
+
+.form-select::-ms-expand {
+  display: none;
+}
+
+/* ============================================
+   INPUT DE MONTO (ESPECIAL)
+   ============================================ */
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 16px;
+  color: var(--color-primary, #0e2a47);
+  font-size: 18px;
+  font-weight: 700;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.input-wrapper .form-input {
+  padding-left: 40px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-primary, #0e2a47);
+}
+
+/* ============================================
+   FILAS DE FORMULARIO
+   ============================================ */
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   SELECT CON BOT├ôN PERSONALIZADO
+   ============================================ */
+
+.select-wrapper {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.select-wrapper .form-select {
+  flex: 1;
+}
+
+.btn-add-custom {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, #0e2a47) 0%,
+    var(--color-primary-600, #103155) 100%
+  );
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.btn-add-custom:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb, 14, 42, 71), 0.28);
+}
+
+.btn-add-custom:active {
+  transform: scale(0.95);
+}
+
+.btn-add-custom:focus-visible {
+  outline: 2px solid var(--color-primary, #0e2a47);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   SELECTOR DE USUARIO
+   ============================================ */
+
+.user-select-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.user-display {
+  flex: 1;
+  padding: 14px 16px;
+  border: 2px solid var(--color-border, #d3dfea);
+  border-radius: 10px;
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text, #0f172a);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+
+.user-display:hover {
+  border-color: var(--color-accent, #00c2ff);
+  background: rgba(0, 194, 255, 0.03);
+}
+
+.user-display:focus {
+  outline: none;
+  border-color: var(--color-accent, #00c2ff);
+  box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.15);
+}
+
+.user-select-hidden {
+  display: none;
+}
+
+/* ============================================
+   BOTONES DE ACCI├ôN
+   ============================================ */
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.btn-clear,
+.btn-submit {
+  flex: 1;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-clear {
+  background: var(--color-surface-hover, #eef4fb);
+  color: var(--color-primary, #0e2a47);
+  border: 2px solid var(--color-border, #d3dfea);
+}
+
+.btn-clear:hover {
+  background: var(--color-border-light, #e4ebf4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(14, 42, 71, 0.1);
+}
+
+.btn-submit {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, #0e2a47) 0%,
+    var(--color-primary-600, #103155) 100%
+  );
+  color: white;
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb, 14, 42, 71), 0.25);
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(var(--color-primary-rgb, 14, 42, 71), 0.32);
+}
+
+.btn-submit:active,
+.btn-clear:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   ESTAD├ìSTICAS DEL FORMULARIO
+   ============================================ */
+
+.form-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 2px solid var(--color-border-light, #e4ebf4);
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(0, 194, 255, 0.05) 0%, rgba(0, 194, 255, 0.02) 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 194, 255, 0.1);
+}
+
+.stat-item i {
+  font-size: 24px;
+  color: var(--color-accent, #00c2ff);
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary, #0e2a47);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--color-text-subtle, #4b5c6b);
+  text-transform: lowercase;
+}
+
+@media (max-width: 640px) {
+  .form-stats {
+    flex-direction: column;
+  }
+}
+
+/* ============================================
+   TARJETA DE LISTA DE GASTOS
+   ============================================ */
+
+.expenses-list-card {
+  background: var(--color-surface, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(14, 42, 71, 0.08);
+  border: 1px solid var(--color-border-light, #e4ebf4);
+  overflow: hidden;
+}
+
+.expenses-list-card .card-header {
+  padding: 24px 32px;
+  background: linear-gradient(135deg, rgba(14, 42, 71, 0.03) 0%, rgba(14, 42, 71, 0.01) 100%);
+  border-bottom: 2px solid var(--color-border-light, #e4ebf4);
+}
+
+.expenses-list-card .card-header h3 {
+  color: var(--color-primary, #0e2a47);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.expenses-list-card .card-header h3 i {
+  color: var(--color-accent, #00c2ff);
+}
+
+.expenses-list-card .card-body {
+  padding: 24px 32px;
+}
+
+/* ============================================
+   ANIMACIONES DE FEEDBACK VISUAL (IA)
+   ============================================ */
+
+.field-filled-by-ai {
+  position: relative;
+  background: linear-gradient(135deg, rgba(0, 194, 255, 0.08) 0%, rgba(0, 194, 255, 0.04) 100%) !important;
+  border-color: var(--color-accent, #00c2ff) !important;
+  box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.15), 0 4px 12px rgba(0, 194, 255, 0.2) !important;
+  animation: aiFieldPulse 1.5s ease-in-out;
+}
+
+@keyframes aiFieldPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 194, 255, 0.4), 0 4px 12px rgba(0, 194, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(0, 194, 255, 0.15), 0 4px 12px rgba(0, 194, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.15), 0 4px 12px rgba(0, 194, 255, 0.2);
+  }
+}
+
+.field-filled-by-ai::after {
+  content: '­ƒñû';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 18px;
+  background: linear-gradient(135deg, var(--color-accent, #00c2ff) 0%, #00a9e0 100%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 194, 255, 0.4);
+  animation: aiIconBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 10;
+}
+
+@keyframes aiIconBounce {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   ESTILOS DE VALIDACI├ôN (ERRORES)
+   ============================================ */
+
+.field-error {
+  border-color: var(--color-error, #ff5c5c) !important;
+  background: rgba(255, 92, 92, 0.05) !important;
+  box-shadow: 0 0 0 3px rgba(255, 92, 92, 0.15) !important;
+  animation: fieldErrorShake 0.4s ease-in-out;
+}
+
+@keyframes fieldErrorShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.field-error-message {
+  color: var(--color-error, #ff5c5c);
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: errorMessageSlideIn 0.3s ease-out;
+}
+
+.field-error-message::before {
+  content: 'ÔÜá´©Å';
+  font-size: 14px;
+}
+
+@keyframes errorMessageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .new-expense-form-card {
+    padding: 24px 20px;
+  }
+
+  .expenses-list-card .card-header,
+  .expenses-list-card .card-body {
+    padding: 20px;
+  }
+
+  .new-expenses-section .section-header h2 {
+    font-size: 24px;
+  }
+
+  .input-wrapper .form-input {
+    font-size: 18px;
+  }
+
+  .btn-scanner {
+    padding: 16px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .new-expenses-section {
+    padding: 16px;
+  }
+
+  .new-expense-form-card {
+    padding: 20px 16px;
+  }
+
+  .form-fields {
+    gap: 20px;
+  }
+}
+

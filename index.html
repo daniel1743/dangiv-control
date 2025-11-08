@@ -290,11 +290,17 @@
 
     <!-- 🛡️ Script de emergencia para loading infinito -->
     <script>
-      (function() {
-        setTimeout(function() {
+      (function () {
+        setTimeout(function () {
           const loader = document.getElementById('loader-wrapper');
-          if (loader && loader.style.display !== 'none' && !loader.classList.contains('hidden')) {
-            console.warn('[Emergency] Ocultando loader por timeout de emergencia (15s)');
+          if (
+            loader &&
+            loader.style.display !== 'none' &&
+            !loader.classList.contains('hidden')
+          ) {
+            console.warn(
+              '[Emergency] Ocultando loader por timeout de emergencia (15s)'
+            );
             loader.style.display = 'none';
             const landing = document.getElementById('landing');
             if (landing) landing.classList.add('active');
@@ -623,7 +629,7 @@
             class="icon-btn mobile-auth-btn"
             title="Iniciar sesión"
             data-auth-state="logged-out"
-            style="display: none;"
+            style="display: none"
           >
             <i class="fas fa-sign-in-alt"></i>
             <span class="mobile-auth-text">Iniciar sesión</span>
@@ -2323,8 +2329,13 @@
       <section id="expenses" class="section expenses-modern">
         <div class="expenses-modern__header">
           <div>
-            <h2 class="expenses-modern__title"><i class="fas fa-wallet"></i> Registro de Gastos</h2>
-            <p class="expenses-modern__subtitle">Registra tus movimientos con una interfaz moderna y mantiene la funcionalidad actual.</p>
+            <h2 class="expenses-modern__title">
+              <i class="fas fa-wallet"></i> Registro de Gastos
+            </h2>
+            <p class="expenses-modern__subtitle">
+              Registra tus movimientos con una interfaz moderna y mantiene la
+              funcionalidad actual.
+            </p>
           </div>
           <div class="expenses-modern__stats">
             <div class="expenses-modern__stat">
@@ -2345,38 +2356,68 @@
         <div class="expenses-modern__grid">
           <div class="expenses-modern__form-card">
             <div class="expenses-modern__ai">
-              <button type="button" id="receiptScanBtn" class="expenses-modern__ai-btn">
+              <button
+                type="button"
+                id="receiptScanBtn"
+                class="expenses-modern__ai-btn"
+              >
                 <span class="ai-icon">IA</span>
                 <span class="ai-content">
                   <strong>Escanear recibo con IA</strong>
-                  <small>Completa los campos automáticamente desde una imagen</small>
+                  <small
+                    >Completa los campos automáticamente desde una imagen</small
+                  >
                 </span>
                 <span class="ai-chev"><i class="fas fa-arrow-right"></i></span>
               </button>
               <div class="expenses-modern__ai-loader" id="aiLoader" hidden>
                 <span class="loader-title">Analizando recibo</span>
-                <span class="loader-dots"><span></span><span></span><span></span></span>
+                <span class="loader-dots"
+                  ><span></span><span></span><span></span
+                ></span>
               </div>
             </div>
 
             <form id="expenseForm" class="expenses-modern__form" novalidate>
-              <div class="expenses-modern__field expenses-modern__field--amount">
-                <label class="field-label" for="amount">Monto <span>*</span></label>
+              <div
+                class="expenses-modern__field expenses-modern__field--amount"
+              >
+                <label class="field-label" for="amount"
+                  >Monto <span>*</span></label
+                >
                 <div class="amount-input">
                   <span class="currency">$</span>
-                  <input type="text" id="amount" placeholder="0.00" inputmode="decimal" autocomplete="off" />
+                  <input
+                    type="text"
+                    id="amount"
+                    placeholder="0.00"
+                    inputmode="decimal"
+                    autocomplete="off"
+                  />
                 </div>
               </div>
 
               <div class="expenses-modern__field">
-                <label class="field-label" for="description">Descripción <span>*</span></label>
-                <input type="text" id="description" placeholder="¿En qué gastaste?" autocomplete="off" />
-                <div id="descriptionAutocomplete" class="autocomplete-dropdown hidden"></div>
+                <label class="field-label" for="description"
+                  >Descripción <span>*</span></label
+                >
+                <input
+                  type="text"
+                  id="description"
+                  placeholder="¿En qué gastaste?"
+                  autocomplete="off"
+                />
+                <div
+                  id="descriptionAutocomplete"
+                  class="autocomplete-dropdown hidden"
+                ></div>
               </div>
 
               <div class="expenses-modern__row">
                 <div class="expenses-modern__field">
-                  <label class="field-label" for="category">Categoría <span>*</span></label>
+                  <label class="field-label" for="category"
+                    >Categoría <span>*</span></label
+                  >
                   <div class="custom-select">
                     <select id="category">
                       <option value="">Seleccionar</option>
@@ -2388,24 +2429,38 @@
                       <option value="Compras">Compras</option>
                       <option value="Otros">Otros</option>
                     </select>
-                    <button type="button" class="custom-select__add" id="addCategoryBtn" title="Añadir categoría personalizada">
+                    <button
+                      type="button"
+                      class="custom-select__add"
+                      id="addCategoryBtn"
+                      title="Añadir categoría personalizada"
+                    >
                       <i class="fas fa-plus"></i>
                     </button>
                   </div>
                 </div>
                 <div class="expenses-modern__field">
-                  <label class="field-label" for="necessity">Necesidad <span>*</span></label>
+                  <label class="field-label" for="necessity"
+                    >Necesidad <span>*</span></label
+                  >
                   <div class="custom-select">
                     <select id="necessity">
                       <option value="">Seleccionar</option>
-                      <option value="Muy Indispensable">Muy Indispensable</option>
+                      <option value="Muy Indispensable">
+                        Muy Indispensable
+                      </option>
                       <option value="Muy Necesario">Muy Necesario</option>
                       <option value="Necesario">Necesario</option>
                       <option value="Poco Necesario">Poco Necesario</option>
                       <option value="Nada Necesario">Nada Necesario</option>
                       <option value="Malgasto">Malgasto</option>
                     </select>
-                    <button type="button" class="custom-select__add" id="addNecessityBtn" title="Añadir nivel personalizado">
+                    <button
+                      type="button"
+                      class="custom-select__add"
+                      id="addNecessityBtn"
+                      title="Añadir nivel personalizado"
+                    >
                       <i class="fas fa-plus"></i>
                     </button>
                   </div>
@@ -2414,7 +2469,9 @@
 
               <div class="expenses-modern__row">
                 <div class="expenses-modern__field">
-                  <label class="field-label" for="date">Fecha <span>*</span></label>
+                  <label class="field-label" for="date"
+                    >Fecha <span>*</span></label
+                  >
                   <input type="date" id="date" autocomplete="off" />
                 </div>
                 <div class="expenses-modern__field">
@@ -2425,11 +2482,23 @@
                       <option value="Daniel">Daniel</option>
                       <option value="Givonik">Givonik</option>
                     </select>
-                    <button type="button" class="custom-select__add" id="addUserBtn" title="Añadir usuario personalizado">
+                    <button
+                      type="button"
+                      class="custom-select__add"
+                      id="addUserBtn"
+                      title="Añadir usuario personalizado"
+                    >
                       <i class="fas fa-plus"></i>
                     </button>
                   </div>
-                  <div class="selected-user-display" id="selectedUserField" tabindex="0" role="button" aria-haspopup="dialog" aria-expanded="false">
+                  <div
+                    class="selected-user-display"
+                    id="selectedUserField"
+                    tabindex="0"
+                    role="button"
+                    aria-haspopup="dialog"
+                    aria-expanded="false"
+                  >
                     <span class="selected-user-placeholder">Sin asignar</span>
                     <i class="fas fa-chevron-down"></i>
                   </div>
@@ -2437,17 +2506,33 @@
               </div>
 
               <div class="expenses-modern__field">
-                <label class="field-label" for="items">Items de compra (opcional)</label>
-                <textarea id="items" rows="3" placeholder="Ej: Arroz 1kg, Leche 2L, Aceite 1L"></textarea>
+                <label class="field-label" for="items"
+                  >Items de compra (opcional)</label
+                >
+                <textarea
+                  id="items"
+                  rows="3"
+                  placeholder="Ej: Arroz 1kg, Leche 2L, Aceite 1L"
+                ></textarea>
               </div>
 
               <div class="expenses-modern__field">
-                <label class="field-label" for="notes">Notas adicionales (opcional)</label>
-                <textarea id="notes" rows="3" placeholder="Método de pago, tienda, número de recibo..."></textarea>
+                <label class="field-label" for="notes"
+                  >Notas adicionales (opcional)</label
+                >
+                <textarea
+                  id="notes"
+                  rows="3"
+                  placeholder="Método de pago, tienda, número de recibo..."
+                ></textarea>
               </div>
 
               <div class="expenses-modern__actions">
-                <button type="button" class="btn-secondary" id="clearExpenseForm">
+                <button
+                  type="button"
+                  class="btn-secondary"
+                  id="clearExpenseForm"
+                >
                   <i class="fas fa-eraser"></i>
                   Limpiar formulario
                 </button>
@@ -2636,156 +2721,160 @@
         </div>
 
         <div id="historyTransactionsPanel">
-        <!-- Filtros y Buscador -->
-        <div class="card">
-          <div class="card__header">
-            <h3><i class="fas fa-filter"></i> Filtros y Búsqueda</h3>
-            <button class="btn btn-sm btn-outline" id="toggleHistoryFilters">
-              <i class="fas fa-chevron-down"></i> Mostrar Filtros
-            </button>
-          </div>
-          <div class="card__body">
-            <div
-              class="history-filters"
-              id="historyFiltersContainer"
-              style="display: none"
-            >
-              <!-- Buscador -->
-              <div class="form-group">
-                <label class="form-label" for="historySearch">
-                  <i class="fas fa-search"></i> Buscar
-                </label>
-                <input
-                  type="text"
-                  id="historySearch"
-                  class="form-control"
-                  placeholder="Buscar por descripción..."
-                />
-              </div>
+          <!-- Filtros y Buscador -->
+          <div class="card">
+            <div class="card__header">
+              <h3><i class="fas fa-filter"></i> Filtros y Búsqueda</h3>
+              <button class="btn btn-sm btn-outline" id="toggleHistoryFilters">
+                <i class="fas fa-chevron-down"></i> Mostrar Filtros
+              </button>
+            </div>
+            <div class="card__body">
+              <div
+                class="history-filters"
+                id="historyFiltersContainer"
+                style="display: none"
+              >
+                <!-- Buscador -->
+                <div class="form-group">
+                  <label class="form-label" for="historySearch">
+                    <i class="fas fa-search"></i> Buscar
+                  </label>
+                  <input
+                    type="text"
+                    id="historySearch"
+                    class="form-control"
+                    placeholder="Buscar por descripción..."
+                  />
+                </div>
 
-              <!-- Filtro por Tipo -->
-              <div class="form-group">
-                <label class="form-label" for="historyFilterType">
-                  <i class="fas fa-tag"></i> Tipo
-                </label>
-                <select id="historyFilterType" class="form-control">
-                  <option value="todos">Todos</option>
-                  <option value="gasto">💸 Gastos</option>
-                  <option value="sueldo">💰 Sueldos</option>
-                  <option value="entrada_extra">✨ Entradas Extra</option>
-                  <option value="abono_meta">🎯 Abonos a Metas</option>
-                  <option value="retiro_meta">↩️ Retiros de Metas</option>
-                </select>
-              </div>
+                <!-- Filtro por Tipo -->
+                <div class="form-group">
+                  <label class="form-label" for="historyFilterType">
+                    <i class="fas fa-tag"></i> Tipo
+                  </label>
+                  <select id="historyFilterType" class="form-control">
+                    <option value="todos">Todos</option>
+                    <option value="gasto">💸 Gastos</option>
+                    <option value="sueldo">💰 Sueldos</option>
+                    <option value="entrada_extra">✨ Entradas Extra</option>
+                    <option value="abono_meta">🎯 Abonos a Metas</option>
+                    <option value="retiro_meta">↩️ Retiros de Metas</option>
+                  </select>
+                </div>
 
-              <!-- Filtro por Categoría (solo gastos) -->
-              <div class="form-group">
-                <label class="form-label" for="historyFilterCategory">
-                  <i class="fas fa-list"></i> Categoría
-                </label>
-                <select id="historyFilterCategory" class="form-control">
-                  <option value="todas">Todas</option>
-                  <option value="Alimentación">Alimentación</option>
-                  <option value="Transporte">Transporte</option>
-                  <option value="Entretenimiento">Entretenimiento</option>
-                  <option value="Salud">Salud</option>
-                  <option value="Servicios">Servicios</option>
-                  <option value="Compras">Compras</option>
-                  <option value="Otros">Otros</option>
-                </select>
-              </div>
+                <!-- Filtro por Categoría (solo gastos) -->
+                <div class="form-group">
+                  <label class="form-label" for="historyFilterCategory">
+                    <i class="fas fa-list"></i> Categoría
+                  </label>
+                  <select id="historyFilterCategory" class="form-control">
+                    <option value="todas">Todas</option>
+                    <option value="Alimentación">Alimentación</option>
+                    <option value="Transporte">Transporte</option>
+                    <option value="Entretenimiento">Entretenimiento</option>
+                    <option value="Salud">Salud</option>
+                    <option value="Servicios">Servicios</option>
+                    <option value="Compras">Compras</option>
+                    <option value="Otros">Otros</option>
+                  </select>
+                </div>
 
-              <!-- Ordenar -->
-              <div class="form-group">
-                <label class="form-label">
-                  <i class="fas fa-sort"></i> Ordenar por
-                </label>
-                <select id="historySort" class="form-control">
-                  <option value="date-desc">Fecha (más reciente)</option>
-                  <option value="date-asc">Fecha (más antiguo)</option>
-                  <option value="amount-desc">Monto (mayor a menor)</option>
-                  <option value="amount-asc">Monto (menor a mayor)</option>
-                  <option value="type">Tipo</option>
-                </select>
-              </div>
+                <!-- Ordenar -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="fas fa-sort"></i> Ordenar por
+                  </label>
+                  <select id="historySort" class="form-control">
+                    <option value="date-desc">Fecha (más reciente)</option>
+                    <option value="date-asc">Fecha (más antiguo)</option>
+                    <option value="amount-desc">Monto (mayor a menor)</option>
+                    <option value="amount-asc">Monto (menor a mayor)</option>
+                    <option value="type">Tipo</option>
+                  </select>
+                </div>
 
-              <!-- Rango de fechas -->
-              <div class="form-group">
-                <label class="form-label" for="historyDateFrom">
-                  <i class="fas fa-calendar"></i> Desde
-                </label>
-                <input type="date" id="historyDateFrom" class="form-control" />
-              </div>
+                <!-- Rango de fechas -->
+                <div class="form-group">
+                  <label class="form-label" for="historyDateFrom">
+                    <i class="fas fa-calendar"></i> Desde
+                  </label>
+                  <input
+                    type="date"
+                    id="historyDateFrom"
+                    class="form-control"
+                  />
+                </div>
 
-              <div class="form-group">
-                <label class="form-label" for="historyDateTo">
-                  <i class="fas fa-calendar"></i> Hasta
-                </label>
-                <input type="date" id="historyDateTo" class="form-control" />
-              </div>
+                <div class="form-group">
+                  <label class="form-label" for="historyDateTo">
+                    <i class="fas fa-calendar"></i> Hasta
+                  </label>
+                  <input type="date" id="historyDateTo" class="form-control" />
+                </div>
 
-              <!-- Botones de acción -->
-              <div class="form-group" style="display: flex; gap: 10px">
-                <button class="btn btn-primary" id="btnApplyHistoryFilters">
-                  <i class="fas fa-check"></i> Aplicar
-                </button>
-                <button class="btn btn-secondary" id="btnClearHistoryFilters">
-                  <i class="fas fa-times"></i> Limpiar
-                </button>
+                <!-- Botones de acción -->
+                <div class="form-group" style="display: flex; gap: 10px">
+                  <button class="btn btn-primary" id="btnApplyHistoryFilters">
+                    <i class="fas fa-check"></i> Aplicar
+                  </button>
+                  <button class="btn btn-secondary" id="btnClearHistoryFilters">
+                    <i class="fas fa-times"></i> Limpiar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Estadísticas Rápidas -->
-        <div class="stats-grid" style="margin-top: 20px">
-          <div class="stat-card">
-            <div class="stat-icon-wrapper">
-              <i class="fas fa-list stat-icon"></i>
+          <!-- Estadísticas Rápidas -->
+          <div class="stats-grid" style="margin-top: 20px">
+            <div class="stat-card">
+              <div class="stat-icon-wrapper">
+                <i class="fas fa-list stat-icon"></i>
+              </div>
+              <div class="stat-details">
+                <h3>Total Transacciones</h3>
+                <p class="stat-value" id="historyTotalCount">0</p>
+              </div>
             </div>
-            <div class="stat-details">
-              <h3>Total Transacciones</h3>
-              <p class="stat-value" id="historyTotalCount">0</p>
+
+            <div class="stat-card">
+              <div
+                class="stat-icon-wrapper"
+                style="background: var(--color-success)"
+              >
+                <i class="fas fa-arrow-up stat-icon"></i>
+              </div>
+              <div class="stat-details">
+                <h3>Total Ingresos</h3>
+                <p class="stat-value" id="historyTotalIncome">$0</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div
+                class="stat-icon-wrapper"
+                style="background: var(--color-danger)"
+              >
+                <i class="fas fa-arrow-down stat-icon"></i>
+              </div>
+              <div class="stat-details">
+                <h3>Total Gastos</h3>
+                <p class="stat-value" id="historyTotalExpenses">$0</p>
+              </div>
             </div>
           </div>
 
-          <div class="stat-card">
-            <div
-              class="stat-icon-wrapper"
-              style="background: var(--color-success)"
-            >
-              <i class="fas fa-arrow-up stat-icon"></i>
+          <!-- Lista de Transacciones -->
+          <div class="card" style="margin-top: 20px">
+            <div class="card__header">
+              <h3><i class="fas fa-history"></i> Transacciones</h3>
+              <span id="historyResultCount" class="badge">0 resultados</span>
             </div>
-            <div class="stat-details">
-              <h3>Total Ingresos</h3>
-              <p class="stat-value" id="historyTotalIncome">$0</p>
+            <div class="card__body">
+              <div id="historyList"></div>
             </div>
           </div>
-
-          <div class="stat-card">
-            <div
-              class="stat-icon-wrapper"
-              style="background: var(--color-danger)"
-            >
-              <i class="fas fa-arrow-down stat-icon"></i>
-            </div>
-            <div class="stat-details">
-              <h3>Total Gastos</h3>
-              <p class="stat-value" id="historyTotalExpenses">$0</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Lista de Transacciones -->
-        <div class="card" style="margin-top: 20px">
-          <div class="card__header">
-            <h3><i class="fas fa-history"></i> Transacciones</h3>
-            <span id="historyResultCount" class="badge">0 resultados</span>
-          </div>
-          <div class="card__body">
-            <div id="historyList"></div>
-          </div>
-        </div>
         </div>
         <div
           class="card monthly-archive-panel"
@@ -2793,7 +2882,9 @@
           style="display: none"
         >
           <div class="card__header">
-            <h3><i class="fas fa-archive"></i> Historial de meses archivados</h3>
+            <h3>
+              <i class="fas fa-archive"></i> Historial de meses archivados
+            </h3>
           </div>
           <div class="card__body" id="monthlyArchiveList"></div>
         </div>
@@ -5999,7 +6090,8 @@
           <div class="fin-welcome-banner">
             <span class="fin-banner-title">¡Bienvenido!</span>
             <p class="fin-banner-subtitle">
-              Es tu primera vez aquí. Configura tu copiloto financiero en menos de 2 minutos.
+              Es tu primera vez aquí. Configura tu copiloto financiero en menos
+              de 2 minutos.
             </p>
           </div>
           <div class="fin-avatar-large">
@@ -6023,8 +6115,8 @@
             <div class="fin-hero-content">
               <h3>Tu copiloto financiero está listo</h3>
               <p>
-                Te acompaño a entender dónde se va tu dinero, cómo ahorrar más
-                y qué pasos seguir para cumplir tus metas sin estrés.
+                Te acompaño a entender dónde se va tu dinero, cómo ahorrar más y
+                qué pasos seguir para cumplir tus metas sin estrés.
               </p>
               <div class="fin-hero-pills">
                 <span class="fin-pill">
@@ -6494,11 +6586,7 @@
     </div>
 
     <!-- Modal Recordatorio de Reinicio Mensual -->
-    <div
-      class="monthly-reset-modal"
-      id="monthlyResetModal"
-      aria-hidden="true"
-    >
+    <div class="monthly-reset-modal" id="monthlyResetModal" aria-hidden="true">
       <div
         class="monthly-reset-modal__overlay"
         id="monthlyResetModalOverlay"
@@ -6535,7 +6623,8 @@
             <li>
               <i class="fas fa-save"></i>
               Archiva el resumen de
-              <strong data-month-label="current">mes actual</strong> en Historial de Mes.
+              <strong data-month-label="current">mes actual</strong> en
+              Historial de Mes.
             </li>
             <li>
               <i class="fas fa-sync-alt"></i>
