@@ -3172,6 +3172,148 @@
             </div>
           </div>
 
+          <!-- 2. Ingresos y entradas extra -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3><i class="fas fa-wallet"></i> Ingresos mensuales</h3>
+              <p>Registra tu ingreso base y controla entradas extra para tu balance</p>
+            </div>
+            <div class="settings-card-body">
+              <form id="incomeForm" class="settings-inline-form">
+                <div class="form-group-premium">
+                  <label class="form-label-premium" for="monthlyIncome">
+                    Ingreso mensual base
+                  </label>
+                  <input
+                    type="text"
+                    id="monthlyIncome"
+                    class="form-input-premium"
+                    inputmode="numeric"
+                    data-allow-decimals="false"
+                    placeholder="Ej: 1.200.000"
+                    autocomplete="off"
+                  />
+                  <span class="form-hint">
+                    Este valor representa tu sueldo o ingreso fijo mensual
+                  </span>
+                </div>
+                <div class="form-actions-premium">
+                  <button type="submit" class="btn-premium btn-premium-primary">
+                    <i class="fas fa-save"></i> Guardar ingreso
+                  </button>
+                </div>
+              </form>
+
+              <div class="income-summary">
+                <div class="income-summary-item">
+                  <div class="income-summary-label">
+                    <i class="fas fa-wallet"></i>
+                  <span>Ingresos totales (base + adicionales + extras)</span>
+                  </div>
+                  <div class="income-summary-value" id="totalIncomeDisplay">
+                    $0
+                  </div>
+                </div>
+                <div
+                  class="income-summary-item income-summary-extra"
+                  id="extraIncomeDisplay"
+                  style="display: none"
+                >
+                  <div class="income-summary-label">
+                    <i class="fas fa-coins"></i>
+                    <span>Ingresos extra acumulados</span>
+                  </div>
+                  <div class="income-summary-actions">
+                    <span class="income-summary-value" id="extraIncomeAmount"
+                      >$0</span
+                    >
+                    <button
+                      type="button"
+                      class="btn-premium btn-premium-sm btn-premium-outline"
+                      id="btnResetExtras"
+                    >
+                      <i class="fas fa-redo"></i> Resetear extras
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="income-extra-actions">
+                <button
+                  type="button"
+                  class="btn-premium btn-premium-outline"
+                  id="btnAddExtraIncome"
+                >
+                  <i class="fas fa-plus-circle"></i> Registrar ingreso extra
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Ingresos adicionales -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3><i class="fas fa-hand-holding-usd"></i> Ingresos adicionales</h3>
+              <p>Agrega y gestiona fuentes adicionales que complementan tu ingreso</p>
+            </div>
+            <div class="settings-card-body">
+              <div class="form-group-premium">
+                <label class="form-label-premium" for="additionalIncomeDescription">
+                  Descripción
+                </label>
+                <input
+                  type="text"
+                  id="additionalIncomeDescription"
+                  class="form-input-premium"
+                  placeholder="Ej: Freelance mensual, arriendo, consultoría"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="form-group-premium">
+                <label class="form-label-premium" for="additionalIncomeAmount">
+                  Monto mensual
+                </label>
+                <input
+                  type="number"
+                  id="additionalIncomeAmount"
+                  class="form-input-premium"
+                  placeholder="Ej: 250000"
+                  min="0"
+                  step="0.01"
+                />
+                <span class="form-hint">
+                  Estos ingresos se sumarán automáticamente a tu balance general
+                </span>
+              </div>
+              <div class="form-actions-premium">
+                <button
+                  type="button"
+                  class="btn-premium btn-premium-primary"
+                  id="addAdditionalIncomeBtn"
+                >
+                  <i class="fas fa-plus"></i> Agregar ingreso adicional
+                </button>
+              </div>
+
+              <div class="additional-income-summary" id="totalAdditionalIncome">
+                <span class="label">Total ingresos adicionales</span>
+                <span class="amount">$0</span>
+              </div>
+
+              <div class="additional-income-list" id="additionalIncomesList">
+                <p
+                  style="
+                    text-align: center;
+                    color: var(--color-text-secondary);
+                    padding: var(--space-12);
+                  "
+                >
+                  No hay ingresos adicionales
+                </p>
+              </div>
+            </div>
+          </div>
+
           <!-- 2. Cambiar Foto de Perfil -->
           <div class="settings-card">
             <div class="settings-card-header">

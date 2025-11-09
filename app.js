@@ -9220,7 +9220,9 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     }
 
     const incomeInput = document.getElementById('monthlyIncome');
-    const income = this.unformatNumber(incomeInput.value);
+    const income = incomeInput?.getNumericValue
+      ? incomeInput.getNumericValue()
+      : this.unformatNumber(incomeInput.value);
 
     if (!income || income <= 0) {
       this.showToast('Por favor ingresa un monto válido', 'error');
@@ -9294,7 +9296,13 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
   }
 
   getTotalIncome() {
-    return this.monthlyIncome + this.getTotalAdditionalIncome();
+    const baseIncome = this.monthlyIncome || 0;
+    const additionalIncome = this.getTotalAdditionalIncome
+      ? this.getTotalAdditionalIncome()
+      : 0;
+    const extraIncome = this.extraIncome || 0;
+
+    return baseIncome + additionalIncome + extraIncome;
   }
 
   renderAdditionalIncomes() {
@@ -9335,12 +9343,17 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     totalContainer.querySelector(
       '.amount'
     ).textContent = `$${totalAdditional.toLocaleString()}`;
+
+    // Actualizar displays relacionados con ingresos totales
+    this.updateExtraIncomeDisplay();
   }
 
   renderConfig() {
     const incomeField = document.getElementById('monthlyIncome');
     if (incomeField) {
-      incomeField.value = this.monthlyIncome;
+      incomeField.value = this.monthlyIncome
+        ? this.formatNumberWithSeparators(this.monthlyIncome.toString())
+        : '';
     }
 
     // Renderizar ingresos adicionales
@@ -9361,6 +9374,18 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     );
 
     const additionalTotal = this.getTotalAdditionalIncome();
+    const extraTotal = this.extraIncome || 0;
+
+    const incomeBreakdown = [];
+    if (this.monthlyIncome) {
+      incomeBreakdown.push(`Base: $${this.monthlyIncome.toLocaleString()}`);
+    }
+    if (additionalTotal > 0) {
+      incomeBreakdown.push(`Adicionales: $${additionalTotal.toLocaleString()}`);
+    }
+    if (extraTotal > 0) {
+      incomeBreakdown.push(`Extras: $${extraTotal.toLocaleString()}`);
+    }
 
     container.innerHTML = `
       <div class="stats-grid">
@@ -9369,8 +9394,10 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
             <h3>Ingresos Totales</h3>
             <p class="stat-value">$${totalIncome.toLocaleString()}</p>
             ${
-              additionalTotal > 0
-                ? `<span class="form-hint" style="margin-top: 4px;">Base: $${this.monthlyIncome.toLocaleString()} + Adicionales: $${additionalTotal.toLocaleString()}</span>`
+              incomeBreakdown.length > 0
+                ? `<span class="form-hint" style="margin-top: 4px;">${incomeBreakdown.join(
+                    ' + '
+                  )}</span>`
                 : ''
             }
           </div>
@@ -13910,6 +13937,13 @@ FinanceApp.prototype.updateConfigurationDisplay = function () {
     monthlyIncomeInput.value = formattedIncome;
   }
 
+  const monthlyIncomeField = document.getElementById('monthlyIncome');
+  if (monthlyIncomeField) {
+    monthlyIncomeField.value = this.monthlyIncome
+      ? this.formatNumberWithSeparators(this.monthlyIncome.toString())
+      : '';
+  }
+
   // Actualizar display de ingresos extras
   this.updateExtraIncomeDisplay();
 
@@ -18434,8 +18468,11 @@ FinanceApp.prototype.unformatNumber = function (formattedNumber) {
       cleaned = cleaned.replace(',', '.');
     }
   } else if (cleaned.includes('.')) {
-    // Solo punto: mantener como está (formato americano)
-    // Ya está en formato correcto para parseFloat
+    const thousandsPattern = /^\d{1,3}(\.\d{3})+$/;
+    if (thousandsPattern.test(cleaned)) {
+      cleaned = cleaned.replace(/\./g, '');
+    }
+    // Caso contrario se asume decimal y se deja el punto
   }
 
   // Limpiar cualquier carácter no numérico restante (excepto el punto decimal)
@@ -18450,7 +18487,8 @@ FinanceApp.prototype.setupNumberFormatting = function (inputElement) {
 
   // Cambiar tipo de input de 'number' a 'text' para permitir formato personalizado
   inputElement.type = 'text';
-  inputElement.inputMode = 'decimal';
+  const allowDecimals = inputElement.dataset.allowDecimals !== 'false';
+  inputElement.inputMode = allowDecimals ? 'decimal' : 'numeric';
 
   // Almacenar el valor sin formato
   let rawValue = '';
@@ -18458,6 +18496,27 @@ FinanceApp.prototype.setupNumberFormatting = function (inputElement) {
   // Evento al escribir
   inputElement.addEventListener('input', (e) => {
     let value = e.target.value;
+
+    if (!allowDecimals) {
+      value = value.replace(/\D/g, '');
+
+      if (value === '') {
+        e.target.value = '';
+        rawValue = '';
+        return;
+      }
+
+      const numericValue = parseInt(value, 10);
+      if (!isNaN(numericValue)) {
+        e.target.value = this.formatNumber(numericValue);
+        rawValue = numericValue;
+
+        // Posicionar cursor al final para evitar saltos inesperados
+        const pos = e.target.value.length;
+        e.target.setSelectionRange(pos, pos);
+      }
+      return;
+    }
 
     // Permitir solo números, puntos y comas
     value = value.replace(/[^\d.,]/g, '');
@@ -18492,6 +18551,15 @@ FinanceApp.prototype.setupNumberFormatting = function (inputElement) {
     const value = e.target.value;
     if (value === '') return;
 
+    if (!allowDecimals) {
+      const numericValue = parseInt(value.replace(/\D/g, ''), 10);
+      if (!isNaN(numericValue)) {
+        e.target.value = this.formatNumber(numericValue);
+        rawValue = numericValue;
+      }
+      return;
+    }
+
     const numericValue = this.unformatNumber(value);
     if (!isNaN(numericValue)) {
       e.target.value = this.formatNumber(numericValue);
@@ -18501,6 +18569,9 @@ FinanceApp.prototype.setupNumberFormatting = function (inputElement) {
 
   // Método para obtener valor numérico
   inputElement.getNumericValue = () => {
+    if (!allowDecimals) {
+      return parseInt(inputElement.value.replace(/\D/g, ''), 10) || 0;
+    }
     return this.unformatNumber(inputElement.value);
   };
 };
@@ -18605,13 +18676,23 @@ FinanceApp.prototype.updateExtraIncomeDisplay = function () {
   }
 
   if (totalDisplay) {
-    const totalIncome = this.monthlyIncome + this.extraIncome;
+    const additionalIncome = this.getTotalAdditionalIncome
+      ? this.getTotalAdditionalIncome()
+      : 0;
+    const totalIncome =
+      (this.monthlyIncome || 0) + (this.extraIncome || 0) + additionalIncome;
     totalDisplay.textContent = `$${totalIncome.toLocaleString()}`;
   }
 };
 
 FinanceApp.prototype.getTotalIncome = function () {
-  return this.monthlyIncome + this.extraIncome;
+  const baseIncome = this.monthlyIncome || 0;
+  const additionalIncome = this.getTotalAdditionalIncome
+    ? this.getTotalAdditionalIncome()
+    : 0;
+  const extraIncome = this.extraIncome || 0;
+
+  return baseIncome + additionalIncome + extraIncome;
 };
 
 // ========================================
