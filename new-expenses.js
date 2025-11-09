@@ -89,6 +89,9 @@
 
       // 4. Campo de usuario
       app.setupNewUserField();
+    if (typeof app.updateUserSelectionDropdown === 'function') {
+      app.updateUserSelectionDropdown();
+    }
 
       // 5. Formateo de monto
       const amountInput = document.getElementById('amount');
@@ -209,74 +212,68 @@
     // FUNCI├ôN 3: CONFIGURAR CAMPO DE USUARIO
     // ============================================
     app.setupNewUserField = function() {
-      const userDisplay = document.getElementById('selectedUserField');
       const userSelect = document.getElementById('user');
+      const userDisplay = document.getElementById('selectedUserField');
       const addUserBtn = document.getElementById('addUserBtn');
 
-      if (!userDisplay || !userSelect) {
-        console.warn('⚠️ Campos de usuario no encontrados');
+      if (!userSelect) {
+        console.warn('⚠️ Select de usuario no encontrado');
         return;
       }
 
       const label =
-        userDisplay.querySelector('.selected-user-placeholder') || userDisplay;
+        userDisplay?.querySelector('.selected-user-placeholder') || userDisplay;
 
       const applyValue = () => {
-        const selectedValue = userSelect.value;
-
         if (typeof this.updateSelectedUserPreview === 'function') {
           this.updateSelectedUserPreview(userSelect);
-        } else {
+        } else if (userDisplay && label) {
+          const selectedValue = userSelect.value;
           label.textContent = selectedValue || 'Sin asignar';
-          userDisplay.style.color = selectedValue
-            ? 'var(--color-primary, #0e2a47)'
-            : 'var(--color-text-subtle, #4b5c6b)';
-          userDisplay.style.fontWeight = selectedValue ? '600' : '400';
+          userDisplay.classList.toggle(
+            'selected-user-display--active',
+            Boolean(selectedValue)
+          );
         }
-
-        userDisplay.classList.toggle(
-          'selected-user-display--active',
-          Boolean(selectedValue)
-        );
       };
 
       applyValue();
       userSelect.addEventListener('change', applyValue);
-      const observer = new MutationObserver(applyValue);
+      const observer = new MutationObserver(() => applyValue());
       observer.observe(userSelect, { childList: true });
 
-      const openUserSelector = () => {
-        if (typeof this.showUserSelectionModal === 'function') {
-          this.showUserSelectionModal();
-        } else if (typeof window.openSelectModal === 'function') {
-          window.openSelectModal('userModal');
-        }
-      };
+      if (userDisplay) {
+        const openUserSelector = () => {
+          if (typeof this.showUserSelectionModal === 'function') {
+            this.showUserSelectionModal();
+          } else if (typeof window.openSelectModal === 'function') {
+            window.openSelectModal('userModal', userSelect.value);
+          }
+        };
 
-      userDisplay.setAttribute('role', 'button');
-      userDisplay.setAttribute('tabindex', '0');
+        userDisplay.setAttribute('role', 'button');
+        userDisplay.setAttribute('tabindex', '0');
 
-      userDisplay.addEventListener('click', openUserSelector);
-
-      userDisplay.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          openUserSelector();
-        }
-      });
+        userDisplay.addEventListener('click', openUserSelector);
+        userDisplay.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openUserSelector();
+          }
+        });
+      }
 
       if (addUserBtn) {
         addUserBtn.addEventListener('click', () => {
           if (typeof window.openSelectModal === 'function') {
             window.openSelectModal('addUserModal');
-          } else if (typeof window.openCustomModal === 'function') {
-            window.openCustomModal('addUserModal');
           }
         });
       }
 
       console.log('✅ Campo de usuario configurado');
-    };// FUNCI├ôN 4: LIMPIAR FORMULARIO
+    };
+    // FUNCI├ôN 4: LIMPIAR FORMULARIO
     // ============================================
     app.clearNewExpenseForm = function() {
       const form = document.getElementById('expenseForm');

@@ -6,9 +6,9 @@
   --exp-bg: #f4f6fb;
   --exp-card: #ffffff;
   --exp-border: rgba(var(--color-primary-rgb), 0.12);
-  --exp-primary: var(--color-primary);
-  --exp-primary-dark: var(--color-primary-dark);
-  --exp-accent: var(--color-primary-light);
+  --exp-primary: var(--color-primary, #0e2a47);
+  --exp-primary-dark: var(--color-primary-dark, #0a1d34);
+  --exp-accent: var(--color-primary, #0e2a47);
   --exp-success: #1fdb8b;
   --exp-text: var(--color-primary);
   --exp-text-soft: rgba(var(--color-primary-rgb), 0.62);
@@ -415,13 +415,39 @@
   color: var(--exp-primary);
 }
 
-#expenseList .user-badge {
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background: rgba(var(--color-primary-rgb), 0.12);
   color: var(--exp-primary);
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 13px;
   font-weight: 600;
+}
+
+.user-badge__initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--exp-primary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.user-badge__name {
+  color: inherit;
+}
+
+.user-badge.user-badge-default {
+  background: rgba(148, 163, 184, 0.18);
+  color: #475569;
 }
 
 @media (max-width: 1080px) {
@@ -547,7 +573,7 @@
   gap: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(0, 194, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(14, 42, 71, 0.3);
 }
 
 .btn-scanner:hover {

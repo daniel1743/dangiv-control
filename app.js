@@ -58,6 +58,7 @@ class FinanceApp {
     this.activityLog = savedData.activityLog || [];
     this.auditLog = savedData.auditLog || []; // Sistema de auditoría
     this.customUsers = savedData.customUsers || []; // Usuarios personalizados para gastos
+    this.customUserIcons = savedData.customUserIcons || {};
     this.savingsAccounts = savedData.savingsAccounts || []; // Cuentas de ahorro
     this.recurringPayments = savedData.recurringPayments || []; // Pagos recurrentes mensuales
     this.isRegistering = false; // Flag to prevent race condition during registration
@@ -677,6 +678,37 @@ class FinanceApp {
       .join(' • ');
   }
 
+  escapeHtml(value) {
+    if (value === null || value === undefined) return '';
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  getUserBadgeHtml(userName) {
+    const raw = (userName || '').trim();
+    const lower = raw.toLowerCase();
+
+    if (!raw || lower === 'sin asignar' || lower === 'sin usuario') {
+      return '<span class="user-badge user-badge-default">👤 Sin asignar</span>';
+    }
+
+    const initials = raw
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join('');
+
+    const safeName = this.escapeHtml(raw);
+    const safeInitials = this.escapeHtml(initials || raw.charAt(0).toUpperCase());
+
+    return `<span class="user-badge" data-user="${safeName}"><span class="user-badge__initials">${safeInitials}</span><span class="user-badge__name">${safeName}</span></span>`;
+  }
+
   // Método para guardar todo el estado relevante en LocalStorageÃ©todo para guardar todo el estado relevante en LocalStorage
   // REEMPLAZA TODA TU FUNCIÓN saveData CON ESTA
   async saveData() {
@@ -692,6 +724,7 @@ class FinanceApp {
       activityLog: this.activityLog,
       auditLog: this.auditLog,
       customUsers: this.customUsers,
+      customUserIcons: this.customUserIcons || {},
       savingsAccounts: this.savingsAccounts,
       recurringPayments: this.recurringPayments,
       expenses: this.expenses,
@@ -2331,6 +2364,7 @@ class FinanceApp {
     );
 
     // Update avatar images
+    const fallbackAvatarSrc = 'img/avatar-placeholder.svg';
     let avatarSrc;
 
     // Si el usuario no está autenticado, usar avatar genérico
@@ -2345,9 +2379,18 @@ class FinanceApp {
           : this.defaultAvatars[this.userProfile.selectedAvatar];
     }
 
-    if (profileAvatar) profileAvatar.src = avatarSrc;
-    if (profileHeaderImg) profileHeaderImg.src = avatarSrc;
-    if (mobileAvatar) mobileAvatar.src = avatarSrc;
+    const assignAvatar = (imgEl) => {
+      if (!imgEl) return;
+      imgEl.onerror = () => {
+        imgEl.onerror = null;
+        imgEl.src = fallbackAvatarSrc;
+      };
+      imgEl.src = avatarSrc || fallbackAvatarSrc;
+    };
+
+    assignAvatar(profileAvatar);
+    assignAvatar(profileHeaderImg);
+    assignAvatar(mobileAvatar);
 
     // Update profile info
     if (profileName) profileName.textContent = this.userProfile.name;
@@ -7453,10 +7496,7 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       const transactionEl = document.createElement('div');
       transactionEl.className = 'transaction-item';
 
-      // Crear badge de usuario con icono
-      const userIcon = expense.user === 'Daniel' ? '👨' : expense.user === 'Givonik' ? '👨‍💼' : '👤';
-      const userName = expense.user || 'Sin asignar';
-      const userBadge = `<span class="user-badge user-badge-${expense.user?.toLowerCase() || 'default'}">${userIcon} ${userName}</span>`;
+      const userBadge = this.getUserBadgeHtml(expense.user);
 
       // Meta line sin el usuario (ya está en el badge)
       const metaLine = this.formatMetaLine([
@@ -7730,10 +7770,7 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       const expenseEl = document.createElement('div');
       expenseEl.className = 'transaction-item';
 
-      // Crear badge de usuario con icono
-      const userIcon = expense.user === 'Daniel' ? '👨' : expense.user === 'Givonik' ? '👨‍💼' : '👤';
-      const userName = expense.user || 'Sin asignar';
-      const userBadge = `<span class="user-badge user-badge-${expense.user?.toLowerCase() || 'default'}">${userIcon} ${userName}</span>`;
+      const userBadge = this.getUserBadgeHtml(expense.user);
 
       // Meta line sin el usuario (ya está en el badge)
       const metaLine = this.formatMetaLine([
@@ -8187,15 +8224,43 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       return;
     }
 
+    const creationTimestamp = Date.now();
+    const creationISO = new Date(creationTimestamp).toISOString();
+    const readableCreationDate = creationISO.split('T')[0];
+    const formattedDeadline = new Date(deadline).toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+    const formattedTarget = `$${this.formatCurrency(target)}`;
+
     const goal = {
-      id: Date.now(),
+      id: creationTimestamp,
       name: name,
       target: target,
       current: 0,
       deadline: deadline,
+      createdAt: creationISO,
+      completedAt: null,
     };
 
     this.goals.push(goal);
+
+    this.addToHistory({
+      type: 'meta_creada',
+      amount: target,
+      goalName: name,
+      date: readableCreationDate,
+      description: `Meta "${name}" creada`,
+      metadata: {
+        note: `Objetivo total: ${formattedTarget}`,
+        additionalDetails: [
+          `Fecha límite: ${formattedDeadline}`,
+          'Ahorro inicial: $0',
+        ],
+      },
+      tags: ['metas'],
+    });
 
     // Registrar en auditoría
     this.logAudit(
@@ -8418,10 +8483,47 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       return false;
     }
 
+    const remainingToTarget = goal.target - goal.current;
+    if (remainingToTarget <= 0) {
+      this.showToast('Esta meta ya está completa. Considera crear una nueva meta.', 'info');
+      return false;
+    }
+
     const remaining = goal.target - goal.current;
     const transferAmount = Math.min(amount, remaining);
 
+    if (transferAmount <= 0) {
+      this.showToast('No hay espacio para más ahorros en esta meta.', 'info');
+      return false;
+    }
+
+    const previousGoalAmount = goal.current;
     goal.current += transferAmount;
+    const newGoalAmount = goal.current;
+    const progress = Math.min(
+      100,
+      Math.round((goal.current / goal.target) * 100)
+    );
+    const today = new Date().toISOString().split('T')[0];
+
+    this.addToHistory({
+      type: 'abono_meta',
+      amount: transferAmount,
+      goalName: goal.name,
+      date: today,
+      description: `Abono a "${goal.name}"`,
+      previousBalance: previousGoalAmount,
+      newBalance: newGoalAmount,
+      metadata: {
+        progress,
+        note: 'Aporte manual a meta',
+        additionalDetails: [
+          `Meta objetivo: $${this.formatCurrency(goal.target)}`,
+          `Restante: $${this.formatCurrency(Math.max(0, goal.target - goal.current))}`,
+        ],
+      },
+      tags: ['metas', 'ahorro'],
+    });
 
     this.logAudit(
       'goal_deposit',
@@ -8430,6 +8532,8 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       '',
       { goalName: goal.name, amount: transferAmount }
     );
+
+    this.ensureGoalCompletionHistory(goal);
 
     this.saveData();
     this.renderGoals();
@@ -9063,10 +9167,7 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       const expenseEl = document.createElement('div');
       expenseEl.className = 'unnecessary-expense';
 
-      // Crear badge de usuario con icono
-      const userIcon = expense.user === 'Daniel' ? '👨' : expense.user === 'Givonik' ? '👨‍💼' : '👤';
-      const userName = expense.user || 'Sin asignar';
-      const userBadge = `<span class="user-badge user-badge-${expense.user?.toLowerCase() || 'default'}">${userIcon} ${userName}</span>`;
+      const userBadge = this.getUserBadgeHtml(expense.user);
 
       // Meta line sin el usuario (ya está en el badge)
       const metaLine = this.formatMetaLine([
@@ -12278,22 +12379,30 @@ FinanceApp.prototype.setupUserSelectListener = function () {
   const newUserSelect = userSelect.cloneNode(true);
   userSelect.parentNode.replaceChild(newUserSelect, userSelect);
 
+  let lastValidValue =
+    newUserSelect.value && newUserSelect.value !== '__add_new__'
+      ? newUserSelect.value
+      : '';
+
   newUserSelect.addEventListener('change', (e) => {
-    console.log('User select changed:', e.target.value);
-    const group = document.getElementById('newUserGroup');
-    const input = document.getElementById('newUserName');
+    const selectedValue = e.target.value;
 
-    if (e.target.value === '__add_new__') {
-      console.log('Showing new user group');
-
-      group?.classList.remove('hidden');
-      // Small delay to ensure the element is visible before focusing
+    if (selectedValue === '__add_new__') {
+      // Restablecer al último valor válido y abrir el modal para agregar usuario
       setTimeout(() => {
-        input?.focus();
-      }, 100);
-    } else {
-      group?.classList.add('hidden');
+        newUserSelect.value = lastValidValue;
+        if (typeof this.updateSelectedUserPreview === 'function') {
+          this.updateSelectedUserPreview(newUserSelect);
+        }
+      }, 0);
+
+      if (typeof window.openSelectModal === 'function') {
+        window.openSelectModal('addUserModal');
+      }
+      return;
     }
+
+    lastValidValue = selectedValue;
 
     if (typeof this.updateSelectedUserPreview === 'function') {
       this.updateSelectedUserPreview(e.target);
@@ -12309,28 +12418,42 @@ FinanceApp.prototype.updateUserSelectionDropdown = function () {
   const userSelect = document.getElementById('user');
   if (!userSelect) return;
 
+  const previousValue = userSelect.value;
+  const seenUsers = new Set();
+
   // Limpiar y agregar opciones base
   userSelect.innerHTML = '<option value="">Sin usuario asignado</option>';
 
-  // Variable para guardar el usuario por defecto
-  let defaultUserValue = '';
+  const addOptionIfNeeded = (value, label) => {
+    if (!value) return;
+    const normalized = value.trim();
+    if (!normalized) return;
+    const key = normalized.toLowerCase();
+    if (seenUsers.has(key)) return;
+    seenUsers.add(key);
 
-  // Agregar usuario del perfil si existe
-  if (this.userProfile.name && this.userProfile.name !== 'Usuario') {
     const option = document.createElement('option');
-    option.value = this.userProfile.name;
-    option.textContent = this.userProfile.name;
+    option.value = normalized;
+    option.textContent = label || normalized;
     userSelect.appendChild(option);
-    // Este será el usuario por defecto
-    defaultUserValue = this.userProfile.name;
-  }
+  };
 
-  // Agregar usuarios personalizados
-  this.customUsers.forEach((userName) => {
-    const option = document.createElement('option');
-    option.value = userName;
-    option.textContent = userName;
-    userSelect.appendChild(option);
+  const normalizedCustomUsers = Array.from(
+    new Set(
+      (this.customUsers || [])
+        .map((user) => (user || '').trim())
+        .filter((user) => user.length > 0)
+    )
+  ).sort((a, b) =>
+    a.localeCompare(b, undefined, {
+      sensitivity: 'base',
+    })
+  );
+
+  this.customUsers = normalizedCustomUsers;
+
+  normalizedCustomUsers.forEach((userName) => {
+    addOptionIfNeeded(userName, userName);
   });
 
   // Opción para añadir nuevo usuario
@@ -12339,12 +12462,26 @@ FinanceApp.prototype.updateUserSelectionDropdown = function () {
   addNewOption.textContent = '+ Añadir nuevo usuario';
   userSelect.appendChild(addNewOption);
 
-  // ✅ ESTABLECER EL USUARIO POR DEFECTO (usuario autenticado)
-  if (defaultUserValue) {
-    userSelect.value = defaultUserValue;
-    console.log(`✅ Usuario por defecto establecido: ${defaultUserValue}`);
+  // Determinar el valor que se debe mantener seleccionado
+  const optionValues = Array.from(userSelect.options).map((opt) => opt.value);
+  let targetValue = '';
 
+  if (previousValue && optionValues.includes(previousValue)) {
+    targetValue = previousValue;
+  } else if (
+    this.defaultUser &&
+    optionValues.includes(this.defaultUser)
+  ) {
+    targetValue = this.defaultUser;
+  } else {
+    targetValue = '';
   }
+
+  if (this.defaultUser && !optionValues.includes(this.defaultUser)) {
+    this.defaultUser = '';
+  }
+
+  userSelect.value = targetValue;
 
   // ✅ RE-AGREGAR EL EVENT LISTENER DESPUÉS DE RECONSTRUIR EL HTML
   this.setupUserSelectListener();
@@ -12399,13 +12536,13 @@ FinanceApp.prototype.updateSelectedUserPreview = function (selectElement) {
   if (isAuthenticatedUser) {
     selectedUserField.innerHTML = `
       <span>${userText}</span>
-      <i class="fas fa-exchange-alt" style="color: var(--color-accent);" title="Click para cambiar usuario"></i>
-      <span style="color: var(--color-accent); font-size: 11px; font-weight: 600; margin-left: 8px;">TÚ</span>
+      <i class="fas fa-exchange-alt" style="color: var(--color-primary);" title="Click para cambiar usuario"></i>
+      <span style="color: var(--color-primary); font-size: 11px; font-weight: 600; margin-left: 8px;">TÚ</span>
     `;
   } else {
     selectedUserField.innerHTML = `
       <span>${userText}</span>
-      <i class="fas fa-exchange-alt" style="color: var(--color-accent);" title="Click para cambiar usuario"></i>
+      <i class="fas fa-exchange-alt" style="color: var(--color-primary);" title="Click para cambiar usuario"></i>
     `;
   }
 
@@ -16986,21 +17123,58 @@ FinanceApp.prototype.handleFastModeSubmit = function () {
  * @param {string} transaction.category - Categoría (para gastos)
  * @param {string} transaction.user - Usuario que realizó la transacción
  */
-FinanceApp.prototype.addToHistory = function (transaction) {
+FinanceApp.prototype.addToHistory = function (transaction = {}) {
+  const now = new Date();
+  const baseType = transaction.type || 'general';
+  const computedTimestamp = transaction.timestamp || Date.now();
+  const computedDate =
+    transaction.date ||
+    new Date(computedTimestamp).toISOString().split('T')[0] ||
+    now.toISOString().split('T')[0];
+
+  const amount =
+    typeof transaction.amount === 'number' && !Number.isNaN(transaction.amount)
+      ? transaction.amount
+      : 0;
+
+  const computedTitle =
+    transaction.title ||
+    transaction.description ||
+    this.generateHistoryTitle(baseType, transaction);
+
+  const computedDescription =
+    transaction.description ||
+    this.generateHistoryDescription(baseType, transaction);
+
   const historyEntry = {
-    id: Date.now() + Math.random(), // ID único
-    type: transaction.type, // 'gasto', 'sueldo', 'entrada_extra', 'abono_meta', 'retiro_meta'
-    amount: transaction.amount,
-    description: transaction.description || '',
-    date: transaction.date,
-    category: transaction.category || '', // Para gastos
+    id: transaction.id || Date.now() + Math.random(), // ID único
+    type: baseType,
+    amount,
+    title: computedTitle,
+    description: computedDescription,
+    details: this.generateHistoryDetails(transaction),
+    date: computedDate,
+    category: transaction.category || '',
     user: transaction.user || this.currentUser || 'Sistema',
-    timestamp: Date.now(),
-    // Datos adicionales según el tipo
-    necessity: transaction.necessity || '', // Para gastos
-    goalName: transaction.goalName || '', // Para abonos/retiros de metas
-    previousBalance: transaction.previousBalance || null, // Balance anterior
-    newBalance: transaction.newBalance || null, // Nuevo balance
+    timestamp: computedTimestamp,
+    necessity: transaction.necessity || '',
+    goalName: transaction.goalName || '',
+    previousBalance:
+      typeof transaction.previousBalance === 'number' &&
+      !Number.isNaN(transaction.previousBalance)
+        ? transaction.previousBalance
+        : null,
+    newBalance:
+      typeof transaction.newBalance === 'number' &&
+      !Number.isNaN(transaction.newBalance)
+        ? transaction.newBalance
+        : null,
+    direction:
+      transaction.direction ||
+      this.getHistoryDirection(baseType, amount, transaction),
+    tags: Array.isArray(transaction.tags) ? transaction.tags : [],
+    icon: transaction.icon || null,
+    metadata: transaction.metadata || {},
   };
 
   // Agregar al inicio del array (más recientes primero)
@@ -17012,6 +17186,153 @@ FinanceApp.prototype.addToHistory = function (transaction) {
   }
 
   console.log('📝 Transacción agregada al historial:', historyEntry);
+};
+
+FinanceApp.prototype.getHistoryDirection = function (type, amount, transaction) {
+  if (['sueldo', 'entrada_extra'].includes(type)) {
+    return 'in';
+  }
+
+  if (['gasto', 'retiro_meta'].includes(type)) {
+    return 'out';
+  }
+
+  if (type === 'abono_meta') {
+    return 'transfer';
+  }
+
+  if (transaction && transaction.direction) {
+    return transaction.direction;
+  }
+
+  return 'neutral';
+};
+
+FinanceApp.prototype.generateHistoryTitle = function (type, transaction) {
+  const goalName = transaction.goalName || transaction.description || '';
+  switch (type) {
+    case 'gasto':
+      return transaction.description || 'Gasto registrado';
+    case 'sueldo':
+      return 'Sueldo mensual';
+    case 'entrada_extra':
+      return transaction.description
+        ? `Entrada extra: ${transaction.description}`
+        : 'Entrada extra';
+    case 'abono_meta':
+      return goalName ? `Abono a meta: ${goalName}` : 'Abono a meta';
+    case 'retiro_meta':
+      return goalName ? `Retiro de meta: ${goalName}` : 'Retiro de meta';
+    case 'meta_creada':
+      return goalName ? `Meta creada: ${goalName}` : 'Meta creada';
+    case 'meta_completada':
+      return goalName ? `Meta completada: ${goalName}` : 'Meta completada';
+    case 'logro':
+      return transaction.description
+        ? `Logro desbloqueado: ${transaction.description}`
+        : 'Logro desbloqueado';
+    default:
+      return transaction.description || 'Movimiento registrado';
+  }
+};
+
+FinanceApp.prototype.generateHistoryDescription = function (type, transaction) {
+  switch (type) {
+    case 'gasto':
+      return 'Gasto registrado';
+    case 'sueldo':
+      return 'Ingreso base actualizado';
+    case 'entrada_extra':
+      return 'Entrada extra registrada';
+    case 'abono_meta':
+      return 'Aporte a una meta de ahorro';
+    case 'retiro_meta':
+      return 'Retiro desde una meta de ahorro';
+    case 'meta_creada':
+      return 'Nueva meta configurada';
+    case 'meta_completada':
+      return 'Meta alcanzada al 100%';
+    case 'logro':
+      return 'Nuevo logro desbloqueado';
+    default:
+      return 'Movimiento registrado';
+  }
+};
+
+FinanceApp.prototype.generateHistoryDetails = function (transaction) {
+  const customDetails = transaction.details;
+  if (Array.isArray(customDetails)) {
+    return customDetails.filter(Boolean).join(' • ');
+  }
+  if (typeof customDetails === 'string' && customDetails.trim().length > 0) {
+    return customDetails;
+  }
+
+  const segments = [];
+  const formatCurrency = (value) => {
+    if (typeof value !== 'number' || Number.isNaN(value)) return null;
+    try {
+      return `$${value.toLocaleString()}`;
+    } catch (error) {
+      return `$${value}`;
+    }
+  };
+
+  if (transaction.goalName) {
+    segments.push(`Meta: ${transaction.goalName}`);
+  }
+  if (transaction.category) {
+    segments.push(`Categoría: ${transaction.category}`);
+  }
+  if (transaction.necessity) {
+    segments.push(`Necesidad: ${transaction.necessity}`);
+  }
+  if (transaction.user) {
+    segments.push(`Usuario: ${transaction.user}`);
+  }
+
+  if (
+    typeof transaction.previousBalance === 'number' &&
+    !Number.isNaN(transaction.previousBalance) &&
+    typeof transaction.newBalance === 'number' &&
+    !Number.isNaN(transaction.newBalance)
+  ) {
+    segments.push(
+      `Balance: ${formatCurrency(transaction.previousBalance)} → ${formatCurrency(
+        transaction.newBalance
+      )}`
+    );
+  } else if (
+    typeof transaction.previousBalance === 'number' &&
+    !Number.isNaN(transaction.previousBalance)
+  ) {
+    segments.push(`Balance anterior: ${formatCurrency(transaction.previousBalance)}`);
+  }
+
+  if (
+    transaction.metadata &&
+    Object.prototype.hasOwnProperty.call(transaction.metadata, 'progress')
+  ) {
+    segments.push(`Progreso: ${transaction.metadata.progress}%`);
+  }
+
+  if (transaction.metadata && transaction.metadata.note) {
+    segments.push(transaction.metadata.note);
+  }
+
+  if (
+    transaction.metadata &&
+    transaction.metadata.additionalDetails &&
+    Array.isArray(transaction.metadata.additionalDetails)
+  ) {
+    transaction.metadata.additionalDetails.forEach((detail) => {
+      if (detail) {
+        segments.push(detail);
+      }
+    });
+  }
+
+  return segments.join(' • ');
 };
 
 /**
@@ -17555,7 +17876,17 @@ FinanceApp.prototype.updateQuickUserDropdown = function () {
     userSelect.remove(2);
   }
 
-  // Add custom users
+  const users = (this.customUsers || [])
+    .map((user) => (user || '').trim())
+    .filter((user) => user.length > 0)
+    .sort((a, b) =>
+      a.localeCompare(b, undefined, {
+        sensitivity: 'base',
+      })
+    );
+
+  this.customUsers = Array.from(new Set(users));
+
   this.customUsers.forEach((userName) => {
     const option = document.createElement('option');
     option.value = userName;
@@ -18321,12 +18652,20 @@ FinanceApp.prototype.renderHistory = function (filters = {}) {
   // Filtro por búsqueda
   if (filters.search) {
     const searchLower = filters.search.toLowerCase();
-    filtered = filtered.filter(
-      (t) =>
-        t.description.toLowerCase().includes(searchLower) ||
-        t.category?.toLowerCase().includes(searchLower) ||
-        t.user?.toLowerCase().includes(searchLower)
-    );
+    filtered = filtered.filter((t) => {
+      const title = (t.title || '').toLowerCase();
+      const description = (t.description || '').toLowerCase();
+      const details = (t.details || '').toLowerCase();
+      const category = (t.category || '').toLowerCase();
+      const user = (t.user || '').toLowerCase();
+      return (
+        title.includes(searchLower) ||
+        description.includes(searchLower) ||
+        details.includes(searchLower) ||
+        category.includes(searchLower) ||
+        user.includes(searchLower)
+      );
+    });
   }
 
   // Filtro por tipo
@@ -18407,6 +18746,9 @@ FinanceApp.prototype.renderHistory = function (filters = {}) {
     entrada_extra: 'fa-coins',
     abono_meta: 'fa-piggy-bank',
     retiro_meta: 'fa-hand-holding-usd',
+    meta_creada: 'fa-flag',
+    meta_completada: 'fa-trophy',
+    logro: 'fa-award',
   };
 
   const typeLabels = {
@@ -18415,24 +18757,72 @@ FinanceApp.prototype.renderHistory = function (filters = {}) {
     entrada_extra: '✨ Entrada Extra',
     abono_meta: '🎯 Abono a Meta',
     retiro_meta: '↩️ Retiro de Meta',
+    meta_creada: '🆕 Meta Creada',
+    meta_completada: '🏁 Meta Completada',
+    logro: '🏆 Logro',
   };
 
   historyList.innerHTML = filtered
     .map((transaction) => {
       const isIncome = ['sueldo', 'entrada_extra'].includes(transaction.type);
-      const amountClass = isIncome ? 'positive' : 'negative';
-      const amountSign = isIncome ? '+' : '-';
+      const direction =
+        transaction.direction ||
+        (isIncome
+          ? 'in'
+          : ['gasto', 'retiro_meta'].includes(transaction.type)
+          ? 'out'
+          : transaction.type === 'abono_meta'
+          ? 'transfer'
+          : 'neutral');
+      const showAmount =
+        typeof transaction.amount === 'number' &&
+        !Number.isNaN(transaction.amount) &&
+        transaction.amount !== 0;
+      const amountClass =
+        direction === 'in'
+          ? 'positive'
+          : direction === 'out'
+          ? 'negative'
+          : 'neutral';
+      const amountSign =
+        direction === 'in' ? '+' : direction === 'out' ? '-' : '';
+      const amountValue = showAmount
+        ? `${amountSign}$${Math.abs(transaction.amount).toLocaleString()}`
+        : '--';
+      const titleText =
+        transaction.title ||
+        transaction.description ||
+        'Movimiento registrado';
+      const summaryText =
+        transaction.title &&
+        transaction.description &&
+        transaction.description !== transaction.title
+          ? transaction.description
+          : '';
+      const detailsText = transaction.details || '';
+      const badgeLabel = typeLabels[transaction.type] || transaction.type;
+      const iconClass = transaction.icon
+        ? transaction.icon
+        : `fas ${typeIcons[transaction.type] || 'fa-circle'}`;
+      const formattedDate = transaction.date
+        ? new Date(transaction.date).toLocaleDateString('es-CO')
+        : new Date(transaction.timestamp || Date.now()).toLocaleDateString('es-CO');
 
       return `
       <div class="history-transaction-item">
         <div class="history-transaction-icon ${transaction.type}">
-          <i class="fas ${typeIcons[transaction.type] || 'fa-circle'}"></i>
+          <i class="${iconClass}"></i>
         </div>
         <div class="history-transaction-info">
-          <h4 class="history-transaction-title">${transaction.description}</h4>
+          <h4 class="history-transaction-title">${titleText}</h4>
+          ${
+            summaryText
+              ? `<div class="history-transaction-summary">${summaryText}</div>`
+              : ''
+          }
           <div class="history-transaction-meta">
             <span class="history-transaction-badge ${transaction.type}">
-              ${typeLabels[transaction.type] || transaction.type}
+              ${badgeLabel}
             </span>
             ${
               transaction.category
@@ -18444,13 +18834,16 @@ FinanceApp.prototype.renderHistory = function (filters = {}) {
                 ? `<span><i class="fas fa-user"></i> ${transaction.user}</span>`
                 : ''
             }
-            <span><i class="fas fa-calendar"></i> ${new Date(
-              transaction.date
-            ).toLocaleDateString('es-CO')}</span>
+            <span><i class="fas fa-calendar"></i> ${formattedDate}</span>
           </div>
+          ${
+            detailsText
+              ? `<div class="history-transaction-details">${detailsText}</div>`
+              : ''
+          }
         </div>
         <div class="history-transaction-amount ${amountClass}">
-          ${amountSign}$${transaction.amount.toLocaleString()}
+          ${amountValue}
         </div>
       </div>
     `;
@@ -18756,51 +19149,84 @@ window.handleModalOptionClick = function(modalId, selectId, value) {
  * Guarda un nuevo usuario desde el modal de añadir usuario
  */
 window.saveNewUserFromModal = function() {
-  const input = document.getElementById('newUserModalInput');
+  const input =
+    document.getElementById('newUserModalInput') ||
+    document.getElementById('newUserName');
+
   if (!input) {
     console.error('Input de nuevo usuario no encontrado');
     return;
   }
 
-  const userName = input.value.trim();
+  const rawValue = input.value.trim();
 
-  if (!userName) {
-    alert('Por favor ingresa un nombre de usuario');
+  if (!rawValue) {
+    if (window.financeApp && window.financeApp.showToast) {
+      window.financeApp.showToast('⚠️ Ingresa un nombre de usuario', 'error');
+    } else {
+      alert('Por favor ingresa un nombre de usuario');
+    }
     input.focus();
     return;
   }
 
-  // Agregar el usuario a la lista personalizada
-  if (window.financeApp && window.financeApp.customUsers) {
-    if (!window.financeApp.customUsers.includes(userName)) {
-      window.financeApp.customUsers.push(userName);
-      window.financeApp.saveData();
+  const newUserName = rawValue.replace(/\s+/g, ' ');
+  const normalized = newUserName.toLowerCase();
 
-      // Actualizar el dropdown de usuarios
-      if (typeof window.financeApp.updateUserSelectionDropdown === 'function') {
-        window.financeApp.updateUserSelectionDropdown();
-      }
-
-      // Actualizar el modal de usuarios
-      populateUserModal();
-
-      console.log(`✅ Usuario "${userName}" agregado`);
-    }
+  if (!window.financeApp || !Array.isArray(window.financeApp.customUsers)) {
+    console.error('⚠️ financeApp o customUsers no están disponibles');
+    return;
   }
 
-  // Seleccionar el nuevo usuario
+  const existingUsers = [
+    ...(window.financeApp.customUsers || []),
+    window.financeApp.userProfile?.name || '',
+  ].map((name) => name.toLowerCase());
+
+  if (existingUsers.includes(normalized)) {
+    if (window.financeApp.showToast) {
+      window.financeApp.showToast('❌ Este usuario ya existe', 'error');
+    }
+    input.focus();
+    return;
+  }
+
+  window.financeApp.customUsers.push(newUserName);
+  window.financeApp.saveData();
+
+  if (typeof window.financeApp.updateUserSelectionDropdown === 'function') {
+    window.financeApp.updateUserSelectionDropdown();
+  }
+
+  if (typeof window.financeApp.updateQuickUserDropdown === 'function') {
+    window.financeApp.updateQuickUserDropdown();
+  }
+
+  if (typeof window.financeApp.updateDefaultUserDropdown === 'function') {
+    window.financeApp.updateDefaultUserDropdown();
+  }
+
+  populateUserModal();
+
   const userSelect = document.getElementById('user');
   if (userSelect) {
-    userSelect.value = userName;
+    userSelect.value = newUserName;
     const event = new Event('change', { bubbles: true });
     userSelect.dispatchEvent(event);
   }
 
-  // Limpiar input
+  if (window.financeApp.showToast) {
+    window.financeApp.showToast(
+      `✅ Usuario "${newUserName}" agregado correctamente`,
+      'success'
+    );
+  }
+
   input.value = '';
 
-  // Cerrar modal
-  closeSelectModal('addUserModal');
+  if (typeof closeSelectModal === 'function') {
+    closeSelectModal('addUserModal');
+  }
 };
 
 /**
@@ -18814,64 +19240,65 @@ window.populateUserModal = function() {
   const modalBody = modal.querySelector('.select-modal-body');
   if (!modalBody) return;
 
-  // Obtener usuario autenticado y usuarios personalizados
-  const authenticatedUser = (window.financeApp && window.financeApp.userProfile.name && window.financeApp.userProfile.name !== 'Usuario')
-    ? window.financeApp.userProfile.name
-    : null;
-  const customUsers = (window.financeApp && window.financeApp.customUsers) ? window.financeApp.customUsers : [];
+  const dynamicContainer =
+    modalBody.querySelector('#userModalDynamicOptions') || modalBody;
 
-  // Encontrar el elemento de Givonik para insertar después de él
-  const givonikOption = modalBody.querySelector('[data-value="Givonik"]');
-  if (!givonikOption) {
-    console.error('No se encontró la opción de Givonik');
-    return;
-  }
+  dynamicContainer.innerHTML = '';
 
-  // Eliminar usuarios dinámicos anteriores (para evitar duplicados)
-  const existingDynamicUsers = modalBody.querySelectorAll('.custom-user-option, .authenticated-user-option');
-  existingDynamicUsers.forEach(el => el.remove());
+  const createOption = (value, label, extraHTML = '') => {
+    const option = document.createElement('div');
+    option.className = 'select-modal-option';
+    option.setAttribute('data-value', value);
+    option.onclick = () => handleModalOptionClick('userModal', 'user', value);
 
-  let lastUserOption = givonikOption;
-
-  // Agregar usuario autenticado primero (si existe y no es Daniel ni Givonik)
-  if (authenticatedUser && authenticatedUser !== 'Daniel' && authenticatedUser !== 'Givonik') {
-    const authUserOption = document.createElement('div');
-    authUserOption.className = 'select-modal-option authenticated-user-option';
-    authUserOption.setAttribute('data-value', authenticatedUser);
-    authUserOption.onclick = () => handleModalOptionClick('userModal', 'user', authenticatedUser);
-
-    authUserOption.innerHTML = `
+    option.innerHTML = `
       <div class="option-icon">👤</div>
-      <div class="option-text">${authenticatedUser} <span style="color: var(--color-accent); font-size: 11px; font-weight: 600;">TÚ</span></div>
+      <div class="option-text">${label}${extraHTML}</div>
       <div class="option-check"><i class="fas fa-check"></i></div>
     `;
 
-    lastUserOption.insertAdjacentElement('afterend', authUserOption);
-    lastUserOption = authUserOption;
-    console.log(`✅ Usuario autenticado agregado al modal: ${authenticatedUser}`);
+    dynamicContainer.appendChild(option);
+  };
+
+  const authenticatedUser =
+    window.financeApp &&
+    window.financeApp.userProfile &&
+    window.financeApp.userProfile.name &&
+    window.financeApp.userProfile.name !== 'Usuario'
+      ? window.financeApp.userProfile.name
+      : null;
+
+  const customUsers =
+    window.financeApp && Array.isArray(window.financeApp.customUsers)
+      ? window.financeApp.customUsers
+      : [];
+
+  if (authenticatedUser) {
+    createOption(
+      authenticatedUser,
+      authenticatedUser,
+      ' <span style="color: var(--color-primary); font-size: 11px; font-weight: 600;">TÚ</span>'
+    );
+    console.log(
+      `✅ Usuario autenticado agregado al modal: ${authenticatedUser}`
+    );
   }
 
-  // Agregar usuarios personalizados
-  customUsers.forEach(user => {
-    // Evitar duplicar el usuario autenticado
-    if (user === authenticatedUser) return;
+  customUsers
+    .filter((user) => {
+      if (!authenticatedUser) return true;
+      return user.toLowerCase() !== authenticatedUser.toLowerCase();
+    })
+    .forEach((user) => {
+      createOption(user, user);
+    });
 
-    const userOption = document.createElement('div');
-    userOption.className = 'select-modal-option custom-user-option';
-    userOption.setAttribute('data-value', user);
-    userOption.onclick = () => handleModalOptionClick('userModal', 'user', user);
-
-    userOption.innerHTML = `
-      <div class="option-icon">👤</div>
-      <div class="option-text">${user}</div>
-      <div class="option-check"><i class="fas fa-check"></i></div>
-    `;
-
-    lastUserOption.insertAdjacentElement('afterend', userOption);
-    lastUserOption = userOption;
-  });
-
-  console.log('✅ Modal de usuarios actualizado - Autenticado:', authenticatedUser, '- Personalizados:', customUsers.length);
+  console.log(
+    '✅ Modal de usuarios actualizado - Autenticado:',
+    authenticatedUser,
+    '- Personalizados:',
+    customUsers.length
+  );
 };
 
 /**
@@ -19074,13 +19501,20 @@ FinanceApp.prototype.setupSelectModalTriggers = function() {
   // User select (hidden; interaction handled by selectedUserField)
   const userSelect = document.getElementById('user');
   const userField = document.getElementById('selectedUserField');
-  if (userSelect) {
+  if (userSelect && userField) {
     userSelect.style.position = 'absolute';
     userSelect.style.opacity = '0';
     userSelect.style.pointerEvents = 'none';
     userSelect.style.height = '0';
     userSelect.setAttribute('aria-hidden', 'true');
     userSelect.setAttribute('tabindex', '-1');
+  } else if (userSelect) {
+    userSelect.style.position = '';
+    userSelect.style.opacity = '';
+    userSelect.style.pointerEvents = '';
+    userSelect.style.height = '';
+    userSelect.removeAttribute('aria-hidden');
+    userSelect.removeAttribute('tabindex');
   }
 
   if (userField && userSelect) {
@@ -19470,6 +19904,16 @@ window.initPushNotifications = async function() {
 // ========================================
 
 /**
+ * Scroll suave a la sección del video "Tu Dinero"
+ */
+window.scrollToTuDinero = function() {
+  const tuDineroSection = document.getElementById('tu-dinero');
+  if (tuDineroSection) {
+    tuDineroSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+};
+
+/**
  * Scroll suave a la sección de beneficios
  */
 window.scrollToBenefits = function() {
@@ -19696,8 +20140,8 @@ class ReceiptScanner {
       // Hide capture options
       document.querySelector('.receipt-capture-options')?.classList.add('hidden');
 
-      // Process image with AI
-      await this.processReceiptWithAI(base64);
+      // // Process image with AI
+      // await this.processReceiptWithAI(base64);
 
     } catch (error) {
       console.error('❌ Error processing image:', error);
@@ -19724,107 +20168,107 @@ class ReceiptScanner {
     }
   }
 
-  async processReceiptWithAI(base64Image) {
-    const processingEl = document.getElementById('receiptProcessing');
-    const dataPreviewEl = document.getElementById('receiptDataPreview');
-
-    try {
-      // Show processing
-      if (processingEl) processingEl.classList.remove('hidden');
-      if (dataPreviewEl) dataPreviewEl.classList.add('hidden');
-
-      // Get Gemini API key
-      const apiKey =
-        this.geminiApiKey ||
-        window.parent?.FB?.geminiApiKey ||
-        window.FB?.geminiApiKey ||
-        '';
-      if (!apiKey) {
-        throw new Error('API key de Gemini no configurada');
-      }
-      this.geminiApiKey = apiKey;
-
-      // Remove data:image/...;base64, prefix
-      const base64Data = base64Image.split(',')[1];
-
-      // Call Gemini Vision API
-      const response = await fetch(
-        `${this.geminiEndpoint}?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [
-                {
-                  text: `Analiza este recibo/boleta de compra en detalle y extrae la siguiente información en formato JSON:
-{
-  "amount": "monto total (solo número, sin símbolos ni puntos)",
-  "description": "descripción breve de la compra o nombre del establecimiento",
-  "category": "una de estas categorías: Alimentación, Transporte, Entretenimiento, Salud, Servicios, Compras, Otros",
-  "date": "fecha en formato YYYY-MM-DD",
-  "items": ["lista COMPLETA de productos con cantidades, ejemplo: Azúcar 1kg, Leche 1L, Aceite 2L"],
-  "store_name": "nombre del comercio/tienda",
-  "store_location": "dirección o comuna si está visible",
-  "payment_method": "método de pago si se menciona (ej: Tarjeta débito, efectivo, etc)",
-  "card_last_digits": "últimos 4 dígitos de tarjeta si aparecen",
-  "receipt_number": "número de boleta o factura si es visible"
-}
-
-IMPORTANTE:
-- En "items" incluye TODOS los productos que veas con sus cantidades
-- En "description" usa el nombre del establecimiento
-- Si no puedes determinar algún valor, usa null
-- Responde SOLO con el JSON, sin texto adicional`
-                },
-                {
-                  inline_data: {
-                    mime_type: this.currentImageMime || 'image/jpeg',
-                    data: base64Data
-                  }
-                }
-              ]
-            }]
-          })
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log('📄 Gemini response:', result);
-
-      // Extract text from response
-      const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!text) {
-        throw new Error('No se pudo extraer información del recibo');
-      }
-
-      // Parse JSON from response
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        throw new Error('No se pudo parsear la respuesta de la IA');
-      }
-
-      this.extractedData = JSON.parse(jsonMatch[0]);
-      console.log('✅ Extracted data:', this.extractedData);
-      this.saveDataToStorage(this.extractedData);
-
-      // Show extracted data
-      this.displayExtractedData();
-
-    } catch (error) {
-      console.error('❌ Error processing receipt with AI:', error);
-      this.showToast(`Error al analizar el recibo: ${error.message}`, 'error');
-    } finally {
-      // Hide processing
-      if (processingEl) processingEl.classList.add('hidden');
-    }
-  }
+  // async processReceiptWithAI(base64Image) {
+  //   const processingEl = document.getElementById('receiptProcessing');
+  //   const dataPreviewEl = document.getElementById('receiptDataPreview');
+  //
+  //   try {
+  //     // Show processing
+  //     if (processingEl) processingEl.classList.remove('hidden');
+  //     if (dataPreviewEl) dataPreviewEl.classList.add('hidden');
+  //
+  //     // Get Gemini API key
+  //     const apiKey =
+  //       this.geminiApiKey ||
+  //       window.parent?.FB?.geminiApiKey ||
+  //       window.FB?.geminiApiKey ||
+  //       '';
+  //     if (!apiKey) {
+  //       throw new Error('API key de Gemini no configurada');
+  //     }
+  //     this.geminiApiKey = apiKey;
+  //
+  //     // Remove data:image/...;base64, prefix
+  //     const base64Data = base64Image.split(',')[1];
+  //
+  //     // Call Gemini Vision API
+  //     const response = await fetch(
+  //       `${this.geminiEndpoint}?key=${apiKey}`,
+  //       {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({
+  //           contents: [{
+  //             parts: [
+  //               {
+  //                 text: `Analiza este recibo/boleta de compra en detalle y extrae la siguiente información en formato JSON:
+//{
+//  "amount": "monto total (solo número, sin símbolos ni puntos)",
+//  "description": "descripción breve de la compra o nombre del establecimiento",
+//  "category": "una de estas categorías: Alimentación, Transporte, Entretenimiento, Salud, Servicios, Compras, Otros",
+//  "date": "fecha en formato YYYY-MM-DD",
+//  "items": ["lista COMPLETA de productos con cantidades, ejemplo: Azúcar 1kg, Leche 1L, Aceite 2L"],
+//  "store_name": "nombre del comercio/tienda",
+//  "store_location": "dirección o comuna si está visible",
+//  "payment_method": "método de pago si se menciona (ej: Tarjeta débito, efectivo, etc)",
+//  "card_last_digits": "últimos 4 dígitos de tarjeta si aparecen",
+//  "receipt_number": "número de boleta o factura si es visible"
+//}
+//
+//IMPORTANTE:
+//- En "items" incluye TODOS los productos que veas con sus cantidades
+//- En "description" usa el nombre del establecimiento
+//- Si no puedes determinar algún valor, usa null
+//- Responde SOLO con el JSON, sin texto adicional`
+  //               },
+  //               {
+  //                 inline_data: {
+  //                   mime_type: this.currentImageMime || 'image/jpeg',
+  //                   data: base64Data
+  //                 }
+  //               }
+  //             ]
+  //           }]
+  //         })
+  //       }
+  //     );
+  //
+  //     if (!response.ok) {
+  //       throw new Error(`API error: ${response.status}`);
+  //     }
+  //
+  //     const result = await response.json();
+  //     console.log('📄 Gemini response:', result);
+  //
+  //     // Extract text from response
+  //     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+  //     if (!text) {
+  //       throw new Error('No se pudo extraer información del recibo');
+  //     }
+  //
+  //     // Parse JSON from response
+  //     const jsonMatch = text.match(/\{[\s\S]*\}/);
+  //     if (!jsonMatch) {
+  //       throw new Error('No se pudo parsear la respuesta de la IA');
+  //     }
+  //
+  //     this.extractedData = JSON.parse(jsonMatch[0]);
+  //     console.log('✅ Extracted data:', this.extractedData);
+  //     this.saveDataToStorage(this.extractedData);
+  //
+  //     // Show extracted data
+  //     this.displayExtractedData();
+  //
+  //   } catch (error) {
+  //     console.error('❌ Error processing receipt with AI:', error);
+  //     this.showToast(`Error al analizar el recibo: ${error.message}`, 'error');
+  //   } finally {
+  //     // Hide processing
+  //     if (processingEl) processingEl.classList.add('hidden');
+  //   }
+  // }
 
   displayExtractedData() {
     const dataPreviewEl = document.getElementById('receiptDataPreview');
@@ -19864,14 +20308,14 @@ IMPORTANTE:
     ];
 
     // Add items if available
-    if (this.extractedData.items && this.extractedData.items.length > 0) {
-      dataItems.push({
-        label: 'Items',
-        icon: 'fa-list',
-        value: this.extractedData.items.join(', '),
-        highlight: false
-      });
-    }
+    // if (this.extractedData.items && this.extractedData.items.length > 0) {
+    //   dataItems.push({
+    //     label: 'Items',
+    //     icon: 'fa-list',
+    //     value: this.extractedData.items.join(', '),
+    //     highlight: false
+    //   });
+    // }
 
     // Render data items
     dataItems.forEach(item => {
@@ -20697,7 +21141,7 @@ class SmartAutoComplete {
       top: 50%;
       right: 10px;
       transform: translateY(-50%);
-      background: var(--color-accent);
+      background: var(--color-primary);
       color: white;
       padding: 4px 12px;
       border-radius: 12px;
@@ -20726,59 +21170,28 @@ class SmartAutoComplete {
     const fieldId = selectElement.id;
     const existingTemp = document.getElementById(`temp-${fieldId}`);
 
-    // Remover campo temporal anterior si existe
+    // Eliminar cualquier residuo de la vista anterior
     if (existingTemp) {
       existingTemp.remove();
     }
 
-    // Ocultar el select original
-    selectElement.style.display = 'none';
+    selectElement.style.display = '';
+    selectElement.value = value;
 
-    // Crear campo temporal que muestra el valor
-    const tempField = document.createElement('div');
-    tempField.id = `temp-${fieldId}`;
-    tempField.className = 'temporary-autocomplete-field';
-    tempField.innerHTML = `
-      <div class="temp-field-inner" style="
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 16px;
-        background: var(--color-accent);
-        border: 2px solid var(--color-accent);
-        border-radius: 8px;
-        color: var(--color-surface);
-        font-weight: 600;
-        font-size: 14px;
-        box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.3);
-        animation: slideIn 0.3s ease;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-        <span>
-          <i class="fas fa-robot" style="margin-right: 8px;"></i>
-          ${displayText}
-        </span>
-        <span style="
-          background: rgba(0,0,0,0.2);
-          color: var(--color-surface);
-          padding: 4px 8px;
-          border-radius: 12px;
-          font-size: 11px;
-          font-weight: 700;
-        ">AUTO</span>
-      </div>
-    `;
+    if (displayText) {
+      selectElement.dataset.autofilledLabel = displayText;
+      selectElement.title = `Valor sugerido automáticamente: ${displayText}`;
+    } else {
+      delete selectElement.dataset.autofilledLabel;
+      selectElement.removeAttribute('title');
+    }
 
-    // Insertar después del select original
-    selectElement.parentNode.insertBefore(tempField, selectElement.nextSibling);
+    selectElement.classList.add('autofilled-select');
 
-    // Al hacer clic en el campo temporal, permitir cambio manual
-    tempField.addEventListener('click', () => {
-      this.removeTemporaryField(selectElement);
-    });
+    // Mantener sincronizado el dropdown personalizado si existe
+    this.syncCustomDropdown(selectElement);
 
-    console.log(`✅ Campo temporal creado para ${fieldId}:`, value);
+    console.log(`✅ Campo autocompletado para ${fieldId}:`, value);
   }
 
   removeTemporaryField(selectElement) {
@@ -20791,11 +21204,15 @@ class SmartAutoComplete {
       tempField.remove();
     }
 
-    // Mostrar el select original de nuevo
     selectElement.style.display = '';
+    selectElement.classList.remove('autofilled-select');
+    delete selectElement.dataset.autofilledLabel;
+    selectElement.removeAttribute('title');
+
+    this.syncCustomDropdown(selectElement);
     selectElement.focus();
 
-    console.log(`🗑️ Campo temporal removido para ${fieldId}`);
+    console.log(`🗑️ Estado autocompletado restablecido para ${fieldId}`);
   }
 
   removeAllTemporaryFields() {
@@ -20803,14 +21220,21 @@ class SmartAutoComplete {
     const tempFields = document.querySelectorAll('.temporary-autocomplete-field');
     tempFields.forEach(field => field.remove());
 
-    // Mostrar todos los selects de nuevo
-    if (this.categorySelect) this.categorySelect.style.display = '';
-    if (this.necessitySelect) this.necessitySelect.style.display = '';
+    const selects = [
+      this.categorySelect,
+      this.necessitySelect,
+      document.getElementById('user')
+    ].filter(Boolean);
 
-    const userSelect = document.getElementById('user');
-    if (userSelect) userSelect.style.display = '';
+    selects.forEach(selectElement => {
+      selectElement.style.display = '';
+      selectElement.classList.remove('autofilled-select');
+      delete selectElement.dataset.autofilledLabel;
+      selectElement.removeAttribute('title');
+      this.syncCustomDropdown(selectElement);
+    });
 
-    console.log('🗑️ Todos los campos temporales removidos');
+    console.log('🗑️ Estados autocompletados restablecidos');
   }
 
   normalizeText(text = '') {

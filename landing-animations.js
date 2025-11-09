@@ -71,41 +71,117 @@ class LandingAnimations {
     let charIndex = 0;
     let isDeleting = false;
     let isPaused = false;
+    let typingTimeoutId = null;
+    let isTypingActive = false;
+    let isTypingRunning = false;
 
     const typingSpeed = 100;
     const deletingSpeed = 50;
     const pauseTime = 2000;
 
+    const scheduleNext = (delay) => {
+      if (!isTypingActive) {
+        typingTimeoutId = null;
+        isTypingRunning = false;
+        return;
+      }
+
+      typingTimeoutId = setTimeout(() => {
+        typingTimeoutId = null;
+        type();
+      }, delay);
+    };
+
     const type = () => {
+      if (!isTypingActive) {
+        isTypingRunning = false;
+        return;
+      }
+
+      isTypingRunning = true;
       const currentText = texts[textIndex];
 
       if (isPaused) {
         isPaused = false;
-        setTimeout(type, pauseTime);
+        scheduleNext(pauseTime);
         return;
       }
 
       if (!isDeleting && charIndex <= currentText.length) {
         typingElement.textContent = currentText.slice(0, charIndex);
         charIndex++;
-        setTimeout(type, typingSpeed);
+        scheduleNext(typingSpeed);
       } else if (!isDeleting && charIndex > currentText.length) {
         isPaused = true;
         isDeleting = true;
-        setTimeout(type, pauseTime);
+        scheduleNext(pauseTime);
       } else if (isDeleting && charIndex >= 0) {
         typingElement.textContent = currentText.slice(0, charIndex);
         charIndex--;
-        setTimeout(type, deletingSpeed);
+        scheduleNext(deletingSpeed);
       } else {
         isDeleting = false;
         textIndex = (textIndex + 1) % texts.length;
         charIndex = 0;
-        setTimeout(type, 500);
+        scheduleNext(500);
       }
     };
 
-    type();
+    const pauseTyping = () => {
+      if (!isTypingActive) return;
+      isTypingActive = false;
+      if (typingTimeoutId) {
+        clearTimeout(typingTimeoutId);
+        typingTimeoutId = null;
+      }
+      isTypingRunning = false;
+    };
+
+    const resumeTyping = () => {
+      if (isTypingActive) {
+        if (!isTypingRunning) {
+          type();
+        }
+        return;
+      }
+
+      isTypingActive = true;
+      type();
+    };
+
+    const heroSection =
+      document.querySelector('.hero-section') ||
+      typingElement.closest('.hero-container') ||
+      typingElement;
+
+    if (heroSection) {
+      const visibilityObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              resumeTyping();
+            } else {
+              pauseTyping();
+            }
+          });
+        },
+        {
+          threshold: 0.35,
+        }
+      );
+
+      visibilityObserver.observe(heroSection);
+      this.observers.push(visibilityObserver);
+
+      const rect = heroSection.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) {
+        pauseTyping();
+      } else {
+        resumeTyping();
+      }
+    } else {
+      resumeTyping();
+    }
   }
 
   /**

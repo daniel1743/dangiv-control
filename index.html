@@ -677,7 +677,7 @@
                 <img
                   class="profile-avatar"
                   id="profileAvatar"
-                  src=""
+                  src="img/avatar-placeholder.svg"
                   alt="Foto de perfil"
                 />
 
@@ -1049,10 +1049,10 @@
               </button>
               <button
                 class="btn-ripple btn-cta-secondary"
-                onclick="scrollToBenefits()"
+                onclick="scrollToTuDinero()"
               >
-                <i class="fas fa-play-circle"></i>
-                Ver Cómo Funciona
+                <i class="fas fa-video"></i>
+                Ver Tu Dinero
               </button>
             </div>
 
@@ -1101,6 +1101,46 @@
                   Cifrado de extremo a extremo con Firebase
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tu Dinero Video Section -->
+        <div class="tu-dinero-section content-section" id="tu-dinero">
+          <div class="section-header-center fade-in-up">
+            <h2>Tu Dinero: transforma tu futuro financiero</h2>
+            <p>
+              Mira esta guía práctica y descubre qué ganas al usar Financia Suite
+              y cómo puede cambiar tu relación con el dinero.
+            </p>
+          </div>
+
+          <div class="tu-dinero-wrapper fade-in-up" style="animation-delay: 0.1s">
+            <div class="tu-dinero-video">
+              <video
+                controls
+                preload="metadata"
+                poster="img/tu-dinero-poster.jpg"
+              >
+                <source src="img/tu-dinero.mp4" type="video/mp4" />
+                Tu navegador no soporta video HTML5. Puedes descargarlo
+                directamente
+                <a href="img/tu-dinero.mp4" download>haciendo clic aquí</a>.
+              </video>
+            </div>
+            <div class="tu-dinero-content">
+              <h3>Lo que aprenderás en minutos</h3>
+              <ul>
+                <li>Cómo identificar fugas de dinero y frenarlas rápido</li>
+                <li>De qué forma Financia Suite te acompaña a cumplir metas</li>
+                <li>Estrategias sencillas para empezar a ahorrar hoy mismo</li>
+                <li>Casos reales de personas que transformaron sus finanzas</li>
+              </ul>
+              <p>
+                El video “Tu Dinero” está pensado para inspirarte y mostrarte el
+                impacto real de tomar control de tus finanzas personales. ¡Dale
+                play y empieza el cambio!
+              </p>
             </div>
           </div>
         </div>
@@ -2341,8 +2381,6 @@
                   <div class="custom-select">
                     <select id="user">
                       <option value="">Sin usuario asignado</option>
-                      <option value="Daniel">Daniel</option>
-                      <option value="Givonik">Givonik</option>
                     </select>
                     <button
                       type="button"
@@ -2352,17 +2390,6 @@
                     >
                       <i class="fas fa-plus"></i>
                     </button>
-                  </div>
-                  <div
-                    class="selected-user-display"
-                    id="selectedUserField"
-                    tabindex="0"
-                    role="button"
-                    aria-haspopup="dialog"
-                    aria-expanded="false"
-                  >
-                    <span class="selected-user-placeholder">Sin asignar</span>
-                    <i class="fas fa-chevron-down"></i>
                   </div>
                 </div>
               </div>
@@ -5569,25 +5596,7 @@
             <div class="option-text">Sin usuario asignado</div>
             <div class="option-check"><i class="fas fa-check"></i></div>
           </div>
-          <div
-            class="select-modal-option"
-            data-value="Daniel"
-            onclick="handleModalOptionClick('userModal', 'user', 'Daniel')"
-          >
-            <div class="option-icon">👨</div>
-            <div class="option-text">Daniel</div>
-            <div class="option-check"><i class="fas fa-check"></i></div>
-          </div>
-          <div
-            class="select-modal-option"
-            data-value="Givonik"
-            onclick="handleModalOptionClick('userModal', 'user', 'Givonik')"
-          >
-            <div class="option-icon">👨‍💼</div>
-            <div class="option-text">Givonik</div>
-            <div class="option-check"><i class="fas fa-check"></i></div>
-          </div>
-          <!-- Usuarios personalizados se agregarán dinámicamente aquí -->
+          <div id="userModalDynamicOptions"></div>
         </div>
         <div class="select-modal-footer">
           <button
@@ -5601,8 +5610,7 @@
       </div>
     </div>
 
-    <!-- Modal: Añadir Nuevo Usuario (Pequeño) - DESHABILITADO: ID duplicado con el nuevo modal -->
-    <!--
+    <!-- Modal: Añadir Nuevo Usuario (Pequeño) -->
     <div class="select-modal select-modal-small" id="addUserModal">
       <div class="select-modal-overlay"></div>
       <div class="select-modal-content">
@@ -5635,7 +5643,6 @@
         </div>
       </div>
     </div>
-    -->
 
     <!-- Modal: Añadir Categoría Personalizada -->
     <div class="select-modal select-modal-small" id="addCategoryModal">
@@ -6236,99 +6243,6 @@
             Cancelar
           </button>
           <button class="btn-modal-save" onclick="saveNewNecessity()">
-            <i class="fas fa-check"></i> Guardar
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal para añadir usuario personalizado -->
-    <div class="custom-modal" id="addUserModal">
-      <div class="custom-modal-overlay"></div>
-      <div class="custom-modal-content">
-        <div class="custom-modal-header">
-          <h3><i class="fas fa-user-plus"></i> Añadir Usuario Personalizado</h3>
-          <button
-            class="custom-modal-close"
-            onclick="closeCustomModal('addUserModal')"
-          >
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="custom-modal-body">
-          <div class="form-group-premium">
-            <label class="form-label-premium">Nombre del usuario</label>
-            <input
-              type="text"
-              id="newUserName"
-              class="form-input-premium"
-              placeholder="Ej: María, Pedro..."
-              maxlength="30"
-            />
-          </div>
-          <div class="form-group-premium">
-            <label class="form-label-premium">Icono (emoji)</label>
-            <div class="emoji-picker-container">
-              <input
-                type="text"
-                id="newUserIcon"
-                class="form-input-premium emoji-input"
-                placeholder="👤"
-                maxlength="2"
-              />
-              <div class="emoji-suggestions">
-                <span
-                  class="emoji-option"
-                  onclick="selectEmoji('newUserIcon', '👨')"
-                  >👨</span
-                >
-                <span
-                  class="emoji-option"
-                  onclick="selectEmoji('newUserIcon', '👩')"
-                  >👩</span
-                >
-                <span
-                  class="emoji-option"
-                  onclick="selectEmoji('newUserIcon', '👦')"
-                  >👦</span
-                >
-                <span
-                  class="emoji-option"
-                  onclick="selectEmoji('newUserIcon', '👧')"
-                  >👧</span
-                >
-                <span
-                  class="emoji-option"
-                  onclick="selectEmoji('newUserIcon', '👶')"
-                  >👶</span
-                >
-                <span
-                  class="emoji-option"
-                  onclick="selectEmoji('newUserIcon', '👴')"
-                  >👴</span
-                >
-                <span
-                  class="emoji-option"
-                  onclick="selectEmoji('newUserIcon', '👵')"
-                  >👵</span
-                >
-                <span
-                  class="emoji-option"
-                  onclick="selectEmoji('newUserIcon', '👤')"
-                  >👤</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="custom-modal-footer">
-          <button
-            class="btn-modal-cancel"
-            onclick="closeCustomModal('addUserModal')"
-          >
-            Cancelar
-          </button>
-          <button class="btn-modal-save" onclick="saveNewUser()">
             <i class="fas fa-check"></i> Guardar
           </button>
         </div>
