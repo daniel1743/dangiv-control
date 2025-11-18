@@ -618,6 +618,15 @@
     }
   }
 
+  // Esperar a que la app esté lista
+  function waitForApp() {
+    if (typeof window.app !== 'undefined' && window.app) {
+      startGame();
+    } else {
+      setTimeout(waitForApp, 100);
+    }
+  }
+
   const kickoff = () => waitForApp();
 
   if (document.readyState === 'loading') {

@@ -3734,10 +3734,14 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
 
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
+      console.log('✅ Theme toggle button found and event listener attached');
       themeToggle.addEventListener('click', (e) => {
         e.preventDefault();
+        console.log('🎨 Theme toggle clicked');
         this.toggleTheme();
       });
+    } else {
+      console.warn('⚠️ Theme toggle button not found');
     }
 
     // === SELECTORES DE TEMA EN CONFIGURACIÃƒâ€œN ===
@@ -9453,8 +9457,10 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
 
   // ... (cÃ³digo de la funciÃ³n toggleTheme) ...
   toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    console.log(`🎨 Changing theme from ${currentTheme} to ${newTheme}`);
+
     document.documentElement.setAttribute('data-theme', newTheme);
 
     const icon = document.querySelector('#themeToggle i');
@@ -9464,6 +9470,7 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
 
     // Guardar preferencia
     localStorage.setItem('financia_theme', newTheme);
+    console.log(`✅ Theme changed to ${newTheme} and saved to localStorage`);
   }
 
   applyTheme(theme) {
@@ -11926,10 +11933,33 @@ function switchToRegister() {
     '¿Ya tienes una cuenta? <a href="#">Inicia sesión aquí</a>';
 }
 
+// Función para abrir el modal de autenticación
+function openAuthModal(mode = 'login') {
+  const modal = document.getElementById('authModal');
+  if (!modal) {
+    console.error('⚠️ Modal de autenticación no encontrado');
+    return;
+  }
+
+  // Mostrar el modal
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+
+  // Cambiar al modo correcto (login o register)
+  if (mode === 'register') {
+    switchToRegister();
+  } else {
+    switchToLogin();
+  }
+
+  console.log(`✅ Modal de autenticación abierto en modo: ${mode}`);
+}
+
 // Exportar funciones inmediatamente para que estén disponibles
 if (typeof window !== 'undefined') {
   window.switchToLogin = switchToLogin;
   window.switchToRegister = switchToRegister;
+  window.openAuthModal = openAuthModal;
 }
 
 function showAccountTypeSelection() {

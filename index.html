@@ -140,6 +140,61 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <style>
+      .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        align-items: stretch;
+      }
+
+      .hero-stats .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.45rem;
+        padding: 1.75rem 1.5rem;
+      }
+
+      .hero-stats .stat-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.1rem;
+      }
+
+      .hero-stats .animated-counter {
+        font-size: 2.4rem;
+        line-height: 1.1;
+      }
+
+      .hero-stats .stat-label {
+        font-weight: 600;
+        color: #eaf5ff;
+        margin-top: 0.25rem;
+      }
+
+      .hero-stats .stat-context {
+        font-size: 0.95rem;
+        color: #9fb8d1;
+        max-width: 260px;
+      }
+
+      @media (max-width: 768px) {
+        .hero-stats {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 1rem;
+        }
+
+        .hero-stats .stat-item {
+          padding: 1.5rem;
+        }
+      }
+    </style>
 
     <!-- Schema.org Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -1059,7 +1114,7 @@
             <!-- Estadísticas con contadores animados -->
             <div class="hero-stats">
               <div class="stat-item fade-in-up" style="animation-delay: 0.1s">
-                <div class="stat-icon">👥</div>
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
                 <div class="animated-counter" data-value="5000" data-suffix="+">
                   5000+
                 </div>
@@ -1070,7 +1125,7 @@
               </div>
 
               <div class="stat-item fade-in-up" style="animation-delay: 0.2s">
-                <div class="stat-icon">💰</div>
+                <div class="stat-icon"><i class="fas fa-piggy-bank"></i></div>
                 <div class="animated-counter" data-value="85" data-suffix="%">
                   85%
                 </div>
@@ -1081,7 +1136,7 @@
               </div>
 
               <div class="stat-item fade-in-up" style="animation-delay: 0.3s">
-                <div class="stat-icon">⚡</div>
+                <div class="stat-icon"><i class="fas fa-robot"></i></div>
                 <div class="animated-counter" data-value="24" data-suffix="/7">
                   24/7
                 </div>
@@ -1092,7 +1147,7 @@
               </div>
 
               <div class="stat-item fade-in-up" style="animation-delay: 0.4s">
-                <div class="stat-icon">🔒</div>
+                <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
                 <div class="animated-counter" data-value="100" data-suffix="%">
                   100%
                 </div>
@@ -1117,19 +1172,14 @@
 
           <div class="tu-dinero-wrapper fade-in-up" style="animation-delay: 0.1s">
             <div class="tu-dinero-video">
-              <video
-                controls
-                preload="metadata"
-                poster="img/tu-dinero-poster.jpg"
-              >
-                <source src="img/tu-dinero.mp4" type="video/mp4" />
-                Tu navegador no soporta video HTML5. Puedes descargarlo
-                directamente
-                <a href="img/tu-dinero.mp4" download>haciendo clic aquí</a>.
-              </video>
+              <img
+                src="img/personas de finanzas.png"
+                alt="Personas gestionando sus finanzas personales"
+                class="tu-dinero-image"
+              />
             </div>
             <div class="tu-dinero-content">
-              <h3>Lo que aprenderás en minutos</h3>
+              <h3>Toma control de tus finanzas personales</h3>
               <ul>
                 <li>Cómo identificar fugas de dinero y frenarlas rápido</li>
                 <li>De qué forma Financia Suite te acompaña a cumplir metas</li>
@@ -1137,9 +1187,9 @@
                 <li>Casos reales de personas que transformaron sus finanzas</li>
               </ul>
               <p>
-                El video “Tu Dinero” está pensado para inspirarte y mostrarte el
-                impacto real de tomar control de tus finanzas personales. ¡Dale
-                play y empieza el cambio!
+                Financia Suite está pensado para inspirarte y mostrarte el
+                impacto real de tomar control de tus finanzas personales. ¡Empieza
+                hoy y transforma tu futuro financiero!
               </p>
             </div>
           </div>
@@ -1282,7 +1332,9 @@
                 polola. La recomiendo caleta 👌"
               </p>
               <div class="testimonial-author">
-                <div class="author-avatar">🙋‍♂️</div>
+                <div class="author-avatar">
+                  <img src="https://ui-avatars.com/api/?name=Cristian+M&background=4A90E2&color=fff&size=200&font-size=0.4&bold=true" alt="Cristian M." />
+                </div>
                 <div class="author-info">
                   <strong>Cristian M.</strong>
                   <span>Santiago, Chile</span>
@@ -1308,7 +1360,9 @@
                 herramienta profesional accesible para todos."
               </p>
               <div class="testimonial-author">
-                <div class="author-avatar">👨‍💼</div>
+                <div class="author-avatar">
+                  <img src="https://ui-avatars.com/api/?name=Roberto+F&background=7E57C2&color=fff&size=200&font-size=0.4&bold=true" alt="Dr. Roberto Fuentes" />
+                </div>
                 <div class="author-info">
                   <strong>Dr. Roberto Fuentes</strong>
                   <span>Contador Auditor</span>
@@ -1334,7 +1388,9 @@
                 navidad de mis nietos 😊"
               </p>
               <div class="testimonial-author">
-                <div class="author-avatar">👵</div>
+                <div class="author-avatar">
+                  <img src="https://ui-avatars.com/api/?name=Carmen+G&background=EC407A&color=fff&size=200&font-size=0.4&bold=true" alt="Carmen de González" />
+                </div>
                 <div class="author-info">
                   <strong>Carmen de González</strong>
                   <span>Jubilada, 62 años</span>
@@ -1360,7 +1416,9 @@
                 a organizarnos juntos 💑"
               </p>
               <div class="testimonial-author">
-                <div class="author-avatar">👩</div>
+                <div class="author-avatar">
+                  <img src="https://ui-avatars.com/api/?name=Valentina+R&background=FF7043&color=fff&size=200&font-size=0.4&bold=true" alt="Valentina R." />
+                </div>
                 <div class="author-info">
                   <strong>Valentina R.</strong>
                   <span>Maestra de Preescolar</span>
@@ -1386,7 +1444,9 @@
                 útil."
               </p>
               <div class="testimonial-author">
-                <div class="author-avatar">👨‍💻</div>
+                <div class="author-avatar">
+                  <img src="https://ui-avatars.com/api/?name=Jorge+R&background=26A69A&color=fff&size=200&font-size=0.4&bold=true" alt="Jorge Ramírez T." />
+                </div>
                 <div class="author-info">
                   <strong>Jorge Ramírez T.</strong>
                   <span>Ingeniero de Software Sr.</span>
@@ -1412,7 +1472,9 @@
                 la usan!"
               </p>
               <div class="testimonial-author">
-                <div class="author-avatar">👩‍🎓</div>
+                <div class="author-avatar">
+                  <img src="https://ui-avatars.com/api/?name=Sofia+P&background=AB47BC&color=fff&size=200&font-size=0.4&bold=true" alt="Sofía P." />
+                </div>
                 <div class="author-info">
                   <strong>Sofía P.</strong>
                   <span>Estudiante Universitaria</span>
@@ -1925,7 +1987,7 @@
 
             <div class="insights-cards">
               <div class="insight-card" id="insightCard1">
-                <div class="insight-icon">💡</div>
+                <div class="insight-icon"><i class="fas fa-lightbulb"></i></div>
                 <div class="insight-content">
                   <h4>Consejo del Día</h4>
                   <p id="dailyTip">
@@ -1935,7 +1997,7 @@
               </div>
 
               <div class="insight-card" id="insightCard2">
-                <div class="insight-icon">📈</div>
+                <div class="insight-icon"><i class="fas fa-chart-line"></i></div>
                 <div class="insight-content">
                   <h4>Tu Progreso</h4>
                   <p id="progressInsight">
@@ -1945,7 +2007,7 @@
               </div>
 
               <div class="insight-card" id="insightCard3">
-                <div class="insight-icon">🎯</div>
+                <div class="insight-icon"><i class="fas fa-bullseye"></i></div>
                 <div class="insight-content">
                   <h4>Próximo Objetivo</h4>
                   <p id="nextGoal">Continúa ahorrando para alcanzar tu meta</p>
@@ -4504,47 +4566,70 @@
       </div>
     </footer>
 
-    <!-- Onboarding Tour Overlay -->
-    <div id="tourOverlay" class="tour-overlay hidden">
-      <div class="tour-backdrop"></div>
-      <div class="tour-spotlight"></div>
-      <div class="tour-tooltip">
-        <div class="tour-tooltip-content">
-          <div class="tour-header">
-            <h3 class="tour-title"></h3>
-            <button class="tour-close" aria-label="Cerrar tour">
-              <i class="fas fa-times"></i>
-            </button>
+    <!-- Professional Onboarding System -->
+    <div id="onboardingOverlay" class="onboarding-overlay hidden">
+      <div class="onboarding-backdrop"></div>
+
+      <!-- Onboarding Modal -->
+      <div class="onboarding-modal">
+        <div class="onboarding-modal-content">
+          <!-- Progress Indicator -->
+          <div class="onboarding-progress">
+            <div class="progress-dots">
+              <span class="dot active" data-step="1"></span>
+              <span class="dot" data-step="2"></span>
+              <span class="dot" data-step="3"></span>
+              <span class="dot" data-step="4"></span>
+              <span class="dot" data-step="5"></span>
+            </div>
+            <span class="progress-text">Paso <span id="currentStep">1</span> de 5</span>
           </div>
-          <div class="tour-body">
-            <p class="tour-description"></p>
+
+          <!-- Modal Header -->
+          <div class="onboarding-header">
+            <div class="onboarding-icon" id="onboardingIcon">
+              <i class="fas fa-rocket"></i>
+            </div>
+            <h2 class="onboarding-title" id="onboardingTitle">Bienvenido a Financia Suite</h2>
           </div>
-          <div class="tour-footer">
-            <div class="tour-progress">
-              <span class="tour-step-counter"></span>
-              <div class="tour-progress-bar">
-                <div class="tour-progress-fill"></div>
+
+          <!-- Modal Body -->
+          <div class="onboarding-body">
+            <p class="onboarding-description" id="onboardingDescription">
+              Tu asistente financiero inteligente está listo para ayudarte a alcanzar tus metas.
+            </p>
+            <div class="onboarding-image" id="onboardingImage">
+              <div class="feature-showcase">
+                <i class="fas fa-chart-line showcase-icon"></i>
               </div>
             </div>
-            <div class="tour-actions">
-              <button class="tour-btn tour-skip-prominent">
-                <i class="fas fa-times"></i> Saltar tour
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="onboarding-footer">
+            <button class="onboarding-btn onboarding-skip" id="skipOnboarding">
+              Omitir tour
+            </button>
+            <div class="onboarding-nav">
+              <button class="onboarding-btn onboarding-prev hidden" id="prevStep">
+                <i class="fas fa-arrow-left"></i>
+                Anterior
               </button>
-              <div class="tour-nav-buttons">
-                <button class="tour-btn tour-prev">
-                  <i class="fas fa-chevron-left"></i> Anterior
-                </button>
-                <button class="tour-btn tour-next">
-                  Siguiente <i class="fas fa-chevron-right"></i>
-                </button>
-                <button class="tour-btn tour-finish hidden">
-                  <i class="fas fa-check"></i> Finalizar
-                </button>
-              </div>
+              <button class="onboarding-btn onboarding-next" id="nextStep">
+                Siguiente
+                <i class="fas fa-arrow-right"></i>
+              </button>
+              <button class="onboarding-btn onboarding-finish hidden" id="finishOnboarding">
+                Comenzar
+                <i class="fas fa-check"></i>
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Spotlight Highlight -->
+      <div class="onboarding-spotlight hidden" id="onboardingSpotlight"></div>
     </div>
 
     <!-- Tour Start Button (floating) -->
@@ -4553,7 +4638,7 @@
       class="tour-start-btn"
       title="Iniciar tour de la aplicación"
     >
-      <i class="fas fa-question-circle"></i>
+      <i class="fas fa-lightbulb"></i>
     </button>
 
     <!-- Partner Invitation Modal -->
@@ -5576,7 +5661,7 @@
     <!-- Additional features -->
     <script type="module" src="avatar-sidebar.js"></script>
     <script src="smart-forms.js?v=1.1"></script>
-    <script src="tour.js?v=1.4"></script>
+    <script src="onboarding-pro.js?v=2.0"></script>
     <script src="fin-memory.js"></script>
     <script src="fin-response-optimizer.js"></script>
     <script src="fin-conversation-guide.js"></script>

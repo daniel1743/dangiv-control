@@ -295,8 +295,31 @@
 .stat-icon {
   font-size: 40px;
   margin-bottom: 12px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.95) 100%);
+  border-radius: 20px;
+  color: var(--landing-primary);
   animation: iconFloat 3s ease-in-out infinite;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(14, 42, 71, 0.15);
+}
+
+.stat-icon i {
+  color: var(--landing-primary);
+}
+
+.stat-item:hover .stat-icon {
+  background: linear-gradient(135deg, var(--landing-primary) 0%, var(--landing-primary-dark) 100%);
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(14, 42, 71, 0.25);
+}
+
+.stat-item:hover .stat-icon i {
+  color: white;
 }
 
 @keyframes iconFloat {
@@ -394,11 +417,16 @@
 .tu-dinero-video {
   position: relative;
   width: 100%;
-  padding-top: 56.25%;
   border-radius: 28px;
   overflow: hidden;
   box-shadow: 0 30px 60px rgba(10, 40, 90, 0.25);
-  background: #000;
+  background: #f8f9fa;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tu-dinero-video:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 40px 80px rgba(10, 40, 90, 0.35);
 }
 
 .tu-dinero-video video,
@@ -409,6 +437,13 @@
   width: 100%;
   height: 100%;
   border: none;
+  object-fit: cover;
+}
+
+.tu-dinero-image {
+  width: 100%;
+  height: auto;
+  display: block;
   object-fit: cover;
 }
 
@@ -598,9 +633,24 @@
   padding: 32px;
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
   transform: translateY(30px);
+  position: relative;
+  overflow: hidden;
+}
+
+.testimonial-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(14, 42, 71, 0.02) 0%, rgba(14, 42, 71, 0.04) 100%);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
 }
 
 .testimonial-card.fade-in-up {
@@ -608,8 +658,17 @@
 }
 
 .testimonial-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.testimonial-card:hover::before {
+  opacity: 1;
+}
+
+.testimonial-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .testimonial-stars {
@@ -649,6 +708,21 @@
   color: white;
   font-size: 24px;
   flex-shrink: 0;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.author-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.testimonial-card:hover .author-avatar {
+  transform: scale(1.1);
 }
 
 .author-info {
