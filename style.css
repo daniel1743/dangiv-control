@@ -2907,23 +2907,42 @@ body.sidebar-collapsed .main-content {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  background-color: rgba(var(--color-primary-rgb, 0), 0.1);
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: transparent;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover .stat-icon-wrapper {
+  background-color: rgba(var(--color-primary-rgb, 0), 0.05);
 }
 
 .stat-icon {
-  font-size: var(--font-size-xl);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover .stat-icon {
+  opacity: 0.8;
   color: var(--color-primary);
 }
 
 .stat-card--primary .stat-icon {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+.stat-card--primary:hover .stat-icon {
   color: var(--color-primary);
+  opacity: 0.8;
 }
 
 .stat-card--primary .stat-icon-wrapper {
-  background-color: rgba(var(--color-primary-rgb), 0.1);
+  background-color: transparent;
 }
 
 /* Balance negativo - mostrar en rojo */
@@ -2932,11 +2951,21 @@ body.sidebar-collapsed .main-content {
 }
 
 .stat-card.balance-negative .stat-icon {
+  color: var(--color-text-secondary) !important;
+  opacity: 0.5;
+}
+
+.stat-card.balance-negative:hover .stat-icon {
+  opacity: 0.8;
   color: var(--color-red-500) !important;
 }
 
 .stat-card.balance-negative .stat-icon-wrapper {
-  background-color: rgba(var(--color-red-500-rgb), 0.1) !important;
+  background-color: transparent !important;
+}
+
+.stat-card.balance-negative:hover .stat-icon-wrapper {
+  background-color: rgba(var(--color-red-500-rgb), 0.05) !important;
 }
 
 .stat-details {

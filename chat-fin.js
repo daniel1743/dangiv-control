@@ -540,27 +540,16 @@ Tu objetivo final es que el usuario se sienta en control y optimista sobre su fu
   // SALUDO PERSONALIZADO AL ABRIR
   // ========================================
   async showPersonalizedGreeting() {
-    // Verificar si ya tiene interacciones previas
     const hasInteracted = localStorage.getItem('finChatInteracted') === 'true';
 
-    if (!hasInteracted) {
-      // Primera vez - No mostrar saludo aún, dejar que las sugerencias hablen
-      return;
-    }
-
-    // Ya tuvo interacción previa - Mostrar saludo personalizado
-    // Intentar obtener nombre del sistema principal primero
     let userName = this.userProfile.name;
 
-    // Si no hay nombre en el perfil del chat, buscar en el perfil principal de la app
     if (!userName || userName === '') {
       try {
-        // Intentar obtener del perfil de Firebase si está disponible
         if (window.FB && window.FB.auth && window.FB.auth.currentUser) {
           userName = window.FB.auth.currentUser.displayName;
         }
 
-        // Si no, intentar del localStorage del app principal
         if (!userName || userName === '') {
           const userProfileMain = localStorage.getItem('userProfile');
           if (userProfileMain) {
@@ -573,48 +562,33 @@ Tu objetivo final es que el usuario se sienta en control y optimista sobre su fu
       }
     }
 
-    // Si no hay nombre, pedir que se presente
-    if (!userName || userName === '' || userName === 'Usuario') {
-      // Ocultar sugerencias
+    const hasValidName =
+      userName && userName !== '' && userName.toLowerCase() !== 'usuario';
+
+    if (this.quickSuggestions) {
+      this.quickSuggestions.style.display = hasInteracted ? 'none' : 'block';
+    }
+
+    this.showTypingIndicator();
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    if (!hasValidName) {
+      this.hideTypingIndicator();
+      const introGreeting = this.getNameRequestGreeting();
+      this.addBotMessage(introGreeting);
+      this.waitingForName = true;
       if (this.quickSuggestions) {
         this.quickSuggestions.style.display = 'none';
       }
-
-      // Mostrar typing indicator
-      this.showTypingIndicator();
-
-      // Esperar 1 segundo
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Mensaje pidiendo nombre
-      const greetingWithoutName = `¡Hola! 👋 Me alegra verte de nuevo. Ya hemos hablado antes, pero me doy cuenta de que no me has dicho tu nombre. 😊
-
-Me gustaría conocerte mejor y entrar en confianza contigo. ¿Cómo te llamas?`;
-
-      this.hideTypingIndicator();
-      this.addBotMessage(greetingWithoutName);
-
-      // Marcar que estamos esperando el nombre
-      this.waitingForName = true;
       return;
     }
 
-    // Tiene nombre - saludo normal
-    // Ocultar sugerencias porque ya ha interactuado antes
-    if (this.quickSuggestions) {
-      this.quickSuggestions.style.display = 'none';
-    }
-
-    // Mostrar typing indicator
-    this.showTypingIndicator();
-
-    // Esperar 1 segundo para parecer más natural
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     let greeting;
 
-    // Si tiene API key, generar con IA
-    if (this.geminiApiKey) {
+    if (!hasInteracted) {
+      greeting = this.getFirstInteractionGreeting(userName);
+    } else if (this.geminiApiKey) {
       try {
         greeting = await this.generateAIGreeting(userName);
       } catch (error) {
@@ -622,7 +596,6 @@ Me gustaría conocerte mejor y entrar en confianza contigo. ¿Cómo te llamas?`;
         greeting = this.getRandomGreeting(userName);
       }
     } else {
-      // Sin API, usar mensajes predefinidos
       greeting = this.getRandomGreeting(userName);
     }
 
@@ -710,6 +683,29 @@ RESPONDE SOLO CON EL SALUDO (sin comillas ni formato extra):`;
       `${userName}, ¡hola! 📊 ¿Cómo van tus finanzas? ¿Te ayudo con algo?`,
       `¡Hola ${userName}! 💡 ¿Qué te trae por aquí hoy? Estoy para ayudarte.`,
       `${userName}! 🚀 ¿Listo para tomar el control de tu dinero? ¿Por dónde empezamos?`
+    ];
+
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  }
+
+
+  getFirstInteractionGreeting(userName) {
+    const greetings = [
+      `¡Hola ${userName}! Soy Fin y estoy listo para ayudarte a tomar el control de tu dinero. ¿Por dónde te gustaría comenzar?`,
+      `Encantado de conocerte, ${userName}. Puedo analizar tus gastos, metas u oportunidades de ahorro. Tú eliges el primer paso.`,
+      `${userName}, qué bueno tenerte aquí. Si quieres optimizar tus gastos o planear metas, dime y lo hacemos juntos.`,
+      `¡Hey ${userName}! Cada conversación es diferente, así que cuéntame qué te inquieta hoy y trabajamos en ello.`
+    ];
+
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  }
+
+  getNameRequestGreeting() {
+    const greetings = [
+      `¡Hola! Soy Fin. Antes de ayudarte con tus finanzas, ¿cómo te gustaría que te llame?`,
+      `Qué bueno verte por aquí. Para darte consejos más cercanos necesito saber tu nombre. ¿Me lo compartes?`,
+      `Hola 👋 Soy Fin, tu coach financiero. ¿Cuál es tu nombre para personalizar mejor la conversación?`,
+      `Me encanta empezar conociéndonos. ¿Cómo te llamas? Así enfoco cada recomendación en ti.`
     ];
 
     return greetings[Math.floor(Math.random() * greetings.length)];
