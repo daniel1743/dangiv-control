@@ -1804,7 +1804,9 @@ class FinanceApp {
             // Actualizar notificaciones
             this.updateNotifications();
 
-            // === MOSTRAR MODAL DE BIENVENIDA DE FIN (SOLO SI NO SE HA VISTO) ===
+            // === MODAL DE BIENVENIDA DE FIN DESHABILITADO (evita bloqueos) ===
+            // Comentado para evitar que los usuarios se queden pegados en el modal
+            /*
             const finWelcomeShown = localStorage.getItem('finWelcomeShown');
             const wasNewUser = sessionStorage.getItem('wasNewUser') === 'true';
 
@@ -1821,6 +1823,7 @@ class FinanceApp {
                 }
               }, delay);
             }
+            */
           })
           .catch((err) => {
             console.error('[Auth] Error en sincronización:', err);
@@ -3139,10 +3142,14 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
 
   /**
    * Muestra el modal de bienvenida de Fin
-   * SOLO para usuarios REGISTRADOS (NO anónimos)
-   * Con actitud tímida/cautelosa para usuarios nuevos
+   * DESHABILITADO: Modal bloqueante que causaba problemas a los usuarios
    */
   showFinWelcomeModal() {
+    // Función deshabilitada para evitar bloqueos de usuarios
+    console.log('⚠️ Modal de bienvenida de Fin deshabilitado');
+    return;
+    
+    /* CÓDIGO ORIGINAL COMENTADO
     // VALIDACIÓN ESTRICTA: Solo usuarios registrados
     if (this.currentUser === 'anonymous' || !this.currentUser || this.currentUser === null) {
       console.log('❌ Modal Fin bloqueado - Usuario no autenticado:', this.currentUser);
@@ -3199,6 +3206,7 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
 
     // Mostrar modal con animación
     modal.classList.add('show');
+    */
   }
 
   /**
@@ -3207,7 +3215,13 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
    */
   closeFinWelcomeModal(markAsSeen = false) {
     const modal = document.getElementById('finWelcomeModal');
-    if (!modal) return;
+    if (!modal) {
+      // Modal no existe (está comentado), solo marcar como visto si se solicita
+      if (markAsSeen) {
+        localStorage.setItem('finWelcomeShown', 'true');
+      }
+      return;
+    }
 
     modal.classList.remove('show');
 
@@ -3251,15 +3265,20 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
   }
 
   /**
-   * Muestra ayuda de Fin (reabre modal o muestra tooltip contextual)
+   * Muestra ayuda de Fin (modal deshabilitado, solo muestra toast)
    */
   showFinHelp() {
+    // Modal de bienvenida deshabilitado - solo mostrar ayuda vía toast
+    this.showToast('Pregúntame sobre tus gastos, metas o consejos de ahorro 💡', 'info', 5000);
+    
+    /* CÓDIGO ORIGINAL COMENTADO
     const modal = document.getElementById('finWelcomeModal');
     if (modal) {
       modal.classList.add('show');
     } else {
       this.showToast('Pregúntame sobre tus gastos, metas o consejos de ahorro 💡', 'info', 5000);
     }
+    */
   }
 
   /**
@@ -7756,54 +7775,96 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
 
   renderExpenses() {
     const container = document.getElementById('expenseList');
+    const emptyState = document.getElementById('expenseEmptyState');
     if (!container) return;
 
     container.innerHTML = '';
 
-    if (this.expenses.length === 0) {
-      container.innerHTML =
-        '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No hay gastos registrados</h3></div>';
-      return;
+    // Aplicar filtros
+    let filteredExpenses = [...this.expenses];
+    
+    // Filtro por período
+    if (this.currentExpenseFilter) {
+      const today = new Date().toISOString().split('T')[0];
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      const weekAgoStr = weekAgo.toISOString().split('T')[0];
+
+      if (this.currentExpenseFilter === 'today') {
+        filteredExpenses = filteredExpenses.filter(e => e.date === today);
+      } else if (this.currentExpenseFilter === 'week') {
+        filteredExpenses = filteredExpenses.filter(e => e.date >= weekAgoStr);
+      }
     }
 
-    const sortedExpenses = [...this.expenses].sort(
+    // Filtro por búsqueda
+    if (this.currentExpenseSearch) {
+      const searchLower = this.currentExpenseSearch.toLowerCase();
+      filteredExpenses = filteredExpenses.filter(e => {
+        const desc = (e.description || '').toLowerCase();
+        const cat = (e.category || '').toLowerCase();
+        const user = (e.user || '').toLowerCase();
+        return desc.includes(searchLower) || cat.includes(searchLower) || user.includes(searchLower);
+      });
+    }
+
+    // Mostrar/ocultar empty state
+    if (filteredExpenses.length === 0) {
+      if (emptyState) emptyState.classList.remove('hidden');
+      return;
+    } else {
+      if (emptyState) emptyState.classList.add('hidden');
+    }
+
+    // Ordenar por fecha (más recientes primero)
+    const sortedExpenses = filteredExpenses.sort(
       (a, b) => new Date(b.date) - new Date(a.date)
     );
 
     sortedExpenses.forEach((expense) => {
       const expenseEl = document.createElement('div');
-      expenseEl.className = 'transaction-item';
+      expenseEl.className = 'expense-item';
 
       const userBadge = this.getUserBadgeHtml(expense.user);
-
-      // Meta line sin el usuario (ya está en el badge)
-      const metaLine = this.formatMetaLine([
-        expense.date,
-        expense.category,
-        expense.necessity,
-      ]);
+      const categoryIcon = this.getCategoryIcon(expense.category);
 
       expenseEl.innerHTML = `
-        <div class="transaction-info">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-            <h4 style="margin: 0;">${this.fixLegacyEncoding(expense.description)}</h4>
-            ${userBadge}
-          </div>
-          <div class="transaction-meta">${metaLine}</div>
+        <div class="expense-item__icon">
+          ${categoryIcon}
         </div>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div class="transaction-amount expense">$${expense.amount}</div>
-          <button type="button" class="btn btn-danger btn-delete" data-id="${
-            expense.id
-          }">
-            Eliminar
+        <div class="expense-item__content">
+          <h4 class="expense-item__title">${this.fixLegacyEncoding(expense.description)}</h4>
+          <div class="expense-item__meta">
+            ${userBadge}
+            <span class="expense-item__category">${expense.category || 'Sin categoría'}</span>
+            <span class="expense-item__date">${this.formatDate(expense.date)}</span>
+          </div>
+        </div>
+        <div class="expense-item__amount">$${this.formatNumberWithSeparators ? this.formatNumberWithSeparators(expense.amount.toString()) : expense.amount.toLocaleString()}</div>
+        <div class="expense-item__actions">
+          <button type="button" class="expense-item__btn expense-item__btn--edit" data-id="${expense.id}" title="Editar">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button type="button" class="expense-item__btn expense-item__btn--delete" data-id="${expense.id}" title="Eliminar">
+            <i class="fas fa-trash"></i>
           </button>
         </div>
       `;
 
       container.appendChild(expenseEl);
 
-      const delBtn = expenseEl.querySelector('.btn-delete');
+      // Event listeners
+      const editBtn = expenseEl.querySelector('.expense-item__btn--edit');
+      const delBtn = expenseEl.querySelector('.expense-item__btn--delete');
+
+      if (editBtn) {
+        editBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.editExpense(expense.id);
+        });
+      }
+
       if (delBtn) {
         delBtn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -7812,6 +7873,80 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
         });
       }
     });
+  }
+
+  getCategoryIcon(category) {
+    const icons = {
+      'Alimentación': '<i class="fas fa-utensils"></i>',
+      'Transporte': '<i class="fas fa-car"></i>',
+      'Entretenimiento': '<i class="fas fa-film"></i>',
+      'Salud': '<i class="fas fa-heartbeat"></i>',
+      'Servicios': '<i class="fas fa-bolt"></i>',
+      'Compras': '<i class="fas fa-shopping-bag"></i>',
+      'Otros': '<i class="fas fa-box"></i>',
+    };
+    return icons[category] || '<i class="fas fa-receipt"></i>';
+  }
+
+  formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Hoy';
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return 'Ayer';
+    } else {
+      return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    }
+  }
+
+  editExpense(id) {
+    const expense = this.expenses.find(e => e.id === id);
+    if (!expense) {
+      this.showToast('Gasto no encontrado', 'error');
+      return;
+    }
+
+    // Llenar formulario con datos del gasto
+    const amountInput = document.getElementById('amount');
+    const descInput = document.getElementById('description');
+    const categorySelect = document.getElementById('category');
+    const necessitySelect = document.getElementById('necessity');
+    const dateInput = document.getElementById('date');
+    const userSelect = document.getElementById('user');
+    const itemsTextarea = document.getElementById('items');
+    const notesTextarea = document.getElementById('notes');
+
+    if (amountInput) {
+      amountInput.value = this.formatNumberWithSeparators ? 
+        this.formatNumberWithSeparators(expense.amount.toString()) : 
+        expense.amount.toString();
+    }
+    if (descInput) descInput.value = expense.description || '';
+    if (categorySelect) categorySelect.value = expense.category || '';
+    if (necessitySelect) necessitySelect.value = expense.necessity || '';
+    if (dateInput) dateInput.value = expense.date || '';
+    if (userSelect) userSelect.value = expense.user || '';
+    if (itemsTextarea) itemsTextarea.value = expense.items || '';
+    if (notesTextarea) notesTextarea.value = expense.notes || '';
+
+    // Marcar para edición
+    this.editingExpenseId = id;
+
+    // Scroll al formulario
+    const form = document.getElementById('expenseForm');
+    if (form) {
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => {
+        if (amountInput) amountInput.focus();
+      }, 300);
+    }
+
+    this.showToast('Gasto cargado para editar. Modifica y guarda.', 'info');
   }
 
   deleteExpense(id) {
@@ -13892,6 +14027,15 @@ FinanceApp.prototype.changeTheme = function (theme) {
 
   // Apply theme logic (you can extend this based on your theme system)
   localStorage.setItem('financia_theme', theme);
+  const themeNames = {
+    light: 'Claro',
+    dark: 'Oscuro',
+    auto: 'Automático',
+  };
+  const currentThemeLabel = document.getElementById('currentThemeLabel');
+  if (currentThemeLabel) {
+    currentThemeLabel.textContent = themeNames[theme] || 'Personalizado';
+  }
   this.showToast(`Tema ${theme} aplicado`, 'success');
 };
 
@@ -13939,6 +14083,7 @@ FinanceApp.prototype.updateConfigurationDisplay = function () {
   );
   const configInviteSection = document.getElementById('configInviteSection');
   const currentProfileAvatar = document.getElementById('currentProfileAvatar');
+  const currentThemeLabel = document.getElementById('currentThemeLabel');
 
   // Update avatar preview
   if (currentProfileAvatar) {
@@ -13976,6 +14121,16 @@ FinanceApp.prototype.updateConfigurationDisplay = function () {
 
   // Actualizar display de ingresos extras
   this.updateExtraIncomeDisplay();
+
+  if (currentThemeLabel) {
+    const savedTheme = localStorage.getItem('financia_theme') || 'light';
+    const themeNames = {
+      light: 'Claro',
+      dark: 'Oscuro',
+      auto: 'Automático',
+    };
+    currentThemeLabel.textContent = themeNames[savedTheme] || 'Personalizado';
+  }
 
   if (configMemberName) {
     configMemberName.textContent = this.userProfile.name || 'Usuario';
@@ -16257,8 +16412,15 @@ FinanceApp.prototype.checkBudgetAlerts = function (monthKey) {
 FinanceApp.prototype.renderBudgetSection = function () {
   const monthKey = this.currentBudgetMonth;
   const monthLabel = document.getElementById('currentBudgetMonth');
+  const yearLabel = document.getElementById('currentBudgetYear');
+  
   if (monthLabel) {
     monthLabel.textContent = this.getMonthName(monthKey);
+  }
+  
+  if (yearLabel) {
+    const [year] = monthKey.split('-');
+    yearLabel.textContent = year;
   }
 
   this.renderBudgetSummary(monthKey);
@@ -16279,131 +16441,194 @@ FinanceApp.prototype.renderBudgetSummary = function (monthKey) {
       ? Math.min((budget.totalSpent / budget.totalLimit) * 100, 100)
       : 0;
 
-  document.getElementById(
-    'totalBudgetLimit'
-  ).textContent = `$${this.formatNumber(budget.totalLimit)}`;
-  document.getElementById(
-    'totalBudgetSpent'
-  ).textContent = `$${this.formatNumber(budget.totalSpent)}`;
-  document.getElementById(
-    'totalBudgetAvailable'
-  ).textContent = `$${this.formatNumber(Math.max(available, 0))}`;
-  document.getElementById(
-    'overallBudgetPercentage'
-  ).textContent = `${percentage.toFixed(0)}%`;
-
+  // Actualizar valores con formato mejorado
+  const limitEl = document.getElementById('totalBudgetLimit');
+  const spentEl = document.getElementById('totalBudgetSpent');
+  const availableEl = document.getElementById('totalBudgetAvailable');
+  const percentageEl = document.getElementById('overallBudgetPercentage');
   const progressBar = document.getElementById('overallBudgetProgress');
+  const progressIndicator = document.getElementById('progressIndicator');
+
+  if (limitEl) {
+    limitEl.textContent = `$${this.formatNumber(budget.totalLimit)}`;
+  }
+  if (spentEl) {
+    spentEl.textContent = `$${this.formatNumber(budget.totalSpent)}`;
+  }
+  if (availableEl) {
+    availableEl.textContent = `$${this.formatNumber(Math.max(available, 0))}`;
+  }
+  if (percentageEl) {
+    percentageEl.textContent = `${percentage.toFixed(0)}%`;
+  }
+
+  // Actualizar barra de progreso con animación
   if (progressBar) {
-    progressBar.style.width = `${percentage}%`;
-    progressBar.className = 'progress-fill';
-    if (percentage >= 100) {
-      progressBar.classList.add('danger');
-    } else if (percentage >= 80) {
-      progressBar.classList.add('warning');
-    }
+    setTimeout(() => {
+      progressBar.style.width = `${percentage}%`;
+      progressBar.className = 'budget-progress__fill';
+      
+      if (percentage >= 100) {
+        progressBar.classList.add('danger');
+      } else if (percentage >= 80) {
+        progressBar.classList.add('warning');
+      }
+    }, 100);
+  }
+
+  // Actualizar indicador de progreso
+  if (progressIndicator) {
+    setTimeout(() => {
+      progressIndicator.style.left = `${percentage}%`;
+    }, 100);
   }
 };
 
 FinanceApp.prototype.renderLeisureItemsList = function (monthKey) {
   const container = document.getElementById('leisureItemsList');
+  const emptyState = document.getElementById('leisureEmptyState');
   if (!container) return;
 
   const budget = this.budgets[monthKey];
 
   if (!budget || !budget.leisureItems || budget.leisureItems.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state" style="padding: 20px; text-align: center; color: var(--color-text-muted);">
-        <i class="fas fa-gift" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
-        <p>No hay gastos de ocio configurados</p>
-        <p style="font-size: 0.9rem;">Agrega un gasto usando el formulario de abajo</p>
-      </div>
-    `;
+    container.innerHTML = '';
+    if (emptyState) emptyState.classList.remove('hidden');
     return;
   }
+
+  if (emptyState) emptyState.classList.add('hidden');
 
   container.innerHTML = budget.leisureItems
     .map(
       (item, index) => `
     <div class="leisure-item" data-index="${index}">
-      <div class="leisure-item-icon">
+      <div class="leisure-item__icon">
         <i class="fas fa-star"></i>
       </div>
-      <div class="leisure-item-content">
-        <div class="leisure-item-description">${item.description}</div>
-        <div class="leisure-item-amount">$${item.amount.toLocaleString()}</div>
+      <div class="leisure-item__content">
+        <div class="leisure-item__description">${this.fixLegacyEncoding ? this.fixLegacyEncoding(item.description) : item.description}</div>
+        <div class="leisure-item__amount">$${this.formatNumber(item.amount)}</div>
       </div>
-      <button type="button" class="leisure-item-delete" data-index="${index}">
-        <i class="fas fa-trash"></i>
-      </button>
+      <div class="leisure-item__actions">
+        <button type="button" class="leisure-item__btn leisure-item__btn--edit" data-index="${index}" title="Editar">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button type="button" class="leisure-item__btn leisure-item__btn--delete" data-index="${index}" title="Eliminar">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
     </div>
   `
     )
     .join('');
 
-  // Agregar event listeners para eliminar items
-  container.querySelectorAll('.leisure-item-delete').forEach((btn) => {
+  // Agregar event listeners
+  container.querySelectorAll('.leisure-item__btn--delete').forEach((btn) => {
     btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const index = parseInt(e.currentTarget.getAttribute('data-index'));
       this.removeLeisureItem(monthKey, index);
+    });
+  });
+
+  container.querySelectorAll('.leisure-item__btn--edit').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(e.currentTarget.getAttribute('data-index'));
+      this.editLeisureItem(monthKey, index);
     });
   });
 };
 
 FinanceApp.prototype.renderBudgetProgress = function (monthKey) {
   const container = document.getElementById('budgetCategoriesProgress');
+  const emptyProgress = document.getElementById('budgetEmptyProgress');
   if (!container) return;
 
   const budget = this.budgets[monthKey];
   if (!budget || !budget.leisureItems || budget.leisureItems.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <i class="fas fa-gift"></i>
-        <p>No hay gastos de ocio configurados</p>
-        <p class="text-muted">Agrega gastos de ocio para ver su progreso aquí</p>
-      </div>
-    `;
+    container.innerHTML = '';
+    if (emptyProgress) emptyProgress.classList.remove('hidden');
     return;
   }
 
+  if (emptyProgress) emptyProgress.classList.add('hidden');
+
   container.innerHTML = budget.leisureItems
     .map((item, index) => {
-      // Por lógica: no podemos saber específicamente qué se gastó en cada item
-      // Solo mostramos el límite configurado
       const itemLimit = item.amount;
       const itemSpent = 0; // Siempre 0 porque no hay tracking específico
       const itemRemaining = itemLimit;
-      const itemExceeded = 0; // Solo si manualmente se marca
+      const itemExceeded = 0;
+      const itemPercentage = itemLimit > 0 ? Math.min((itemSpent / itemLimit) * 100, 100) : 0;
 
       return `
-      <div class="budget-category-progress">
-        <div class="budget-category-progress-header">
-          <div class="budget-category-info">
-            <i class="fas fa-star category-icon category-icon--entertainment"></i>
-            <span class="category-name">${item.description}</span>
+      <div class="budget-category-item">
+        <div class="category-header">
+          <div class="category-info">
+            <div class="category-icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <span class="category-name">${this.fixLegacyEncoding ? this.fixLegacyEncoding(item.description) : item.description}</span>
           </div>
-          <div class="budget-category-amounts">
-            <div class="budget-category-amounts-row">
-              <span class="budget-amount-label">Límite:</span>
-              <span class="budget-amount-value">$${itemLimit.toLocaleString()}</span>
-            </div>
-            <div class="budget-category-amounts-row">
-              <span class="budget-amount-label">Gastado:</span>
-              <span class="budget-amount-value spent">$${itemSpent.toLocaleString()}</span>
-            </div>
-            <div class="budget-category-amounts-row">
-              <span class="budget-amount-label">Restante:</span>
-              <span class="budget-amount-value available">$${itemRemaining.toLocaleString()}</span>
-            </div>
-            <div class="budget-category-amounts-row">
-              <span class="budget-amount-label">Excedido:</span>
-              <span class="budget-amount-value exceeded">$${itemExceeded.toLocaleString()}</span>
-            </div>
+        </div>
+        <div class="category-amounts">
+          <div class="amount-row">
+            <span class="amount-label">Límite:</span>
+            <span class="amount-value">$${this.formatNumber(itemLimit)}</span>
           </div>
+          <div class="amount-row">
+            <span class="amount-label">Gastado:</span>
+            <span class="amount-value spent">$${this.formatNumber(itemSpent)}</span>
+          </div>
+          <div class="amount-row">
+            <span class="amount-label">Restante:</span>
+            <span class="amount-value available">$${this.formatNumber(itemRemaining)}</span>
+          </div>
+          <div class="amount-row">
+            <span class="amount-label">Excedido:</span>
+            <span class="amount-value exceeded">$${this.formatNumber(itemExceeded)}</span>
+          </div>
+        </div>
+        <div class="category-progress-bar">
+          <div class="category-progress-fill" style="width: ${itemPercentage}%"></div>
         </div>
       </div>
     `;
     })
     .join('');
+};
+
+FinanceApp.prototype.editLeisureItem = function (monthKey, index) {
+  const budget = this.budgets[monthKey];
+  if (!budget || !budget.leisureItems || !budget.leisureItems[index]) {
+    this.showToast('Item no encontrado', 'error');
+    return;
+  }
+
+  const item = budget.leisureItems[index];
+  const descInput = document.getElementById('leisureItemDescription');
+  const amountInput = document.getElementById('leisureItemAmount');
+
+  if (descInput) descInput.value = item.description || '';
+  if (amountInput) {
+    amountInput.value = this.formatNumber(item.amount);
+  }
+
+  // Marcar para edición
+  this.editingLeisureItem = { monthKey, index };
+
+  // Scroll al formulario
+  const form = document.getElementById('budgetSetupForm');
+  if (form) {
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => {
+      if (descInput) descInput.focus();
+    }, 300);
+  }
+
+  this.showToast('Item cargado para editar. Modifica y guarda.', 'info');
 };
 
 FinanceApp.prototype.setupBudgetListeners = function () {
@@ -16433,14 +16658,6 @@ FinanceApp.prototype.setupBudgetListeners = function () {
       const amountCleaned = amountRaw.replace(/[^0-9]/g, '');
       const amount = parseInt(amountCleaned, 10) || 0;
 
-      console.log('🎉 Adding leisure item:', {
-        description,
-        amountRaw,
-        amountCleaned,
-        amount,
-        type: typeof amount,
-      });
-
       if (!description) {
         this.showToast('Debes especificar para qué es el gasto', 'error');
         return;
@@ -16451,7 +16668,29 @@ FinanceApp.prototype.setupBudgetListeners = function () {
         return;
       }
 
-      this.addLeisureItem(this.currentBudgetMonth, description, amount);
+      // Si estamos editando, actualizar el item existente
+      if (this.editingLeisureItem) {
+        const { monthKey, index } = this.editingLeisureItem;
+        const budget = this.budgets[monthKey];
+        if (budget && budget.leisureItems && budget.leisureItems[index]) {
+          budget.leisureItems[index].description = description;
+          budget.leisureItems[index].amount = amount;
+          
+          // Recalcular total
+          budget.totalLimit = budget.leisureItems.reduce((sum, item) => sum + item.amount, 0);
+          
+          this.updateLeisureBudgetSpending(monthKey);
+          this.saveData();
+          this.renderBudgetSection();
+          this.showToast('Gasto de ocio actualizado', 'success');
+          
+          // Limpiar estado de edición
+          this.editingLeisureItem = null;
+        }
+      } else {
+        // Agregar nuevo item
+        this.addLeisureItem(this.currentBudgetMonth, description, amount);
+      }
 
       // Limpiar inputs
       descInput.value = '';
@@ -18695,6 +18934,7 @@ FinanceApp.prototype.updateExtraIncomeDisplay = function () {
   const extraDisplay = document.getElementById('extraIncomeDisplay');
   const extraAmount = document.getElementById('extraIncomeAmount');
   const totalDisplay = document.getElementById('totalIncomeDisplay');
+  const sidebarIncomeValue = document.getElementById('sidebarIncomeValue');
 
   if (extraDisplay && extraAmount) {
     if (this.extraIncome > 0) {
@@ -18705,13 +18945,18 @@ FinanceApp.prototype.updateExtraIncomeDisplay = function () {
     }
   }
 
+  const additionalIncome = this.getTotalAdditionalIncome
+    ? this.getTotalAdditionalIncome()
+    : 0;
+  const totalIncome =
+    (this.monthlyIncome || 0) + (this.extraIncome || 0) + additionalIncome;
+
   if (totalDisplay) {
-    const additionalIncome = this.getTotalAdditionalIncome
-      ? this.getTotalAdditionalIncome()
-      : 0;
-    const totalIncome =
-      (this.monthlyIncome || 0) + (this.extraIncome || 0) + additionalIncome;
     totalDisplay.textContent = `$${totalIncome.toLocaleString()}`;
+  }
+
+  if (sidebarIncomeValue) {
+    sidebarIncomeValue.textContent = `$${totalIncome.toLocaleString()}`;
   }
 };
 
@@ -19156,6 +19401,53 @@ window.openSelectModal = function(modalId, currentValue) {
   if (!modal) {
     console.error(`Modal ${modalId} no encontrado`);
     return;
+  }
+
+  // Buscar el elemento trigger (el select o botón que abrió el modal)
+  let trigger = document.querySelector(`[data-modal-id="${modalId}"]`);
+  
+  // Si no se encuentra con data-modal-id, intentar encontrar por el ID del select relacionado
+  if (!trigger || trigger === document.body) {
+    const selectId = modalId.replace('Modal', '').replace('add', '');
+    const selectElement = document.getElementById(selectId);
+    if (selectElement) {
+      // Usar el contenedor custom-select o el select mismo
+      trigger = selectElement.closest('.custom-select') || selectElement;
+    }
+  }
+  
+  // Si aún no se encuentra, usar el elemento activo (útil cuando se hace click/focus directo)
+  if (!trigger || trigger === document.body || trigger === document.documentElement) {
+    trigger = document.activeElement;
+    // Si el elemento activo es un select, usar su contenedor custom-select
+    if (trigger && trigger.tagName === 'SELECT') {
+      trigger = trigger.closest('.custom-select') || trigger;
+    }
+  }
+  
+  // Calcular posición del modal solo si encontramos un trigger válido
+  if (trigger && trigger !== document.body && trigger !== document.documentElement && trigger.getBoundingClientRect) {
+    try {
+      const triggerRect = trigger.getBoundingClientRect();
+      const modalContent = modal.querySelector('.select-modal-content');
+      const viewportHeight = window.innerHeight;
+      const spaceBelow = viewportHeight - triggerRect.bottom;
+      const spaceAbove = triggerRect.top;
+      const estimatedModalHeight = Math.min(400, viewportHeight * 0.7); // 70% del viewport o 400px, el menor
+      
+      // Si no hay espacio abajo suficiente y hay más espacio arriba, abrir hacia arriba
+      if (spaceBelow < estimatedModalHeight && spaceAbove > estimatedModalHeight) {
+        modal.classList.add('select-modal-top');
+      } else {
+        modal.classList.remove('select-modal-top');
+      }
+    } catch (error) {
+      // Si hay error, usar posición por defecto (abajo)
+      modal.classList.remove('select-modal-top');
+    }
+  } else {
+    // Por defecto, abrir hacia abajo
+    modal.classList.remove('select-modal-top');
   }
 
   // Agregar clase show para mostrar el modal

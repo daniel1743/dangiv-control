@@ -2569,6 +2569,14 @@ input:checked + .toggle-slider:before {
   font-size: 0.875rem;
 }
 
+.empty-state-copy {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: var(--space-12);
+  margin: 0;
+  font-size: 0.875rem;
+}
+
 /* Responsive Adjustments for New Elements */
 @media (max-width: 1024px) {
   .theme-options {
@@ -2606,5 +2614,163 @@ input:checked + .toggle-slider:before {
   .current-chart-style {
     flex-direction: column;
     text-align: center;
+  }
+}
+
+/* ===================================
+   SETTINGS LAYOUT ENHANCEMENTS
+   =================================== */
+.settings-sidebar-header {
+  padding: var(--space-20);
+  margin-bottom: var(--space-16);
+  background: linear-gradient(135deg, #fdf7ed 0%, #fffdf8 100%);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-12);
+  background: rgba(var(--color-primary-rgb), 0.08);
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: var(--space-12);
+}
+
+.settings-sidebar-header p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.sidebar-stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  margin-bottom: var(--space-20);
+}
+
+.sidebar-stat {
+  padding: var(--space-12);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.sidebar-stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+}
+
+.sidebar-stat-value {
+  display: block;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.sidebar-stat-value--mono {
+  font-family: 'JetBrains Mono', 'Menlo', 'Fira Code', monospace;
+  font-size: 1rem;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-24);
+}
+
+.settings-grid--balanced {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.settings-highlight-card {
+  padding: var(--space-24);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  background: linear-gradient(135deg, #fff 0%, #fdf8f3 100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.settings-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-12);
+  background: rgba(var(--color-primary-rgb), 0.08);
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.income-breakdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-16);
+}
+
+.breakdown-item {
+  padding: var(--space-16);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+}
+
+.breakdown-item span {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.breakdown-item strong {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.cover-image-preview {
+  width: 100%;
+  height: 180px;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--color-border);
+  background: linear-gradient(135deg, rgba(32, 36, 50, 0.4), rgba(3, 7, 18, 0.6));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cover-empty-state {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cover-empty-state i {
+  font-size: 2rem;
+  margin-bottom: var(--space-8);
+}
+
+@media (max-width: 768px) {
+  .breakdown-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .settings-highlight-card {
+    padding: var(--space-20);
   }
 }
