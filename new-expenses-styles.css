@@ -25,6 +25,10 @@
   padding: 32px 24px 48px;
   background: var(--exp-bg);
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* ============================================
@@ -148,6 +152,9 @@
   grid-template-columns: 1.2fr 1fr;
   gap: 24px;
   align-items: start;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 1024px) {
@@ -162,6 +169,16 @@
 .expense-form-wrapper {
   position: sticky;
   top: 100px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: visible; /* Permitir dropdowns */
+}
+
+@media (max-width: 1024px) {
+  .expense-form-wrapper {
+    position: static; /* No sticky en tablets/móvil */
+  }
 }
 
 .expense-form-card {
@@ -169,8 +186,19 @@
   border-radius: var(--exp-radius);
   border: 1px solid var(--exp-border);
   box-shadow: var(--exp-shadow);
-  padding: 28px;
+  padding: 32px; /* Aumentado de 28px */
   transition: var(--exp-transition);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: visible; /* Permitir que dropdowns se muestren fuera */
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .expense-form-card {
+    padding: 20px 16px; /* Padding reducido en móvil pero consistente */
+  }
 }
 
 .expense-form-card:hover {
@@ -181,9 +209,10 @@
 .quick-actions {
   display: flex;
   gap: 8px;
-  margin-bottom: 24px;
+  margin-bottom: 28px; /* Aumentado de 24px */
   padding-bottom: 20px;
   border-bottom: 1px solid var(--exp-border);
+  flex-wrap: wrap; /* Permitir wrap en móvil */
 }
 
 .quick-action-btn {
@@ -222,17 +251,18 @@
 .expense-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px; /* Aumentado de 20px para mejor respiración */
 }
 
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px; /* Aumentado de 8px para mejor separación */
+  margin-bottom: 0; /* Removido margin-bottom inconsistente */
 }
 
 .form-field--amount {
-  margin-bottom: 8px;
+  margin-bottom: 0; /* Removido margin-bottom extra */
 }
 
 .form-label {
@@ -242,7 +272,8 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--exp-text);
-  margin-bottom: 4px;
+  margin-bottom: 0; /* Removido margin-bottom, usando gap del contenedor */
+  line-height: 1.4;
 }
 
 .form-label i {
@@ -254,19 +285,32 @@
   color: var(--exp-error);
 }
 
-/* Inputs */
+/* Inputs - Estandarizados */
 .form-input,
 .form-select,
 .form-textarea {
   width: 100%;
-  padding: 12px 16px;
-  font-size: 15px;
+  max-width: 100%;
+  padding: 14px 16px; /* Aumentado de 12px para mejor touch target */
+  font-size: 16px; /* Aumentado de 15px para mejor legibilidad */
   border: 2px solid var(--exp-border);
   border-radius: var(--exp-radius-sm);
   background: var(--exp-card);
   color: var(--exp-text);
   transition: var(--exp-transition);
   font-family: inherit;
+  box-sizing: border-box;
+  min-height: 48px; /* Altura mínima consistente para accesibilidad */
+  line-height: 1.5;
+}
+
+/* Prevenir zoom en iOS al enfocar inputs */
+@media (max-width: 768px) {
+  .form-input,
+  .form-select,
+  .form-textarea {
+    font-size: 16px; /* 16px previene zoom automático en iOS */
+  }
 }
 
 .form-input:focus,
@@ -274,7 +318,16 @@
 .form-textarea:focus {
   outline: none;
   border-color: var(--exp-accent);
-  box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.15); /* Aumentado de 0.1 */
+  transform: translateY(-1px); /* Sutil elevación al enfocar */
+}
+
+/* Focus visible para accesibilidad */
+.form-input:focus-visible,
+.form-select:focus-visible,
+.form-textarea:focus-visible {
+  outline: 2px solid var(--exp-accent);
+  outline-offset: 2px;
 }
 
 .form-input:hover,
@@ -287,23 +340,37 @@
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .currency-symbol {
   position: absolute;
   left: 16px;
-  font-size: 20px;
+  font-size: 22px; /* Aumentado de 20px */
   font-weight: 700;
   color: var(--exp-accent);
   z-index: 1;
   pointer-events: none;
+  top: 50%;
+  transform: translateY(-50%);
+  line-height: 1;
 }
 
 .amount-input {
   padding-left: 48px !important;
-  font-size: 24px;
+  font-size: 28px; /* Aumentado de 24px para mejor visibilidad */
   font-weight: 700;
   text-align: left;
+  min-height: 56px; /* Altura mínima mayor para el campo de monto */
+}
+
+@media (max-width: 768px) {
+  .amount-input {
+    font-size: 24px; /* Reducido en móvil pero aún grande */
+    min-height: 52px;
+  }
 }
 
 .amount-suggestions {
@@ -333,27 +400,83 @@
   border-color: var(--exp-accent);
 }
 
-/* Select Wrapper */
+/* Select Wrapper - Mejorado */
 .select-wrapper {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: stretch; /* Cambiado de center para mejor alineación */
+  width: 100%;
 }
 
 .form-select {
-  padding-right: 48px;
+  padding-right: 88px; /* Aumentado para botón + icono */
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 16px center;
+  background-position: right 48px center; /* Ajustado para botón */
   cursor: pointer;
+  min-height: 48px; /* Consistente con otros inputs */
+}
+
+/* Trigger de modal para selects en móvil */
+.modal-trigger-select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--exp-border);
+  border-radius: var(--exp-radius-sm);
+  font-size: 16px;
+  background: var(--exp-card);
+  color: var(--exp-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: var(--exp-transition);
+  min-height: 48px;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.modal-trigger-select:hover {
+  border-color: var(--exp-primary-light);
+}
+
+.modal-trigger-select:focus {
+  outline: none;
+  border-color: var(--exp-accent);
+  box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.15);
+}
+
+.modal-trigger-select[aria-expanded="true"] {
+  border-color: var(--exp-accent);
+  box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.1);
+}
+
+/* En móvil, ocultar select nativo y usar modal */
+@media (max-width: 768px) {
+  .form-select {
+    /* El select nativo se oculta y se reemplaza por trigger */
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+  
+  /* Asegurar que el trigger sea visible */
+  .modal-trigger-select {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .select-add-btn {
   position: absolute;
   right: 8px;
-  width: 32px;
-  height: 32px;
+  width: 36px; /* Aumentado de 32px */
+  height: 36px; /* Aumentado de 32px */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -363,7 +486,10 @@
   color: var(--exp-text-soft);
   cursor: pointer;
   transition: var(--exp-transition);
-  z-index: 1;
+  z-index: 2; /* Aumentado de 1 */
+  flex-shrink: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .select-add-btn:hover {
@@ -373,31 +499,46 @@
   transform: scale(1.1);
 }
 
-/* Autocomplete */
+/* Autocomplete - Mejorado */
 .input-with-autocomplete {
   position: relative;
+  width: 100%;
 }
 
 .autocomplete-dropdown {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 4px);
   left: 0;
   right: 0;
-  margin-top: 4px;
   background: var(--exp-card);
-  border: 1px solid var(--exp-border);
+  border: 2px solid var(--exp-border);
   border-radius: var(--exp-radius-sm);
-  box-shadow: var(--exp-shadow-hover);
-  max-height: 200px;
+  box-shadow: 0 8px 24px rgba(14, 42, 71, 0.15);
+  max-height: 240px; /* Aumentado de 200px */
   overflow-y: auto;
-  z-index: 100;
+  overflow-x: hidden;
+  z-index: 1000; /* Aumentado de 100 */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 768px) {
+  .autocomplete-dropdown {
+    max-height: 200px; /* Más pequeño en móvil */
+    border-radius: 12px;
+  }
 }
 
 .autocomplete-item {
-  padding: 12px 16px;
+  padding: 14px 16px; /* Aumentado de 12px */
   cursor: pointer;
   transition: var(--exp-transition);
   border-bottom: 1px solid var(--exp-border);
+  min-height: 48px; /* Altura mínima para touch */
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 .autocomplete-item:last-child {
@@ -414,22 +555,25 @@
   display: none;
 }
 
-/* Form Row */
+/* Form Row - Mejorado */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 16px; /* Espaciado consistente */
+  align-items: start; /* Alineación superior para labels de diferentes alturas */
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
+    gap: 24px; /* Más espacio en móvil */
   }
 }
 
-/* Campos Opcionales */
+/* Campos Opcionales - Mejorado */
 .form-optional {
-  margin-top: 8px;
+  margin-top: 4px; /* Reducido de 8px */
+  margin-bottom: 0;
 }
 
 .optional-toggle {
@@ -471,6 +615,19 @@
 
 .optional-fields.active {
   max-height: 500px;
+  margin-top: 16px; /* Aumentado de 12px */
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .optional-fields .form-field {
@@ -479,16 +636,38 @@
 
 .form-textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 100px; /* Aumentado de 80px */
+  padding: 14px 16px; /* Consistente con otros inputs */
+  line-height: 1.6;
+  font-family: inherit;
 }
 
-/* Acciones del Formulario */
+@media (max-width: 768px) {
+  .form-textarea {
+    min-height: 90px;
+  }
+}
+
+/* Acciones del Formulario - Mejorado */
 .form-actions {
   display: flex;
   gap: 12px;
   margin-top: 8px;
-  padding-top: 20px;
+  padding-top: 24px; /* Aumentado de 20px */
   border-top: 1px solid var(--exp-border);
+  position: sticky; /* Fijar en la parte inferior al hacer scroll */
+  bottom: 0;
+  background: var(--exp-card);
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .form-actions {
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 20px;
+    margin-top: 16px;
+  }
 }
 
 .btn {
@@ -496,9 +675,15 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 14px 24px;
+  padding: 14px 24px; /* Consistente */
   font-size: 15px;
   font-weight: 600;
+  min-height: 48px; /* Altura mínima para accesibilidad */
+  border-radius: var(--exp-radius-sm);
+  transition: var(--exp-transition);
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
   border: none;
   border-radius: var(--exp-radius-sm);
   cursor: pointer;
@@ -553,6 +738,9 @@
 .expense-history-wrapper {
   position: sticky;
   top: 100px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .expense-history-card {
@@ -564,6 +752,9 @@
   display: flex;
   flex-direction: column;
   max-height: calc(100vh - 140px);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .history-header {
@@ -845,36 +1036,253 @@
 
 @media (max-width: 768px) {
   .expenses-premium {
-    padding: 24px 16px 32px;
+    padding: 20px 12px 32px;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .expenses-header {
+    margin-bottom: 24px;
   }
 
   .expenses-header__content {
     flex-direction: column;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .expenses-header__title-group {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .expenses-header__title {
+    font-size: 24px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .expenses-header__title i {
+    font-size: 22px;
+  }
+
+  .expenses-header__subtitle {
+    font-size: 14px;
   }
 
   .expenses-stats {
     width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .expense-stat-card {
     flex: 1;
     min-width: 0;
+    padding: 12px 10px;
+    gap: 8px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .stat-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .stat-content {
+    gap: 4px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+
+  .stat-value {
+    font-size: 14px;
+  }
+
+  .expenses-layout {
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .expense-form-wrapper,
+  .expense-history-wrapper {
+    position: static;
+    width: 100%;
+    max-width: 100%;
   }
 
   .expense-form-card {
-    padding: 20px;
+    padding: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .quick-actions {
     flex-wrap: wrap;
+    gap: 6px;
+    padding-bottom: 16px;
+  }
+
+  .quick-action-btn {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    font-size: 13px;
+    justify-content: center;
+  }
+
+  .quick-action-btn span {
+    display: none;
+  }
+
+  .form-field {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .form-label {
+    font-size: 13px;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    font-size: 15px;
+    padding: 12px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .amount-input-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .form-row {
+    gap: 12px;
   }
 
   .form-actions {
     flex-direction: column;
+    gap: 12px;
   }
 
   .btn {
     width: 100%;
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+
+  .expense-history-card {
+    padding: 16px;
+    max-height: none;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .history-header {
+    padding: 12px 0;
+  }
+
+  .history-header h3 {
+    font-size: 18px;
+  }
+
+  .expense-item {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .expense-item__content {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .expense-item__description {
+    font-size: 14px;
+  }
+
+  .expense-item__meta {
+    font-size: 12px;
+  }
+
+  .expense-item__amount {
+    font-size: 16px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .expenses-premium {
+    padding: 16px 10px 24px;
+  }
+
+  .expenses-header__title {
+    font-size: 20px;
+  }
+
+  .expenses-header__subtitle {
+    font-size: 13px;
+  }
+
+  .expenses-stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .expense-stat-card {
+    flex-direction: row;
+    text-align: left;
+    padding: 10px 12px;
+  }
+
+  .expense-form-card {
+    padding: 12px;
+  }
+
+  .quick-actions {
+    gap: 4px;
+  }
+
+  .quick-action-btn {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .btn {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .expense-item {
+    padding: 10px;
+    flex-wrap: wrap;
+  }
+
+  .expense-item__actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 8px;
   }
 }
 

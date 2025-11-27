@@ -23,44 +23,55 @@
 
         <!-- PASO 1: BIENVENIDA EMOCIONAL -->
         <div class="onboarding-step" id="step-welcome">
-            <div class="step-content">
-                <div class="welcome-animation">
-                    <div class="welcome-circle pulse">
-                        <img src="img/FIN.png" alt="Fin" class="welcome-avatar">
+            <div class="step-content step-content-compact">
+                <!-- Botón cerrar siempre visible -->
+                <button class="step-close-btn" id="closeOnboardingBtn" title="Cerrar">
+                    <i class="fas fa-times"></i>
+                </button>
+
+                <div class="welcome-animation-compact">
+                    <div class="welcome-circle-compact pulse">
+                        <img src="img/FIN.png" alt="Fin" class="welcome-avatar-compact" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="welcome-avatar-fallback" style="display: none;">
+                            <i class="fas fa-robot"></i>
+                        </div>
                     </div>
                 </div>
 
-                <h1 class="step-title gradient-text">¡Bienvenido a FinanciaSuite! 🎉</h1>
-                <p class="step-subtitle">Tu viaje hacia la libertad financiera comienza aquí</p>
+                <h1 class="step-title-compact gradient-text">¡Bienvenido a FinanciaSuite!</h1>
+                <p class="step-subtitle-compact">Tu viaje hacia la libertad financiera comienza aquí</p>
 
-                <div class="welcome-message">
-                    <p class="lead-text">Hola, soy <strong>Fin</strong>, tu coach financiero personal.</p>
-                    <p>Estoy aquí para ayudarte a tomar el control total de tu dinero, alcanzar tus metas y construir el futuro que deseas.</p>
-                    <div class="feature-highlights">
-                        <div class="highlight-item">
+                <div class="welcome-message-compact">
+                    <p class="lead-text-compact">Hola, soy <strong>Fin</strong>, tu coach financiero personal.</p>
+                    <p class="description-compact">Estoy aquí para ayudarte a tomar el control total de tu dinero, alcanzar tus metas y construir el futuro que deseas.</p>
+                    
+                    <div class="feature-highlights-compact">
+                        <div class="highlight-item-compact">
                             <i class="fas fa-brain"></i>
                             <span>Análisis inteligente con IA</span>
                         </div>
-                        <div class="highlight-item">
+                        <div class="highlight-item-compact">
                             <i class="fas fa-rocket"></i>
                             <span>Planes personalizados</span>
                         </div>
-                        <div class="highlight-item">
+                        <div class="highlight-item-compact">
                             <i class="fas fa-chart-line"></i>
                             <span>Seguimiento en tiempo real</span>
                         </div>
                     </div>
                 </div>
 
-                <button class="btn btn-primary btn-large" id="welcomeContinueBtn">
-                    <span>Comenzar mi transformación</span>
-                    <i class="fas fa-arrow-right"></i>
-                </button>
-
-                <button class="btn btn-secondary btn-large" id="skipOnboardingBtn" style="margin-top: 15px;">
-                    <span>Explorar la app primero</span>
-                    <i class="fas fa-forward"></i>
-                </button>
+                <!-- Botones siempre visibles -->
+                <div class="step-actions-compact">
+                    <button class="btn btn-primary btn-compact" id="welcomeContinueBtn">
+                        <span>Comenzar mi transformación</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="btn btn-secondary btn-compact" id="skipOnboardingBtn">
+                        <span>Explorar la app primero</span>
+                        <i class="fas fa-forward"></i>
+                    </button>
+                </div>
             </div>
         </div>
 

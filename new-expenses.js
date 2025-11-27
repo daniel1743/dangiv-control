@@ -76,10 +76,19 @@
         app.updateUserSelectionDropdown();
       }
 
-      // Formateo de monto
+      // Formateo de monto - Versión segura
       const amountInput = document.getElementById('amount');
       if (amountInput) {
-        amountInput.addEventListener('input', (e) => app.formatAmountInput(e.target));
+        amountInput.addEventListener('input', (e) => {
+          // Si la función existe, usarla, si no, formatear manualmente
+          if (typeof app.formatAmountInput === 'function') {
+            app.formatAmountInput(e.target);
+          } else {
+            // Formateo manual: solo números
+            const value = e.target.value.replace(/\D/g, '');
+            e.target.value = value;
+          }
+        });
       }
 
       // Fecha actual

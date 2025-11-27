@@ -35,6 +35,19 @@ class OnboardingManager {
   // INICIALIZACIÓN
   // ========================================
   init() {
+    // FALLBACK: Asegurar que siempre haya algo visible
+    setTimeout(() => {
+      const activeStep = document.querySelector('.onboarding-step.active');
+      if (!activeStep) {
+        const welcomeStep = document.getElementById('step-welcome');
+        if (welcomeStep) {
+          welcomeStep.classList.add('active');
+          welcomeStep.style.display = 'block';
+          console.log('✅ Fallback: Mostrando paso de bienvenida');
+        }
+      }
+    }, 200);
+
     // Escuchar configuración de Firebase desde el padre
     window.addEventListener('message', (event) => {
       if (event.data && event.data.type === 'FIREBASE_CONFIG') {
@@ -47,10 +60,20 @@ class OnboardingManager {
     // Solicitar configuración si estamos en un iframe
     if (window.parent !== window) {
       console.log('🟡 Onboarding esperando configuración...');
+      // Timeout de seguridad: si después de 2 segundos no hay respuesta, iniciar de todas formas
+      setTimeout(() => {
+        if (!this.geminiApiKey) {
+          console.warn('⚠️ No se recibió API Key, continuando sin ella');
+          this.start();
+        }
+      }, 2000);
     } else {
       // Si no estamos en iframe, intentar obtener de window.FB
       if (window.FB && window.FB.geminiApiKey) {
         this.geminiApiKey = window.FB.geminiApiKey;
+        this.start();
+      } else {
+        // Iniciar de todas formas
         this.start();
       }
     }
@@ -69,7 +92,22 @@ class OnboardingManager {
     // NO redirigir, NO bloquear, NO mostrar nada automáticamente
     // El onboarding se activa solo cuando el usuario hace click en "Comenzar guía"
     if (window.location.pathname.includes('onboarding.html')) {
-      this.showStep('welcome');
+      // Asegurar que el paso de bienvenida se muestre
+      setTimeout(() => {
+        this.showStep('welcome');
+        // Fallback: si después de 500ms no hay nada visible, forzar mostrar
+        setTimeout(() => {
+          const activeStep = document.querySelector('.onboarding-step.active');
+          if (!activeStep) {
+            console.warn('⚠️ No hay paso activo, forzando mostrar bienvenida');
+            const welcomeStep = document.getElementById('step-welcome');
+            if (welcomeStep) {
+              welcomeStep.classList.add('active');
+              welcomeStep.style.display = 'block';
+            }
+          }
+        }, 500);
+      }, 100);
     }
   }
 
@@ -92,7 +130,14 @@ class OnboardingManager {
   // ========================================
   showStep(stepName) {
     const stepIndex = this.steps.indexOf(stepName);
-    if (stepIndex === -1) return;
+    if (stepIndex === -1) {
+      console.error(`❌ Paso "${stepName}" no encontrado`);
+      // Fallback: mostrar paso de bienvenida
+      if (stepName !== 'welcome') {
+        this.showStep('welcome');
+      }
+      return;
+    }
 
     this.currentStep = stepIndex;
     this.updateProgressBar();
@@ -105,12 +150,20 @@ class OnboardingManager {
     // Mostrar el paso actual
     const currentStepEl = document.getElementById(`step-${stepName}`);
     if (currentStepEl) {
-      // OPTIMIZADO: Reducido de 300ms a 50ms
-      // animateStepEntry() ya maneja su propia animación con delay interno
+      // Asegurar que el paso sea visible inmediatamente
+      currentStepEl.style.display = 'block';
       setTimeout(() => {
         currentStepEl.classList.add('active');
         this.animateStepEntry(currentStepEl);
       }, 50);
+    } else {
+      console.error(`❌ Elemento step-${stepName} no encontrado en el DOM`);
+      // Fallback: mostrar paso de bienvenida
+      const welcomeStep = document.getElementById('step-welcome');
+      if (welcomeStep) {
+        welcomeStep.classList.add('active');
+        welcomeStep.style.display = 'block';
+      }
     }
 
     // Ejecutar lógica específica del paso
@@ -187,25 +240,56 @@ class OnboardingManager {
   // PASO 1: BIENVENIDA EMOCIONAL
   // ========================================
   handleWelcomeStep() {
+    // Asegurar que el paso esté visible
+    const welcomeStep = document.getElementById('step-welcome');
+    if (welcomeStep) {
+      welcomeStep.classList.add('active');
+    }
+
     setTimeout(() => {
+      // Botón continuar
       const continueBtn = document.getElementById('welcomeContinueBtn');
       if (continueBtn) {
-        continueBtn.addEventListener('click', () => {
+        // Remover listeners anteriores para evitar duplicados
+        const newContinueBtn = continueBtn.cloneNode(true);
+        continueBtn.parentNode.replaceChild(newContinueBtn, continueBtn);
+        
+        newContinueBtn.addEventListener('click', () => {
+          console.log('✅ Click en "Continuar" - Avanzando a modo selección');
           this.showStep('mode-selection');
         });
         console.log('✅ Botón "Continuar" configurado');
+      } else {
+        console.error('❌ Botón "Continuar" no encontrado');
       }
 
-      // NUEVO: Botón para saltar onboarding
+      // Botón saltar
       const skipBtn = document.getElementById('skipOnboardingBtn');
       if (skipBtn) {
-        skipBtn.addEventListener('click', () => {
-          console.log('🔘 Click en botón Saltar detectado');
+        // Remover listeners anteriores
+        const newSkipBtn = skipBtn.cloneNode(true);
+        skipBtn.parentNode.replaceChild(newSkipBtn, skipBtn);
+        
+        newSkipBtn.addEventListener('click', () => {
+          console.log('🔘 Click en botón "Saltar" detectado');
           this.skipOnboarding();
         });
         console.log('✅ Botón "Saltar" configurado');
       } else {
         console.error('❌ Botón "Saltar" no encontrado en el DOM');
+      }
+
+      // Botón cerrar (nuevo)
+      const closeBtn = document.getElementById('closeOnboardingBtn');
+      if (closeBtn) {
+        const newCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+        
+        newCloseBtn.addEventListener('click', () => {
+          console.log('❌ Click en botón "Cerrar" - Saltando onboarding');
+          this.skipOnboarding();
+        });
+        console.log('✅ Botón "Cerrar" configurado');
       }
     }, 100);
   }

@@ -88,14 +88,36 @@ body {
    PASOS DEL ONBOARDING
    ======================================== */
 .onboarding-step {
-  display: none;
+  display: none !important;
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .onboarding-step.active {
-  display: block;
+  display: block !important;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Fallback para evitar pantallas en blanco */
+.onboarding-container:has(.onboarding-step.active) {
+  min-height: 100vh;
+}
+
+/* Si no hay ningún paso activo después de 1 segundo, mostrar el de bienvenida */
+@keyframes ensureVisible {
+  to {
+    opacity: 1;
+  }
+}
+
+.onboarding-container:not(:has(.onboarding-step.active)) #step-welcome {
+  display: block !important;
+  animation: ensureVisible 0.3s ease forwards;
 }
 
 .step-content {
@@ -104,6 +126,18 @@ body {
   padding: 48px;
   box-shadow: var(--shadow-lg);
   text-align: center;
+  position: relative;
+}
+
+/* Responsive: reducir padding en móvil */
+@media (max-width: 768px) {
+  .step-content {
+    padding: 32px 24px;
+  }
+  
+  .step-content-compact {
+    padding: 24px 20px !important;
+  }
 }
 
 .step-icon {
@@ -142,8 +176,166 @@ body {
 }
 
 /* ========================================
-   PASO 1: BIENVENIDA
+   PASO 1: BIENVENIDA - VERSIÓN COMPACTA
    ======================================== */
+.step-content-compact {
+  padding: 32px 28px !important;
+  max-width: 520px !important;
+  margin: 0 auto;
+  position: relative;
+}
+
+.step-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--bg-secondary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 16px;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.step-close-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  transform: rotate(90deg);
+}
+
+.welcome-animation-compact {
+  margin-bottom: 24px;
+}
+
+.welcome-circle-compact {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  background: var(--primary-gradient);
+  border-radius: 50%;
+  padding: 6px;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  position: relative;
+}
+
+.welcome-circle-compact.pulse {
+  animation: welcomePulseCompact 2s ease-in-out infinite;
+}
+
+@keyframes welcomePulseCompact {
+  0%, 100% {
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.5), 0 0 0 12px rgba(102, 126, 234, 0.08);
+    transform: scale(1.03);
+  }
+}
+
+.welcome-avatar-compact {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: white;
+}
+
+.welcome-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #3da1ac;
+}
+
+.step-title-compact {
+  font-size: 26px !important;
+  font-weight: 800;
+  margin-bottom: 8px !important;
+  line-height: 1.2;
+}
+
+.step-subtitle-compact {
+  font-size: 15px !important;
+  color: var(--text-secondary);
+  margin-bottom: 20px !important;
+}
+
+.welcome-message-compact {
+  margin: 20px 0;
+  text-align: left;
+}
+
+.lead-text-compact {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.description-compact {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.feature-highlights-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.highlight-item-compact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.highlight-item-compact i {
+  font-size: 20px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  flex-shrink: 0;
+  width: 24px;
+}
+
+.step-actions-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.btn-compact {
+  padding: 14px 24px !important;
+  font-size: 15px !important;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Versión original (mantener para compatibilidad) */
 .welcome-animation {
   margin-bottom: 32px;
 }
@@ -1240,17 +1432,41 @@ body {
     padding: 24px 20px;
   }
 
+  .step-content-compact {
+    padding: 20px 16px !important;
+  }
+
   .step-title {
     font-size: 22px;
+  }
+
+  .step-title-compact {
+    font-size: 22px !important;
   }
 
   .progress-text {
     font-size: 12px;
     padding: 6px 12px;
+    top: 12px;
+    right: 12px;
   }
 
   .feature-highlights {
     grid-template-columns: 1fr;
+  }
+
+  .feature-highlights-compact {
+    gap: 8px;
+  }
+
+  .highlight-item-compact {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .welcome-circle-compact {
+    width: 80px;
+    height: 80px;
   }
 
   .form-card {
@@ -1267,5 +1483,13 @@ body {
 
   .goal-amount {
     font-size: 28px;
+  }
+
+  .step-close-btn {
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
   }
 }

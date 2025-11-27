@@ -379,10 +379,28 @@
     <link rel="stylesheet" href="NUEVO_CSS_COMPLETO.css" />
   </head>
   <body class="landing-mode">
-    <!-- Loading Spinner -->
+    <!-- Loading Spinner Mejorado -->
     <div id="loader-wrapper">
-      <div class="spinner"></div>
-      <p>Cargando datos...</p>
+      <div class="loader-content">
+        <div class="spinner"></div>
+        <p class="loader-text" id="loaderText">Cargando datos...</p>
+        <div class="loader-progress">
+          <div class="loader-progress-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido estático visible inmediatamente (skeleton) -->
+    <div id="static-content" class="static-content-skeleton" style="display: none;">
+      <div class="skeleton-navbar"></div>
+      <div class="skeleton-hero">
+        <div class="skeleton-title"></div>
+        <div class="skeleton-subtitle"></div>
+        <div class="skeleton-buttons">
+          <div class="skeleton-button"></div>
+          <div class="skeleton-button"></div>
+        </div>
+      </div>
     </div>
 
     <!-- 🛡️ Script de emergencia para loading infinito -->
@@ -2074,35 +2092,35 @@
               </div>
 
               <!-- Brand Card 3 -->
-              <div class="brand-card">
+              <div class="brand-card" id="boostCard-ai">
                 <div class="brand-icon gradient-green">
                   <i class="fas fa-brain"></i>
                 </div>
                 <div class="brand-content">
                   <h3>IA Financiera</h3>
-                  <p>Recomendaciones automáticas</p>
+                  <p id="boostMessage-ai">Recomendaciones automáticas</p>
                 </div>
               </div>
 
               <!-- Brand Card 4 -->
-              <div class="brand-card">
+              <div class="brand-card" id="boostCard-achievements">
                 <div class="brand-icon gradient-orange">
                   <i class="fas fa-trophy"></i>
                 </div>
                 <div class="brand-content">
                   <h3>Sistema de Logros</h3>
-                  <p>Gamificación motivacional</p>
+                  <p id="boostMessage-achievements">Gamificación motivacional</p>
                 </div>
               </div>
 
               <!-- Brand Card 5 -->
-              <div class="brand-card">
+              <div class="brand-card" id="boostCard-security">
                 <div class="brand-icon gradient-red">
                   <i class="fas fa-shield-alt"></i>
                 </div>
                 <div class="brand-content">
                   <h3>Seguridad Total</h3>
-                  <p>Protección de grado bancario</p>
+                  <p id="boostMessage-security">Protección de grado bancario</p>
                 </div>
               </div>
 
@@ -5824,6 +5842,7 @@
     <script src="achievements-system.js"></script>
     <script src="notifications-system.js"></script>
     <script src="ai-recommendations.js"></script>
+    <script src="boost-messages-manager.js"></script>
     <script src="balance-history.js"></script>
     <script src="premium-manager.js"></script>
     <script src="promo-codes-system.js"></script>

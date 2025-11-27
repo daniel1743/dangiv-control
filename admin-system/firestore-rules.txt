@@ -1,0 +1,80 @@
+/**
+ * ========================================
+ * FIRESTORE SECURITY RULES
+ * Reglas de seguridad para system_events
+ * ========================================
+ * 
+ * Copia estas reglas en Firebase Console:
+ * Firestore Database → Rules
+ */
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function: Verificar si es admin
+    function isAdmin() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/user_profiles/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/user_profiles/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Helper function: Verificar si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // ========================================
+    // SYSTEM_EVENTS - Eventos del sistema
+    // ========================================
+    match /system_events/{eventId} {
+      // Cualquier usuario autenticado puede crear eventos
+      allow create: if isAuthenticated();
+      
+      // Solo admins pueden leer eventos
+      allow read: if isAdmin();
+      
+      // Solo admins pueden actualizar eventos
+      allow update: if isAdmin();
+      
+      // Solo admins pueden eliminar eventos
+      allow delete: if isAdmin();
+    }
+
+    // ========================================
+    // SYSTEM_ANALYTICS - Análisis automáticos
+    // ========================================
+    match /system_analytics/{analyticsId} {
+      // Solo admins pueden leer
+      allow read: if isAdmin();
+      
+      // Solo admins pueden crear/actualizar
+      allow write: if isAdmin();
+    }
+
+    // ========================================
+    // NOTIFICATION_SETTINGS - Configuración
+    // ========================================
+    match /notification_settings/{settingId} {
+      // Solo admins pueden leer y escribir
+      allow read, write: if isAdmin();
+    }
+
+    // ========================================
+    // USER_PROFILES - Perfiles de usuario
+    // ========================================
+    match /user_profiles/{userId} {
+      // Usuarios pueden leer su propio perfil
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Usuarios pueden actualizar su propio perfil (excepto role)
+      allow update: if isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']));
+      
+      // Solo admins pueden crear perfiles
+      allow create: if isAdmin();
+    }
+  }
+}
+

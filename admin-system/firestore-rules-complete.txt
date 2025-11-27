@@ -1,0 +1,171 @@
+/**
+ * ========================================
+ * FIRESTORE SECURITY RULES COMPLETAS
+ * Reglas de seguridad para Finantel
+ * ========================================
+ * 
+ * IMPORTANTE: Reemplaza estas reglas en Firebase Console:
+ * Firestore Database → Rules → Editar
+ */
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ========================================
+    // HELPER FUNCTIONS
+    // ========================================
+    
+    // Verificar si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Verificar si es admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/user_profiles/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/user_profiles/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Verificar si el usuario es el dueño del documento
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // ========================================
+    // SYSTEM_EVENTS - Eventos del sistema
+    // ========================================
+    match /system_events/{eventId} {
+      // Cualquier usuario autenticado puede crear eventos
+      allow create: if isAuthenticated();
+      
+      // Solo admins pueden leer eventos
+      allow read: if isAdmin();
+      
+      // Solo admins pueden actualizar eventos
+      allow update: if isAdmin();
+      
+      // Solo admins pueden eliminar eventos
+      allow delete: if isAdmin();
+    }
+
+    // ========================================
+    // SYSTEM_ANALYTICS - Análisis automáticos
+    // ========================================
+    match /system_analytics/{analyticsId} {
+      // Solo admins pueden leer
+      allow read: if isAdmin();
+      
+      // Solo admins pueden crear/actualizar
+      allow write: if isAdmin();
+    }
+
+    // ========================================
+    // NOTIFICATION_SETTINGS - Configuración
+    // ========================================
+    match /notification_settings/{settingId} {
+      // Solo admins pueden leer y escribir
+      allow read, write: if isAdmin();
+    }
+
+    // ========================================
+    // USER_PROFILES - Perfiles de usuario
+    // ========================================
+    match /user_profiles/{userId} {
+      // Usuarios pueden leer su propio perfil
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Usuarios pueden actualizar su propio perfil (excepto role)
+      allow update: if isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']));
+      
+      // Solo admins pueden crear perfiles
+      allow create: if isAdmin();
+    }
+
+    // ========================================
+    // USERS - Datos de usuarios (tu colección principal)
+    // ========================================
+    match /users/{userId} {
+      // Usuarios pueden leer y escribir sus propios datos
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Admins pueden leer todos los datos
+      allow read: if isAdmin();
+    }
+
+    // ========================================
+    // EXPENSES - Gastos (si tienes una colección separada)
+    // ========================================
+    match /expenses/{expenseId} {
+      // Usuarios pueden crear sus propios gastos
+      allow create: if isAuthenticated() && 
+                     request.resource.data.userId == request.auth.uid;
+      
+      // Usuarios pueden leer y actualizar sus propios gastos
+      allow read, update: if isAuthenticated() && 
+                           resource.data.userId == request.auth.uid;
+      
+      // Usuarios pueden eliminar sus propios gastos
+      allow delete: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      
+      // Admins pueden hacer todo
+      allow read, write: if isAdmin();
+    }
+
+    // ========================================
+    // TRANSACTIONS - Transacciones (si tienes una colección separada)
+    // ========================================
+    match /transactions/{transactionId} {
+      // Usuarios pueden crear sus propias transacciones
+      allow create: if isAuthenticated() && 
+                     request.resource.data.userId == request.auth.uid;
+      
+      // Usuarios pueden leer y actualizar sus propias transacciones
+      allow read, update: if isAuthenticated() && 
+                           resource.data.userId == request.auth.uid;
+      
+      // Usuarios pueden eliminar sus propias transacciones
+      allow delete: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      
+      // Admins pueden hacer todo
+      allow read, write: if isAdmin();
+    }
+
+    // ========================================
+    // FCM_TOKENS - Tokens de notificaciones push
+    // ========================================
+    match /fcm_tokens/{tokenId} {
+      // Usuarios pueden crear/actualizar su propio token
+      allow create, update: if isAuthenticated() && 
+                              request.resource.data.userId == request.auth.uid;
+      
+      // Usuarios pueden leer su propio token
+      allow read: if isAuthenticated() && 
+                   resource.data.userId == request.auth.uid;
+      
+      // Usuarios pueden eliminar su propio token
+      allow delete: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+    }
+
+    // ========================================
+    // CUALQUIER OTRA COLECCIÓN
+    // Por defecto, solo usuarios autenticados pueden leer/escribir sus propios datos
+    // ========================================
+    match /{document=**} {
+      // Permitir lectura/escritura solo si el documento tiene userId y coincide
+      allow read, write: if isAuthenticated() && 
+                          (resource == null || resource.data.userId == request.auth.uid ||
+                           request.resource.data.userId == request.auth.uid);
+      
+      // Admins pueden hacer todo
+      allow read, write: if isAdmin();
+    }
+  }
+}
+

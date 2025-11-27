@@ -1639,10 +1639,14 @@ class FinanceApp {
 
   // === INICIO DE SECCIÃƒâ€œN: LÃƒâ€œGICA DE AUTENTICACIÃƒâ€œN DE FIREBASE ===
   setupAuth() {
-    // 🛡️ TIMEOUT DE SEGURIDAD: Ocultar loading después de 10 segundos máximo
+    // ⚡ MEJORA: Mostrar contenido estático inmediatamente
+    this.showStaticContent();
+
+    // 🛡️ TIMEOUT DE SEGURIDAD: Reducido a 5 segundos (más agresivo)
     this.safetyTimeout = setTimeout(() => {
-      console.warn('[Safety] Loading timeout alcanzado (10s) - forzando hide');
+      console.warn('[Safety] Loading timeout alcanzado (5s) - forzando hide');
       this.hideAppLoading();
+      this.hideStaticContent();
 
       this.showToast(
         'Conexión lenta detectada. Usando modo local.',
@@ -1659,7 +1663,10 @@ class FinanceApp {
       if (!isAnyVisible && landingSection) {
         landingSection.classList.add('active');
       }
-    }, 10000);
+    }, 5000); // Reducido de 10s a 5s
+
+    // ⚡ MEJORA: Actualizar texto del loader según progreso
+    this.updateLoaderText('Conectando...');
 
     const FB = window.FB;
     if (!FB?.auth) return;
@@ -1745,11 +1752,18 @@ class FinanceApp {
           '[Auth] Usuario existente autenticado, cargando datos reales...'
         );
 
+        // Actualizar texto del loader
+        this.updateLoaderText('Sincronizando datos...');
+
         // Sincronizar desde Firebase y esperar a que complete
         this.syncFromFirebase()
           .then(() => {
+            // Actualizar texto final
+            this.updateLoaderText('¡Listo!');
             // Ocultar loading solo cuando los datos reales estén cargados
-            this.hideAppLoading();
+            setTimeout(() => {
+              this.hideAppLoading();
+            }, 200); // Pequeño delay para mostrar "¡Listo!"
 
             console.log(
               '[Auth] Datos reales cargados, renderizando dashboard...'
@@ -1827,8 +1841,11 @@ class FinanceApp {
           })
           .catch((err) => {
             console.error('[Auth] Error en sincronización:', err);
-            // clearTimeout(maxLoadingTime); // maxLoadingTime no está definido, lo comento para evitar errores
-            this.hideAppLoading();
+            this.updateLoaderText('Usando modo local...');
+            // Ocultar loading después de mostrar mensaje
+            setTimeout(() => {
+              this.hideAppLoading();
+            }, 500);
 
             // Renderizar con datos locales si falla
             this.renderDashboard();
@@ -1895,7 +1912,10 @@ class FinanceApp {
         if (footerLoginLink) footerLoginLink.style.display = 'block';
 
         // Para usuario anónimo, SOLO mostrar landing page (sin dashboard)
-        this.hideAppLoading();
+        this.updateLoaderText('Cargando...');
+        setTimeout(() => {
+          this.hideAppLoading();
+        }, 300); // Pequeño delay para transición suave
 
         // NUEVO: Ocultar botones Fin y + para usuarios anónimos
         this.hideAuthRequiredButtons();
@@ -4729,6 +4749,7 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
     this.renderGoalsProgress();
     this.renderGoalsProgressChart();
     this.renderAIRecommendations();
+    this.initBoostMessages();
     this.renderRecentTransactions();
     this.updateNotifications();
   }
@@ -7440,6 +7461,14 @@ Escribe el número de la opción o cuéntame qué necesitas:`,
       // Si ya existe, solo renderizar
       this.aiRecommendationsManager.renderRecommendations();
     }
+  }
+
+  initBoostMessages() {
+    // Inicializar el gestor de boost messages si no existe
+    if (!this.boostMessagesManager) {
+      this.boostMessagesManager = new BoostMessagesManager(this);
+    }
+    // El manager se auto-actualiza cada 12 horas, no necesita render manual
   }
 
   renderRecentTransactions() {
@@ -18980,15 +19009,65 @@ FinanceApp.prototype.hideAppLoading = function () {
     this.safetyTimeout = null;
   }
 
+  // Ocultar contenido estático
+  this.hideStaticContent();
+
   const loader = document.getElementById('loader-wrapper');
   if (loader) {
     loader.classList.add('hidden');
     setTimeout(() => {
       loader.style.display = 'none';
-    }, 600);
+    }, 300); // Reducido de 600ms a 300ms para más rapidez
   }
 
   console.log('[Loading] Loader ocultado exitosamente');
+};
+
+// ========================================
+// MÉTODOS DE CONTENIDO ESTÁTICO Y LOADER
+// ========================================
+
+/**
+ * Mostrar contenido estático inmediatamente (skeleton screens)
+ */
+FinanceApp.prototype.showStaticContent = function () {
+  const staticContent = document.getElementById('static-content');
+  if (staticContent) {
+    staticContent.style.display = 'block';
+    // Mostrar landing page con opacidad baja mientras carga
+    const landingSection = document.getElementById('landing');
+    if (landingSection) {
+      landingSection.style.opacity = '0.3';
+      landingSection.style.pointerEvents = 'none';
+      landingSection.classList.add('active');
+    }
+  }
+};
+
+/**
+ * Ocultar contenido estático
+ */
+FinanceApp.prototype.hideStaticContent = function () {
+  const staticContent = document.getElementById('static-content');
+  if (staticContent) {
+    staticContent.style.display = 'none';
+  }
+  // Restaurar opacidad de landing
+  const landingSection = document.getElementById('landing');
+  if (landingSection) {
+    landingSection.style.opacity = '1';
+    landingSection.style.pointerEvents = 'auto';
+  }
+};
+
+/**
+ * Actualizar texto del loader según progreso
+ */
+FinanceApp.prototype.updateLoaderText = function (text) {
+  const loaderText = document.getElementById('loaderText');
+  if (loaderText) {
+    loaderText.textContent = text;
+  }
 };
 
 // ========================================
@@ -19425,29 +19504,44 @@ window.openSelectModal = function(modalId, currentValue) {
     }
   }
   
-  // Calcular posición del modal solo si encontramos un trigger válido
-  if (trigger && trigger !== document.body && trigger !== document.documentElement && trigger.getBoundingClientRect) {
-    try {
-      const triggerRect = trigger.getBoundingClientRect();
-      const modalContent = modal.querySelector('.select-modal-content');
-      const viewportHeight = window.innerHeight;
-      const spaceBelow = viewportHeight - triggerRect.bottom;
-      const spaceAbove = triggerRect.top;
-      const estimatedModalHeight = Math.min(400, viewportHeight * 0.7); // 70% del viewport o 400px, el menor
-      
-      // Si no hay espacio abajo suficiente y hay más espacio arriba, abrir hacia arriba
-      if (spaceBelow < estimatedModalHeight && spaceAbove > estimatedModalHeight) {
-        modal.classList.add('select-modal-top');
-      } else {
-        modal.classList.remove('select-modal-top');
-      }
-    } catch (error) {
-      // Si hay error, usar posición por defecto (abajo)
-      modal.classList.remove('select-modal-top');
+  // Detectar si estamos en móvil
+  const isMobile = window.innerWidth <= 768;
+  
+  // En móvil, siempre usar posición desde abajo (mejor UX)
+  if (isMobile) {
+    modal.classList.remove('select-modal-top');
+    // Asegurar que el modal se ajuste al viewport
+    const modalContent = modal.querySelector('.select-modal-content');
+    if (modalContent) {
+      // Limitar altura máxima al 90% del viewport
+      const maxHeight = Math.min(window.innerHeight * 0.9, 600);
+      modalContent.style.maxHeight = `${maxHeight}px`;
     }
   } else {
-    // Por defecto, abrir hacia abajo
-    modal.classList.remove('select-modal-top');
+    // En desktop, calcular posición inteligente
+    if (trigger && trigger !== document.body && trigger !== document.documentElement && trigger.getBoundingClientRect) {
+      try {
+        const triggerRect = trigger.getBoundingClientRect();
+        const modalContent = modal.querySelector('.select-modal-content');
+        const viewportHeight = window.innerHeight;
+        const spaceBelow = viewportHeight - triggerRect.bottom;
+        const spaceAbove = triggerRect.top;
+        const estimatedModalHeight = Math.min(400, viewportHeight * 0.7); // 70% del viewport o 400px, el menor
+        
+        // Si no hay espacio abajo suficiente y hay más espacio arriba, abrir hacia arriba
+        if (spaceBelow < estimatedModalHeight && spaceAbove > estimatedModalHeight) {
+          modal.classList.add('select-modal-top');
+        } else {
+          modal.classList.remove('select-modal-top');
+        }
+      } catch (error) {
+        // Si hay error, usar posición por defecto (abajo)
+        modal.classList.remove('select-modal-top');
+      }
+    } else {
+      // Por defecto, abrir hacia abajo
+      modal.classList.remove('select-modal-top');
+    }
   }
 
   // Agregar clase show para mostrar el modal
@@ -19458,8 +19552,21 @@ window.openSelectModal = function(modalId, currentValue) {
     trigger.setAttribute('aria-expanded', 'true');
   });
 
-  // Prevenir scroll del body
+  // Prevenir scroll del body - mejorado para móvil
   document.body.classList.add('modal-open');
+  document.documentElement.classList.add('modal-open');
+  // Guardar posición del scroll antes de abrir el modal
+  if (!document.body.dataset.scrollY) {
+    document.body.dataset.scrollY = window.scrollY;
+  }
+  // En móvil, también prevenir scroll en el html
+  if (window.innerWidth <= 768) {
+    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.position = 'fixed';
+    document.documentElement.style.width = '100%';
+    document.documentElement.style.height = '100%';
+    document.documentElement.style.touchAction = 'none';
+  }
 
   // Resaltar opción seleccionada actual
   const options = modal.querySelectorAll('.select-modal-option');
@@ -19492,8 +19599,22 @@ window.closeSelectModal = function(modalId) {
     trigger.setAttribute('aria-expanded', 'false');
   });
 
-  // Restaurar scroll del body
+  // Restaurar scroll del body - mejorado para móvil
   document.body.classList.remove('modal-open');
+  document.documentElement.classList.remove('modal-open');
+  // Restaurar scroll en móvil
+  if (window.innerWidth <= 768) {
+    document.documentElement.style.overflow = '';
+    document.documentElement.style.position = '';
+    document.documentElement.style.width = '';
+    document.documentElement.style.height = '';
+    document.documentElement.style.touchAction = '';
+    // Restaurar posición del scroll si existe
+    if (document.body.dataset.scrollY) {
+      window.scrollTo(0, parseInt(document.body.dataset.scrollY));
+      delete document.body.dataset.scrollY;
+    }
+  }
 
   console.log(`✅ Modal ${modalId} cerrado`);
 };

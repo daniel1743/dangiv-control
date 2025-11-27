@@ -368,7 +368,7 @@ IMPORTANTE: Responde SOLO con el array JSON (sin markdown, sin \`\`\`json):
     const isPremium = window.premiumManager?.data?.isPremium || false;
     const freeCount = 3;
 
-    // Renderizar recomendaciones gratis (primeras 3)
+    // Renderizar solo las 3 recomendaciones gratis (primeras 3)
     const freeRecommendations = this.allRecommendations.slice(0, freeCount);
     freeRecommendations.forEach((rec, index) => {
       setTimeout(() => {
@@ -378,23 +378,14 @@ IMPORTANTE: Responde SOLO con el array JSON (sin markdown, sin \`\`\`json):
       }, index * 100);
     });
 
-    // Si no es premium, mostrar cards bloqueadas
-    if (!isPremium && this.allRecommendations.length > freeCount) {
-      const lockedRecommendations = this.allRecommendations.slice(freeCount);
-      lockedRecommendations.forEach((rec, index) => {
-        setTimeout(() => {
-          const card = this.createLockedCard(rec, freeCount + index);
-          scrollContainer.appendChild(card);
-          setTimeout(() => card.classList.add('visible'), 50);
-        }, (freeCount + index) * 100);
-      });
-    } else if (isPremium) {
-      // Si es premium, mostrar todas normalmente con scroll infinito
+    // Si es premium, mostrar todas normalmente con scroll infinito
+    if (isPremium && this.allRecommendations.length > freeCount) {
       this.currentIndex = freeCount;
-      if (this.allRecommendations.length > freeCount) {
-        this.setupInfiniteScroll(scrollContainer);
-      }
+      this.setupInfiniteScroll(scrollContainer);
     }
+    
+    // NOTA: Las cards premium bloqueadas ya no se muestran
+    // Solo se muestran las 3 recomendaciones gratuitas
 
     // Mostrar tarjeta padre
     const parentCard = container.closest('.card');
