@@ -99,3 +99,4 @@ Si después de aplicar estas reglas el error persiste, revisa:
 2. Que el campo `userId` exista en tus documentos
 3. Los logs de Firebase Console para más detalles
 
+

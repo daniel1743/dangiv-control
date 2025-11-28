@@ -156,3 +156,4 @@ admin-system/database/schema.sql
 
 Copia TODO el contenido de ese archivo y pégalo en el SQL Editor de Supabase.
 
+

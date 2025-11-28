@@ -553,3 +553,4 @@ export const reportUserActivity = (event: string, metadata?: Record<string, any>
 // Exportar instancia por defecto
 export default getEventReporter();
 
+

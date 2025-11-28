@@ -62,3 +62,4 @@ Lee `FIREBASE-SETUP.md` para instrucciones detalladas.
 
 Solo cambia el backend de almacenamiento.
 
+

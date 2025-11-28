@@ -723,3 +723,4 @@ function getSeverityColor(severity: string): string {
   return colors[severity] || '#6b7280';
 }
 
+
